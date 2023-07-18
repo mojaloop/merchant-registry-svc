@@ -1,4 +1,12 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
-cd ./packages/acquirer-frontend && npx --no -- commitlint --edit "$1"
+PACKAGES=("packages/acquirer-frontend")  # List the names of the packages you want to lint
+
+for PACKAGE in "${PACKAGES[@]}"
+do
+  CHANGED_FILES=$(git diff --cached --name-only --diff-filter=ACM -- "$PACKAGE")
+  if [ -n "$CHANGED_FILES" ]; then
+    cd ./packages/acquirer-frontend && npx --no -- commitlint --edit "$1"
+  fi
+done
