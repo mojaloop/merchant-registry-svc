@@ -1,4 +1,5 @@
 export * from './merchant-category-codes'
+export * from './countries'
 
 export enum AuditActionType {
   ACCESS = 'Access',
