@@ -10,5 +10,6 @@
         "project": "./packages/acquirer-backend/tsconfig.json"
     },
     "rules": {
+      "max-len": ["error", { "code": 100 }]
     }
 }

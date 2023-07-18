@@ -14,11 +14,25 @@ export enum MerchantAllowBlockStatus {
   BLOCKED = 'Blocked'
 }
 
-export enum MerchnatRegistrationStatus {
+export enum MerchantRegistrationStatus {
   DRAFT = 'Draft',
   REVIEWING = 'Reviewing',
   APPROVED = 'Approved',
   REJECTED = 'Rejected'
+}
+
+export enum MerchantLocationType {
+  PHYSICAL = 'Physical',
+  WEB = 'Web',
+}
+
+export enum DFSPType {
+  BANK = 'Bank and Credit Union',
+  MMO = 'Mobile Money Operator',
+  PSP = 'Payment Service Provider',
+  EMI = 'Electronic Money Issuer',
+  MFI = 'Microfinance Institution',
+  OTHER = 'Other'
 }
 
 export enum PortalUserStatus {
@@ -32,4 +46,10 @@ export enum PortalUserType {
   HUB = 'Hub',
   DFSP = 'DFSP',
   MERCHANT = 'Merchant'
+}
+
+export enum BusinessOwnerIDType {
+  PASSPORT = 'Passport',
+  NATIONAL_ID = 'National ID',
+  SSN = 'SSN',
 }
