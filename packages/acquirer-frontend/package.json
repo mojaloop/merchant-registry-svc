@@ -9,16 +9,28 @@
     "build": "tsc && vite build",
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
-    "prepare": "cd ../../ && husky install ./packages/acquirer-frontend/.husky"
+    "prepare": "cd ../../ && husky install ./packages/acquirer-frontend/.husky",
+    "theme": "chakra-cli tokens ./src/theme/index.ts",
+    "theme:watch": "chakra-cli tokens ./src/theme/index.ts --watch",
+    "postinstall": "pnpm theme"
   },
   "lint-staged": {
     "**/*": "prettier --write --ignore-unknown"
   },
   "dependencies": {
+    "@chakra-ui/react": "^2.8.0",
+    "@chakra-ui/styled-system": "^2.9.1",
+    "@emotion/react": "^11.11.1",
+    "@emotion/styled": "^11.11.0",
+    "@fontsource/inter": "^5.0.5",
+    "framer-motion": "^10.13.0",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "react-icons": "^4.10.1",
+    "react-router-dom": "^6.14.2"
   },
   "devDependencies": {
+    "@chakra-ui/cli": "^2.4.1",
     "@commitlint/cli": "^17.6.6",
     "@commitlint/config-conventional": "^17.6.6",
     "@types/react": "^18.2.14",
@@ -33,6 +45,7 @@
     "lint-staged": "^13.2.3",
     "prettier": "^3.0.0",
     "typescript": "^5.0.2",
-    "vite": "^4.4.0"
+    "vite": "^4.4.0",
+    "vite-tsconfig-paths": "^4.2.0"
   }
 }
