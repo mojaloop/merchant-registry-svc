@@ -15,13 +15,18 @@ interface NavItemAccordionProps {
   navItemAccordion: NavItemAccordionType
 }
 
-const NavItemAccordion = ({ navItemAccordion }: NavItemAccordionProps) => {
+const NavItemAccordion = ({
+  navItemAccordion: { tooltipLabel, label, icon, subNavItems },
+}: NavItemAccordionProps) => {
   const location = useLocation()
 
-  const { tooltipLabel, label, icon, subNavItems } = navItemAccordion
+  // This is to control the state of the accordion.
+  // An accordion will initially be expanded if one of the nav items inside it is active.
+  const isOpen = subNavItems.some(subNavItem => subNavItem.to === location.pathname)
+  const initialIndex = isOpen ? 0 : 1
 
   return (
-    <Accordion allowToggle>
+    <Accordion allowToggle defaultIndex={initialIndex}>
       <AccordionItem border='0' display='flex' flexDir='column' alignItems='center'>
         <TooltipShell label={tooltipLabel}>
           <AccordionButton
