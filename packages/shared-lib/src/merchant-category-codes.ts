@@ -1,3 +1,4 @@
+/* eslint-disable */
 export const MerchantCategoryCodes = {
   "01110": "Growing of cereals (except rice), leguminous crops and oil seeds",
   "01120": "Growing of rice",
