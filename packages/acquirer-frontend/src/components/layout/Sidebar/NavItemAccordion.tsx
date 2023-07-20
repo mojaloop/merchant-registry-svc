@@ -6,10 +6,10 @@ import {
   AccordionPanel,
   Icon,
   Link,
-  Tooltip,
 } from '@chakra-ui/react'
 
 import type { NavItemAccordion as NavItemAccordionType } from './navItems'
+import TooltipShell from './TooltipShell'
 
 interface NavItemAccordionProps {
   navItemAccordion: NavItemAccordionType
@@ -23,7 +23,7 @@ const NavItemAccordion = ({ navItemAccordion }: NavItemAccordionProps) => {
   return (
     <Accordion allowToggle>
       <AccordionItem border='0' display='flex' flexDir='column' alignItems='center'>
-        <Tooltip label={tooltipLabel} hasArrow placement='right' bg='primary'>
+        <TooltipShell label={tooltipLabel}>
           <AccordionButton
             p='0'
             aria-label={label}
@@ -40,7 +40,7 @@ const NavItemAccordion = ({ navItemAccordion }: NavItemAccordionProps) => {
           >
             <Icon as={icon} />
           </AccordionButton>
-        </Tooltip>
+        </TooltipShell>
 
         <AccordionPanel
           p='0'
@@ -53,13 +53,7 @@ const NavItemAccordion = ({ navItemAccordion }: NavItemAccordionProps) => {
           gap='4'
         >
           {subNavItems.map(({ tooltipLabel, name, to }) => (
-            <Tooltip
-              key={tooltipLabel}
-              label={tooltipLabel}
-              hasArrow
-              placement='right'
-              bg='primary'
-            >
+            <TooltipShell key={tooltipLabel} label={tooltipLabel}>
               <Link
                 as={NavLink}
                 to={to}
@@ -74,7 +68,7 @@ const NavItemAccordion = ({ navItemAccordion }: NavItemAccordionProps) => {
               >
                 {name}
               </Link>
-            </Tooltip>
+            </TooltipShell>
           ))}
         </AccordionPanel>
       </AccordionItem>
