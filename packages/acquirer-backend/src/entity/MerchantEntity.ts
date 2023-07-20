@@ -30,8 +30,8 @@ export class MerchantEntity {
   @Column({ nullable: true, unique: true, length: 255 })
     registered_name!: string
 
-  @Column({ nullable: false, type: 'int', default: 0 })
-    employees_num_atm!: number
+  @Column({ nullable: true, default: '0 - 5' })
+    employees_num!: string
 
   @Column({
     nullable: false,
