@@ -1,5 +1,5 @@
 /* eslint-disable */
-export const MerchantCategoryCodes = {
+export const MerchantCategoryCodes: Record<string,string>  = {
   "01110": "Growing of cereals (except rice), leguminous crops and oil seeds",
   "01120": "Growing of rice",
   "01130": "Growing of vegetables and melons, roots and tubers",
