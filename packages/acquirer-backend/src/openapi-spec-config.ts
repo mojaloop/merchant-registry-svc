@@ -1,4 +1,8 @@
 import swaggerJSDoc from 'swagger-jsdoc'
+import path from 'path'
+
+const ROUTE_PATH = path.join(__dirname, './routes/*.ts')
+const ENTITY_PATH = path.join(__dirname, './entities/*.ts')
 
 const options = {
   failOnErrors: true,
@@ -19,7 +23,7 @@ const options = {
       }
     }
   },
-  apis: ['./src/routes/*.ts', './src/entities/*.ts']
+  apis: [ROUTE_PATH, ENTITY_PATH]
 }
 
 export const openAPISpecification = swaggerJSDoc(options)

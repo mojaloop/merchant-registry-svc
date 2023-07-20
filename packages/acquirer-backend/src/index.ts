@@ -6,6 +6,7 @@ import { initializeDatabase } from './database/init-database'
 import logger from './logger'
 import morgan_config from './morgan-config'
 import health_check_route from './routes/health-check-route'
+import merchant_routes from './routes/merchant-routes'
 import { openAPISpecification } from './openapi-spec-config'
 
 const HOSTNAME: string = process.env.HOST ?? 'localhost'
@@ -24,6 +25,7 @@ app.use(morgan_config)
 
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(openAPISpecification))
 app.use('/api/v1', health_check_route)
+app.use('/api/v1', merchant_routes)
 
 app.listen(PORT, HOSTNAME, () => {
   logger.info(`Merchant Acquirer API is running on http://${HOSTNAME}:${PORT}/api/v1`)
