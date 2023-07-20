@@ -67,9 +67,6 @@ export class LocationEntity {
   @Column({ nullable: true, length: 255 })
     longitude!: string
 
-  @OneToOne(() => PersonEntity, person => person.businessPersonLocation)
-    person!: PersonEntity
-
   @CreateDateColumn()
     created_at!: Date
 

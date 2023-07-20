@@ -10,7 +10,11 @@
     "esModuleInterop": true,
     "emitDecoratorMetadata": true,
     "allowSyntheticDefaultImports": true,
-    "experimentalDecorators": true
+    "experimentalDecorators": true,
+    "baseUrl": ".",
+    "paths": {
+      "shared-lib": ["../shared-lib/src/*"]
+    }
   },
   "include": ["**/src/**/*.ts"],
   "exclude": ["node_modules"]

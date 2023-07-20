@@ -4,7 +4,7 @@ import {
 import { MerchantEntity } from './MerchantEntity'
 import { BusinessOwnerIDType } from 'shared-lib'
 import { PersonEntity } from './PersonEntity'
-import { BusinessPersonLocation } from './BusinessPersonLocationEntity'
+import { BusinessPersonLocationEntity } from './BusinessPersonLocationEntity'
 
 @Entity('business_owner')
 export class BusinessOwnerEntity extends PersonEntity {
@@ -19,8 +19,8 @@ export class BusinessOwnerEntity extends PersonEntity {
   @Column({ nullable: false, length: 255 })
     identification_number!: string
 
-  @OneToOne(() => BusinessPersonLocation, businessPersonLocation => businessPersonLocation.person)
-    businessPersonLocation!: BusinessPersonLocation
+  @OneToOne(() => BusinessPersonLocationEntity, location => location.person)
+    businessPersonLocation!: BusinessPersonLocationEntity
 
   @ManyToMany(() => MerchantEntity, merchant => merchant.business_owners)
     merchants!: MerchantEntity[]

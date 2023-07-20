@@ -1,7 +1,9 @@
 import {
   Entity, Column, PrimaryGeneratedColumn,
-  CreateDateColumn, UpdateDateColumn
+  CreateDateColumn, UpdateDateColumn, OneToOne
 } from 'typeorm'
+import { BusinessPersonLocationEntity } from './BusinessPersonLocationEntity'
+
 @Entity('persons')
 export class PersonEntity {
   @PrimaryGeneratedColumn()
@@ -15,6 +17,9 @@ export class PersonEntity {
 
   @Column({ nullable: false, length: 255 })
     phone_number!: string
+
+  @OneToOne(() => BusinessPersonLocationEntity, location => location.person)
+    businessPersonLocation!: BusinessPersonLocationEntity
 
   @CreateDateColumn()
     created_at!: Date
