@@ -2,14 +2,21 @@ import { type IconType } from 'react-icons'
 import { MdAssignmentAdd } from 'react-icons/md'
 import { TbFileText, TbUserSearch } from 'react-icons/tb'
 
+export interface NavItem {
+  name: string
+  to: string
+  label?: string
+  icon?: IconType
+}
+
 export interface SubNavItem {
   name: string
-  tooltipLabel: string
+  shortName: string
   to: string
 }
 
-export interface NavItemAccordion {
-  tooltipLabel: string
+export interface NavAccordion {
+  name: string
   label: string
   icon: IconType
   subNavItems: SubNavItem[]
@@ -17,41 +24,42 @@ export interface NavItemAccordion {
 
 export const navItems = [
   {
-    tooltipLabel: 'Registry',
+    name: 'Registry',
     to: '/registry',
     label: 'Go to registry page',
     icon: MdAssignmentAdd,
   },
   {
-    tooltipLabel: 'Merchant Records',
+    name: 'Merchant Records',
     label: 'Open merchant records nav menu',
     icon: TbFileText,
     subNavItems: [
       {
-        name: 'All',
-        tooltipLabel: 'All Merchant Records',
+        name: 'All Merchant Records',
+        shortName: 'All',
         to: '/merchant-records/all-merchant-records',
       },
       {
-        name: 'Pending',
-        tooltipLabel: 'Pending Merchant Records',
+        name: 'Pending Merchant Records',
+        shortName: 'Pending',
         to: '/merchant-records/pending-merchant-records',
       },
     ],
   },
   {
-    tooltipLabel: 'Portal User Management',
+    name: 'Portal User Management',
     label: 'Open portal user management nav menu',
     icon: TbUserSearch,
     subNavItems: [
       {
-        name: 'Role',
-        tooltipLabel: 'Role Management',
+        name: 'Role Management',
+        shortName: 'Role',
+
         to: '/portal-user-management/role-management',
       },
       {
-        name: 'User',
-        tooltipLabel: 'User Management',
+        name: 'User Management',
+        shortName: 'User',
         to: '/portal-user-management/user-management',
       },
     ],

@@ -1,4 +1,5 @@
-import { NavLink, useLocation } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { NavLink } from 'react-router-dom'
 import {
   Accordion,
   AccordionButton,
@@ -8,27 +9,38 @@ import {
   Link,
 } from '@chakra-ui/react'
 
-import type { NavItemAccordion as NavItemAccordionType } from './navItems'
+import type { NavAccordion } from './navItems'
 import TooltipShell from './TooltipShell'
 
-interface NavItemAccordionProps {
-  navItemAccordion: NavItemAccordionType
+interface SidebarNavAccordionProps {
+  navAccordion: NavAccordion
 }
 
-const NavItemAccordion = ({
-  navItemAccordion: { tooltipLabel, label, icon, subNavItems },
-}: NavItemAccordionProps) => {
-  const location = useLocation()
-
+const SidebarNavAccordion = ({
+  navAccordion: { name, label, icon, subNavItems },
+}: SidebarNavAccordionProps) => {
   // This is to control the state of the accordion.
   // An accordion will initially be expanded if one of the nav items inside it is active.
   const isOpen = subNavItems.some(subNavItem => subNavItem.to === location.pathname)
   const initialIndex = isOpen ? 0 : 1
 
+  const [activeIndex, setActiveIndex] = useState(initialIndex)
+
+  useEffect(() => {
+    const isOpen = subNavItems.some(subNavItem => subNavItem.to === location.pathname)
+    setActiveIndex(isOpen ? 0 : 1)
+  }, [location.pathname])
+
   return (
-    <Accordion allowToggle defaultIndex={initialIndex}>
+    <Accordion
+      allowToggle
+      index={activeIndex}
+      onChange={expandedIndex => {
+        setActiveIndex(expandedIndex as number)
+      }}
+    >
       <AccordionItem border='0' display='flex' flexDir='column' alignItems='center'>
-        <TooltipShell label={tooltipLabel}>
+        <TooltipShell label={name}>
           <AccordionButton
             p='0'
             aria-label={label}
@@ -57,8 +69,8 @@ const NavItemAccordion = ({
           alignItems='center'
           gap='4'
         >
-          {subNavItems.map(({ tooltipLabel, name, to }) => (
-            <TooltipShell key={tooltipLabel} label={tooltipLabel}>
+          {subNavItems.map(({ name, shortName, to }) => (
+            <TooltipShell key={name} label={name}>
               <Link
                 as={NavLink}
                 to={to}
@@ -71,7 +83,7 @@ const NavItemAccordion = ({
                 rounded='md'
                 _hover={{ bg: 'secondary' }}
               >
-                {name}
+                {shortName}
               </Link>
             </TooltipShell>
           ))}
@@ -81,4 +93,4 @@ const NavItemAccordion = ({
   )
 }
 
-export default NavItemAccordion
+export default SidebarNavAccordion
