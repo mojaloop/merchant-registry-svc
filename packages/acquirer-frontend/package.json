@@ -11,8 +11,7 @@
     "preview": "vite preview",
     "prepare": "cd ../../ && husky install ./packages/acquirer-frontend/.husky",
     "theme": "chakra-cli tokens ./src/theme/index.ts",
-    "theme:watch": "chakra-cli tokens ./src/theme/index.ts --watch",
-    "postinstall": "pnpm theme"
+    "theme:watch": "chakra-cli tokens ./src/theme/index.ts --watch"
   },
   "lint-staged": {
     "**/*": "prettier --write --ignore-unknown"
