@@ -1,14 +1,14 @@
 import { NavLink } from 'react-router-dom'
-import { Box, Flex, HStack, Icon, Link } from '@chakra-ui/react'
+import { Box, Flex, HStack, Icon, Link, type LinkProps } from '@chakra-ui/react'
 
 import type { NavItem } from '@/components/layout/Sidebar/navItems'
 import { useDrawerDisclosure } from '@/context/DrawerDisclosureContext'
 
-interface DrawerNavItemProps {
+interface DrawerNavItemProps extends LinkProps {
   navItem: NavItem
 }
 
-const DrawerNavItem = ({ navItem: { name, to, icon } }: DrawerNavItemProps) => {
+const DrawerNavItem = ({ navItem: { name, to, icon }, ...props }: DrawerNavItemProps) => {
   const { onClose } = useDrawerDisclosure()
 
   return (
@@ -19,10 +19,11 @@ const DrawerNavItem = ({ navItem: { name, to, icon } }: DrawerNavItemProps) => {
       w='full'
       px='3'
       py='2'
-      display='inline-block'
+      display='flex'
       borderRadius='md'
       bg={location.pathname === to ? 'secondary' : ''}
       _hover={{ bg: 'secondary' }}
+      {...props}
     >
       <HStack>
         {icon && (
