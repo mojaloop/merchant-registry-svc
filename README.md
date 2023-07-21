@@ -31,7 +31,7 @@ and proceed with the necessary steps in the payment transaction.
 
 * Run 
     ```bash 
-    $ docker-compose up -d
+    $ docker-compose up --build
     ```
     * Acquirer Frontend should be running at: http://localhost:5173
     * Acquirer Backend should be running at: http://localhost:5555/api/v1/health-check
