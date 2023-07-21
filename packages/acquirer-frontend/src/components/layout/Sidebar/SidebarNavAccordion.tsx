@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import { NavLink } from 'react-router-dom'
 import {
   Accordion,
@@ -23,8 +24,21 @@ const SidebarNavAccordion = ({
   const isOpen = subNavItems.some(subNavItem => subNavItem.to === location.pathname)
   const initialIndex = isOpen ? 0 : 1
 
+  const [activeIndex, setActiveIndex] = useState(initialIndex)
+
+  useEffect(() => {
+    const isOpen = subNavItems.some(subNavItem => subNavItem.to === location.pathname)
+    setActiveIndex(isOpen ? 0 : 1)
+  }, [location.pathname])
+
   return (
-    <Accordion allowToggle defaultIndex={initialIndex}>
+    <Accordion
+      allowToggle
+      index={activeIndex}
+      onChange={expandedIndex => {
+        setActiveIndex(expandedIndex as number)
+      }}
+    >
       <AccordionItem border='0' display='flex' flexDir='column' alignItems='center'>
         <TooltipShell label={name}>
           <AccordionButton
