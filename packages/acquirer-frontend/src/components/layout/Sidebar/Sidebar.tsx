@@ -31,14 +31,15 @@ const Sidebar = () => {
         spacing='6'
         w={isExpanded ? 'auto' : '24'}
         h='full'
+        px='7'
+        py='2'
         display={{ base: 'none', md: 'flex' }}
         position='fixed'
         bg='white'
+        shadow={isExpanded ? 'md' : ''}
         zIndex='overlay'
-        borderRight='1px'
-        borderColor='gray.100'
-        py='2'
-        px='7'
+        borderRight={isExpanded ? '' : '1px'}
+        borderColor={isExpanded ? '' : 'gray.100'}
       >
         <IconButton
           aria-label={`${isExpanded ? 'Shrink' : 'Expand'} sidebar`}
