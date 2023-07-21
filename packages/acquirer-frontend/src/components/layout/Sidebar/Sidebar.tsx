@@ -1,14 +1,11 @@
-import { NavLink, useLocation } from 'react-router-dom'
-import { Icon, IconButton, Link, VStack } from '@chakra-ui/react'
+import { IconButton, VStack } from '@chakra-ui/react'
 import { FiMenu } from 'react-icons/fi'
 
 import { navItems } from './navItems'
 import SidebarNavAccordion from './SidebarNavAccordion'
-import TooltipShell from './TooltipShell'
+import SidebarNavItem from './SidebarNavItem'
 
 const Sidebar = () => {
-  const location = useLocation()
-
   return (
     <VStack
       as='aside'
@@ -35,28 +32,9 @@ const Sidebar = () => {
 
       {navItems.map(navItem =>
         navItem.subNavItems ? (
-          <SidebarNavAccordion key={navItem.tooltipLabel} navAccordion={navItem} />
+          <SidebarNavAccordion key={navItem.name} navAccordion={navItem} />
         ) : (
-          <TooltipShell key={navItem.tooltipLabel} label={navItem.tooltipLabel}>
-            <Link
-              as={NavLink}
-              to={navItem.to}
-              p='0'
-              aria-label={navItem.label}
-              h='10'
-              w='10'
-              display='flex'
-              alignItems='center'
-              justifyContent='center'
-              bg={location.pathname === navItem.to ? 'secondary' : 'transparent'}
-              fontSize='20px'
-              color='primary'
-              _hover={{ bg: 'secondary' }}
-              rounded='md'
-            >
-              <Icon as={navItem.icon} />
-            </Link>
-          </TooltipShell>
+          <SidebarNavItem navItem={navItem} />
         )
       )}
     </VStack>

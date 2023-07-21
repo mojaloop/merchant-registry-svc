@@ -16,7 +16,7 @@ interface SidebarNavAccordionProps {
 }
 
 const SidebarNavAccordion = ({
-  navAccordion: { tooltipLabel, label, icon, subNavItems },
+  navAccordion: { name, label, icon, subNavItems },
 }: SidebarNavAccordionProps) => {
   const location = useLocation()
 
@@ -28,7 +28,7 @@ const SidebarNavAccordion = ({
   return (
     <Accordion allowToggle defaultIndex={initialIndex}>
       <AccordionItem border='0' display='flex' flexDir='column' alignItems='center'>
-        <TooltipShell label={tooltipLabel}>
+        <TooltipShell label={name}>
           <AccordionButton
             p='0'
             aria-label={label}
@@ -57,8 +57,8 @@ const SidebarNavAccordion = ({
           alignItems='center'
           gap='4'
         >
-          {subNavItems.map(({ tooltipLabel, name, to }) => (
-            <TooltipShell key={tooltipLabel} label={tooltipLabel}>
+          {subNavItems.map(({ name, shortName, to }) => (
+            <TooltipShell key={name} label={name}>
               <Link
                 as={NavLink}
                 to={to}
@@ -71,7 +71,7 @@ const SidebarNavAccordion = ({
                 rounded='md'
                 _hover={{ bg: 'secondary' }}
               >
-                {name}
+                {shortName}
               </Link>
             </TooltipShell>
           ))}
