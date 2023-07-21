@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Box, IconButton, Stack } from '@chakra-ui/react'
 import { FiMenu } from 'react-icons/fi'
 
@@ -10,6 +10,11 @@ import SidebarNavItem from './SidebarNavItem'
 
 const Sidebar = () => {
   const [isExpanded, setIsExpanded] = useState(false)
+
+  useEffect(() => {
+    setIsExpanded(false)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.pathname])
 
   return (
     <>

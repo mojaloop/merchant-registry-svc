@@ -27,9 +27,9 @@ const SidebarNavAccordion = ({
   const [activeIndex, setActiveIndex] = useState(initialIndex)
 
   useEffect(() => {
-    const isOpen = subNavItems.some(subNavItem => subNavItem.to === location.pathname)
     setActiveIndex(isOpen ? 0 : 1)
-  }, [location.pathname])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.pathname, isOpen])
 
   return (
     <Accordion
