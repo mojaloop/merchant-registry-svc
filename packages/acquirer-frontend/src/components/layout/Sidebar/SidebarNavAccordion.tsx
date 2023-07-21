@@ -1,4 +1,4 @@
-import { NavLink, useLocation } from 'react-router-dom'
+import { NavLink } from 'react-router-dom'
 import {
   Accordion,
   AccordionButton,
@@ -18,8 +18,6 @@ interface SidebarNavAccordionProps {
 const SidebarNavAccordion = ({
   navAccordion: { name, label, icon, subNavItems },
 }: SidebarNavAccordionProps) => {
-  const location = useLocation()
-
   // This is to control the state of the accordion.
   // An accordion will initially be expanded if one of the nav items inside it is active.
   const isOpen = subNavItems.some(subNavItem => subNavItem.to === location.pathname)

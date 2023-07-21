@@ -4,6 +4,7 @@ import { BrowserRouter } from 'react-router-dom'
 import { ChakraProvider } from '@chakra-ui/react'
 
 import theme from '@/theme'
+import DrawerDisclosureProvider from '@/context/DrawerDisclosureContext.tsx'
 import App from './App.tsx'
 import './index.css'
 
@@ -11,7 +12,9 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <BrowserRouter>
       <ChakraProvider theme={theme}>
-        <App />
+        <DrawerDisclosureProvider>
+          <App />
+        </DrawerDisclosureProvider>
       </ChakraProvider>
     </BrowserRouter>
   </React.StrictMode>

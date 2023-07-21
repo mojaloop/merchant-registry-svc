@@ -5,8 +5,8 @@ import { TbFileText, TbUserSearch } from 'react-icons/tb'
 export interface NavItem {
   name: string
   to: string
-  label: string
-  icon: IconType
+  label?: string
+  icon?: IconType
 }
 
 export interface SubNavItem {

@@ -1,11 +1,14 @@
 import { IconButton, VStack } from '@chakra-ui/react'
 import { FiMenu } from 'react-icons/fi'
 
+import { useDrawerDisclosure } from '@/context/DrawerDisclosureContext'
 import { navItems } from './navItems'
 import SidebarNavAccordion from './SidebarNavAccordion'
 import SidebarNavItem from './SidebarNavItem'
 
 const Sidebar = () => {
+  const { onOpen } = useDrawerDisclosure()
+
   return (
     <VStack
       as='aside'
@@ -28,13 +31,14 @@ const Sidebar = () => {
         color='primary'
         bg='transparent'
         _hover={{ bg: 'secondary' }}
+        onClick={onOpen}
       />
 
       {navItems.map(navItem =>
         navItem.subNavItems ? (
           <SidebarNavAccordion key={navItem.name} navAccordion={navItem} />
         ) : (
-          <SidebarNavItem navItem={navItem} />
+          <SidebarNavItem key={navItem.name} navItem={navItem} />
         )
       )}
     </VStack>
