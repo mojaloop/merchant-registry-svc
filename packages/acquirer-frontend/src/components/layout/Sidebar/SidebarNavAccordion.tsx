@@ -8,16 +8,16 @@ import {
   Link,
 } from '@chakra-ui/react'
 
-import type { NavItemAccordion as NavItemAccordionType } from './navItems'
+import type { NavAccordion } from './navItems'
 import TooltipShell from './TooltipShell'
 
-interface NavItemAccordionProps {
-  navItemAccordion: NavItemAccordionType
+interface SidebarNavAccordionProps {
+  navAccordion: NavAccordion
 }
 
-const NavItemAccordion = ({
-  navItemAccordion: { tooltipLabel, label, icon, subNavItems },
-}: NavItemAccordionProps) => {
+const SidebarNavAccordion = ({
+  navAccordion: { tooltipLabel, label, icon, subNavItems },
+}: SidebarNavAccordionProps) => {
   const location = useLocation()
 
   // This is to control the state of the accordion.
@@ -81,4 +81,4 @@ const NavItemAccordion = ({
   )
 }
 
-export default NavItemAccordion
+export default SidebarNavAccordion

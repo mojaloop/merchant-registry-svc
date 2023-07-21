@@ -3,7 +3,7 @@ import { Icon, IconButton, Link, VStack } from '@chakra-ui/react'
 import { FiMenu } from 'react-icons/fi'
 
 import { navItems } from './navItems'
-import NavItemAccordion from './NavItemAccordion'
+import SidebarNavAccordion from './SidebarNavAccordion'
 import TooltipShell from './TooltipShell'
 
 const Sidebar = () => {
@@ -35,7 +35,7 @@ const Sidebar = () => {
 
       {navItems.map(navItem =>
         navItem.subNavItems ? (
-          <NavItemAccordion key={navItem.tooltipLabel} navItemAccordion={navItem} />
+          <SidebarNavAccordion key={navItem.tooltipLabel} navAccordion={navItem} />
         ) : (
           <TooltipShell key={navItem.tooltipLabel} label={navItem.tooltipLabel}>
             <Link

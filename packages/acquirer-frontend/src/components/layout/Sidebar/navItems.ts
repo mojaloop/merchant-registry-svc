@@ -8,7 +8,7 @@ export interface SubNavItem {
   to: string
 }
 
-export interface NavItemAccordion {
+export interface NavAccordion {
   tooltipLabel: string
   label: string
   icon: IconType
