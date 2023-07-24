@@ -21,7 +21,7 @@ const SidebarNavItem = ({ navItem: { name, to, label, icon } }: SidebarNavItemPr
         display='flex'
         alignItems='center'
         justifyContent='center'
-        bg={location.pathname === to ? 'secondary' : 'transparent'}
+        bg={location.pathname.includes(to) ? 'secondary' : 'transparent'}
         fontSize='20px'
         color='primary'
         _hover={{ bg: 'secondary' }}

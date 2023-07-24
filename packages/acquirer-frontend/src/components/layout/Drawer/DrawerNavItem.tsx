@@ -21,7 +21,7 @@ const DrawerNavItem = ({ navItem: { name, to, icon }, ...props }: DrawerNavItemP
       py='2'
       display='flex'
       borderRadius='md'
-      bg={location.pathname === to ? 'secondary' : ''}
+      bg={location.pathname.includes(to) ? 'secondary' : ''}
       _hover={{ bg: 'secondary' }}
       {...props}
     >

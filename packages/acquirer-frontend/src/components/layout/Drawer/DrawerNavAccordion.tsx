@@ -26,7 +26,7 @@ const DrawerNavAccordion = ({
 }: DrawerNavAccordionProps) => {
   // This is to control the state of the accordion.
   // An accordion will initially be expanded if one of the nav items inside it is active.
-  const isOpen = subNavItems.some(subNavItem => subNavItem.to === location.pathname)
+  const isOpen = subNavItems.some(subNavItem => location.pathname.includes(subNavItem.to))
   const initialIndex = isOpen ? 0 : 1
 
   return (
