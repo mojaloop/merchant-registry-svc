@@ -12,6 +12,11 @@ const options = {
       title: 'Merchant Acquirer API',
       version: '0.1.0'
     },
+    servers: [
+      {
+        url: '/api/v1'
+      }
+    ],
     components: {
       securitySchemes: {
         Authorization: {

@@ -24,10 +24,10 @@ export class MerchantEntity {
   @PrimaryGeneratedColumn()
     id!: number
 
-  @Column({ nullable: true, length: 255 })
+  @Column({ nullable: false, length: 255 })
     dba_trading_name!: string
 
-  @Column({ nullable: true, unique: true, length: 255 })
+  @Column({ nullable: true, length: 255 })
     registered_name!: string
 
   @Column({ nullable: true, default: '0 - 5' })

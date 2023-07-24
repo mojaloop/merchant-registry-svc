@@ -13,7 +13,7 @@ export enum MerchantAllowBlockStatus {
 
 export enum MerchantRegistrationStatus {
   DRAFT = 'Draft',
-  REVIEWING = 'Reviewing',
+  REVIEWING = 'Review',
   APPROVED = 'Approved',
   REJECTED = 'Rejected'
 }

@@ -1,9 +1,8 @@
 import {
-  Entity, OneToOne,
+  Entity,
   Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn
 } from 'typeorm'
 
-import { PersonEntity } from './PersonEntity'
 import { Countries } from 'shared-lib'
 
 @Entity('locations')
