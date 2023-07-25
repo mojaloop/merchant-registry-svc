@@ -11,7 +11,8 @@ import { PortalUserEntity } from './PortalUserEntity'
 import { MerchantLocationEntity } from './MerchantLocationEntity'
 import {
   MerchantAllowBlockStatus,
-  MerchantRegistrationStatus
+  MerchantRegistrationStatus,
+  NumberOfEmployees
 } from 'shared-lib'
 import { CheckoutCounterEntity } from './CheckoutCounterEntity'
 import { BusinessLicenseEntity } from './BusinessLicenseEntity'
@@ -30,8 +31,13 @@ export class MerchantEntity {
   @Column({ nullable: true, length: 255 })
     registered_name!: string
 
-  @Column({ nullable: true, default: '0 - 5' })
-    employees_num!: string
+  @Column({
+    type: 'enum',
+    enum: NumberOfEmployees,
+    nullable: false,
+    default: NumberOfEmployees.ONE_TO_FIVE
+  })
+    employees_num!: NumberOfEmployees
 
   @Column({
     nullable: false,

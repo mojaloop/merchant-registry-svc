@@ -120,11 +120,11 @@ router.get('/merchants/:id', async (req: Request, res: Response) => {
 
 /**
  * @openapi
- * /merchants/draft:
+ * /merchants/submit:
  *   post:
  *     tags:
  *       - Merchants
- *     summary: Create a new Merchant Draft
+ *     summary: Create a new Merchant Draft or Submit for Approval
  *     requestBody:
  *       required: true
  *       content:
@@ -134,34 +134,44 @@ router.get('/merchants/:id', async (req: Request, res: Response) => {
  *             properties:
  *               dba_trading_name:
  *                 type: string
- *                 description: "The DBA Trading Name of the merchant"
  *                 example: "Merchant 1"
  *               registered_name:
  *                 type: string
- *                 description: "The Registered Name of the merchant"
  *                 example: "Merchant 1"
  *               employees_num:
  *                 type: string
- *                 description: "The number of employees of the merchant"
- *                 example: "1 - 10"
+ *                 example: "1 - 5"
  *               monthly_turnover:
  *                 type: number
- *                 description: "The monthly turnover percentage of the merchant"
  *                 example: 0.5
  *               currency_code:
  *                 type: string
- *                 description: "The currency code of the merchant"
  *                 example: "PHP"
  *               category_code:
  *                 type: string
- *                 description: "The merchant SIC category code"
  *                 example: "10410"
  *               payinto_alias:
  *                 type: string
- *                 description: "The PayInto alias of the merchant"
  *                 example: "merchant1"
  *                 required: false
- *
+ *               registration_status:
+ *                 type: string
+ *                 example: "Draft"
+ *               registration_status_reason:
+ *                 type: string
+ *                 example: "Drafted by Maker"
+ *               business_licenses:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     license_number:
+ *                       type: string
+ *                       example: "123456789"
+ *                       required: true
+ *                     license_document_link:
+ *                       type: string
+ *                       example: "https://www.africau.edu/images/default/sample.pdf"
  *     responses:
  *       200:
  *         description:
@@ -184,32 +194,39 @@ router.get('/merchants/:id', async (req: Request, res: Response) => {
  */
 // TODO: Protect the route with User Authentication (Keycloak)
 // TODO: check if the authenticated user is a Maker
-router.post('/merchants/draft', async (req: Request, res: Response) => {
+router.post('/merchants/submit', async (req: Request, res: Response) => {
   // Validate the Request Body
   try {
     MerchantSubmitDataSchema.parse(req.body)
   } catch (err) {
     if (err instanceof z.ZodError) {
       logger.error('Validation error: %o', err.issues.map((issue) => issue.message))
-      return res.status(422).send({ error: err.issues.map((issue) => issue.message) })
+      return res.status(422).send({ error: err })
     }
   }
 
   // PayInto Alias is set, then create checkout counter
   let checkoutCounter = null
+  const alias = req.body.payinto_alias
   if (
-    req.body.payinto_alias !== undefined &&
-    req.body.payinto_alias !== null &&
-      req.body.payinto_alias !== ''
+    alias !== undefined &&
+    alias !== null &&
+      alias !== ''
   ) {
     // TODO: Talk to Merchant Registry Oracle Service to create merchant_registry_id first ?
     checkoutCounter = await AppDataSource.manager.findOne(
       CheckoutCounterEntity,
-      { where: { alias_value: req.body.payinto_alias } }
+      { where: { alias_value: alias } }
     )
+    if (checkoutCounter != null) {
+      const errorMsg = `Alias Value already exists: ${checkoutCounter.alias_value} `
+      logger.error(errorMsg)
+      return res.status(422).send({ error: errorMsg })
+    }
+
     if (checkoutCounter === null) {
       checkoutCounter = new CheckoutCounterEntity()
-      checkoutCounter.alias_value = req.body.payinto_alias
+      checkoutCounter.alias_value = alias
 
       try {
         await AppDataSource.manager.save(checkoutCounter)
@@ -230,12 +247,13 @@ router.post('/merchants/draft', async (req: Request, res: Response) => {
   merchant.monthly_turnover = req.body.monthly_turnover
   merchant.currency_code = req.body.currency_code
   merchant.category_code = req.body.category_code
-  merchant.registration_status = MerchantRegistrationStatus.DRAFT
-  merchant.registration_status_reason = 'Drafted by Maker'
+  merchant.registration_status = req.body.registration_status
+  merchant.registration_status_reason = req.body.registration_status_reason
   merchant.allow_block_status = MerchantAllowBlockStatus.PENDING
   if (checkoutCounter !== null) {
     merchant.checkout_counters = [checkoutCounter]
   }
+
   // TODO: associat created_by with the current user (Maker)
 
   try {

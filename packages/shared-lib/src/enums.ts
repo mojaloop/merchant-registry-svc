@@ -13,7 +13,7 @@ export enum MerchantAllowBlockStatus {
 
 export enum MerchantRegistrationStatus {
   DRAFT = 'Draft',
-  REVIEWING = 'Review',
+  REVIEW = 'Review',
   APPROVED = 'Approved',
   REJECTED = 'Rejected'
 }
@@ -43,6 +43,14 @@ export enum PortalUserType {
   HUB = 'Hub',
   DFSP = 'DFSP',
   MERCHANT = 'Merchant'
+}
+
+export enum NumberOfEmployees {
+  ONE_TO_FIVE = '1 - 5',
+  SIX_TO_TEN = '6 - 10',
+  ELEVEN_TO_FIFTY = '11 - 50',
+  FIFTY_ONE_TO_ONE_HUNDRED = '51 - 100',
+  HUNDRED_PLUS_PLUS = '100++',
 }
 
 export enum BusinessOwnerIDType {

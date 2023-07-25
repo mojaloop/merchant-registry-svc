@@ -1,35 +1,37 @@
-import { BusinessOwnerIDType, Countries, MerchantLocationType } from 'shared-lib'
+import {
+  BusinessOwnerIDType, Countries, MerchantLocationType,
+  MerchantRegistrationStatus,
+  NumberOfEmployees
+} from 'shared-lib'
 import * as z from 'zod'
 
+enum SubmitRegistratonStatus {
+  DRAFT = MerchantRegistrationStatus.DRAFT,
+  REVIEW = MerchantRegistrationStatus.REVIEW,
+}
+
+export const BusinessLicenseSubmitDataSchema = z.object({
+  license_number: z.string(),
+  license_document_link: z.string().url().nullable()
+}).strict()
+
 export const MerchantSubmitDataSchema = z.object({
-  id: z.number().optional(),
-  dba_trading_name: z.string().optional(),
-  registered_name: z.string(),
-  employees_num: z.string(),
-  monthly_turnover: z.number().optional(),
-  payinto_alias: z.string().optional(),
-
-  // Will be default to 'PENDING' during submission/drafting
-  // Status will be updated by the separate API route
-  // allow_block_status: z.nativeEnum(MerchantAllowBlockStatus),
-
-  // Will be default to 'DRAFT'
-  // Status will be updated by the separate API route
-  // registration_status: z.nativeEnum(MerchantRegistrationStatus).optional(),
-
-  registration_status_reason: z.string().optional(),
+  id: z.number().optional(), // only needed for updating
+  dba_trading_name: z.string(),
+  registered_name: z.string().optional().nullable().default(null),
+  employees_num: z.nativeEnum(NumberOfEmployees),
+  monthly_turnover: z.number().nullable().default(null),
   currency_code: z.string(),
   category_code: z.string(),
-  locations: z.array(z.number()).optional(),
-  checkout_counters: z.array(z.number()).optional(),
-  business_licenses: z.array(z.number()).optional(),
-  business_owners: z.array(z.number()).optional(),
-  contact_persons: z.array(z.number()).optional(),
-  dfsp_merchant_relations: z.array(z.number()).optional()
+  registration_status: z.nativeEnum(SubmitRegistratonStatus),
+  registration_status_reason: z.string(),
+  payinto_alias: z.string().optional(),
+  business_licenses: z.array(BusinessLicenseSubmitDataSchema)
 }).strict()
 
 export const MerchantLocationSubmitDataSchema = z.object({
   location_type: z.nativeEnum(MerchantLocationType),
+  country: z.nativeEnum(Countries),
   web_url: z.string().optional(),
   address_type: z.string().optional(),
   department: z.string().optional(),
@@ -44,11 +46,9 @@ export const MerchantLocationSubmitDataSchema = z.object({
   town_name: z.string().optional(),
   distinct_name: z.string().optional(),
   country_subdivision: z.string().optional(),
-  country: z.nativeEnum(Countries),
   address_line: z.string().optional(),
   latitude: z.string().optional(),
   longitude: z.string().optional(),
-  merchant: z.number().optional(), // The ID of the associated merchant
   checkout_counters: z.array(z.number()).optional() // The IDs of the associated checkout counters
 }).strict()
 
