@@ -45,7 +45,7 @@ router.get('/users', async (_req: Request, res: Response) => {
  *             properties:
  *               email:
  *                 type: string
- *                 example: "test_maker@email.com"
+ *                 example: "test1@email.com"
  *                 description: "The email for login"
  *               password:
  *                 type: string
@@ -96,13 +96,25 @@ router.post('/users/login', async (req: Request, res: Response) => {
       PortalUserEntity,
       { where: { email: req.body.email } }
     )
+    logger.info('User %s login attempt.', req.body.email)
 
     //
     // TODO: use keycloak to authenticate and token generation
     //
     if ((user != null) && await bcrypt.compare(req.body.password, user.password)) {
       logger.info('User %s logged in successfully.', user.email)
-      res.json({ success: true, mesaage: 'Login successful' })
+
+      // Dummy token... TODO: Remove this!
+      let token = ''
+      if (req.body.email === process.env.TEST1_EMAIL) {
+        token = process.env.TEST1_DUMMY_AUTH_TOKEN ?? ''
+      } else if (req.body.email === process.env.TEST2_EMAIL) {
+        token = process.env.TEST2_DUMMY_AUTH_TOKEN ?? ''
+      } else {
+        throw new Error('Invalid credentials')
+      }
+
+      res.json({ success: true, mesaage: 'Login successful', token })
     } else {
       throw new Error('Invalid credentials')
     }

@@ -10,6 +10,7 @@ import { CheckoutCounterEntity } from '../entity/CheckoutCounterEntity'
 import { ContactPersonEntity } from '../entity/ContactPersonEntity'
 import { BusinessOwnerEntity } from '../entity/BusinessOwnerEntity'
 import { BusinessLicenseEntity } from '../entity/BusinessLicenseEntity'
+import { PortalUserEntity } from '../entity/PortalUserEntity'
 import {
   MerchantAllowBlockStatus,
   MerchantRegistrationStatus
@@ -106,13 +107,24 @@ router.get('/merchants/:id', async (req: Request, res: Response) => {
         'locations',
         'checkout_counters',
         'business_licenses',
-        'contact_persons'
+        'contact_persons',
+        'created_by'
       ]
     })
     if (merchant == null) {
       return res.status(404).send({ message: 'Merchant not found' })
     }
-    res.send({ message: 'OK', data: merchant })
+    // Create a new object that excludes the created_by's password field
+    const merchantData = {
+      ...merchant,
+      created_by: {
+        id: merchant.created_by.id,
+        name: merchant.created_by.name,
+        email: merchant.created_by.email,
+        phone_number: merchant.created_by.phone_number
+      }
+    }
+    res.send({ message: 'OK', data: merchantData })
   } catch (e) {
     logger.error(e)
     res.status(500).send({ message: e })
@@ -125,6 +137,8 @@ router.get('/merchants/:id', async (req: Request, res: Response) => {
  *   post:
  *     tags:
  *       - Merchants
+ *     security:
+ *       - Authorization: []
  *     summary: Create a new Merchant Draft or Submit for Approval
  *     requestBody:
  *       required: true
@@ -197,6 +211,28 @@ router.get('/merchants/:id', async (req: Request, res: Response) => {
 // TODO: check if the authenticated user is a Maker
 router.post('/merchants/submit', async (req: Request, res: Response) => {
   // Validate the Request Body
+
+  // TODO: Remove This! and replace with Keycloak Authentication
+  const token = req.headers.authorization === undefined
+    ? undefined
+    : req.headers.authorization.replace('Bearer', '').trim()
+  logger.info('headers: %o', req.headers)
+  logger.info('Token: %s', token)
+  let portalUser = null
+  if (token === process.env.TEST1_DUMMY_AUTH_TOKEN) {
+    portalUser = await AppDataSource.manager.findOne(
+      PortalUserEntity,
+      { where: { email: process.env.TEST1_EMAIL } }
+    )
+  } else if (token === process.env.TEST2_DUMMY_AUTH_TOKEN) {
+    portalUser = await AppDataSource.manager.findOne(
+      PortalUserEntity,
+      { where: { email: process.env.TEST2_EMAIL } }
+    )
+  } else {
+    return res.status(401).send({ message: 'Unauthorized' })
+  }
+
   try {
     MerchantSubmitDataSchema.parse(req.body)
   } catch (err) {
@@ -251,6 +287,10 @@ router.post('/merchants/submit', async (req: Request, res: Response) => {
   merchant.registration_status = req.body.registration_status
   merchant.registration_status_reason = req.body.registration_status_reason
   merchant.allow_block_status = MerchantAllowBlockStatus.PENDING
+
+  if (portalUser !== null) { // Should never be null.. but just in case
+    merchant.created_by = portalUser
+  }
   if (checkoutCounter !== null) {
     merchant.checkout_counters = [checkoutCounter]
   }
@@ -284,8 +324,12 @@ router.post('/merchants/submit', async (req: Request, res: Response) => {
     return res.status(500).send({ error: err })
   }
 
-  // PayInto Alias is set, then create checkout counter
-  return res.status(200).send({ message: 'Drafting Merchant Successful', data: merchant })
+  // Remove created_by from the response to prevent password hash leaking
+  const result = {
+    ...merchant,
+    created_by: undefined
+  }
+  return res.status(200).send({ message: 'Drafting Merchant Successful', data: result })
 })
 
 /**
@@ -315,7 +359,7 @@ router.post('/merchants/submit', async (req: Request, res: Response) => {
  *                 example: "Approved"
  *     responses:
  *       200:
- *         description: GET Merchant by ID
+ *         description: Status Updated
  *         content:
  *           application/json:
  *             schema:
