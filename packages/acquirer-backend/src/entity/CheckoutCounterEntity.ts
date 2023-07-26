@@ -11,7 +11,7 @@ export class CheckoutCounterEntity {
   @PrimaryGeneratedColumn()
     id!: number
 
-  @Column({ nullable: false, length: 255 })
+  @Column({ nullable: true, length: 255 })
     description!: string
 
   @Column({ nullable: true, length: 255 })
@@ -20,20 +20,24 @@ export class CheckoutCounterEntity {
   @Column({ nullable: false, length: 255, default: 'PAYINTO_ID' })
     alias_type!: string
 
-  @Column({ nullable: false, length: 255 })
+  @Column({ nullable: false, length: 255, unique: true })
     alias_value!: string
 
-  @Column({ nullable: false })
+  @Column({ nullable: true })
     merchant_registry_id!: number
 
   // merchant_id
-  @ManyToOne(() => MerchantEntity, merchant => merchant.checkout_counters)
+  @ManyToOne(
+    () => MerchantEntity, merchant => merchant.checkout_counters,
+    { onDelete: 'SET NULL' }
+  )
     merchant!: MerchantEntity
 
   // merchant_location_id
   @ManyToOne(
     () => MerchantLocationEntity,
-    merchantLocation => merchantLocation.checkout_counters
+    merchantLocation => merchantLocation.checkout_counters,
+    { onDelete: 'SET NULL' }
   )
     checkout_location!: MerchantLocationEntity
 

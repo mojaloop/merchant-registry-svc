@@ -1,9 +1,11 @@
 import { AppDataSource } from './data-source'
 import logger from '../logger'
 import 'dotenv/config'
-import { CurrencyCodes, MerchantCategoryCodes } from 'shared-lib'
+import { CurrencyCodes, MerchantCategoryCodes, PortalUserStatus, PortalUserType } from 'shared-lib'
 import { MerchantCategoryEntity } from '../entity/MerchantCategoryEntity'
 import { CurrencyEntity } from '../entity/CurrencyEntity'
+import { hashPassword } from '../utils/utils'
+import { PortalUserEntity } from '../entity/PortalUserEntity'
 
 export const initializeDatabase = async (): Promise<void> => {
   logger.info('Connecting MySQL database...')
@@ -12,13 +14,14 @@ export const initializeDatabase = async (): Promise<void> => {
     .then(async () => {
       logger.info('MySQL Database Connection success.')
 
-      logger.info('Seeding Merchant Category Codes to DB...')
       await seedCategoryCode()
-      logger.info('Seeding Merchant Category Codes to DB success.')
 
-      logger.info('Seeding Currency Codes to DB...')
       await seedCurrency()
-      logger.info('Seeding Currency Codes to DB success.')
+
+      //
+      //  TODO: Remove Test Accounts in Production
+      //
+      await seedTestAccounts()
     })
     .catch((error) => {
       throw error
@@ -57,4 +60,50 @@ async function seedCurrency (): Promise<void> {
     currency.description = CurrencyCodes[currencyCode]
     await AppDataSource.manager.save(currency)
   }
+}
+
+async function seedTestAccounts (): Promise<void> {
+  const test1Account: ITestAccount = {
+    name: process.env.TEST1_NAME ?? 'Test 1',
+    email: process.env.TEST1_EMAIL ?? 'test1@email.com',
+    phone: process.env.TEST1_PHONE_NUMBER ?? '0000000',
+    password: process.env.TEST1_PASSWORD ?? 'password'
+  }
+  await createAccount(test1Account)
+
+  const test2Account: ITestAccount = {
+    name: process.env.TEST2_NAME ?? 'Test 2',
+    email: process.env.TEST2_EMAIL ?? 'test2@email.com',
+    phone: process.env.TEST2_PHONE_NUMBER ?? '1111111',
+    password: process.env.TEST2_PASSWORD ?? 'password'
+  }
+  await createAccount(test2Account)
+}
+
+async function createAccount (account: ITestAccount): Promise<void> {
+  const { name, email, password, phone } = account
+  let testCheckerAccount = await AppDataSource.manager.findOne(
+    PortalUserEntity,
+    { where: { email } }
+  )
+  if (testCheckerAccount != null) {
+    logger.info(`Test Account ${email} already seeded. Skipping...`)
+    return
+  }
+
+  testCheckerAccount = new PortalUserEntity()
+  testCheckerAccount.name = name
+  testCheckerAccount.email = email
+  testCheckerAccount.phone_number = phone
+  testCheckerAccount.password = await hashPassword(password)
+  testCheckerAccount.user_type = PortalUserType.HUB
+  testCheckerAccount.status = PortalUserStatus.FRESH
+  await AppDataSource.manager.save(testCheckerAccount)
+}
+
+interface ITestAccount {
+  name: string
+  email: string
+  phone: string
+  password: string
 }

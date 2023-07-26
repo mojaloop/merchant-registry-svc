@@ -11,6 +11,10 @@ export class ContactPersonEntity extends PersonEntity {
   @OneToOne(() => BusinessPersonLocationEntity, location => location.person)
     businessPersonLocation!: BusinessPersonLocationEntity
 
-  @ManyToOne(() => MerchantEntity, merchant => merchant.contact_persons)
+  @ManyToOne(
+    () => MerchantEntity,
+    merchant => merchant.contact_persons,
+    { onDelete: 'SET NULL' }
+  )
     merchant!: MerchantEntity
 }

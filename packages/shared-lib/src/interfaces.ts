@@ -3,7 +3,7 @@ import { type MerchantAllowBlockStatus, type MerchantRegistrationStatus } from '
 
 export interface IMerchantSubmitData {
   id?: number // for continue updates after drafting
-  dba_trading_name?: string
+  dba_trading_name: string
   registered_name?: string
   employees_num: string
   monthly_turnover?: number
@@ -14,12 +14,13 @@ export interface IMerchantSubmitData {
   // checked_by: number; // will be set by the backend
   currency_code: string
   category_code: string
-  locations: number[]
-  checkout_counters: number[]
-  business_licenses: number[]
-  business_owners: number[]
-  contact_persons: number[]
-  dfsp_merchant_relations: number[]
+  payinto_alias?: string // Will create a new CheckoutCounterEntity if provided.
+  locations?: number[]
+  // checkout_counters?: number[]
+  business_licenses?: number[]
+  business_owners?: number[]
+  contact_persons?: number[]
+  dfsp_merchant_relations?: number[]
 }
 
 export interface ILocationSubmitData {

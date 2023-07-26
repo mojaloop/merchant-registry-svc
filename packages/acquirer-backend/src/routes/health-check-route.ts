@@ -2,7 +2,7 @@ import express, { type Request, type Response } from 'express'
 
 /**
  * @openapi
- * /api/v1/health-check:
+ * /health-check:
  *   get:
  *     tags:
  *       - Health Check
