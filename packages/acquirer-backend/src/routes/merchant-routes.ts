@@ -9,6 +9,7 @@ import logger from '../logger'
 import { CheckoutCounterEntity } from '../entity/CheckoutCounterEntity'
 import { ContactPersonEntity } from '../entity/ContactPersonEntity'
 import { BusinessOwnerEntity } from '../entity/BusinessOwnerEntity'
+import { BusinessLicenseEntity } from '../entity/BusinessLicenseEntity'
 import {
   MerchantAllowBlockStatus,
   MerchantRegistrationStatus
@@ -258,6 +259,22 @@ router.post('/merchants/submit', async (req: Request, res: Response) => {
 
   try {
     await merchantRepository.save(merchant)
+
+    const licenses = []
+    const licenseRepository = AppDataSource.getRepository(BusinessLicenseEntity)
+
+    for (const license of req.body.business_licenses) {
+      let licenseObj = new BusinessLicenseEntity()
+      licenseObj.license_number = license.license_number
+      licenseObj.license_document_link = license.license_document_link
+      licenseObj = await licenseRepository.save(licenseObj)
+      licenses.push(licenseObj)
+    }
+
+    if (licenses.length > 0) {
+      merchant.business_licenses = licenses
+      await merchantRepository.save(merchant)
+    }
   } catch (err) {
     if (err instanceof QueryFailedError) {
       logger.error('Query Failed: %o', err.message)
