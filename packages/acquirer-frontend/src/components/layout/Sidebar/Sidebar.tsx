@@ -38,7 +38,7 @@ const Sidebar = () => {
         h='full'
         px='7'
         py='2'
-        display={{ base: 'none', md: 'flex' }}
+        display={{ base: 'none', lg: 'flex' }}
         position='fixed'
         bg='white'
         shadow={isExpanded ? 'md' : ''}
