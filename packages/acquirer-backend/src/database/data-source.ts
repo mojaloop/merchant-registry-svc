@@ -1,7 +1,11 @@
 import 'reflect-metadata'
 import path from 'path'
 import { DataSource } from 'typeorm'
-import 'dotenv/config'
+import dotenv from 'dotenv'
+
+if (process.env.NODE_ENV === 'test') {
+  dotenv.config({ path: path.resolve(process.cwd(), '.env.test'), override: true })
+}
 
 const PORT: number = parseInt(
   process.env.DB_PORT !== null && process.env.DB_PORT !== undefined && process.env.DB_PORT !== ''

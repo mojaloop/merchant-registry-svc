@@ -2,7 +2,7 @@
   "compilerOptions": {
     "target": "es6",
     "module": "commonjs",
-    "rootDir": "./src",
+    "rootDir": "./",
     "outDir": "./build",
     "strict": true,
     "strictPropertyInitialization": true,
@@ -16,6 +16,6 @@
       "shared-lib": ["../shared-lib/src/*"]
     }
   },
-  "include": ["**/src/**/*.ts"],
+  "include": ["**/src/**/*.ts", "**/__tests__/**/*.ts"],
   "exclude": ["node_modules"]
 }

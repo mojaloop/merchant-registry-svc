@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "acquirer-backend:start": "npm run start -w acquirer-backend"
+    "acquirer-backend:start": "npm run start -w acquirer-backend",
+    "acquirer-backend:test": "npm run test -w acquirer-backend"
   },
   "keywords": [],
   "author": "",

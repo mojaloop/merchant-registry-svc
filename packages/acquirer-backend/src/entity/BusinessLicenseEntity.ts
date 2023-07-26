@@ -22,6 +22,10 @@ export class BusinessLicenseEntity {
     updated_at!: Date
 
   // merchant_id
-  @ManyToOne(() => MerchantEntity, merchant => merchant.business_licenses)
+  @ManyToOne(
+    () => MerchantEntity,
+    merchant => merchant.business_licenses,
+    { onDelete: 'SET NULL' }
+  )
     merchant!: MerchantEntity
 }

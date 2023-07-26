@@ -335,7 +335,7 @@ router.post('/merchants/submit', async (req: Request, res: Response) => {
     ...merchant,
     created_by: undefined
   }
-  return res.status(200).send({ message: 'Drafting Merchant Successful', data: merchantData })
+  return res.status(201).send({ message: 'Drafting Merchant Successful', data: merchantData })
 })
 
 /**
@@ -433,7 +433,7 @@ router.put('/merchants/:id/registration-status', async (req: Request, res: Respo
 
     if (portalUser == null || merchant.created_by.id === portalUser.id) {
       return res.status(401).send({
-        message: 'Same Hub User cannot do both Sumitting and Review Checking.'
+        message: 'Same Hub User cannot do both Sumitting and Review Checking'
       })
     }
 
@@ -458,7 +458,7 @@ router.put('/merchants/:id/registration-status', async (req: Request, res: Respo
       created_by: undefined,
       checked_by: undefined
     }
-    res.send({ message: 'Status Updated', data: merchantData })
+    res.status(200).send({ message: 'Status Updated', data: merchantData })
   } catch (e) {
     logger.error(e)
     res.status(500).send({ message: e })

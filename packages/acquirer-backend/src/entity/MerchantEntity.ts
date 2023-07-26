@@ -67,10 +67,19 @@ export class MerchantEntity {
   @Column({ nullable: true, length: 2048 })
     registration_status_reason!: string
 
-  @ManyToOne(() => PortalUserEntity, portalUser => portalUser.created_merchants)
+  @ManyToOne(
+    () => PortalUserEntity,
+    portalUser => portalUser.created_merchants,
+    { onDelete: 'SET NULL' }
+  )
     created_by!: PortalUserEntity
 
-  @ManyToOne(() => PortalUserEntity, portalUser => portalUser.checked_merchants)
+  @ManyToOne(
+    () => PortalUserEntity,
+    portalUser => portalUser.checked_merchants,
+    { onDelete: 'SET NULL' }
+  )
+
     checked_by!: PortalUserEntity
 
   @ManyToOne(() => CurrencyEntity, currency => currency.merchants)
@@ -87,29 +96,44 @@ export class MerchantEntity {
 
   @OneToMany(
     () => MerchantLocationEntity,
-    merchantLocation => merchantLocation.merchant
+    merchantLocation => merchantLocation.merchant,
+    { onDelete: 'SET NULL' }
   )
     locations!: MerchantLocationEntity[]
 
   @OneToMany(
     () => CheckoutCounterEntity,
-    checkoutCounter => checkoutCounter.merchant
+    checkoutCounter => checkoutCounter.merchant,
+    { onDelete: 'SET NULL' }
   )
     checkout_counters!: CheckoutCounterEntity[]
 
-  @OneToMany(() => BusinessLicenseEntity, businessLicense => businessLicense.merchant)
+  @OneToMany(
+    () => BusinessLicenseEntity,
+    businessLicense => businessLicense.merchant,
+    { onDelete: 'CASCADE' }
+  )
     business_licenses!: BusinessLicenseEntity[]
 
-  @ManyToMany(() => BusinessOwnerEntity, businessOwner => businessOwner.merchants)
+  @ManyToMany(
+    () => BusinessOwnerEntity,
+    businessOwner => businessOwner.merchants,
+    { onDelete: 'SET NULL' }
+  )
     business_owners!: BusinessOwnerEntity[]
 
   @OneToMany(
     () => ContactPersonEntity,
-    contactPerson => contactPerson.merchant
+    contactPerson => contactPerson.merchant,
+    { onDelete: 'CASCADE' }
   )
     contact_persons!: ContactPersonEntity[]
 
-  @OneToMany(() => DFSPMerchantRelationsEntity, relation => relation.merchant)
+  @OneToMany(
+    () => DFSPMerchantRelationsEntity,
+    relation => relation.merchant,
+    { onDelete: 'CASCADE' }
+  )
     dfsp_merchant_relations!: DFSPMerchantRelationsEntity[]
 
   @CreateDateColumn()

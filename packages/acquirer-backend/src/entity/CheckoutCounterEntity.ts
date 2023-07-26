@@ -27,13 +27,17 @@ export class CheckoutCounterEntity {
     merchant_registry_id!: number
 
   // merchant_id
-  @ManyToOne(() => MerchantEntity, merchant => merchant.checkout_counters)
+  @ManyToOne(
+    () => MerchantEntity, merchant => merchant.checkout_counters,
+    { onDelete: 'SET NULL' }
+  )
     merchant!: MerchantEntity
 
   // merchant_location_id
   @ManyToOne(
     () => MerchantLocationEntity,
-    merchantLocation => merchantLocation.checkout_counters
+    merchantLocation => merchantLocation.checkout_counters,
+    { onDelete: 'SET NULL' }
   )
     checkout_location!: MerchantLocationEntity
 
