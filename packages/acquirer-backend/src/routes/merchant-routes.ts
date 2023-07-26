@@ -108,13 +108,14 @@ router.get('/merchants/:id', async (req: Request, res: Response) => {
         'checkout_counters',
         'business_licenses',
         'contact_persons',
-        'created_by'
+        'created_by',
+        'checked_by'
       ]
     })
     if (merchant == null) {
       return res.status(404).send({ message: 'Merchant not found' })
     }
-    // Create a new object that excludes the created_by's password field
+    // Create a new object that excludes the created_by's hasheded password field
     const merchantData = {
       ...merchant,
       created_by: {
@@ -122,6 +123,12 @@ router.get('/merchants/:id', async (req: Request, res: Response) => {
         name: merchant.created_by.name,
         email: merchant.created_by.email,
         phone_number: merchant.created_by.phone_number
+      },
+      checked_by: {
+        id: merchant.checked_by.id,
+        name: merchant.checked_by.name,
+        email: merchant.checked_by.email,
+        phone_number: merchant.checked_by.phone_number
       }
     }
     res.send({ message: 'OK', data: merchantData })
@@ -216,7 +223,6 @@ router.post('/merchants/submit', async (req: Request, res: Response) => {
   const token = req.headers.authorization === undefined
     ? undefined
     : req.headers.authorization.replace('Bearer', '').trim()
-  logger.info('headers: %o', req.headers)
   logger.info('Token: %s', token)
   let portalUser = null
   if (token === process.env.TEST1_DUMMY_AUTH_TOKEN) {
@@ -325,11 +331,11 @@ router.post('/merchants/submit', async (req: Request, res: Response) => {
   }
 
   // Remove created_by from the response to prevent password hash leaking
-  const result = {
+  const merchantData = {
     ...merchant,
     created_by: undefined
   }
-  return res.status(200).send({ message: 'Drafting Merchant Successful', data: result })
+  return res.status(200).send({ message: 'Drafting Merchant Successful', data: merchantData })
 })
 
 /**
@@ -338,6 +344,8 @@ router.post('/merchants/submit', async (req: Request, res: Response) => {
  *   put:
  *     tags:
  *       - Merchants
+ *     security:
+ *       - Authorization: []
  *     summary: Update the registration status of Merchant Record
  *     parameters:
  *      - in: path
@@ -372,6 +380,28 @@ router.post('/merchants/submit', async (req: Request, res: Response) => {
  */
 // TODO: Protect the route with User Authentication (Keycloak)
 router.put('/merchants/:id/registration-status', async (req: Request, res: Response) => {
+  // TODO: Remove This! and replace with Keycloak Authentication
+  const token = req.headers.authorization === undefined
+    ? undefined
+    : req.headers.authorization.replace('Bearer', '').trim()
+  logger.info('Token: %s', token)
+  let portalUser = null
+  if (token === process.env.TEST1_DUMMY_AUTH_TOKEN) {
+    logger.info('TEST1_DUMMY_AUTH_TOKEN')
+    portalUser = await AppDataSource.manager.findOne(
+      PortalUserEntity,
+      { where: { email: process.env.TEST1_EMAIL } }
+    )
+  } else if (token === process.env.TEST2_DUMMY_AUTH_TOKEN) {
+    logger.info('TEST2_DUMMY_AUTH_TOKEN')
+    portalUser = await AppDataSource.manager.findOne(
+      PortalUserEntity,
+      { where: { email: process.env.TEST2_EMAIL } }
+    )
+  } else {
+    return res.status(401).send({ message: 'Unauthorized' })
+  }
+
   try {
     const id = Number(req.params.id)
     if (isNaN(id)) {
@@ -391,18 +421,44 @@ router.put('/merchants/:id/registration-status', async (req: Request, res: Respo
     }
 
     const merchantRepository = AppDataSource.getRepository(MerchantEntity)
-    const merchant = await merchantRepository.findOne({ where: { id: Number(req.params.id) } })
+    const merchant = await merchantRepository.findOne({
+      where: { id: Number(req.params.id) },
+      relations: [
+        'created_by'
+      ]
+    })
     if (merchant == null) {
       return res.status(404).send({ message: 'Merchant not found' })
     }
 
+    if (portalUser == null || merchant.created_by.id === portalUser.id) {
+      return res.status(401).send({
+        message: 'Same Hub User cannot do both Sumitting and Review Checking.'
+      })
+    }
+
     merchant.registration_status = req.body.registration_status
     merchant.registration_status_reason = req.body.registration_status_reason
+    merchant.checked_by = portalUser
     // TODO: associate checked_by with the current user (Checker)
     // merchant.checked_by = checker_user_id
 
-    await merchantRepository.save(merchant)
-    res.send({ message: 'Status Updated', data: merchant })
+    try {
+      await merchantRepository.save(merchant)
+    } catch (err) {
+      if (err instanceof QueryFailedError) {
+        logger.error('Query Failed: %o', err.message)
+        return res.status(500).send({ error: err.message })
+      }
+    }
+
+    // Remove created_by from the response to prevent password hash leaking
+    const merchantData = {
+      ...merchant,
+      created_by: undefined,
+      checked_by: undefined
+    }
+    res.send({ message: 'Status Updated', data: merchantData })
   } catch (e) {
     logger.error(e)
     res.status(500).send({ message: e })
