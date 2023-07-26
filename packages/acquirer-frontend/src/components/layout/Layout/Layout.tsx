@@ -14,11 +14,11 @@ const Layout = () => {
         <Box
           position={'relative'}
           as='main'
-          ml={{ base: '0', md: '24' }}
+          ml={{ base: '0', lg: '24' }}
           mt='14'
           px={{ base: '4', sm: '6', lg: '8' }}
           py='6'
-          w={{ base: 'full', md: 'calc(100vw - 6rem)' }}
+          w={{ base: 'full', lg: 'calc(100vw - 6rem)' }}
           overflow='scroll'
         >
           <Outlet />

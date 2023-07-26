@@ -15,7 +15,7 @@ const Header = () => {
       w={{ base: 'full', md: 'calc(100% - 6rem)' }}
       h='14'
       justify='space-between'
-      ml={{ base: '0', md: '24' }}
+      ml={{ base: '0', lg: '24' }}
       px={{ base: '2', sm: '4', md: '6', lg: '8' }}
       shadow='sm'
       position='fixed'
