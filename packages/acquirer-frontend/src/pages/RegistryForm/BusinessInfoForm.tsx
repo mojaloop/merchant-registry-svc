@@ -23,10 +23,6 @@ import { type BusinessInfo, businessInfoSchema } from '@/lib/validations/registr
 import { CustomButton } from '@/components/ui'
 import { FormInput, FormSelect } from '@/components/form'
 
-interface BusinessInfoFormProps {
-  setActiveStep: React.Dispatch<React.SetStateAction<number>>
-}
-
 const EMPLOYEE_COUNTS = [
   { value: '1 - 10', label: '1 - 10' },
   { value: '11 - 50', label: '11 - 50' },
@@ -43,6 +39,10 @@ const CURRENCIES = [
   { value: 'EUR', label: 'EUR' },
   { value: 'MMK', label: 'MMK' },
 ]
+
+interface BusinessInfoFormProps {
+  setActiveStep: React.Dispatch<React.SetStateAction<number>>
+}
 
 const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
   const navigate = useNavigate()

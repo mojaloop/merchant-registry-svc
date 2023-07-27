@@ -11,7 +11,6 @@ const LOCATION_TYPES = [
   { value: 'physical', label: 'Physical' },
   { value: 'virtual', label: 'Virtual' },
 ]
-
 const COUNTRIES = [
   { value: 'Afghanistan', label: 'Afghanistan' },
   { value: 'Albania', label: 'Albania' },
@@ -94,7 +93,7 @@ const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
         pt='2'
         pb='6'
       >
-        <Heading size='sm' as='h3' w='20rem' justifySelf='center'>
+        <Heading size='sm' as='h3' w='20rem' justifySelf={{ md: 'center' }}>
           Physical Business Address
         </Heading>
       </SimpleGrid>

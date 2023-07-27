@@ -3,6 +3,7 @@ import { Countries } from 'shared-lib'
 
 export type BusinessInfo = z.infer<typeof businessInfoSchema>
 export type LocationInfo = z.infer<typeof locationInfoSchema>
+export type OwnerInfo = z.infer<typeof ownerInfoSchema>
 
 export const businessInfoSchema = z.object({
   businessName: z.string().nonempty({ message: 'Business name is required' }),
@@ -50,4 +51,27 @@ export const locationInfoSchema = z.object({
   longitude: z.string().optional(),
   latitude: z.string().optional(),
   checkoutDescription: z.string().optional(),
+})
+
+export const ownerInfoSchema = z.object({
+  name: z.string().nonempty({ message: 'Name is required' }),
+  nationalId: z.string().nonempty({ message: 'National ID is required' }),
+  nationality: z.string().nonempty({ message: 'Nationality is required' }),
+  department: z.string().optional(),
+  subDepartment: z.string().optional(),
+  streetName: z.string().optional(),
+  buildingNumber: z.string().optional(),
+  buildingName: z.string().optional(),
+  floorNumber: z.string().optional(),
+  roomNumber: z.string().optional(),
+  postBox: z.string().optional(),
+  postalCode: z.string().optional(),
+  township: z.string().optional(),
+  district: z.string().optional(),
+  countrySubdivision: z.string().optional(),
+  physicalAddressCountry: z.nativeEnum(Countries),
+  longitude: z.string().optional(),
+  latitude: z.string().optional(),
+  phoneNumber: z.string().nonempty(),
+  email: z.string().email().or(z.literal('')),
 })
