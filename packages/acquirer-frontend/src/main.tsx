@@ -8,7 +8,7 @@ import DrawerDisclosureProvider from '@/context/DrawerDisclosureContext.tsx'
 import App from './App.tsx'
 import './index.css'
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
+ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
     <BrowserRouter>
       <ChakraProvider theme={theme}>
