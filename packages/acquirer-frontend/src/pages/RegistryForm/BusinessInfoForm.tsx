@@ -143,6 +143,7 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
           label='Number of Employee'
           placeholder='Number of Employee'
           options={EMPLOYEE_COUNTS}
+          errorMsg='Please select an option'
           justifySelf='center'
         />
 
@@ -163,6 +164,7 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
           label='Merchant Category'
           placeholder='Merchant Type'
           options={MERCHANT_TYPES}
+          errorMsg='Please select a category'
           justifySelf='center'
         />
 

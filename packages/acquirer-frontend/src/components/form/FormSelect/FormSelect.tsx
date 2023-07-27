@@ -19,6 +19,7 @@ interface FormSelectProps<T extends FieldValues> extends FormControlProps {
   label: string
   placeholder: string
   options: Option[]
+  errorMsg?: string
 }
 
 const FormSelect = <T extends FieldValues>({
@@ -28,6 +29,7 @@ const FormSelect = <T extends FieldValues>({
   label,
   placeholder,
   options,
+  errorMsg,
   ...props
 }: FormSelectProps<T>) => {
   return (
@@ -43,7 +45,9 @@ const FormSelect = <T extends FieldValues>({
           </option>
         ))}
       </Select>
-      <FormErrorMessage>{errors[name]?.message?.toString()}</FormErrorMessage>
+      <FormErrorMessage>
+        {errorMsg || errors[name]?.message?.toString() || ''}
+      </FormErrorMessage>
     </FormControl>
   )
 }
