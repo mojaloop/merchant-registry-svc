@@ -7,11 +7,9 @@ import {
   FormLabel,
   HStack,
   IconButton,
-  Input,
   Link,
   Radio,
   RadioGroup,
-  Select,
   SimpleGrid,
   Stack,
   Text,
@@ -23,18 +21,28 @@ import { MdFileUpload } from 'react-icons/md'
 
 import { type BusinessInfo, businessInfoSchema } from '@/lib/validations/registry'
 import { CustomButton } from '@/components/ui'
+import { FormInput, FormSelect } from '@/components/form'
 
 interface BusinessInfoFormProps {
   setActiveStep: React.Dispatch<React.SetStateAction<number>>
 }
 
-const EMPLOYEE_COUNTS = ['1 - 10', '11 - 50', '51 - 100', '100 +']
+const EMPLOYEE_COUNTS = [
+  { value: '1 - 10', label: '1 - 10' },
+  { value: '11 - 50', label: '11 - 50' },
+  { value: '51 - 100', label: '51 - 100' },
+  { value: '100 +', label: '100 +' },
+]
 const MERCHANT_TYPES = [
   { value: 'individual', label: 'Individual' },
   { value: 'small-shop', label: 'Small Shop' },
   { value: 'chain-store', label: 'Chain Store' },
 ]
-const CURRENCIES = ['USD', 'EUR', 'MMK']
+const CURRENCIES = [
+  { value: 'USD', label: 'USD' },
+  { value: 'EUR', label: 'EUR' },
+  { value: 'MMK', label: 'MMK' },
+]
 
 const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
   const navigate = useNavigate()
@@ -48,6 +56,7 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
     watch,
     formState: { errors },
     setValue,
+    setFocus,
     handleSubmit,
   } = useForm<BusinessInfo>({
     resolver: zodResolver(businessInfoSchema),
@@ -76,6 +85,15 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
     setActiveStep(2)
   }
 
+  // focus on first input that has error after validation
+  useEffect(() => {
+    const firstError = Object.keys(errors)[0] as keyof BusinessInfo
+
+    if (firstError) {
+      setFocus(firstError)
+    }
+  }, [errors, setFocus])
+
   useEffect(() => {
     if (watchedHaveLicense === 'no') {
       setValue('licenseDocument', null)
@@ -83,149 +101,106 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
   }, [watchedHaveLicense, setValue])
 
   return (
-    <Stack as='form' onSubmit={handleSubmit(onSubmit)} pt='20'>
+    <Stack as='form' onSubmit={handleSubmit(onSubmit)} pt='20' noValidate>
       <SimpleGrid
         templateColumns={{ base: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)' }}
         rowGap={{ base: '4', sm: '6' }}
         pb='6'
       >
-        <FormControl
+        <FormInput
           isRequired
-          isInvalid={!!errors.businessName}
-          maxW={{ md: '20rem' }}
+          name='businessName'
+          register={register}
+          errors={errors}
+          label='Business Name'
+          placeholder='Business Name'
           justifySelf='center'
-        >
-          <FormLabel fontSize='sm'>Business Name</FormLabel>
-          <Input {...register('businessName')} placeholder='Business Name' />
-          <FormErrorMessage>{errors.businessName?.message}</FormErrorMessage>
-        </FormControl>
+        />
 
-        <FormControl
-          isInvalid={!!errors.registeredName}
-          maxW={{ md: '20rem' }}
+        <FormInput
+          name='registeredName'
+          register={register}
+          errors={errors}
+          label='Registered Name'
+          placeholder='Registered Name'
           justifySelf='center'
-        >
-          <FormLabel fontSize='sm'>Registered Name</FormLabel>
-          <Input {...register('registeredName')} placeholder='Registered Name' />
-          <FormErrorMessage>{errors.registeredName?.message}</FormErrorMessage>
-        </FormControl>
+        />
 
-        <FormControl
-          isInvalid={!!errors.payintoAccount}
-          maxW={{ md: '20rem' }}
+        <FormInput
+          name='payintoAccount'
+          register={register}
+          errors={errors}
+          label='Payinto Account'
+          placeholder='Payinto Account'
           justifySelf='center'
-        >
-          <FormLabel fontSize='sm'>Payinto Account</FormLabel>
-          <Input {...register('payintoAccount')} placeholder='Payinto Account' />
-          <FormErrorMessage>{errors.payintoAccount?.message}</FormErrorMessage>
-        </FormControl>
+        />
 
-        <FormControl
+        <FormSelect
           isRequired
-          isInvalid={!!errors.numberOfEmployee}
-          maxW={{ md: '20rem' }}
+          name='numberOfEmployee'
+          register={register}
+          errors={errors}
+          label='Number of Employee'
+          placeholder='Number of Employee'
+          options={EMPLOYEE_COUNTS}
+          errorMsg='Please select an option'
           justifySelf='center'
-        >
-          <FormLabel fontSize='sm'>Number of Employee</FormLabel>
-          <Select {...register('numberOfEmployee')} defaultValue=''>
-            <option value='' disabled>
-              Number of Employee
-            </option>
-            {EMPLOYEE_COUNTS.map(employeeCount => (
-              <option key={employeeCount} value={employeeCount}>
-                {employeeCount}
-              </option>
-            ))}
-          </Select>
-          <FormErrorMessage>{errors.numberOfEmployee?.message}</FormErrorMessage>
-        </FormControl>
+        />
 
-        <FormControl
-          isInvalid={!!errors.monthlyTurnOver}
-          maxW={{ md: '20rem' }}
+        <FormInput
+          name='monthlyTurnOver'
+          register={register}
+          errors={errors}
+          label='Monthly Turn Over'
+          placeholder='Monthly Turn Over'
           justifySelf='center'
-        >
-          <FormLabel fontSize='sm'>Monthly Turn Over</FormLabel>
-          <Input {...register('monthlyTurnOver')} placeholder='Monthly Turn Over' />
-          <FormErrorMessage>{errors.monthlyTurnOver?.message}</FormErrorMessage>
-        </FormControl>
+        />
 
-        <FormControl
+        <FormSelect
           isRequired
-          isInvalid={!!errors.merchantCategory}
-          maxW={{ md: '20rem' }}
+          name='merchantCategory'
+          register={register}
+          errors={errors}
+          label='Merchant Category'
+          placeholder='Merchant Type'
+          options={MERCHANT_TYPES}
+          errorMsg='Please select a category'
           justifySelf='center'
-        >
-          <FormLabel fontSize='sm'>Merchant Category</FormLabel>
-          <Select {...register('merchantCategory')} defaultValue=''>
-            <option value='' disabled>
-              Merchant Type
-            </option>
-            {MERCHANT_TYPES.map(({ value, label }) => (
-              <option key={value} value={value}>
-                {label}
-              </option>
-            ))}
-          </Select>
-          <FormErrorMessage>{errors.merchantCategory?.message}</FormErrorMessage>
-        </FormControl>
+        />
 
-        <FormControl
-          isInvalid={!!errors.merchantType}
-          maxW={{ md: '20rem' }}
+        <FormSelect
+          name='merchantType'
+          register={register}
+          errors={errors}
+          label='Merchant Type'
+          placeholder='Merchant Type'
+          options={MERCHANT_TYPES}
           justifySelf='center'
-        >
-          <FormLabel fontSize='sm'>Merchant Type</FormLabel>
-          <Select {...register('merchantType')} defaultValue=''>
-            <option value='' disabled>
-              Merchant Type
-            </option>
-            {MERCHANT_TYPES.map(({ value, label }) => (
-              <option key={value} value={value}>
-                {label}
-              </option>
-            ))}
-          </Select>
-          <FormErrorMessage>{errors.merchantType?.message}</FormErrorMessage>
-        </FormControl>
+        />
 
-        <FormControl
-          isInvalid={!!errors.registeredDFSPName}
-          maxW={{ md: '20rem' }}
+        <FormSelect
+          name='registeredDFSPName'
+          register={register}
+          errors={errors}
+          label='Registered DFSP Name'
+          placeholder='DFSP'
+          options={[
+            { value: 'AA', label: 'AA' },
+            { value: 'BB', label: 'BB' },
+            { value: 'CC', label: 'CC' },
+          ]}
           justifySelf='center'
-        >
-          <FormLabel fontSize='sm'>Registered DFSP Name</FormLabel>
-          <Select {...register('registeredDFSPName')} defaultValue=''>
-            <option value='' disabled>
-              DFSP
-            </option>
-            {['AA', 'BB', 'CC'].map(dfspName => (
-              <option key={dfspName} value={dfspName}>
-                {dfspName}
-              </option>
-            ))}
-          </Select>
-          <FormErrorMessage>{errors.registeredDFSPName?.message}</FormErrorMessage>
-        </FormControl>
+        />
 
-        <FormControl
-          isInvalid={!!errors.currency}
-          maxW={{ md: '20rem' }}
+        <FormSelect
+          name='currency'
+          register={register}
+          errors={errors}
+          label='Currency'
+          placeholder='Currency'
+          options={CURRENCIES}
           justifySelf='center'
-        >
-          <FormLabel fontSize='sm'>Currency</FormLabel>
-          <Select {...register('currency')} defaultValue=''>
-            <option value='' disabled>
-              Currency
-            </option>
-            {CURRENCIES.map(currency => (
-              <option key={currency} value={currency}>
-                {currency}
-              </option>
-            ))}
-          </Select>
-          <FormErrorMessage>{errors.currency?.message}</FormErrorMessage>
-        </FormControl>
+        />
       </SimpleGrid>
 
       <SimpleGrid
@@ -255,16 +230,15 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
         rowGap={{ base: '4', sm: '6' }}
         pb='12'
       >
-        <FormControl
+        <FormInput
           isDisabled={!haveLicense}
-          isInvalid={!!errors.licenseNumber}
-          maxW={{ md: '20rem' }}
+          name='licenseNumber'
+          register={register}
+          errors={errors}
+          label='License Number'
+          placeholder='License Number'
           justifySelf='center'
-        >
-          <FormLabel fontSize='sm'>License Number</FormLabel>
-          <Input {...register('licenseNumber')} placeholder='License Number' />
-          <FormErrorMessage>{errors.licenseNumber?.message}</FormErrorMessage>
-        </FormControl>
+        />
 
         <Box justifySelf='center' w='full' maxW={{ md: '20rem' }}>
           <FormControl
@@ -364,9 +338,7 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
           Back
         </CustomButton>
 
-        <CustomButton type='submit' w='36'>
-          Save and proceed
-        </CustomButton>
+        <CustomButton type='submit'>Save and proceed</CustomButton>
       </Box>
     </Stack>
   )
