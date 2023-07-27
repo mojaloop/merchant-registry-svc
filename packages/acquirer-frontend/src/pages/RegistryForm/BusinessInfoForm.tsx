@@ -101,7 +101,7 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
   }, [watchedHaveLicense, setValue])
 
   return (
-    <Stack as='form' onSubmit={handleSubmit(onSubmit)} pt='20'>
+    <Stack as='form' onSubmit={handleSubmit(onSubmit)} pt='20' noValidate>
       <SimpleGrid
         templateColumns={{ base: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)' }}
         rowGap={{ base: '4', sm: '6' }}
