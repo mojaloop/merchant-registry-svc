@@ -4,6 +4,7 @@ import {
   FormErrorMessage,
   FormLabel,
   Input,
+  type InputProps,
 } from '@chakra-ui/react'
 import type { FieldErrors, FieldValues, Path, UseFormRegister } from 'react-hook-form'
 
@@ -14,6 +15,7 @@ interface FormInputProps<T extends FieldValues> extends FormControlProps {
   label: string
   placeholder: string
   errorMsg?: string
+  inputProps?: InputProps
 }
 
 const FormInput = <T extends FieldValues>({
@@ -23,12 +25,13 @@ const FormInput = <T extends FieldValues>({
   label,
   placeholder,
   errorMsg,
+  inputProps,
   ...props
 }: FormInputProps<T>) => {
   return (
     <FormControl isInvalid={!!errors[name]} maxW={{ md: '20rem' }} {...props}>
       <FormLabel fontSize='sm'>{label}</FormLabel>
-      <Input {...register(name)} placeholder={placeholder} />
+      <Input {...register(name)} placeholder={placeholder} {...inputProps} />
       <FormErrorMessage>
         {errorMsg || errors[name]?.message?.toString() || ''}
       </FormErrorMessage>

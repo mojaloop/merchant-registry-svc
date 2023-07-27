@@ -230,6 +230,7 @@ const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
           errors={errors}
           label='Longitude'
           placeholder='Longitude'
+          inputProps={{ type: 'number' }}
           justifySelf='center'
         />
 
@@ -239,6 +240,7 @@ const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
           errors={errors}
           label='Latitude'
           placeholder='Latitude'
+          inputProps={{ type: 'number' }}
           justifySelf='center'
         />
       </SimpleGrid>
