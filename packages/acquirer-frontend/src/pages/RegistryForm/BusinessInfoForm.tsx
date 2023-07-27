@@ -61,17 +61,8 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
   } = useForm<BusinessInfo>({
     resolver: zodResolver(businessInfoSchema),
     defaultValues: {
-      businessName: '',
-      registeredName: '',
-      payintoAccount: '',
-      numberOfEmployee: undefined,
-      monthlyTurnOver: '',
-      merchantCategory: undefined,
       merchantType: null,
-      registeredDFSPName: '',
       currency: null,
-      haveBusinessLicense: undefined,
-      licenseNumber: '',
       licenseDocument: null,
     },
   })
@@ -82,7 +73,7 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
 
   const onSubmit = (values: BusinessInfo) => {
     console.log(values)
-    setActiveStep(2)
+    setActiveStep(activeStep => activeStep + 1)
   }
 
   // focus on first input that has error after validation

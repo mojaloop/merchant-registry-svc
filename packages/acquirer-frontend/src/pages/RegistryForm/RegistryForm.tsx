@@ -62,7 +62,7 @@ const RegistryForm = () => {
         </Stepper>
 
         {activeStep === 1 && <BusinessInfoForm setActiveStep={setActiveStep} />}
-        {activeStep === 2 && <LocationInfoForm />}
+        {activeStep === 2 && <LocationInfoForm setActiveStep={setActiveStep} />}
         {activeStep === 3 && <OwnerInfoForm />}
         {activeStep === 4 && <ContactPersonForm />}
       </Box>
