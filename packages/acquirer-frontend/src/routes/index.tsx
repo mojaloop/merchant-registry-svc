@@ -5,6 +5,7 @@ import {
   AllMerchantRecords,
   PendingMerchantRecords,
   Registry,
+  RegistryForm,
   RoleManagement,
   UserManagement,
 } from '@/pages'
@@ -22,6 +23,11 @@ const Routes = () => {
         {
           path: 'registry',
           element: <Registry />,
+          caseSensitive: true,
+        },
+        {
+          path: 'registry/registry-form',
+          element: <RegistryForm />,
           caseSensitive: true,
         },
         {

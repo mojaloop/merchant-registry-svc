@@ -1,19 +1,24 @@
+import { useNavigate } from 'react-router-dom'
 import { Box, Heading, Link, Text } from '@chakra-ui/react'
 
 import { CustomButton } from '@/components/ui'
 
 const Registry = () => {
+  const navigate = useNavigate()
+
   return (
     <Box>
-      <Heading size='lg' mb='10'>
-        Merchant Registration
+      <Heading size='md' mb='10' textAlign='center'>
+        Merchant Acquiring System
       </Heading>
 
       <Heading as='h3' size='sm' fontWeight='medium' mb='5'>
         Fill in the merchant registry form
       </Heading>
 
-      <CustomButton mr='4'>Add new record</CustomButton>
+      <CustomButton mr='4' onClick={() => navigate('/registry/registry-form')}>
+        Add new record
+      </CustomButton>
       <CustomButton isDisabled>Continue with saved draft</CustomButton>
 
       <Heading as='h3' size='sm' fontWeight='medium' mt='10' mb='5'>
@@ -33,7 +38,7 @@ const Registry = () => {
           color='blue.500'
           fontSize='sm'
         >
-          Sample merchant record file type
+          Sample merchant record file template
         </Link>
       </Box>
     </Box>
