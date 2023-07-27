@@ -20,21 +20,14 @@ export const businessInfoSchema = z.object({
     z.literal('small-shop'),
     z.literal('chain-store'),
   ]),
-  merchantType: z.union([
-    z.union([z.literal('individual'), z.literal('small-shop'), z.literal('chain-store')]),
-    z.null(),
-  ]),
+  merchantType: z
+    .union([z.literal('individual'), z.literal('small-shop'), z.literal('chain-store')])
+    .or(z.null()),
   registeredDFSPName: z.string().optional(),
-  currency: z.union([
-    z.union([z.literal('USD'), z.literal('EUR'), z.literal('MMK')]),
-    z.null(),
-  ]),
-  haveBusinessLicense: z.union([
-    z.union([z.literal('yes'), z.literal('no')]),
-    z.undefined(),
-  ]),
+  currency: z.union([z.literal('USD'), z.literal('EUR'), z.literal('MMK')]).or(z.null()),
+  haveBusinessLicense: z.union([z.literal('yes'), z.literal('no')]).or(z.undefined()),
   licenseNumber: z.string().optional(),
-  licenseDocument: z.union([z.custom<File>(val => val instanceof File), z.null()]),
+  licenseDocument: z.custom<File>(val => val instanceof File).or(z.null()),
 })
 
 export const locationInfoSchema = z.object({
