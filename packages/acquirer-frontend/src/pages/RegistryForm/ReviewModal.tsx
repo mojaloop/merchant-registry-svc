@@ -44,10 +44,12 @@ const ReviewModal = ({ isOpen, onClose }: ReviewModalProps) => {
       <ModalOverlay bg='hsl(0, 0%, 100%, 0.6)' backdropFilter='blur(4px)' />
 
       <ModalContent w='90vw' maxW='1000px' mt='14' mb={{ base: '14', lg: '0' }}>
-        <ModalHeader>Merchant Information</ModalHeader>
-        <ModalCloseButton />
+        <ModalHeader py='3' borderBottom='1px' borderColor='gray.100'>
+          Merchant Information
+        </ModalHeader>
+        <ModalCloseButton top='2.5' right='4' />
 
-        <ModalBody>
+        <ModalBody py='5' px={{ base: '4', md: '6' }}>
           <Grid
             templateRows={{ base: '1fr', lg: 'repeat(4, 1fr)' }}
             templateColumns={{
