@@ -4,6 +4,7 @@ import AllMerchantRecords from './AllMerchantRecords/AllMerchantRecords'
 import PendingMerchantRecords from './PendingMerchantRecords/PendingMerchantRecords'
 import RoleManagement from './RoleManagement/RoleManagement'
 import UserManagement from './UserManagement/UserManagement'
+import Login from './Login/Login'
 
 export {
   Registry,
@@ -12,4 +13,5 @@ export {
   PendingMerchantRecords,
   RoleManagement,
   UserManagement,
+  Login,
 }
