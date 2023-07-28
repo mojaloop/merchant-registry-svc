@@ -96,7 +96,7 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
       <SimpleGrid
         templateColumns={{ base: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)' }}
         rowGap={{ base: '4', sm: '6' }}
-        pb='6'
+        pb={{ base: '4', sm: '6' }}
       >
         <FormInput
           isRequired
@@ -197,7 +197,7 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
       <SimpleGrid
         templateColumns={{ base: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)' }}
         rowGap={{ base: '4', sm: '6' }}
-        pb='6'
+        pb={{ base: '4', sm: '6' }}
       >
         <FormControl maxW={{ md: '20rem' }} justifySelf='center'>
           <Text mb='4'>Do you have Business license?</Text>

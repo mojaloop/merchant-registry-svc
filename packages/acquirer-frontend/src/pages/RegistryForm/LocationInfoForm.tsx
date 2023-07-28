@@ -52,7 +52,7 @@ const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
       <SimpleGrid
         templateColumns={{ base: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)' }}
         rowGap={{ base: '4', sm: '6' }}
-        pb='6'
+        pb={{ base: '4', sm: '6' }}
       >
         <FormSelect
           isRequired
@@ -91,7 +91,7 @@ const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
         templateColumns={{ base: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)' }}
         rowGap={{ base: '4', sm: '6' }}
         pt='2'
-        pb='6'
+        pb={{ base: '4', sm: '6' }}
       >
         <Heading size='sm' as='h3' w='20rem' justifySelf={{ md: 'center' }}>
           Physical Business Address
@@ -101,7 +101,7 @@ const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
       <SimpleGrid
         templateColumns={{ base: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)' }}
         rowGap={{ base: '4', sm: '6' }}
-        pb='6'
+        pb={{ base: '4', sm: '6' }}
       >
         <FormInput
           name='department'
