@@ -1,5 +1,5 @@
 import {
-  BusinessOwnerIDType, Countries, MerchantLocationType,
+  BusinessOwnerIDType, Countries, CurrencyCodes, MerchantLocationType,
   MerchantRegistrationStatus,
   NumberOfEmployees
 } from 'shared-lib'
@@ -21,7 +21,7 @@ export const MerchantSubmitDataSchema = z.object({
   registered_name: z.string().optional().nullable().default(null),
   employees_num: z.nativeEnum(NumberOfEmployees),
   monthly_turnover: z.number().nullable().default(null),
-  currency_code: z.string(),
+  currency_code: z.nativeEnum(CurrencyCodes),
   category_code: z.string(),
   registration_status: z.nativeEnum(SubmitRegistratonStatus),
   registration_status_reason: z.string(),

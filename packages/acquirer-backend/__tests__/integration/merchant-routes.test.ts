@@ -8,7 +8,10 @@ import { initializeDatabase } from '../../src/database/init-database'
 import { MerchantEntity } from '../../src/entity/MerchantEntity'
 import { ContactPersonEntity } from '../../src/entity/ContactPersonEntity'
 import { BusinessOwnerEntity } from '../../src/entity/BusinessOwnerEntity'
-import { MerchantRegistrationStatus, NumberOfEmployees } from 'shared-lib'
+import {
+  CurrencyCodes,
+  MerchantRegistrationStatus, NumberOfEmployees
+} from 'shared-lib'
 import { CheckoutCounterEntity } from '../../src/entity/CheckoutCounterEntity'
 import { BusinessLicenseEntity } from '../../src/entity/BusinessLicenseEntity'
 
@@ -21,7 +24,7 @@ logger.silent = true
 describe('Merchant Routes Tests', () => {
   beforeAll(async () => {
     await initializeDatabase()
-  })
+  }, 20000) // wait for 20secs for db to initialize
 
   afterAll(async () => {
     await AppDataSource.destroy()
@@ -46,8 +49,8 @@ describe('Merchant Routes Tests', () => {
           registered_name: 'Test Merchant 1',
           employees_num: '1 - 5',
           monthly_turnover: 0.5,
-          currency_code: 'PHP',
-          category_code: '10410',
+          currency_code: CurrencyCodes.USD,
+          category_code: '01110',
           payinto_alias: 'P33',
           registration_status: MerchantRegistrationStatus.DRAFT,
           registration_status_reason: 'Drafting Merchant',
@@ -106,8 +109,8 @@ describe('Merchant Routes Tests', () => {
           registered_name: 'Test Merchant 1',
           employees_num: NumberOfEmployees.ONE_TO_FIVE,
           monthly_turnover: 0.5,
-          currency_code: 'PHP',
-          category_code: '10410',
+          currency_code: CurrencyCodes.USD,
+          category_code: '01110',
           payinto_alias: 'merchant1',
           registration_status: MerchantRegistrationStatus.DRAFT,
           registration_status_reason: 'Drafting Merchant',
@@ -179,8 +182,6 @@ describe('Merchant Routes Tests', () => {
         { where: { id: merchant?.id } }
       )
       expect(originalMerchant?.registration_status).toEqual(MerchantRegistrationStatus.DRAFT)
-      // Assert
-      //
 
       // Clean up
     })
