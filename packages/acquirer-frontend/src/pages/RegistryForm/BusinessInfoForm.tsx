@@ -10,7 +10,6 @@ import {
   Link,
   Radio,
   RadioGroup,
-  SimpleGrid,
   Stack,
   Text,
   VisuallyHiddenInput,
@@ -22,6 +21,7 @@ import { MdFileUpload } from 'react-icons/md'
 import { type BusinessInfo, businessInfoSchema } from '@/lib/validations/registry'
 import { CustomButton } from '@/components/ui'
 import { FormInput, FormSelect } from '@/components/form'
+import GridShell from './GridShell'
 
 const EMPLOYEE_COUNTS = [
   { value: '1 - 10', label: '1 - 10' },
@@ -93,11 +93,7 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
 
   return (
     <Stack as='form' onSubmit={handleSubmit(onSubmit)} pt='20' noValidate>
-      <SimpleGrid
-        templateColumns={{ base: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)' }}
-        rowGap={{ base: '4', sm: '6' }}
-        pb={{ base: '4', sm: '6' }}
-      >
+      <GridShell>
         <FormInput
           isRequired
           name='businessName'
@@ -192,13 +188,9 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
           options={CURRENCIES}
           justifySelf='center'
         />
-      </SimpleGrid>
+      </GridShell>
 
-      <SimpleGrid
-        templateColumns={{ base: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)' }}
-        rowGap={{ base: '4', sm: '6' }}
-        pb={{ base: '4', sm: '6' }}
-      >
+      <GridShell>
         <FormControl maxW={{ md: '20rem' }} justifySelf='center'>
           <Text mb='4'>Do you have Business license?</Text>
           <Controller
@@ -214,13 +206,9 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
             )}
           />
         </FormControl>
-      </SimpleGrid>
+      </GridShell>
 
-      <SimpleGrid
-        templateColumns={{ base: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)' }}
-        rowGap={{ base: '4', sm: '6' }}
-        pb='12'
-      >
+      <GridShell pb={{ base: '8', sm: '12' }}>
         <FormInput
           isDisabled={!haveLicense}
           name='licenseNumber'
@@ -316,7 +304,7 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
             </Box>
           )}
         </Box>
-      </SimpleGrid>
+      </GridShell>
 
       <Box alignSelf='end'>
         <CustomButton

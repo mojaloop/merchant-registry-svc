@@ -1,11 +1,12 @@
 import { useEffect } from 'react'
-import { Box, Checkbox, Heading, SimpleGrid, Stack } from '@chakra-ui/react'
+import { Box, Checkbox, Heading, Stack } from '@chakra-ui/react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 
 import { type ContactPerson, contactPersonSchema } from '@/lib/validations/registry'
 import { CustomButton } from '@/components/ui'
 import { FormInput } from '@/components/form'
+import GridShell from './GridShell'
 
 interface ContactPersonProps {
   setActiveStep: React.Dispatch<React.SetStateAction<number>>
@@ -36,11 +37,7 @@ const ContactPersonForm = ({ setActiveStep }: ContactPersonProps) => {
 
   return (
     <Stack as='form' onSubmit={handleSubmit(onSubmit)} pt='20' noValidate>
-      <SimpleGrid
-        templateColumns={{ base: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)' }}
-        rowGap={{ base: '4', sm: '6' }}
-        pb={{ base: '4', sm: '6' }}
-      >
+      <GridShell>
         <Box w='20rem' justifySelf={{ md: 'center' }}>
           <Heading size='sm' as='h3'>
             Contact Person
@@ -48,13 +45,9 @@ const ContactPersonForm = ({ setActiveStep }: ContactPersonProps) => {
 
           <Checkbox mt='4'>Same as business owner</Checkbox>
         </Box>
-      </SimpleGrid>
+      </GridShell>
 
-      <SimpleGrid
-        templateColumns={{ base: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)' }}
-        rowGap={{ base: '4', sm: '6' }}
-        pb={{ base: '4', sm: '6' }}
-      >
+      <GridShell pb={{ base: '8', sm: '12' }}>
         <FormInput
           isRequired
           name='name'
@@ -84,7 +77,7 @@ const ContactPersonForm = ({ setActiveStep }: ContactPersonProps) => {
           placeholder='Email'
           justifySelf='center'
         />
-      </SimpleGrid>
+      </GridShell>
 
       <Box alignSelf='end'>
         <CustomButton

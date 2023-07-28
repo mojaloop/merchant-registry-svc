@@ -1,11 +1,12 @@
 import { useEffect } from 'react'
-import { Box, Heading, SimpleGrid, Stack } from '@chakra-ui/react'
+import { Box, Heading, Stack } from '@chakra-ui/react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 
 import { type LocationInfo, locationInfoSchema } from '@/lib/validations/registry'
 import { CustomButton } from '@/components/ui'
 import { FormInput, FormSelect } from '@/components/form'
+import GridShell from './GridShell'
 
 const LOCATION_TYPES = [
   { value: 'physical', label: 'Physical' },
@@ -49,11 +50,7 @@ const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
 
   return (
     <Stack as='form' onSubmit={handleSubmit(onSubmit)} pt='20' noValidate>
-      <SimpleGrid
-        templateColumns={{ base: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)' }}
-        rowGap={{ base: '4', sm: '6' }}
-        pb={{ base: '4', sm: '6' }}
-      >
+      <GridShell>
         <FormSelect
           isRequired
           name='locationType'
@@ -85,24 +82,15 @@ const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
           placeholder='Website URL'
           justifySelf='center'
         />
-      </SimpleGrid>
+      </GridShell>
 
-      <SimpleGrid
-        templateColumns={{ base: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)' }}
-        rowGap={{ base: '4', sm: '6' }}
-        pt='2'
-        pb={{ base: '4', sm: '6' }}
-      >
+      <GridShell pt='2'>
         <Heading size='sm' as='h3' w='20rem' justifySelf={{ md: 'center' }}>
           Physical Business Address
         </Heading>
-      </SimpleGrid>
+      </GridShell>
 
-      <SimpleGrid
-        templateColumns={{ base: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)' }}
-        rowGap={{ base: '4', sm: '6' }}
-        pb={{ base: '4', sm: '6' }}
-      >
+      <GridShell>
         <FormInput
           name='department'
           register={register}
@@ -242,13 +230,9 @@ const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
           inputProps={{ type: 'number' }}
           justifySelf='center'
         />
-      </SimpleGrid>
+      </GridShell>
 
-      <SimpleGrid
-        templateColumns={{ base: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)' }}
-        rowGap={{ base: '4', sm: '6' }}
-        pb='12'
-      >
+      <GridShell pb={{ base: '8', sm: '12' }}>
         <FormInput
           name='checkoutDescription'
           register={register}
@@ -257,7 +241,7 @@ const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
           placeholder='Checkout Counter Description'
           justifySelf='center'
         />
-      </SimpleGrid>
+      </GridShell>
 
       <Box alignSelf='end'>
         <CustomButton
