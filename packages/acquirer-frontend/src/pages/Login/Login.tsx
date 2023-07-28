@@ -34,8 +34,15 @@ const Login = () => {
 
   return (
     <Flex w='full' h='100vh' justify='center' align='center'>
-      <Flex w='90vw' maxW='900px' rounded='2xl' shadow='md' overflow='hidden'>
-        <VStack w='50%' py='12' px='10' justify='space-between' bg='#F0F9FF'>
+      <Flex w='90vw' maxW='900px' rounded='xl' shadow='md' overflow='hidden'>
+        <VStack
+          w='50%'
+          py='12'
+          px='10'
+          display={{ base: 'none', md: 'flex' }}
+          justify='space-between'
+          bg='#F0F9FF'
+        >
           <Image src={mojaloopLogo} w='60' />
 
           <Heading as='h1' color='primary' textAlign='center'>
@@ -48,7 +55,11 @@ const Login = () => {
           </Box>
         </VStack>
 
-        <Stack w='50%' py='12' px='10'>
+        <Stack
+          w={{ base: '100%', md: '50%' }}
+          py={{ base: '8', sm: '12' }}
+          px={{ base: '6', sm: '10' }}
+        >
           <Heading fontSize='2xl' mb='6'>
             Log in to your account
           </Heading>
