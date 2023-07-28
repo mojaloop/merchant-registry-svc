@@ -96,10 +96,10 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
       <GridShell>
         <FormInput
           isRequired
-          name='businessName'
+          name='dbaName'
           register={register}
           errors={errors}
-          label='Business Name'
+          label='Doing Business As Name'
           placeholder='Business Name'
           justifySelf='center'
         />

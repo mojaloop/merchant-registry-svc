@@ -7,7 +7,7 @@ export type OwnerInfo = z.infer<typeof ownerInfoSchema>
 export type ContactPerson = z.infer<typeof contactPersonSchema>
 
 export const businessInfoSchema = z.object({
-  businessName: z.string().nonempty({ message: 'Business name is required' }),
+  dbaName: z.string().nonempty({ message: 'Business name is required' }),
   registeredName: z.string().optional(),
   payintoAccount: z.string().optional(),
   numberOfEmployee: z.union([
