@@ -3,6 +3,7 @@ import { Navigate, useRoutes } from 'react-router-dom'
 import { Layout } from '@/components/layout'
 import {
   AllMerchantRecords,
+  Login,
   PendingMerchantRecords,
   Registry,
   RegistryForm,
@@ -51,6 +52,11 @@ const Routes = () => {
           caseSensitive: true,
         },
       ],
+    },
+    {
+      path: '/login',
+      element: <Login />,
+      caseSensitive: true,
     },
   ])
 
