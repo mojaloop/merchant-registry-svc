@@ -4,6 +4,7 @@ import { Countries } from 'shared-lib'
 export type BusinessInfo = z.infer<typeof businessInfoSchema>
 export type LocationInfo = z.infer<typeof locationInfoSchema>
 export type OwnerInfo = z.infer<typeof ownerInfoSchema>
+export type ContactPerson = z.infer<typeof contactPersonSchema>
 
 export const businessInfoSchema = z.object({
   businessName: z.string().nonempty({ message: 'Business name is required' }),
@@ -72,6 +73,12 @@ export const ownerInfoSchema = z.object({
   physicalAddressCountry: z.nativeEnum(Countries),
   longitude: z.string().optional(),
   latitude: z.string().optional(),
-  phoneNumber: z.string().nonempty(),
+  phoneNumber: z.string().nonempty({ message: 'Phone number is required' }),
+  email: z.string().email().or(z.literal('')),
+})
+
+export const contactPersonSchema = z.object({
+  name: z.string().nonempty({ message: 'Name is required' }),
+  phoneNumber: z.string().nonempty({ message: 'Phone number is required' }),
   email: z.string().email().or(z.literal('')),
 })

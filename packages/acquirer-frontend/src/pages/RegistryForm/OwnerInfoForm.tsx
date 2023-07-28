@@ -1,11 +1,12 @@
 import { useEffect } from 'react'
-import { Box, Heading, SimpleGrid, Stack } from '@chakra-ui/react'
+import { Box, Heading, Stack } from '@chakra-ui/react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 
 import { type OwnerInfo, ownerInfoSchema } from '@/lib/validations/registry'
 import { CustomButton } from '@/components/ui'
 import { FormInput, FormSelect } from '@/components/form'
+import GridShell from './GridShell'
 
 const COUNTRIES = [
   { value: 'Afghanistan', label: 'Afghanistan' },
@@ -42,11 +43,7 @@ const OwnerInfoForm = ({ setActiveStep }: OwnerInfoFormProps) => {
 
   return (
     <Stack as='form' onSubmit={handleSubmit(onSubmit)} pt='20' noValidate>
-      <SimpleGrid
-        templateColumns={{ base: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)' }}
-        rowGap={{ base: '4', sm: '6' }}
-        pb='6'
-      >
+      <GridShell>
         <FormInput
           isRequired
           name='name'
@@ -76,24 +73,15 @@ const OwnerInfoForm = ({ setActiveStep }: OwnerInfoFormProps) => {
           placeholder='Nationality'
           justifySelf='center'
         />
-      </SimpleGrid>
+      </GridShell>
 
-      <SimpleGrid
-        templateColumns={{ base: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)' }}
-        rowGap={{ base: '4', sm: '6' }}
-        pt='2'
-        pb='6'
-      >
+      <GridShell pt='2'>
         <Heading size='sm' as='h3' w='20rem' justifySelf={{ md: 'center' }}>
           Physical Address
         </Heading>
-      </SimpleGrid>
+      </GridShell>
 
-      <SimpleGrid
-        templateColumns={{ base: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)' }}
-        rowGap={{ base: '4', sm: '6' }}
-        pb='6'
-      >
+      <GridShell>
         <FormInput
           name='department'
           register={register}
@@ -233,13 +221,9 @@ const OwnerInfoForm = ({ setActiveStep }: OwnerInfoFormProps) => {
           inputProps={{ type: 'number' }}
           justifySelf='center'
         />
-      </SimpleGrid>
+      </GridShell>
 
-      <SimpleGrid
-        templateColumns={{ base: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)' }}
-        rowGap={{ base: '4', sm: '6' }}
-        pb='12'
-      >
+      <GridShell pb={{ base: '8', sm: '12' }}>
         <FormInput
           isRequired
           name='phoneNumber'
@@ -247,11 +231,11 @@ const OwnerInfoForm = ({ setActiveStep }: OwnerInfoFormProps) => {
           errors={errors}
           label='Phone Number'
           placeholder='Phone Number'
+          inputProps={{ type: 'number' }}
           justifySelf='center'
         />
 
         <FormInput
-          isRequired
           name='email'
           register={register}
           errors={errors}
@@ -259,11 +243,10 @@ const OwnerInfoForm = ({ setActiveStep }: OwnerInfoFormProps) => {
           placeholder='Email'
           justifySelf='center'
         />
-      </SimpleGrid>
+      </GridShell>
 
       <Box alignSelf='end'>
         <CustomButton
-          ml='auto'
           colorVariant='accent-outline'
           w='32'
           mr='4'
