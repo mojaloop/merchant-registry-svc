@@ -126,7 +126,7 @@ const ReviewModal = ({ isOpen, onClose }: ReviewModalProps) => {
               <Stack spacing='3'>
                 <DetailsItem label='Name' value='John' />
 
-                <DetailsItem label='Phone number' value='09756290742' />
+                <DetailsItem label='Phone Number' value='09756290742' />
 
                 <DetailsItem label='Email' value='konlineshop@gmail.com' />
               </Stack>
@@ -136,9 +136,9 @@ const ReviewModal = ({ isOpen, onClose }: ReviewModalProps) => {
               <SubHeading>Checkout Information</SubHeading>
 
               <Stack spacing='3'>
-                <DetailsItem label='Counter Description' value='Online shopping - 01' />
+                <DetailsItem label='Counter Description' value='Online Shopping - 01' />
 
-                <DetailsItem label='Counter description2' value='Online shopping - 02' />
+                <DetailsItem label='Counter Description2' value='Online Shopping - 02' />
               </Stack>
             </GridItemShell>
           </Grid>
