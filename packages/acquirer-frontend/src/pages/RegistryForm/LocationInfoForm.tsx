@@ -261,7 +261,6 @@ const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
 
       <Box alignSelf='end'>
         <CustomButton
-          ml='auto'
           colorVariant='accent-outline'
           w='32'
           mr='4'

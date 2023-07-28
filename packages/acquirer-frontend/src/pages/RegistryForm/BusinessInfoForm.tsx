@@ -320,7 +320,6 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
 
       <Box alignSelf='end'>
         <CustomButton
-          ml='auto'
           colorVariant='accent-outline'
           w='32'
           mr='4'

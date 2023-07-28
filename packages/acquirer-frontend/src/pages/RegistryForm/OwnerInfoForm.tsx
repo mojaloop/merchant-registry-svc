@@ -263,7 +263,6 @@ const OwnerInfoForm = ({ setActiveStep }: OwnerInfoFormProps) => {
 
       <Box alignSelf='end'>
         <CustomButton
-          ml='auto'
           colorVariant='accent-outline'
           w='32'
           mr='4'
