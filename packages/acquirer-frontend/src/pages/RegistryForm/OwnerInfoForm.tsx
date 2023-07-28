@@ -247,11 +247,11 @@ const OwnerInfoForm = ({ setActiveStep }: OwnerInfoFormProps) => {
           errors={errors}
           label='Phone Number'
           placeholder='Phone Number'
+          inputProps={{ type: 'number' }}
           justifySelf='center'
         />
 
         <FormInput
-          isRequired
           name='email'
           register={register}
           errors={errors}
