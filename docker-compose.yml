@@ -11,13 +11,21 @@ services:
     environment:
       - HOST=0.0.0.0
       - PORT=5555
+
       - DB_HOST=db
       - DB_PORT=3306
       - DB_USERNAME=root
       - DB_PASSWORD=password
       - DB_DATABASE=merchant_acquirer_db
+
+      - S3_ENDPOINT=minio
+      - S3_PORT=9000
+      - S3_ACCESS_KEY=minioadmin
+      - S3_SECRET_KEY=minioadmin
+      - S3_MERCHANT_BUCKET_NAME=merchant-documents
     depends_on:
       - db
+      - minio
 
   acquirer-frontend:
     build:
@@ -45,3 +53,17 @@ services:
       - MYSQL_DATABASE=merchant_acquirer_db
     ports:
       - 3306:3306
+
+  minio:
+    image: minio/minio:RELEASE.2023-07-21T21-12-44Z
+    volumes:
+      - data:/data
+    ports:
+      - "9000:9000"
+    environment:
+      - MINIO_ROOT_USER=minioadmin
+      - MINIO_ROOT_PASSWORD=minioadmin
+    command: server /data
+
+volumes:
+  data:

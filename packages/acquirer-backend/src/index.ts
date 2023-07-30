@@ -9,6 +9,10 @@ import health_check_route from './routes/health-check-route'
 import merchant_routes from './routes/merchant-routes'
 import user_routes from './routes/user-routes'
 import { openAPISpecification } from './openapi-spec-config'
+import {
+  merchantDocumentBucketName,
+  minioClient, createMerchantDocumentBucket
+} from './middleware/minioClient'
 
 const HOSTNAME: string = process.env.HOST ?? 'localhost'
 const PORT: number = parseInt(
@@ -32,6 +36,25 @@ app.use('/api/v1', user_routes)
 app.listen(PORT, HOSTNAME, () => {
   logger.info(`Merchant Acquirer API is running on http://${HOSTNAME}:${PORT}/api/v1`)
   logger.info(`Swagger API Documentation UI is running on http://${HOSTNAME}:${PORT}/docs`)
+
+  // check if client able to connect to storage server
+  minioClient.listBuckets().then(async (buckets) => {
+    logger.info('Storage buckets: %o', buckets)
+    try {
+      await createMerchantDocumentBucket()
+
+      logger.info('Uploading test file to Storage Server bucket: %s', merchantDocumentBucketName)
+      await minioClient.putObject(merchantDocumentBucketName, 'test.txt', 'Hello World!')
+      logger.info('Test file uploaded to Storage Server bucket: %s', merchantDocumentBucketName)
+    } catch (error) {
+      logger.error('createMerchantDocumentBucket error: %o', error)
+      process.exit(1)
+    }
+  }).catch((error) => {
+    logger.error('listBuckets error: %s', error.message)
+    process.exit(1)
+  })
+
   initializeDatabase()
     .then(async () => {
     })
