@@ -102,7 +102,7 @@ const AllMerchantsDataTable = <T,>({
                           colSpan={header.colSpan}
                           textAlign='center'
                           whiteSpace='pre-line'
-                          px='2'
+                          px='3'
                         >
                           {flexRender(
                             header.column.columnDef.header,

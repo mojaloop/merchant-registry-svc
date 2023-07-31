@@ -54,7 +54,7 @@ const ContactPersonForm = ({ setActiveStep }: ContactPersonProps) => {
           </Box>
         </GridShell>
 
-        <GridShell pb={{ base: '8', sm: '12' }}>
+        <GridShell justifyItems='center' pb={{ base: '8', sm: '12' }}>
           <FormInput
             isRequired
             name='name'
@@ -62,7 +62,6 @@ const ContactPersonForm = ({ setActiveStep }: ContactPersonProps) => {
             errors={errors}
             label='Name'
             placeholder='Name'
-            justifySelf='center'
           />
 
           <FormInput
@@ -73,7 +72,6 @@ const ContactPersonForm = ({ setActiveStep }: ContactPersonProps) => {
             label='Phone Number'
             placeholder='Phone Number'
             inputProps={{ type: 'number' }}
-            justifySelf='center'
           />
 
           <FormInput
@@ -82,7 +80,6 @@ const ContactPersonForm = ({ setActiveStep }: ContactPersonProps) => {
             errors={errors}
             label='Email'
             placeholder='Email'
-            justifySelf='center'
           />
         </GridShell>
 

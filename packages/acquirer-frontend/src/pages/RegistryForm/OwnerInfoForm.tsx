@@ -43,7 +43,7 @@ const OwnerInfoForm = ({ setActiveStep }: OwnerInfoFormProps) => {
 
   return (
     <Stack as='form' onSubmit={handleSubmit(onSubmit)} pt='20' noValidate>
-      <GridShell>
+      <GridShell justifyItems='center'>
         <FormInput
           isRequired
           name='name'
@@ -51,7 +51,6 @@ const OwnerInfoForm = ({ setActiveStep }: OwnerInfoFormProps) => {
           errors={errors}
           label='Name'
           placeholder='Name'
-          justifySelf='center'
         />
 
         <FormInput
@@ -61,7 +60,6 @@ const OwnerInfoForm = ({ setActiveStep }: OwnerInfoFormProps) => {
           errors={errors}
           label='National ID'
           placeholder='National ID'
-          justifySelf='center'
         />
 
         <FormInput
@@ -71,7 +69,6 @@ const OwnerInfoForm = ({ setActiveStep }: OwnerInfoFormProps) => {
           errors={errors}
           label='Nationality'
           placeholder='Nationality'
-          justifySelf='center'
         />
       </GridShell>
 
@@ -81,14 +78,13 @@ const OwnerInfoForm = ({ setActiveStep }: OwnerInfoFormProps) => {
         </Heading>
       </GridShell>
 
-      <GridShell>
+      <GridShell justifyItems='center'>
         <FormInput
           name='department'
           register={register}
           errors={errors}
           label='Department'
           placeholder='Department'
-          justifySelf='center'
         />
 
         <FormInput
@@ -97,7 +93,6 @@ const OwnerInfoForm = ({ setActiveStep }: OwnerInfoFormProps) => {
           errors={errors}
           label='Sub Department'
           placeholder='Sub Department'
-          justifySelf='center'
         />
 
         <FormInput
@@ -106,7 +101,6 @@ const OwnerInfoForm = ({ setActiveStep }: OwnerInfoFormProps) => {
           errors={errors}
           label='Street Name'
           placeholder='Street Name'
-          justifySelf='center'
         />
 
         <FormInput
@@ -115,7 +109,6 @@ const OwnerInfoForm = ({ setActiveStep }: OwnerInfoFormProps) => {
           errors={errors}
           label='Building Number'
           placeholder='Building Number'
-          justifySelf='center'
         />
 
         <FormInput
@@ -124,7 +117,6 @@ const OwnerInfoForm = ({ setActiveStep }: OwnerInfoFormProps) => {
           errors={errors}
           label='Building Name'
           placeholder='Building Name'
-          justifySelf='center'
         />
 
         <FormInput
@@ -133,7 +125,6 @@ const OwnerInfoForm = ({ setActiveStep }: OwnerInfoFormProps) => {
           errors={errors}
           label='Floor Number'
           placeholder='Floor Number'
-          justifySelf='center'
         />
 
         <FormInput
@@ -142,7 +133,6 @@ const OwnerInfoForm = ({ setActiveStep }: OwnerInfoFormProps) => {
           errors={errors}
           label='Room Number'
           placeholder='Room Number'
-          justifySelf='center'
         />
 
         <FormInput
@@ -151,7 +141,6 @@ const OwnerInfoForm = ({ setActiveStep }: OwnerInfoFormProps) => {
           errors={errors}
           label='Post Box'
           placeholder='Post Box'
-          justifySelf='center'
         />
 
         <FormInput
@@ -160,7 +149,6 @@ const OwnerInfoForm = ({ setActiveStep }: OwnerInfoFormProps) => {
           errors={errors}
           label='Postal Code'
           placeholder='Postal Code'
-          justifySelf='center'
         />
 
         <FormInput
@@ -169,7 +157,6 @@ const OwnerInfoForm = ({ setActiveStep }: OwnerInfoFormProps) => {
           errors={errors}
           label='Township'
           placeholder='Township'
-          justifySelf='center'
         />
 
         <FormInput
@@ -178,7 +165,6 @@ const OwnerInfoForm = ({ setActiveStep }: OwnerInfoFormProps) => {
           errors={errors}
           label='District'
           placeholder='District'
-          justifySelf='center'
         />
 
         <FormInput
@@ -187,7 +173,6 @@ const OwnerInfoForm = ({ setActiveStep }: OwnerInfoFormProps) => {
           errors={errors}
           label='Country Subdivision (State/Divison)'
           placeholder='Country Subdivision'
-          justifySelf='center'
         />
 
         <FormSelect
@@ -199,7 +184,6 @@ const OwnerInfoForm = ({ setActiveStep }: OwnerInfoFormProps) => {
           placeholder='Choose Country'
           options={COUNTRIES}
           errorMsg='Please select a country'
-          justifySelf='center'
         />
 
         <FormInput
@@ -209,7 +193,6 @@ const OwnerInfoForm = ({ setActiveStep }: OwnerInfoFormProps) => {
           label='Longitude'
           placeholder='Longitude'
           inputProps={{ type: 'number' }}
-          justifySelf='center'
         />
 
         <FormInput
@@ -219,11 +202,10 @@ const OwnerInfoForm = ({ setActiveStep }: OwnerInfoFormProps) => {
           label='Latitude'
           placeholder='Latitude'
           inputProps={{ type: 'number' }}
-          justifySelf='center'
         />
       </GridShell>
 
-      <GridShell pb={{ base: '8', sm: '12' }}>
+      <GridShell justifyItems='center' pb={{ base: '8', sm: '12' }}>
         <FormInput
           isRequired
           name='phoneNumber'
@@ -232,7 +214,6 @@ const OwnerInfoForm = ({ setActiveStep }: OwnerInfoFormProps) => {
           label='Phone Number'
           placeholder='Phone Number'
           inputProps={{ type: 'number' }}
-          justifySelf='center'
         />
 
         <FormInput
@@ -241,7 +222,6 @@ const OwnerInfoForm = ({ setActiveStep }: OwnerInfoFormProps) => {
           errors={errors}
           label='Email'
           placeholder='Email'
-          justifySelf='center'
         />
       </GridShell>
 
