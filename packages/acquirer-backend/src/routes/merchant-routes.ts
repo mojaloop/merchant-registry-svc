@@ -22,6 +22,9 @@ import {
   ContactPersonSubmitDataSchema,
   BusinessOwnerSubmitDataSchema
 } from './schemas'
+import { merchantDocumentBucketName, minioClient, pdfUpload } from '../middleware/minioClient'
+import { convertURLFriendly } from '../utils/utils'
+import { type UploadedObjectInfo } from 'minio'
 
 const router = express.Router()
 
@@ -140,7 +143,7 @@ router.get('/merchants/:id', async (req: Request, res: Response) => {
 
 /**
  * @openapi
- * /merchants/submit:
+ * /merchants/draft:
  *   post:
  *     tags:
  *       - Merchants
@@ -150,7 +153,7 @@ router.get('/merchants/:id', async (req: Request, res: Response) => {
  *     requestBody:
  *       required: true
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
  *             type: object
  *             properties:
@@ -182,18 +185,14 @@ router.get('/merchants/:id', async (req: Request, res: Response) => {
  *               registration_status_reason:
  *                 type: string
  *                 example: "Drafted by Maker"
- *               business_licenses:
- *                 type: array
- *                 items:
- *                   type: object
- *                   properties:
- *                     license_number:
- *                       type: string
- *                       example: "123456789"
- *                       required: true
- *                     license_document_link:
- *                       type: string
- *                       example: "https://www.africau.edu/images/default/sample.pdf"
+ *               license_number:
+ *                 type: string
+ *                 example: "123456789"
+ *                 required: true
+ *
+ *               file:
+ *                 type: string
+ *                 format: binary
  *     responses:
  *       200:
  *         description:
@@ -216,9 +215,7 @@ router.get('/merchants/:id', async (req: Request, res: Response) => {
  */
 // TODO: Protect the route with User Authentication (Keycloak)
 // TODO: check if the authenticated user is a Maker
-router.post('/merchants/submit', async (req: Request, res: Response) => {
-  // Validate the Request Body
-
+router.post('/merchants/draft', pdfUpload.single('file'), async (req: Request, res: Response) => {
   // TODO: Remove This! and replace with Keycloak Authentication
   const token = req.headers.authorization === undefined
     ? undefined
@@ -249,6 +246,7 @@ router.post('/merchants/submit', async (req: Request, res: Response) => {
   }
 
   // PayInto Alias is set, then create checkout counter
+  // TODO: Separate this into a separate endpoint
   let checkoutCounter = null
   const alias = req.body.payinto_alias
   if (
@@ -306,20 +304,40 @@ router.post('/merchants/submit', async (req: Request, res: Response) => {
   try {
     await merchantRepository.save(merchant)
 
-    const licenses = []
-    const licenseRepository = AppDataSource.getRepository(BusinessLicenseEntity)
-
-    for (const license of req.body.business_licenses) {
-      let licenseObj = new BusinessLicenseEntity()
-      licenseObj.license_number = license.license_number
-      licenseObj.license_document_link = license.license_document_link
-      licenseObj = await licenseRepository.save(licenseObj)
-      licenses.push(licenseObj)
+    // Upload Business License Document
+    const metaData = {
+      'Content-Type': 'application/pdf',
+      'X-Amz-Meta-Testing': 1234
     }
+    const file = req.file
+    if (file != null) {
+      const licenseRepository = AppDataSource.getRepository(BusinessLicenseEntity)
+      const timestamp = Date.now()
+      const name = convertURLFriendly(merchant.dba_trading_name)
+      const objectName = `${name}/${name}-license-document-${timestamp}.pdf`
 
-    if (licenses.length > 0) {
-      merchant.business_licenses = licenses
-      await merchantRepository.save(merchant)
+      const uploadedPDFInfo: UploadedObjectInfo = await minioClient.putObject(
+        merchantDocumentBucketName,
+        objectName,
+        file.buffer,
+        file.buffer.length,
+        metaData
+      )
+      if (uploadedPDFInfo == null) {
+        logger.error('Failed to upload the PDF to Storage Server')
+      } else {
+        logger.info('Successfully uploaded the PDF \'%s\' to Storage', uploadedPDFInfo.etag)
+        // Save the file info to the database
+        const license = new BusinessLicenseEntity()
+        license.license_number = req.body.license_number
+        license.license_document_link = objectName
+        license.merchant = merchant
+        await licenseRepository.save(license)
+        merchant.business_licenses = [license]
+        await merchantRepository.save(merchant)
+      }
+    } else {
+      logger.error('No PDF file submitted for the merchant')
     }
   } catch (err) {
     if (err instanceof QueryFailedError) {
@@ -333,7 +351,13 @@ router.post('/merchants/submit', async (req: Request, res: Response) => {
   // Remove created_by from the response to prevent password hash leaking
   const merchantData = {
     ...merchant,
-    created_by: undefined
+    created_by: undefined,
+
+    // Fix TypeError: Converting circular structure to JSON
+    business_licenses: merchant.business_licenses.map(license => {
+      const { merchant, ...licenseData } = license
+      return licenseData
+    })
   }
   return res.status(201).send({ message: 'Drafting Merchant Successful', data: merchantData })
 })

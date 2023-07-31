@@ -20,13 +20,15 @@ export const MerchantSubmitDataSchema = z.object({
   dba_trading_name: z.string(),
   registered_name: z.string().optional().nullable().default(null),
   employees_num: z.nativeEnum(NumberOfEmployees),
-  monthly_turnover: z.number().nullable().default(null),
+  monthly_turnover: z.string().nullable().default(null),
   currency_code: z.nativeEnum(CurrencyCodes),
   category_code: z.string(),
   registration_status: z.nativeEnum(SubmitRegistratonStatus),
   registration_status_reason: z.string(),
   payinto_alias: z.string().optional(),
-  business_licenses: z.array(BusinessLicenseSubmitDataSchema)
+  license_number: z.string().optional(),
+  file: z.any().optional()
+
 }).strict()
 
 export const MerchantLocationSubmitDataSchema = z.object({

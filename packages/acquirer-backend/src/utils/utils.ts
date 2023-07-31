@@ -7,3 +7,8 @@ export async function hashPassword (password: string): Promise<string> {
   const hashedPassword = await bcrypt.hash(password, salt)
   return hashedPassword
 }
+
+export function convertURLFriendly (input: string): string {
+  // convert to lowercase, replace spaces with hyphens, remove non-alphanumeric
+  return input.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')
+}

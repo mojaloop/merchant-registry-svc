@@ -1,5 +1,6 @@
 import request from 'supertest'
 import express from 'express'
+import path from 'path'
 import merchant_router from '../../src/routes/merchant-routes'
 import { AppDataSource } from '../../src/database/data-source'
 import logger from '../../src/logger'
@@ -14,6 +15,11 @@ import {
 } from 'shared-lib'
 import { CheckoutCounterEntity } from '../../src/entity/CheckoutCounterEntity'
 import { BusinessLicenseEntity } from '../../src/entity/BusinessLicenseEntity'
+import {
+  createMerchantDocumentBucket,
+  removeMerchantDocument,
+  removeMerchantDocumentBucket
+} from '../../src/middleware/minioClient'
 
 const app = express()
 app.use(express.json())
@@ -24,13 +30,15 @@ logger.silent = true
 describe('Merchant Routes Tests', () => {
   beforeAll(async () => {
     await initializeDatabase()
+    await createMerchantDocumentBucket()
   }, 20000) // wait for 20secs for db to initialize
 
   afterAll(async () => {
     await AppDataSource.destroy()
+    await removeMerchantDocumentBucket()
   })
 
-  describe('POST /api/v1/merchants/submit', () => {
+  describe('POST /api/v1/merchants/draft', () => {
     beforeEach(async () => {
       await AppDataSource.manager.delete(BusinessLicenseEntity, {})
       await AppDataSource.manager.delete(CheckoutCounterEntity, {})
@@ -42,29 +50,19 @@ describe('Merchant Routes Tests', () => {
 
       // Act
       const res = await request(app)
-        .post('/api/v1/merchants/submit')
+        .post('/api/v1/merchants/draft')
         .set('Authorization', `Bearer ${process.env.TEST1_DUMMY_AUTH_TOKEN ?? ''}`)
-        .send({
-          dba_trading_name: 'Test Merchant 1',
-          registered_name: 'Test Merchant 1',
-          employees_num: '1 - 5',
-          monthly_turnover: 0.5,
-          currency_code: CurrencyCodes.USD,
-          category_code: '01110',
-          payinto_alias: 'P33',
-          registration_status: MerchantRegistrationStatus.DRAFT,
-          registration_status_reason: 'Drafting Merchant',
-          business_licenses: [
-            {
-              license_number: '007',
-              license_document_link: 'https://www.africau.edu/images/default/sample.pdf'
-            },
-            {
-              license_number: '001',
-              license_document_link: 'https://www.africau.edu/images/default/sample.pdf'
-            }
-          ]
-        })
+        .field('dba_trading_name', 'Test Merchant 1')
+        .field('registered_name', 'Test Merchant 1')
+        .field('employees_num', '1 - 5')
+        .field('monthly_turnover', 0.5)
+        .field('currency_code', CurrencyCodes.USD)
+        .field('category_code', '01110')
+        .field('payinto_alias', 'P33')
+        .field('registration_status', MerchantRegistrationStatus.DRAFT)
+        .field('registration_status_reason', 'Drafting Merchant')
+        .field('license_number', '007')
+        .attach('file', path.join(__dirname, '../test-files/dummy.pdf'))
 
       // Assert
       expect(res.statusCode).toEqual(201)
@@ -72,6 +70,9 @@ describe('Merchant Routes Tests', () => {
       expect(res.body.message).toEqual('Drafting Merchant Successful')
       expect(res.body).toHaveProperty('data')
       expect(res.body.data).toHaveProperty('id')
+      expect(res.body.data).toHaveProperty('business_licenses')
+      expect(res.body.data.business_licenses).toHaveLength(1)
+      expect(res.body.data.business_licenses[0]).toHaveProperty('license_document_link')
 
       // Clean up
       await AppDataSource.manager.delete(
@@ -86,6 +87,7 @@ describe('Merchant Routes Tests', () => {
         BusinessLicenseEntity,
         {}
       )
+      await removeMerchantDocument(res.body.data.business_licenses[0].license_document_link)
     })
     // TODO: Add more tests and failure cases
   })

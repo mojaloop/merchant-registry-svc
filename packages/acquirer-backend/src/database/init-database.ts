@@ -1,7 +1,11 @@
 import { AppDataSource } from './data-source'
 import logger from '../logger'
 import 'dotenv/config'
-import { CurrencyCodes, CurrencyDescriptions, MerchantCategoryCodes, PortalUserStatus, PortalUserType } from 'shared-lib'
+import {
+  CurrencyCodes, CurrencyDescriptions,
+  MerchantCategoryCodes,
+  PortalUserStatus, PortalUserType
+} from 'shared-lib'
 import { MerchantCategoryEntity } from '../entity/MerchantCategoryEntity'
 import { CurrencyEntity } from '../entity/CurrencyEntity'
 import { hashPassword } from '../utils/utils'
