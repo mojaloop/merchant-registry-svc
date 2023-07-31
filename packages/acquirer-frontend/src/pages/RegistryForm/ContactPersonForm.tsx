@@ -4,9 +4,8 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 
 import { type ContactPerson, contactPersonSchema } from '@/lib/validations/registry'
-import { CustomButton } from '@/components/ui'
+import { CustomButton, MerchantInformationModal } from '@/components/ui'
 import { FormInput } from '@/components/form'
-import ReviewModal from './ReviewModal'
 import GridShell from './GridShell'
 
 interface ContactPersonProps {
@@ -41,7 +40,7 @@ const ContactPersonForm = ({ setActiveStep }: ContactPersonProps) => {
 
   return (
     <>
-      <ReviewModal isOpen={isOpen} onClose={onClose} />
+      <MerchantInformationModal isOpen={isOpen} onClose={onClose} />
 
       <Stack as='form' onSubmit={handleSubmit(onSubmit)} pt='20' noValidate>
         <GridShell>

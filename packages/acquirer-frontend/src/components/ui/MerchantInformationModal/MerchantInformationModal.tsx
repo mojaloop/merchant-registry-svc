@@ -17,7 +17,7 @@ import {
 import { CustomButton } from '@/components/ui'
 import DetailsItem from './DetailsItem'
 
-interface ReviewModalProps {
+interface MerchantInformationModalProps {
   isOpen: boolean
   onClose: () => void
 }
@@ -38,7 +38,7 @@ const GridItemShell = ({ children, ...props }: GridItemProps) => {
   )
 }
 
-const ReviewModal = ({ isOpen, onClose }: ReviewModalProps) => {
+const MerchantInformationModal = ({ isOpen, onClose }: MerchantInformationModalProps) => {
   return (
     <Modal isOpen={isOpen} onClose={onClose} scrollBehavior='inside'>
       <ModalOverlay bg='hsl(0, 0%, 100%, 0.6)' backdropFilter='blur(4px)' />
@@ -156,4 +156,4 @@ const ReviewModal = ({ isOpen, onClose }: ReviewModalProps) => {
   )
 }
 
-export default ReviewModal
+export default MerchantInformationModal
