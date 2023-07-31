@@ -1,19 +1,40 @@
-import { Box, Heading, SimpleGrid, Stack } from '@chakra-ui/react'
+import { useMemo } from 'react'
+import { createColumnHelper } from '@tanstack/react-table'
+import { Box, Checkbox, Heading, SimpleGrid, Stack } from '@chakra-ui/react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 
+import type { RegisteredMerchantInfo } from '@/types/registeredMerchants'
 import {
   type RegisteredMerchants,
   registeredMerchantsSchema,
 } from '@/lib/validations/registeredMerchants'
 import { FormInput, FormSelect } from '@/components/form'
 import { CustomButton } from '@/components/ui'
+import AllMerchantsDataTable from './AllMerchantsDataTable'
 
 const REGISTRATION_STATUSES = [
   { value: 'approved', label: 'Approved' },
   { value: 'pending', label: 'Pending' },
   { value: 'rejected', label: 'Rejected' },
 ]
+
+const registeredMerchant: RegisteredMerchantInfo = {
+  no: 1,
+  dbaName: 'K Company Pte.Ltd',
+  registeredName: '122132',
+  payintoAccount: '06103461954',
+  merchantType: 'individual',
+  state: 'Shan',
+  city: 'Taunggyi',
+  counterDescription: 'Online Shopping - 01',
+  registeredDfspName: 'AA',
+  registrationStatus: 'approved',
+}
+
+const dummyData = new Array(10)
+  .fill(0)
+  .map((_, index) => ({ ...registeredMerchant, no: index + 1 }))
 
 const AllMerchantRecords = () => {
   const {
@@ -28,12 +49,84 @@ const AllMerchantRecords = () => {
     },
   })
 
+  const columns = useMemo(() => {
+    const columnHelper = createColumnHelper<RegisteredMerchantInfo>()
+
+    return [
+      columnHelper.display({
+        id: 'select',
+        header: ({ table }) => (
+          <Checkbox
+            isChecked={table.getIsAllPageRowsSelected()}
+            onChange={e => table.toggleAllPageRowsSelected(!!e.target.checked)}
+            aria-label='Select all'
+            borderColor='blackAlpha.400'
+          />
+        ),
+        cell: ({ row }) => (
+          <Checkbox
+            isChecked={row.getIsSelected()}
+            onChange={e => row.toggleSelected(!!e.target.checked)}
+            aria-label='Select row'
+            borderColor='blackAlpha.400'
+          />
+        ),
+        enableSorting: false,
+      }),
+      columnHelper.accessor('no', {
+        cell: info => info.getValue(),
+        header: 'No',
+      }),
+      columnHelper.accessor('dbaName', {
+        cell: info => info.getValue(),
+        header: 'Doing Business As Name',
+      }),
+      columnHelper.accessor('registeredName', {
+        cell: info => info.getValue(),
+        header: 'Registered Name',
+      }),
+      columnHelper.accessor('payintoAccount', {
+        cell: info => info.getValue(),
+        header: 'Payinto Account',
+      }),
+      columnHelper.accessor('merchantType', {
+        cell: info => info.getValue(),
+        header: 'Merchant Type',
+      }),
+      columnHelper.accessor('state', {
+        cell: info => info.getValue(),
+        header: 'State',
+      }),
+      columnHelper.accessor('city', {
+        cell: info => info.getValue(),
+        header: 'City',
+      }),
+      columnHelper.accessor('counterDescription', {
+        cell: info => info.getValue(),
+        header: 'Counter Description',
+      }),
+      columnHelper.accessor('registeredDfspName', {
+        cell: info => info.getValue(),
+        header: 'Registered DFSP Name',
+      }),
+      columnHelper.accessor('registrationStatus', {
+        cell: info => info.getValue(),
+        header: 'Registration Status',
+      }),
+      columnHelper.display({
+        id: 'view-details',
+        cell: () => <CustomButton mr='2'>View Details</CustomButton>,
+        enableSorting: false,
+      }),
+    ]
+  }, [])
+
   const onSubmit = (values: RegisteredMerchants) => {
     console.log(values)
   }
 
   return (
-    <Box>
+    <Box mb='-14'>
       <Heading size='md' mb='10'>
         View Registered Merchants
       </Heading>
@@ -123,9 +216,28 @@ const AllMerchantRecords = () => {
             Clear Filter
           </CustomButton>
 
-          <CustomButton type='submit'>Search</CustomButton>
+          <CustomButton type='submit' px='6'>
+            Search
+          </CustomButton>
         </Box>
       </Stack>
+
+      <Box
+        bg='primaryBackground'
+        mx={{ base: '-4', sm: '-6', lg: '-8' }}
+        mt='5'
+        pt='6'
+        px='4'
+        pb='14'
+      >
+        <AllMerchantsDataTable
+          columns={columns}
+          data={dummyData}
+          breakpoint='xl'
+          alwaysVisibleColumns={[1]}
+          onExport={() => console.log('exported')}
+        />
+      </Box>
     </Box>
   )
 }
