@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import { createColumnHelper } from '@tanstack/react-table'
-import { Box, Checkbox, Heading, SimpleGrid, Stack } from '@chakra-ui/react'
+import { Box, Checkbox, HStack, Heading, SimpleGrid, Stack, Text } from '@chakra-ui/react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 
@@ -9,6 +9,7 @@ import {
   type RegisteredMerchants,
   registeredMerchantsSchema,
 } from '@/lib/validations/registeredMerchants'
+import { convertKebabCaseToReadable } from '@/utils'
 import { FormInput, FormSelect } from '@/components/form'
 import { CustomButton } from '@/components/ui'
 import AllMerchantsDataTable from './AllMerchantsDataTable'
@@ -18,6 +19,14 @@ const REGISTRATION_STATUSES = [
   { value: 'pending', label: 'Pending' },
   { value: 'rejected', label: 'Rejected' },
 ]
+
+const REGISTRATION_STATUS_COLORS = {
+  approved: 'success',
+  pending: 'warning',
+  rejected: 'danger',
+}
+
+type StatusKey = keyof typeof REGISTRATION_STATUS_COLORS
 
 const registeredMerchant: RegisteredMerchantInfo = {
   no: 1,
@@ -90,7 +99,7 @@ const AllMerchantRecords = () => {
         header: 'Payinto Account',
       }),
       columnHelper.accessor('merchantType', {
-        cell: info => info.getValue(),
+        cell: info => convertKebabCaseToReadable(info.getValue()),
         header: 'Merchant Type',
       }),
       columnHelper.accessor('state', {
@@ -110,7 +119,19 @@ const AllMerchantRecords = () => {
         header: 'Registered DFSP Name',
       }),
       columnHelper.accessor('registrationStatus', {
-        cell: info => info.getValue(),
+        cell: info => (
+          <HStack justify='center' spacing='1.5'>
+            <Box
+              as='span'
+              w='2'
+              h='2'
+              borderRadius='full'
+              bg={REGISTRATION_STATUS_COLORS[info.getValue().toLowerCase() as StatusKey]}
+            />
+
+            <Text>{convertKebabCaseToReadable(info.getValue())}</Text>
+          </HStack>
+        ),
         header: 'Registration Status',
       }),
       columnHelper.display({
