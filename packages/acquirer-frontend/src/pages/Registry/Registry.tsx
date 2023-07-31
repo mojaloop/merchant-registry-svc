@@ -8,7 +8,7 @@ const Registry = () => {
 
   return (
     <Box>
-      <Heading size='md' mb='10' textAlign='center'>
+      <Heading size='md' mb='10'>
         Merchant Acquiring System
       </Heading>
 
