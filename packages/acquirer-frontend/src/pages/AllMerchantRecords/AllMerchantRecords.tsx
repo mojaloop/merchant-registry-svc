@@ -1,6 +1,15 @@
 import { useMemo } from 'react'
 import { createColumnHelper } from '@tanstack/react-table'
-import { Box, Checkbox, HStack, Heading, SimpleGrid, Stack, Text } from '@chakra-ui/react'
+import {
+  Box,
+  Checkbox,
+  HStack,
+  Heading,
+  SimpleGrid,
+  Stack,
+  Text,
+  useDisclosure,
+} from '@chakra-ui/react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 
@@ -10,8 +19,8 @@ import {
   registeredMerchantsSchema,
 } from '@/lib/validations/registeredMerchants'
 import { convertKebabCaseToReadable } from '@/utils'
+import { CustomButton, MerchantInformationModal } from '@/components/ui'
 import { FormInput, FormSelect } from '@/components/form'
-import { CustomButton } from '@/components/ui'
 import AllMerchantsDataTable from './AllMerchantsDataTable'
 
 const REGISTRATION_STATUSES = [
@@ -57,6 +66,8 @@ const AllMerchantRecords = () => {
       registrationStatus: null,
     },
   })
+
+  const { isOpen, onOpen, onClose } = useDisclosure()
 
   const columns = useMemo(() => {
     const columnHelper = createColumnHelper<RegisteredMerchantInfo>()
@@ -136,11 +147,15 @@ const AllMerchantRecords = () => {
       }),
       columnHelper.display({
         id: 'view-details',
-        cell: () => <CustomButton mr='2'>View Details</CustomButton>,
+        cell: () => (
+          <CustomButton mr='2' onClick={onOpen}>
+            View Details
+          </CustomButton>
+        ),
         enableSorting: false,
       }),
     ]
-  }, [])
+  }, [onOpen])
 
   const onSubmit = (values: RegisteredMerchants) => {
     console.log(values)
@@ -242,6 +257,8 @@ const AllMerchantRecords = () => {
           </CustomButton>
         </Box>
       </Stack>
+
+      <MerchantInformationModal isOpen={isOpen} onClose={onClose} />
 
       <Box
         bg='primaryBackground'
