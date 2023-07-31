@@ -1,7 +1,7 @@
 import {
   Entity,
   Column, PrimaryGeneratedColumn, OneToMany, ManyToMany,
-  CreateDateColumn, UpdateDateColumn
+  CreateDateColumn, UpdateDateColumn, JoinTable
 } from 'typeorm'
 import { PortalPermissionEntity } from './PortalPermissionEntity'
 import { PortalUserEntity } from './PortalUserEntity'
@@ -18,6 +18,7 @@ export class PortalRoleEntity {
     description!: string
 
   @ManyToMany(() => PortalPermissionEntity, permission => permission.roles)
+  @JoinTable()
     permissions!: PortalPermissionEntity[]
 
   @OneToMany(() => PortalUserEntity, user => user.role)

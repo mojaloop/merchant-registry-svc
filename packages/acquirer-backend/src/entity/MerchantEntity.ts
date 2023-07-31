@@ -2,7 +2,7 @@ import {
   Entity,
   Column, JoinColumn, PrimaryGeneratedColumn,
   ManyToOne, OneToMany, ManyToMany,
-  CreateDateColumn, UpdateDateColumn
+  CreateDateColumn, UpdateDateColumn, JoinTable
 } from 'typeorm'
 
 import { CurrencyEntity } from './CurrencyEntity'
@@ -117,9 +117,9 @@ export class MerchantEntity {
 
   @ManyToMany(
     () => BusinessOwnerEntity,
-    businessOwner => businessOwner.merchants,
-    { onDelete: 'SET NULL' }
+    businessOwner => businessOwner.merchants
   )
+  @JoinTable()
     business_owners!: BusinessOwnerEntity[]
 
   @OneToMany(

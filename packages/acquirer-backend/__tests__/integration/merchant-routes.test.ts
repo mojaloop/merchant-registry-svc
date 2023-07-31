@@ -10,6 +10,7 @@ import { MerchantEntity } from '../../src/entity/MerchantEntity'
 import { ContactPersonEntity } from '../../src/entity/ContactPersonEntity'
 import { BusinessOwnerEntity } from '../../src/entity/BusinessOwnerEntity'
 import {
+  BusinessOwnerIDType,
   CurrencyCodes,
   MerchantRegistrationStatus, NumberOfEmployees
 } from 'shared-lib'
@@ -190,7 +191,7 @@ describe('Merchant Routes Tests', () => {
   })
 
   describe('POST /api/v1/merchants/:id/contact-persons', () => {
-    it('should respond with 201 status and the created contact person', async () => {
+    it('should respond with 201 status when create contact person valid data', async () => {
       // Arrange
       const merchant = await AppDataSource.manager.save(
         MerchantEntity,
@@ -199,7 +200,7 @@ describe('Merchant Routes Tests', () => {
           registered_name: 'Test Merchant 1',
           employees_num: NumberOfEmployees.ONE_TO_FIVE,
           monthly_turnover: 0.5,
-          currency_code: 'PHP',
+          currency_code: CurrencyCodes.PHP,
           category_code: '10410',
           payinto_alias: 'merchant1'
         }
@@ -214,10 +215,23 @@ describe('Merchant Routes Tests', () => {
           phone_number: '1234567890'
         })
 
+      const merchantTest = await AppDataSource.manager.findOneOrFail(
+        MerchantEntity,
+        {
+          where:
+          { id: merchant.id },
+          relations: ['contact_persons']
+        }
+      )
       // Assert
       expect(res.statusCode).toEqual(201)
       expect(res.body).toHaveProperty('message')
       expect(res.body).toHaveProperty('data')
+
+      expect(merchantTest.contact_persons).toHaveLength(1)
+      expect(merchantTest.contact_persons[0].name).toEqual('John Doe')
+      expect(merchantTest.contact_persons[0].email).toEqual('john.doe@example.com')
+      expect(merchantTest.contact_persons[0].phone_number).toEqual('1234567890')
 
       // Clean up
       await AppDataSource.manager.delete(
@@ -227,6 +241,85 @@ describe('Merchant Routes Tests', () => {
       await AppDataSource.manager.delete(
         MerchantEntity,
         { id: merchant.id }
+      )
+    })
+
+    // eslint-disable-next-line
+    it('should respond with 201 status when creating contact person with is_same_as_business_owner=true ', async () => {
+      // Arrange
+      const businessOwner = await AppDataSource.manager.save(
+        BusinessOwnerEntity,
+        {
+          name: 'test business owner',
+          email: 'test_buz_owner@email.com',
+          phone_number: '1234567890',
+          identificaton_type: BusinessOwnerIDType.NATIONAL_ID,
+          identification_number: '1234567890'
+        }
+      )
+      const merchant = await AppDataSource.manager.save(
+        MerchantEntity,
+        {
+          dba_trading_name: 'Test Merchant 1',
+          registered_name: 'Test Merchant 1',
+          employees_num: NumberOfEmployees.ONE_TO_FIVE,
+          monthly_turnover: 0.5,
+          currency_code: CurrencyCodes.PHP,
+          category_code: '10410',
+          payinto_alias: 'merchant1',
+          business_owners: [businessOwner]
+        }
+      )
+
+      // Act
+      const res = await request(app)
+        .post(`/api/v1/merchants/${merchant.id}/contact-persons`)
+        .send({
+          is_same_as_business_owner: true
+          // No Longer needed!
+          // name: '',
+          // email: '',
+          // phone_number: ''
+        })
+
+      const merchantTest = await AppDataSource.manager.findOneOrFail(
+        MerchantEntity,
+        {
+          where:
+          { id: merchant.id },
+          relations: ['contact_persons']
+        }
+      )
+
+      // Assert
+      expect(res.statusCode).toEqual(201)
+      expect(res.body).toHaveProperty('message')
+      expect(res.body).toHaveProperty('data')
+
+      expect(res.body.data).toHaveProperty('name')
+      expect(res.body.data.name).toEqual(businessOwner.name)
+      expect(res.body.data).toHaveProperty('email')
+      expect(res.body.data.email).toEqual(businessOwner.email)
+      expect(res.body.data).toHaveProperty('phone_number')
+      expect(res.body.data.phone_number).toEqual(businessOwner.phone_number)
+
+      expect(merchantTest.contact_persons.length).toEqual(1)
+      expect(merchantTest.contact_persons[0].name).toEqual(businessOwner.name)
+      expect(merchantTest.contact_persons[0].email).toEqual(businessOwner.email)
+      expect(merchantTest.contact_persons[0].phone_number).toEqual(businessOwner.phone_number)
+
+      // Clean up
+      await AppDataSource.manager.delete(
+        MerchantEntity,
+        { id: merchant.id }
+      )
+      await AppDataSource.manager.delete(
+        ContactPersonEntity,
+        { id: res.body.data.id }
+      )
+      await AppDataSource.manager.delete(
+        BusinessOwnerEntity,
+        { id: businessOwner.id }
       )
     })
   })
@@ -263,12 +356,12 @@ describe('Merchant Routes Tests', () => {
 
       // Clean up
       await AppDataSource.manager.delete(
-        BusinessOwnerEntity,
-        { id: res.body.data.id }
-      )
-      await AppDataSource.manager.delete(
         MerchantEntity,
         { id: merchant.id }
+      )
+      await AppDataSource.manager.delete(
+        BusinessOwnerEntity,
+        { id: res.body.data.id }
       )
     })
   })

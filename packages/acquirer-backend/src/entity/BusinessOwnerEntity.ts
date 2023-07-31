@@ -6,7 +6,7 @@ import { BusinessOwnerIDType } from 'shared-lib'
 import { PersonEntity } from './PersonEntity'
 import { BusinessPersonLocationEntity } from './BusinessPersonLocationEntity'
 
-@Entity('business_owner')
+@Entity('business_owners')
 export class BusinessOwnerEntity extends PersonEntity {
   @Column({
     type: 'enum',

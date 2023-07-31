@@ -1,4 +1,4 @@
-import { Entity, Column, OneToMany, ManyToOne, ManyToMany } from 'typeorm'
+import { Entity, Column, OneToMany, ManyToOne, ManyToMany, JoinTable } from 'typeorm'
 import { AuditEntity } from './AuditEntity'
 import { MerchantEntity } from './MerchantEntity'
 import { PortalUserStatus, PortalUserType } from 'shared-lib'
@@ -37,6 +37,7 @@ export class PortalUserEntity extends PersonEntity {
     audits!: AuditEntity[]
 
   @ManyToMany(() => DFSPEntity, dfsp => dfsp.portal_users)
+  @JoinTable()
     dfsps!: DFSPEntity[]
 
   @ManyToOne(() => PortalRoleEntity, role => role.users)
