@@ -175,6 +175,9 @@ router.get('/merchants/:id', async (req: Request, res: Response) => {
  *               category_code:
  *                 type: string
  *                 example: "10410"
+ *               merchant_type:
+ *                 type: string
+ *                 example: "Individual"
  *               payinto_alias:
  *                 type: string
  *                 example: "merchant1"
@@ -288,6 +291,7 @@ router.post('/merchants/draft', pdfUpload.single('file'), async (req: Request, r
   merchant.monthly_turnover = req.body.monthly_turnover
   merchant.currency_code = req.body.currency_code
   merchant.category_code = req.body.category_code
+  merchant.merchant_type = req.body.merchant_type
   merchant.registration_status = req.body.registration_status
   merchant.registration_status_reason = req.body.registration_status_reason
   merchant.allow_block_status = MerchantAllowBlockStatus.PENDING

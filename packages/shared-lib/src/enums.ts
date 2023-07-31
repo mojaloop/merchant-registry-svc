@@ -5,6 +5,12 @@ export enum AuditActionType {
   DELETE = 'Delete'
 }
 
+export enum MerchantType {
+  INDIVIDUAL = 'Individual',
+  SMALL_SHOP = 'Small Shop',
+  CHAIN_STORE = 'Chain Store'
+}
+
 export enum MerchantAllowBlockStatus {
   PENDING = 'Pending',
   ALLOWED = 'Allowed',

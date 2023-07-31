@@ -12,7 +12,7 @@ import { BusinessOwnerEntity } from '../../src/entity/BusinessOwnerEntity'
 import {
   BusinessOwnerIDType,
   CurrencyCodes,
-  MerchantRegistrationStatus, NumberOfEmployees
+  MerchantRegistrationStatus, MerchantType, NumberOfEmployees
 } from 'shared-lib'
 import { CheckoutCounterEntity } from '../../src/entity/CheckoutCounterEntity'
 import { BusinessLicenseEntity } from '../../src/entity/BusinessLicenseEntity'
@@ -59,6 +59,7 @@ describe('Merchant Routes Tests', () => {
         .field('monthly_turnover', 0.5)
         .field('currency_code', CurrencyCodes.USD)
         .field('category_code', '01110')
+        .field('merchant_type', MerchantType.INDIVIDUAL)
         .field('payinto_alias', 'P33')
         .field('registration_status', MerchantRegistrationStatus.DRAFT)
         .field('registration_status_reason', 'Drafting Merchant')

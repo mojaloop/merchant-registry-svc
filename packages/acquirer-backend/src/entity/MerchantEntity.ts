@@ -12,6 +12,7 @@ import { MerchantLocationEntity } from './MerchantLocationEntity'
 import {
   MerchantAllowBlockStatus,
   MerchantRegistrationStatus,
+  MerchantType,
   NumberOfEmployees
 } from 'shared-lib'
 import { CheckoutCounterEntity } from './CheckoutCounterEntity'
@@ -47,6 +48,14 @@ export class MerchantEntity {
     default: 0
   })
     monthly_turnover!: number
+
+  @Column({
+    type: 'enum',
+    enum: MerchantType,
+    nullable: false,
+    default: MerchantType.INDIVIDUAL
+  })
+    merchant_type!: MerchantType
 
   @Column({
     type: 'enum',
