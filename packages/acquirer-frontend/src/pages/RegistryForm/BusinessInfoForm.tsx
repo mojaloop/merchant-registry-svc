@@ -93,7 +93,7 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
 
   return (
     <Stack as='form' onSubmit={handleSubmit(onSubmit)} pt='20' noValidate>
-      <GridShell>
+      <GridShell justifyItems='center'>
         <FormInput
           isRequired
           name='dbaName'
@@ -101,7 +101,6 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
           errors={errors}
           label='Doing Business As Name'
           placeholder='Business Name'
-          justifySelf='center'
         />
 
         <FormInput
@@ -110,7 +109,6 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
           errors={errors}
           label='Registered Name'
           placeholder='Registered Name'
-          justifySelf='center'
         />
 
         <FormInput
@@ -119,7 +117,6 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
           errors={errors}
           label='Payinto Account'
           placeholder='Payinto Account'
-          justifySelf='center'
         />
 
         <FormSelect
@@ -131,7 +128,6 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
           placeholder='Number of Employee'
           options={EMPLOYEE_COUNTS}
           errorMsg='Please select an option'
-          justifySelf='center'
         />
 
         <FormInput
@@ -140,7 +136,6 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
           errors={errors}
           label='Monthly Turn Over'
           placeholder='Monthly Turn Over'
-          justifySelf='center'
         />
 
         <FormSelect
@@ -152,7 +147,6 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
           placeholder='Merchant Type'
           options={MERCHANT_TYPES}
           errorMsg='Please select a category'
-          justifySelf='center'
         />
 
         <FormSelect
@@ -162,7 +156,6 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
           label='Merchant Type'
           placeholder='Merchant Type'
           options={MERCHANT_TYPES}
-          justifySelf='center'
         />
 
         <FormSelect
@@ -176,7 +169,6 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
             { value: 'BB', label: 'BB' },
             { value: 'CC', label: 'CC' },
           ]}
-          justifySelf='center'
         />
 
         <FormSelect
@@ -186,12 +178,11 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
           label='Currency'
           placeholder='Currency'
           options={CURRENCIES}
-          justifySelf='center'
         />
       </GridShell>
 
-      <GridShell>
-        <FormControl maxW={{ md: '20rem' }} justifySelf='center'>
+      <GridShell justifyItems='center'>
+        <FormControl maxW={{ md: '20rem' }}>
           <Text mb='4'>Do you have Business license?</Text>
           <Controller
             control={control}
@@ -208,7 +199,7 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
         </FormControl>
       </GridShell>
 
-      <GridShell pb={{ base: '8', sm: '12' }}>
+      <GridShell justifyItems='center' pb={{ base: '8', sm: '12' }}>
         <FormInput
           isDisabled={!haveLicense}
           name='licenseNumber'
@@ -216,10 +207,9 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
           errors={errors}
           label='License Number'
           placeholder='License Number'
-          justifySelf='center'
         />
 
-        <Box justifySelf='center' w='full' maxW={{ md: '20rem' }}>
+        <Box w='full' maxW={{ md: '20rem' }}>
           <FormControl
             isDisabled={!haveLicense}
             isInvalid={!!errors.licenseDocument}

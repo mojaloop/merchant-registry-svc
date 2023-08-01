@@ -50,7 +50,7 @@ const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
 
   return (
     <Stack as='form' onSubmit={handleSubmit(onSubmit)} pt='20' noValidate>
-      <GridShell>
+      <GridShell justifyItems='center'>
         <FormSelect
           isRequired
           name='locationType'
@@ -60,7 +60,6 @@ const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
           placeholder='Location Type'
           options={LOCATION_TYPES}
           errorMsg='Please select a location type'
-          justifySelf='center'
         />
 
         <FormSelect
@@ -71,7 +70,6 @@ const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
           placeholder='Choose Country'
           options={COUNTRIES}
           errorMsg='Please select a country'
-          justifySelf='center'
         />
 
         <FormInput
@@ -80,7 +78,6 @@ const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
           errors={errors}
           label='Website URL'
           placeholder='Website URL'
-          justifySelf='center'
         />
       </GridShell>
 
@@ -90,14 +87,13 @@ const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
         </Heading>
       </GridShell>
 
-      <GridShell>
+      <GridShell justifyItems='center'>
         <FormInput
           name='department'
           register={register}
           errors={errors}
           label='Department'
           placeholder='Department'
-          justifySelf='center'
         />
 
         <FormInput
@@ -106,7 +102,6 @@ const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
           errors={errors}
           label='Sub Department'
           placeholder='Sub Department'
-          justifySelf='center'
         />
 
         <FormInput
@@ -115,7 +110,6 @@ const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
           errors={errors}
           label='Street Name'
           placeholder='Street Name'
-          justifySelf='center'
         />
 
         <FormInput
@@ -124,7 +118,6 @@ const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
           errors={errors}
           label='Building Number'
           placeholder='Building Number'
-          justifySelf='center'
         />
 
         <FormInput
@@ -133,7 +126,6 @@ const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
           errors={errors}
           label='Building Name'
           placeholder='Building Name'
-          justifySelf='center'
         />
 
         <FormInput
@@ -142,7 +134,6 @@ const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
           errors={errors}
           label='Floor Number'
           placeholder='Floor Number'
-          justifySelf='center'
         />
 
         <FormInput
@@ -151,7 +142,6 @@ const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
           errors={errors}
           label='Room Number'
           placeholder='Room Number'
-          justifySelf='center'
         />
 
         <FormInput
@@ -160,7 +150,6 @@ const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
           errors={errors}
           label='Post Box'
           placeholder='Post Box'
-          justifySelf='center'
         />
 
         <FormInput
@@ -169,7 +158,6 @@ const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
           errors={errors}
           label='Postal Code'
           placeholder='Postal Code'
-          justifySelf='center'
         />
 
         <FormInput
@@ -178,7 +166,6 @@ const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
           errors={errors}
           label='Township'
           placeholder='Township'
-          justifySelf='center'
         />
 
         <FormInput
@@ -187,7 +174,6 @@ const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
           errors={errors}
           label='District'
           placeholder='District'
-          justifySelf='center'
         />
 
         <FormInput
@@ -196,7 +182,6 @@ const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
           errors={errors}
           label='Country Subdivision (State/Divison)'
           placeholder='Country Subdivision'
-          justifySelf='center'
         />
 
         <FormSelect
@@ -208,7 +193,6 @@ const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
           placeholder='Choose Country'
           options={COUNTRIES}
           errorMsg='Please select a country'
-          justifySelf='center'
         />
 
         <FormInput
@@ -218,7 +202,6 @@ const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
           label='Longitude'
           placeholder='Longitude'
           inputProps={{ type: 'number' }}
-          justifySelf='center'
         />
 
         <FormInput
@@ -228,18 +211,16 @@ const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
           label='Latitude'
           placeholder='Latitude'
           inputProps={{ type: 'number' }}
-          justifySelf='center'
         />
       </GridShell>
 
-      <GridShell pb={{ base: '8', sm: '12' }}>
+      <GridShell justifyItems='center' pb={{ base: '8', sm: '12' }}>
         <FormInput
           name='checkoutDescription'
           register={register}
           errors={errors}
           label='Checkout Counter Description'
           placeholder='Checkout Counter Description'
-          justifySelf='center'
         />
       </GridShell>
 

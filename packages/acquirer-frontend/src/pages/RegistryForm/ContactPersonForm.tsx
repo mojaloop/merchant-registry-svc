@@ -4,9 +4,8 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 
 import { type ContactPerson, contactPersonSchema } from '@/lib/validations/registry'
-import { CustomButton } from '@/components/ui'
+import { CustomButton, MerchantInformationModal } from '@/components/ui'
 import { FormInput } from '@/components/form'
-import ReviewModal from './ReviewModal'
 import GridShell from './GridShell'
 
 interface ContactPersonProps {
@@ -41,7 +40,7 @@ const ContactPersonForm = ({ setActiveStep }: ContactPersonProps) => {
 
   return (
     <>
-      <ReviewModal isOpen={isOpen} onClose={onClose} />
+      <MerchantInformationModal isOpen={isOpen} onClose={onClose} />
 
       <Stack as='form' onSubmit={handleSubmit(onSubmit)} pt='20' noValidate>
         <GridShell>
@@ -54,7 +53,7 @@ const ContactPersonForm = ({ setActiveStep }: ContactPersonProps) => {
           </Box>
         </GridShell>
 
-        <GridShell pb={{ base: '8', sm: '12' }}>
+        <GridShell justifyItems='center' pb={{ base: '8', sm: '12' }}>
           <FormInput
             isRequired
             name='name'
@@ -62,7 +61,6 @@ const ContactPersonForm = ({ setActiveStep }: ContactPersonProps) => {
             errors={errors}
             label='Name'
             placeholder='Name'
-            justifySelf='center'
           />
 
           <FormInput
@@ -73,7 +71,6 @@ const ContactPersonForm = ({ setActiveStep }: ContactPersonProps) => {
             label='Phone Number'
             placeholder='Phone Number'
             inputProps={{ type: 'number' }}
-            justifySelf='center'
           />
 
           <FormInput
@@ -82,7 +79,6 @@ const ContactPersonForm = ({ setActiveStep }: ContactPersonProps) => {
             errors={errors}
             label='Email'
             placeholder='Email'
-            justifySelf='center'
           />
         </GridShell>
 

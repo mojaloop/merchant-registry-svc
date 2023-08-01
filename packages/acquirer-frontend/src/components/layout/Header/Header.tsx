@@ -12,7 +12,7 @@ const Header = () => {
   return (
     <HStack
       as='header'
-      w={{ base: 'full', md: 'calc(100% - 6rem)' }}
+      w={{ base: 'full', lg: 'calc(100% - 6rem)' }}
       h='14'
       justify='space-between'
       ml={{ base: '0', lg: '24' }}
@@ -25,7 +25,7 @@ const Header = () => {
       <IconButton
         aria-label='Open sidebar'
         icon={<FiMenu />}
-        display={{ base: 'flex', md: 'none' }}
+        display={{ base: 'flex', lg: 'none' }}
         fontSize='22px'
         color='primary'
         bg='transparent'
@@ -33,12 +33,7 @@ const Header = () => {
         onClick={onOpen}
       />
 
-      <Image
-        src={mojaloopLogo}
-        h='9'
-        display={{ base: 'none', md: 'block' }}
-        alt='Mojaloop Logo'
-      />
+      <Image src={mojaloopLogo} h='9' alt='Mojaloop Logo' />
 
       <Drawer />
 
