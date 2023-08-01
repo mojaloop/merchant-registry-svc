@@ -31,7 +31,7 @@ const FormInput = <T extends FieldValues>({
   return (
     <FormControl isInvalid={!!errors[name]} maxW={{ md: '20rem' }} {...props}>
       <FormLabel fontSize='sm'>{label}</FormLabel>
-      <Input {...register(name)} placeholder={placeholder} {...inputProps} />
+      <Input {...register(name)} placeholder={placeholder} type='text' {...inputProps} />
       <FormErrorMessage>
         {errorMsg || errors[name]?.message?.toString() || ''}
       </FormErrorMessage>
