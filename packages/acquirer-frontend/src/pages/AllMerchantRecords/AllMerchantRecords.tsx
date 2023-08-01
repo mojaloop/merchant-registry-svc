@@ -148,7 +148,11 @@ const AllMerchantRecords = () => {
       columnHelper.display({
         id: 'view-details',
         cell: () => (
-          <CustomButton mr='2' onClick={onOpen}>
+          <CustomButton
+            mt={{ base: '2', xl: '0' }}
+            mr={{ base: '-2', xl: '3' }}
+            onClick={onOpen}
+          >
             View Details
           </CustomButton>
         ),
