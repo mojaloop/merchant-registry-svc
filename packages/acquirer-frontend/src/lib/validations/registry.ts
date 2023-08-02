@@ -9,7 +9,7 @@ export type ContactPerson = z.infer<typeof contactPersonSchema>
 export const businessInfoSchema = z.object({
   dbaName: z.string().nonempty({ message: 'Business name is required' }),
   registeredName: z.string().optional(),
-  payintoAccount: z.string().optional(),
+  payintoAccount: z.string().nonempty({ message: 'Payinto account is required' }),
   numberOfEmployee: z.union([
     z.literal('1 - 10'),
     z.literal('11 - 50'),
