@@ -111,14 +111,25 @@ router.get('/merchants/:id', async (req: Request, res: Response) => {
         'checkout_counters',
         'business_licenses',
         'contact_persons',
-        'created_by'
-        // 'checked_by'
+        'created_by',
+        'business_owners',
+        'checked_by'
       ]
     })
     if (merchant == null) {
       return res.status(404).send({ message: 'Merchant not found' })
     }
     // Create a new object that excludes the created_by's hasheded password field
+    let checkedBy = null
+    if (merchant.checked_by !== null && merchant.checked_by !== undefined) {
+      checkedBy = {
+        id: merchant.checked_by.id,
+        name: merchant.checked_by.name,
+        email: merchant.checked_by.email,
+        phone_number: merchant.checked_by.phone_number
+      }
+    }
+
     const merchantData = {
       ...merchant,
       created_by: {
@@ -126,14 +137,10 @@ router.get('/merchants/:id', async (req: Request, res: Response) => {
         name: merchant.created_by.name,
         email: merchant.created_by.email,
         phone_number: merchant.created_by.phone_number
-      }
-      // checked_by: {
-      //   id: merchant.checked_by.id,
-      //   name: merchant.checked_by.name,
-      //   email: merchant.checked_by.email,
-      //   phone_number: merchant.checked_by.phone_number
-      // }
+      },
+      checked_by: checkedBy
     }
+
     res.send({ message: 'OK', data: merchantData })
   } catch (e) {
     logger.error(e)
