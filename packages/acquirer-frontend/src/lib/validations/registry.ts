@@ -34,7 +34,6 @@ export const businessInfoSchema = z.object({
 
 export const locationInfoSchema = z.object({
   locationType: z.union([z.literal('physical'), z.literal('virtual')]),
-  country: z.nativeEnum(Countries).or(z.null()),
   websiteUrl: z.string().optional(),
   department: z.string().optional(),
   subDepartment: z.string().optional(),
@@ -48,7 +47,7 @@ export const locationInfoSchema = z.object({
   township: z.string().optional(),
   district: z.string().optional(),
   countrySubdivision: z.string().optional(),
-  physicalAddressCountry: z.nativeEnum(Countries),
+  country: z.nativeEnum(Countries).or(z.null()),
   longitude: z.string().optional(),
   latitude: z.string().optional(),
   checkoutDescription: z.string().optional(),

@@ -62,16 +62,6 @@ const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
           errorMsg='Please select a location type'
         />
 
-        <FormSelect
-          name='country'
-          register={register}
-          errors={errors}
-          label='Country'
-          placeholder='Choose Country'
-          options={COUNTRIES}
-          errorMsg='Please select a country'
-        />
-
         <FormInput
           name='websiteUrl'
           register={register}
@@ -185,8 +175,7 @@ const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
         />
 
         <FormSelect
-          isRequired
-          name='physicalAddressCountry'
+          name='country'
           register={register}
           errors={errors}
           label='Country'
