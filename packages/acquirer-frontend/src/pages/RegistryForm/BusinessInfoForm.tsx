@@ -112,6 +112,7 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
         />
 
         <FormInput
+          isRequired
           name='payintoAccount'
           register={register}
           errors={errors}
