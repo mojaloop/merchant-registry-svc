@@ -22,9 +22,7 @@ import {
   ContactPersonSubmitDataSchema,
   BusinessOwnerSubmitDataSchema
 } from './schemas'
-import { merchantDocumentBucketName, minioClient, pdfUpload } from '../middleware/minioClient'
-import { convertURLFriendly } from '../utils/utils'
-import { type UploadedObjectInfo } from 'minio'
+import { pdfUpload, uploadMerchantDocument } from '../middleware/minioClient'
 
 const router = express.Router()
 
@@ -316,32 +314,19 @@ router.post('/merchants/draft', pdfUpload.single('file'), async (req: Request, r
     await merchantRepository.save(merchant)
 
     // Upload Business License Document
-    const metaData = {
-      'Content-Type': 'application/pdf',
-      'X-Amz-Meta-Testing': 1234
-    }
     const file = req.file
     if (file != null) {
       const licenseRepository = AppDataSource.getRepository(BusinessLicenseEntity)
-      const timestamp = Date.now()
-      const name = convertURLFriendly(merchant.dba_trading_name)
-      const objectName = `${name}/${name}-license-document-${timestamp}.pdf`
 
-      const uploadedPDFInfo: UploadedObjectInfo = await minioClient.putObject(
-        merchantDocumentBucketName,
-        objectName,
-        file.buffer,
-        file.buffer.length,
-        metaData
-      )
-      if (uploadedPDFInfo == null) {
+      const documentPath = await uploadMerchantDocument(merchant, file)
+      if (documentPath == null) {
         logger.error('Failed to upload the PDF to Storage Server')
       } else {
-        logger.info('Successfully uploaded the PDF \'%s\' to Storage', uploadedPDFInfo.etag)
+        logger.info('Successfully uploaded the PDF \'%s\' to Storage', documentPath)
         // Save the file info to the database
         const license = new BusinessLicenseEntity()
         license.license_number = req.body.license_number
-        license.license_document_link = objectName
+        license.license_document_link = documentPath
         license.merchant = merchant
         await licenseRepository.save(license)
         merchant.business_licenses = [license]

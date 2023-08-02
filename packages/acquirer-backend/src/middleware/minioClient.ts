@@ -2,7 +2,9 @@ import path from 'path'
 import multer from 'multer'
 import logger from '../logger'
 import dotenv from 'dotenv'
-import { Client } from 'minio'
+import { Client, type UploadedObjectInfo } from 'minio'
+import { convertURLFriendly } from '../utils/utils'
+import { type MerchantEntity } from '../entity/MerchantEntity'
 
 if (process.env.NODE_ENV === 'test') {
   dotenv.config({ path: path.resolve(process.cwd(), '.env.test'), override: true })
@@ -66,4 +68,44 @@ export async function removeMerchantDocument (documentPath: string): Promise<voi
   // documentPath example.. merchant-1/merchant-1-license-document-1690705979705.pdf
   await minioClient.removeObject(merchantDocumentBucketName, documentPath)
   logger.info('Storage Server document removed: %s', documentPath)
+}
+
+export async function uploadMerchantDocument (
+  merchant: MerchantEntity,
+  file: Express.Multer.File
+): Promise<string | null> {
+  const metaData = {
+    'Content-Type': 'application/pdf',
+    'X-Amz-Meta-Testing': 1234
+  }
+
+  const name = convertURLFriendly(merchant.dba_trading_name)
+  const objectName = `${name}/${name}-license-document.pdf`
+  let uploadedPDFInfo: UploadedObjectInfo | null = null
+  try {
+    uploadedPDFInfo = await minioClient.putObject(
+      merchantDocumentBucketName,
+      objectName,
+      file.buffer,
+      file.buffer.length,
+      metaData
+    )
+  } catch (e) {
+    logger.error('Storage Server document upload error: %s', e)
+    return null
+  }
+  if (uploadedPDFInfo == null) {
+    logger.error('Storage Server document upload error: %s', 'uploadedPDFInfo is null')
+    return null
+  }
+
+  logger.info('Storage Server document uploaded: %s', objectName)
+  return objectName
+}
+
+export async function getMerchantDocumentURL (documentPath: string): Promise<string> {
+  // documentPath example.. merchant-1/merchant-1-license-document-1690705979705.pdf
+  const url = await minioClient.presignedGetObject(merchantDocumentBucketName, documentPath)
+  logger.info('Storage Server document URL: %s', url)
+  return url
 }
