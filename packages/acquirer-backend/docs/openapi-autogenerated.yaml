@@ -12,6 +12,51 @@ components:
       bearerFormat: JWT
       value: Bearer <JWT token here>
 paths:
+  /config/trace-level:
+    put:
+      tags:
+        - Server Configuration
+      summary: Set the log level
+      description: This endpoint allows you to set the logging level
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                level:
+                  type: string
+                  description: The registration status of the merchant
+                  enum:
+                    - error
+                    - warn
+                    - info
+                    - http
+                    - verbose
+                    - debug
+                    - silly
+                  example: error
+      responses:
+        '200':
+          description: Log level set successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        '400':
+          description: Invalid log level
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'Invalid log level: error'
   /health-check:
     get:
       tags:

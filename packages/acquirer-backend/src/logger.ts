@@ -7,7 +7,7 @@ import 'dotenv/config'
 const logPath = process.env.LOG_PATH ?? './logs'
 
 const logger: Logger = winston.createLogger({
-  level: 'info',
+  level: process.env.LOG_LEVEL ?? 'info',
   format: winston.format.combine(
     winston.format.splat(),
     winston.format.timestamp(),

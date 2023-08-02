@@ -8,6 +8,7 @@ import morgan_config from './morgan-config'
 import health_check_route from './routes/health-check-route'
 import merchant_routes from './routes/merchant-routes'
 import user_routes from './routes/user-routes'
+import config_routes from './routes/config-routes'
 import { openAPISpecification } from './openapi-spec-config'
 import {
   merchantDocumentBucketName,
@@ -32,6 +33,7 @@ app.use('/docs', swaggerUi.serve, swaggerUi.setup(openAPISpecification))
 app.use('/api/v1', health_check_route)
 app.use('/api/v1', merchant_routes)
 app.use('/api/v1', user_routes)
+app.use('/api/v1', config_routes)
 
 app.listen(PORT, HOSTNAME, () => {
   logger.info(`Merchant Acquirer API is running on http://${HOSTNAME}:${PORT}/api/v1`)
