@@ -289,7 +289,22 @@ router.post('/merchants/draft', pdfUpload.single('file'), async (req: Request, r
   }
 
   const merchantRepository = AppDataSource.getRepository(MerchantEntity)
-  const merchant = merchantRepository.create()
+  let merchant = merchantRepository.create()
+  if (req.body.id !== undefined && req.body.id !== null && req.body.id !== '') {
+    const m = await merchantRepository.findOne({
+      where: {
+        id: req.body.id,
+        registration_status: MerchantRegistrationStatus.DRAFT
+      }
+    })
+
+    if (m === null) {
+      return res.status(422).send({ error: 'Updating Merchant ID does not exist' })
+    }
+    merchant = m
+    logger.info('Updating Merchant: %o', merchant.id)
+  }
+
   merchant.dba_trading_name = req.body.dba_trading_name
   merchant.registered_name = req.body.registered_name // TODO: check if already registered
   merchant.employees_num = req.body.employees_num
@@ -336,6 +351,11 @@ router.post('/merchants/draft', pdfUpload.single('file'), async (req: Request, r
       logger.error('No PDF file submitted for the merchant')
     }
   } catch (err) {
+    // Revert the checkout counter creation
+    if (checkoutCounter !== null) {
+      await AppDataSource.manager.delete(CheckoutCounterEntity, checkoutCounter)
+    }
+
     if (err instanceof QueryFailedError) {
       logger.error('Query Failed: %o', err.message)
       return res.status(500).send({ error: err.message })
@@ -724,7 +744,7 @@ router.put('/merchants/:id/registration-status', async (req: Request, res: Respo
  *               town_name:
  *                 type: string
  *                 example: "Townsville"
- *               distinct_name:
+ *               district_name:
  *                 type: string
  *                 example: "District 1"
  *               country_subdivision:

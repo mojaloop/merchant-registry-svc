@@ -25,11 +25,11 @@ export const MerchantSubmitDataSchema = z.object({
   currency_code: z.nativeEnum(CurrencyCodes),
   category_code: z.string(),
   merchant_type: z.nativeEnum(MerchantType),
-  registration_status: z.nativeEnum(SubmitRegistratonStatus),
-  registration_status_reason: z.string(),
+  // registration_status: z.nativeEnum(SubmitRegistratonStatus),
+  // registration_status_reason: z.string(),
   payinto_alias: z.string().optional(),
   license_number: z.string().optional(),
-  file: z.any().optional()
+  file: z.custom<File>(val => val instanceof File).or(z.null())
 
 }).strict()
 
@@ -48,7 +48,7 @@ export const MerchantLocationSubmitDataSchema = z.object({
   post_box: z.string().optional(),
   postal_code: z.string().optional(),
   town_name: z.string().optional(),
-  distinct_name: z.string().optional(),
+  district_name: z.string().optional(),
   country_subdivision: z.string().optional(),
   address_line: z.string().optional(),
   latitude: z.string().optional(),

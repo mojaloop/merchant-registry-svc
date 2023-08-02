@@ -11,11 +11,14 @@ import { ContactPersonEntity } from '../../src/entity/ContactPersonEntity'
 import { BusinessOwnerEntity } from '../../src/entity/BusinessOwnerEntity'
 import {
   BusinessOwnerIDType,
+  Countries,
   CurrencyCodes,
+  MerchantLocationType,
   MerchantRegistrationStatus, MerchantType, NumberOfEmployees
 } from 'shared-lib'
 import { CheckoutCounterEntity } from '../../src/entity/CheckoutCounterEntity'
 import { BusinessLicenseEntity } from '../../src/entity/BusinessLicenseEntity'
+import { MerchantLocationEntity } from '../../src/entity/MerchantLocationEntity'
 import {
   createMerchantDocumentBucket,
   removeMerchantDocument,
@@ -55,7 +58,7 @@ describe('Merchant Routes Tests', () => {
         .set('Authorization', `Bearer ${process.env.TEST1_DUMMY_AUTH_TOKEN ?? ''}`)
         .field('dba_trading_name', 'Test Merchant 1')
         .field('registered_name', 'Test Merchant 1')
-        .field('employees_num', '1 - 5')
+        .field('employees_num', NumberOfEmployees.ONE_TO_FIVE)
         .field('monthly_turnover', 0.5)
         .field('currency_code', CurrencyCodes.USD)
         .field('category_code', '01110')
@@ -74,6 +77,82 @@ describe('Merchant Routes Tests', () => {
       expect(res.body.data).toHaveProperty('id')
       expect(res.body.data).toHaveProperty('business_licenses')
       expect(res.body.data.business_licenses).toHaveLength(1)
+      expect(res.body.data.business_licenses[0]).toHaveProperty('license_document_link')
+
+      // Clean up
+      await AppDataSource.manager.delete(
+        MerchantEntity,
+        { id: res.body.data.id }
+      )
+      await AppDataSource.manager.delete(
+        CheckoutCounterEntity,
+        { alias_value: res.body.data.id }
+      )
+      await AppDataSource.manager.delete(
+        BusinessLicenseEntity,
+        {}
+      )
+      await removeMerchantDocument(res.body.data.business_licenses[0].license_document_link)
+    })
+    // TODO: Add more tests and failure cases
+
+    it('should respond with 201 status and when updating existing drafted merchant', async () => {
+      // Arrange
+
+      const merchant = await AppDataSource.manager.save(
+        MerchantEntity,
+        {
+          dba_trading_name: 'Test Merchant 1',
+          registered_name: 'Test Merchant 1',
+          employees_num: NumberOfEmployees.ONE_TO_FIVE,
+          monthly_turnover: 0.5,
+          currency_code: CurrencyCodes.USD,
+          category_code: '01110',
+          merchant_type: MerchantType.INDIVIDUAL,
+          registration_status: MerchantRegistrationStatus.DRAFT,
+          registration_status_reason: 'Drafting Merchant'
+        }
+      )
+
+      // Act
+      const res = await request(app)
+        .post('/api/v1/merchants/draft')
+        .set('Authorization', `Bearer ${process.env.TEST1_DUMMY_AUTH_TOKEN ?? ''}`)
+        .field('id', merchant.id) // Updating existing merchant using id
+        .field('dba_trading_name', 'Updated Merchant 1')
+        .field('registered_name', 'Updated Merchant 1')
+        .field('employees_num', NumberOfEmployees.FIFTY_ONE_TO_ONE_HUNDRED)
+        .field('monthly_turnover', 0.5)
+        .field('currency_code', CurrencyCodes.AED)
+        .field('category_code', '01110')
+        .field('merchant_type', MerchantType.INDIVIDUAL)
+        .field('payinto_alias', 'P33')
+        .field('license_number', '007')
+        .attach('file', path.join(__dirname, '../test-files/dummy.pdf'))
+
+      // Assert
+
+      expect(res.statusCode).toEqual(201)
+      expect(res.body).toHaveProperty('message')
+      expect(res.body.message).toEqual('Drafting Merchant Successful')
+      expect(res.body).toHaveProperty('data')
+      expect(res.body.data).toHaveProperty('id')
+      expect(res.body.data.id).toEqual(merchant.id)
+      expect(res.body.data.dba_trading_name).toEqual('Updated Merchant 1')
+      expect(res.body.data.registered_name).toEqual('Updated Merchant 1')
+      expect(res.body.data.employees_num).toEqual(NumberOfEmployees.FIFTY_ONE_TO_ONE_HUNDRED)
+      expect(res.body.data.currency_code).toEqual(CurrencyCodes.AED)
+
+      const updatedMerchant = await AppDataSource.manager.findOne(
+        MerchantEntity,
+        { where: { id: merchant.id } }
+      )
+      expect(updatedMerchant?.dba_trading_name).toEqual('Updated Merchant 1')
+      expect(updatedMerchant?.registered_name).toEqual('Updated Merchant 1')
+
+      expect(res.body.data).toHaveProperty('business_licenses')
+      expect(res.body.data.business_licenses).toHaveLength(1)
+
       expect(res.body.data.business_licenses[0]).toHaveProperty('license_document_link')
 
       // Clean up
@@ -188,6 +267,57 @@ describe('Merchant Routes Tests', () => {
       expect(originalMerchant?.registration_status).toEqual(MerchantRegistrationStatus.DRAFT)
 
       // Clean up
+    })
+  })
+
+  describe('POST /api/v1/merchants/:id/locations', () => {
+    it('should respond with 201 status when create location valid data', async () => {
+      // Arrange
+      const merchant = await AppDataSource.manager.save(
+        MerchantEntity,
+        {
+          dba_trading_name: 'Test Merchant 1',
+          registered_name: 'Test Merchant 1',
+          employees_num: NumberOfEmployees.ONE_TO_FIVE,
+          monthly_turnover: 0.5,
+          currency_code: CurrencyCodes.PHP,
+          category_code: '10410',
+          payinto_alias: 'P00331'
+        }
+      )
+
+      // Act
+      const res = await request(app)
+        .post(`/api/v1/merchants/${merchant.id}/locations`)
+        .send({
+          address_line: 'Test Address 1',
+          country: Countries.United_States_of_America,
+          location_type: MerchantLocationType.PHYSICAL,
+          latitude: '14.123456',
+          longitude: '121.123456',
+          town_name: 'Test Town 1',
+          district_name: 'Test District 1'
+        })
+
+      // Assert
+      expect(res.statusCode).toEqual(201)
+      expect(res.body).toHaveProperty('message')
+      expect(res.body.message).toEqual('Merchant Location Saved')
+      expect(res.body).toHaveProperty('data')
+      expect(res.body.data).toHaveProperty('id')
+      expect(res.body.data).toHaveProperty('merchant')
+      expect(res.body.data.merchant).toHaveProperty('id')
+      expect(res.body.data.merchant.id).toEqual(merchant.id)
+
+      // Clean up
+      await AppDataSource.manager.delete(
+        MerchantLocationEntity,
+        { id: res.body.data.id }
+      )
+      await AppDataSource.manager.delete(
+        MerchantEntity,
+        { id: merchant.id }
+      )
     })
   })
 

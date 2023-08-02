@@ -44,7 +44,7 @@ export class LocationEntity {
     town_name!: string
 
   @Column({ nullable: true, length: 255 })
-    distinct_name!: string
+    district_name!: string
 
   @Column({ nullable: true, length: 255 })
     country_subdivision!: string
