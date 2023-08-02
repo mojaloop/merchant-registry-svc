@@ -1,4 +1,4 @@
-export interface RegisteredMerchantInfo {
+export interface AllMerchantInfo {
   no: number
   dbaName: string
   registeredName: string
