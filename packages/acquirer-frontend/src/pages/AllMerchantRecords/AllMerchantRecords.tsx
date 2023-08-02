@@ -14,10 +14,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 
 import type { AllMerchantInfo } from '@/types/allMerchants'
-import {
-  type RegisteredMerchants,
-  registeredMerchantsSchema,
-} from '@/lib/validations/registeredMerchants'
+import { type AllMerchants, allMerchantsSchema } from '@/lib/validations/allMerchants'
 import { convertKebabCaseToReadable } from '@/utils'
 import { CustomButton, MerchantInformationModal } from '@/components/ui'
 import { FormInput, FormSelect } from '@/components/form'
@@ -60,8 +57,8 @@ const AllMerchantRecords = () => {
     formState: { errors },
     handleSubmit,
     reset,
-  } = useForm<RegisteredMerchants>({
-    resolver: zodResolver(registeredMerchantsSchema),
+  } = useForm<AllMerchants>({
+    resolver: zodResolver(allMerchantsSchema),
     defaultValues: {
       registrationStatus: null,
     },
@@ -161,7 +158,7 @@ const AllMerchantRecords = () => {
     ]
   }, [onOpen])
 
-  const onSubmit = (values: RegisteredMerchants) => {
+  const onSubmit = (values: AllMerchants) => {
     console.log(values)
   }
 

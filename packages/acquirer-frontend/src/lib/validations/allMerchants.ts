@@ -1,8 +1,8 @@
 import { z } from 'zod'
 
-export type RegisteredMerchants = z.infer<typeof registeredMerchantsSchema>
+export type AllMerchants = z.infer<typeof allMerchantsSchema>
 
-export const registeredMerchantsSchema = z.object({
+export const allMerchantsSchema = z.object({
   addedBy: z.string().optional(),
   approvedBy: z.string().optional(),
   addedTime: z.string().optional(),
