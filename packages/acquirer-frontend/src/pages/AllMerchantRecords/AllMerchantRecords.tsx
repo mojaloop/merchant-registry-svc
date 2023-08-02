@@ -13,7 +13,7 @@ import {
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 
-import type { RegisteredMerchantInfo } from '@/types/registeredMerchants'
+import type { AllMerchantInfo } from '@/types/allMerchants'
 import {
   type RegisteredMerchants,
   registeredMerchantsSchema,
@@ -37,7 +37,7 @@ const REGISTRATION_STATUS_COLORS = {
 
 type StatusKey = keyof typeof REGISTRATION_STATUS_COLORS
 
-const registeredMerchant: RegisteredMerchantInfo = {
+const registeredMerchant: AllMerchantInfo = {
   no: 1,
   dbaName: 'K Company Pte.Ltd',
   registeredName: '122132',
@@ -70,7 +70,7 @@ const AllMerchantRecords = () => {
   const { isOpen, onOpen, onClose } = useDisclosure()
 
   const columns = useMemo(() => {
-    const columnHelper = createColumnHelper<RegisteredMerchantInfo>()
+    const columnHelper = createColumnHelper<AllMerchantInfo>()
 
     return [
       columnHelper.display({
