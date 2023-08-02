@@ -26,7 +26,7 @@ export enum MerchantRegistrationStatus {
 
 export enum MerchantLocationType {
   PHYSICAL = 'Physical',
-  WEB = 'Web',
+  VIRTUAL = 'Virtual',
 }
 
 export enum DFSPType {

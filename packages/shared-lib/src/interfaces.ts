@@ -36,7 +36,7 @@ export interface ILocationSubmitData {
   post_box?: string
   postal_code?: string
   town_name?: string
-  distinct_name?: string
+  district_name?: string
   country_subdivision?: string
   country: Countries
   address_line?: string
