@@ -15,9 +15,9 @@ import {
 } from '@chakra-ui/react'
 
 import { CustomButton } from '@/components/ui'
-import DetailsItem from './DetailsItem'
+import DetailsItem from '@/components/ui/MerchantInformationModal/DetailsItem'
 
-interface MerchantInformationModalProps {
+interface ReviewModalProps {
   isOpen: boolean
   onClose: () => void
 }
@@ -38,7 +38,7 @@ const GridItemShell = ({ children, ...props }: GridItemProps) => {
   )
 }
 
-const MerchantInformationModal = ({ isOpen, onClose }: MerchantInformationModalProps) => {
+const ReviewModal = ({ isOpen, onClose }: ReviewModalProps) => {
   return (
     <Modal isOpen={isOpen} onClose={onClose} scrollBehavior='inside'>
       <ModalOverlay bg='hsl(0, 0%, 100%, 0.6)' backdropFilter='blur(4px)' />
@@ -145,13 +145,15 @@ const MerchantInformationModal = ({ isOpen, onClose }: MerchantInformationModalP
         </ModalBody>
 
         <ModalFooter>
-          <CustomButton colorVariant='info' mr='3' onClick={onClose}>
+          <CustomButton colorVariant='accent-outline' mr='3' onClick={onClose}>
             Close
           </CustomButton>
+
+          <CustomButton>Submit</CustomButton>
         </ModalFooter>
       </ModalContent>
     </Modal>
   )
 }
 
-export default MerchantInformationModal
+export default ReviewModal

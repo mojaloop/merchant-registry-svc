@@ -13,11 +13,8 @@ import {
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 
-import type { RegisteredMerchantInfo } from '@/types/registeredMerchants'
-import {
-  type RegisteredMerchants,
-  registeredMerchantsSchema,
-} from '@/lib/validations/registeredMerchants'
+import type { AllMerchantInfo } from '@/types/allMerchants'
+import { type AllMerchants, allMerchantsSchema } from '@/lib/validations/allMerchants'
 import { convertKebabCaseToReadable } from '@/utils'
 import { CustomButton, MerchantInformationModal } from '@/components/ui'
 import { FormInput, FormSelect } from '@/components/form'
@@ -37,7 +34,7 @@ const REGISTRATION_STATUS_COLORS = {
 
 type StatusKey = keyof typeof REGISTRATION_STATUS_COLORS
 
-const registeredMerchant: RegisteredMerchantInfo = {
+const registeredMerchant: AllMerchantInfo = {
   no: 1,
   dbaName: 'K Company Pte.Ltd',
   registeredName: '122132',
@@ -60,8 +57,8 @@ const AllMerchantRecords = () => {
     formState: { errors },
     handleSubmit,
     reset,
-  } = useForm<RegisteredMerchants>({
-    resolver: zodResolver(registeredMerchantsSchema),
+  } = useForm<AllMerchants>({
+    resolver: zodResolver(allMerchantsSchema),
     defaultValues: {
       registrationStatus: null,
     },
@@ -70,7 +67,7 @@ const AllMerchantRecords = () => {
   const { isOpen, onOpen, onClose } = useDisclosure()
 
   const columns = useMemo(() => {
-    const columnHelper = createColumnHelper<RegisteredMerchantInfo>()
+    const columnHelper = createColumnHelper<AllMerchantInfo>()
 
     return [
       columnHelper.display({
@@ -161,7 +158,7 @@ const AllMerchantRecords = () => {
     ]
   }, [onOpen])
 
-  const onSubmit = (values: RegisteredMerchants) => {
+  const onSubmit = (values: AllMerchants) => {
     console.log(values)
   }
 
