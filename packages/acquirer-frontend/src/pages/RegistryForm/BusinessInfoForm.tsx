@@ -89,11 +89,7 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
 
     // Loop over the form values and append each one to the form data.
     for (const [key, value] of Object.entries(values)) {
-      if (key === 'licenseDocument') {
-        formData.append('file', value)
-      } else {
-        formData.append(key, value)
-      }
+      formData.append(key, value)
     }
 
     try {

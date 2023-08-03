@@ -21,6 +21,7 @@ import { BusinessLicenseEntity } from '../../src/entity/BusinessLicenseEntity'
 import { MerchantLocationEntity } from '../../src/entity/MerchantLocationEntity'
 import {
   createMerchantDocumentBucket,
+  getMerchantDocumentURL,
   removeMerchantDocument,
   removeMerchantDocumentBucket
 } from '../../src/middleware/minioClient'
@@ -67,7 +68,7 @@ describe('Merchant Routes Tests', () => {
         .field('registration_status', MerchantRegistrationStatus.DRAFT)
         .field('registration_status_reason', 'Drafting Merchant')
         .field('license_number', '007')
-        .attach('file', path.join(__dirname, '../test-files/dummy.pdf'))
+        .attach('licenseDocument', path.join(__dirname, '../test-files/dummy.pdf'))
 
       // Assert
       expect(res.statusCode).toEqual(201)
@@ -78,6 +79,10 @@ describe('Merchant Routes Tests', () => {
       expect(res.body.data).toHaveProperty('business_licenses')
       expect(res.body.data.business_licenses).toHaveLength(1)
       expect(res.body.data.business_licenses[0]).toHaveProperty('license_document_link')
+      const url = await getMerchantDocumentURL(
+        res.body.data.business_licenses[0].license_document_link
+      )
+      expect(url).not.toBeNull()
 
       // Clean up
       await AppDataSource.manager.delete(
@@ -136,7 +141,7 @@ describe('Merchant Routes Tests', () => {
         .field('merchant_type', MerchantType.INDIVIDUAL)
         .field('payinto_alias', 'N33')
         .field('license_number', '007')
-        .attach('file', path.join(__dirname, '../test-files/dummy.pdf'))
+        .attach('licenseDocument', path.join(__dirname, '../test-files/dummy.pdf'))
 
       // Assert
 
