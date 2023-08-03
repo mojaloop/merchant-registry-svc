@@ -31,7 +31,7 @@ export const businessInfoSchema = z.object({
 
 export const locationInfoSchema = z.object({
   location_type: z.nativeEnum(MerchantLocationType),
-  country: z.nativeEnum(Countries).or(z.null()),
+  country: z.nativeEnum(Countries).or(z.null()).or(z.literal('')),
   web_url: z.string().optional(),
   address_type: z.string().optional(),
   department: z.string().optional(),

@@ -46,6 +46,9 @@ const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
       return
     }
 
+    // Server expects null instead of empty string or any other falsy value
+    values.country = values.country || null
+
     try {
       const response = await instance.post<FormReponse>(
         `/merchants/${merchantId}/locations`,
