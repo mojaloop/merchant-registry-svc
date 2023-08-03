@@ -4,6 +4,7 @@ import { isAxiosError } from 'axios'
 import { Controller, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 
+import { FormReponse } from '@/types/form'
 import instance from '@/lib/axiosInstance'
 import { type ContactPerson, contactPersonSchema } from '@/lib/validations/registry'
 import { CustomButton, MerchantInformationModal } from '@/components/ui'
@@ -38,7 +39,7 @@ const ContactPersonForm = ({ setActiveStep }: ContactPersonProps) => {
     }
 
     try {
-      const response = await instance.post<{ data: { id: number }; message: string }>(
+      const response = await instance.post<FormReponse>(
         `/merchants/${merchantId}/contact-persons`,
         values,
         {

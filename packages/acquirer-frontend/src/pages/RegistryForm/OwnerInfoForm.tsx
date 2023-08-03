@@ -4,6 +4,7 @@ import { isAxiosError } from 'axios'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 
+import { FormReponse } from '@/types/form'
 import instance from '@/lib/axiosInstance'
 import { type OwnerInfo, ownerInfoSchema } from '@/lib/validations/registry'
 import { CustomButton } from '@/components/ui'
@@ -46,7 +47,7 @@ const OwnerInfoForm = ({ setActiveStep }: OwnerInfoFormProps) => {
     }
 
     try {
-      const response = await instance.post<{ data: { id: number }; message: string }>(
+      const response = await instance.post<FormReponse>(
         `/merchants/${merchantId}/business-owners`,
         values,
         {

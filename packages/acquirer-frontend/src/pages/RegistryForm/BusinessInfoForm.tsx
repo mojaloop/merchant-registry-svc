@@ -25,6 +25,7 @@ import {
   MerchantType,
 } from 'shared-lib'
 
+import { FormReponse } from '@/types/form'
 import instance from '@/lib/axiosInstance'
 import { type BusinessInfo, businessInfoSchema } from '@/lib/validations/registry'
 import { CustomButton } from '@/components/ui'
@@ -93,16 +94,12 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
     })
 
     try {
-      const response = await instance.post<{ data: { id: number }; message: string }>(
-        '/merchants/draft',
-        formData,
-        {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-            Authorization: `Bearer test_1_dummy_auth_token`,
-          },
-        }
-      )
+      const response = await instance.post<FormReponse>('/merchants/draft', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer test_1_dummy_auth_token`,
+        },
+      })
 
       if (response.data.data?.id) {
         sessionStorage.setItem('merchantId', response.data.data.id.toString())

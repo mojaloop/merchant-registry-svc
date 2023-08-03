@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { MerchantLocationType, Countries } from 'shared-lib'
 
+import { FormReponse } from '@/types/form'
 import instance from '@/lib/axiosInstance'
 import { type LocationInfo, locationInfoSchema } from '@/lib/validations/registry'
 import { CustomButton } from '@/components/ui'
@@ -46,7 +47,7 @@ const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
     }
 
     try {
-      const response = await instance.post<{ data: { id: number }; message: string }>(
+      const response = await instance.post<FormReponse>(
         `/merchants/${merchantId}/locations`,
         values,
         {
