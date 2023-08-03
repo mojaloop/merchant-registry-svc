@@ -52,8 +52,7 @@ export class LocationEntity {
   @Column({
     type: 'enum',
     enum: Countries,
-    nullable: false,
-    default: Countries.United_States_of_America
+    nullable: true
   })
     country!: Countries
 

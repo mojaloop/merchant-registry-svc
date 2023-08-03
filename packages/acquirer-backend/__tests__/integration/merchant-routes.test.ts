@@ -59,7 +59,7 @@ describe('Merchant Routes Tests', () => {
         .field('dba_trading_name', 'Test Merchant 1')
         .field('registered_name', 'Test Merchant 1')
         .field('employees_num', NumberOfEmployees.ONE_TO_FIVE)
-        .field('monthly_turnover', 0.5)
+        .field('monthly_turnover', '0.5')
         .field('currency_code', CurrencyCodes.USD)
         .field('category_code', '01110')
         .field('merchant_type', MerchantType.INDIVIDUAL)
@@ -98,6 +98,13 @@ describe('Merchant Routes Tests', () => {
 
     it('should respond with 201 status and when updating existing drafted merchant', async () => {
       // Arrange
+      const checkoutCounter = await AppDataSource.manager.save(
+        CheckoutCounterEntity,
+        {
+          alias_value: 'O33',
+          description: 'Test Checkout Counter'
+        }
+      )
 
       const merchant = await AppDataSource.manager.save(
         MerchantEntity,
@@ -105,12 +112,13 @@ describe('Merchant Routes Tests', () => {
           dba_trading_name: 'Test Merchant 1',
           registered_name: 'Test Merchant 1',
           employees_num: NumberOfEmployees.ONE_TO_FIVE,
-          monthly_turnover: 0.5,
+          monthly_turnover: '0.5',
           currency_code: CurrencyCodes.USD,
           category_code: '01110',
           merchant_type: MerchantType.INDIVIDUAL,
           registration_status: MerchantRegistrationStatus.DRAFT,
-          registration_status_reason: 'Drafting Merchant'
+          registration_status_reason: 'Drafting Merchant',
+          checkout_counters: [checkoutCounter]
         }
       )
 
@@ -122,11 +130,11 @@ describe('Merchant Routes Tests', () => {
         .field('dba_trading_name', 'Updated Merchant 1')
         .field('registered_name', 'Updated Merchant 1')
         .field('employees_num', NumberOfEmployees.FIFTY_ONE_TO_ONE_HUNDRED)
-        .field('monthly_turnover', 0.5)
+        .field('monthly_turnover', '0.5')
         .field('currency_code', CurrencyCodes.AED)
         .field('category_code', '01110')
         .field('merchant_type', MerchantType.INDIVIDUAL)
-        .field('payinto_alias', 'P33')
+        .field('payinto_alias', 'N33')
         .field('license_number', '007')
         .attach('file', path.join(__dirname, '../test-files/dummy.pdf'))
 
@@ -142,6 +150,11 @@ describe('Merchant Routes Tests', () => {
       expect(res.body.data.registered_name).toEqual('Updated Merchant 1')
       expect(res.body.data.employees_num).toEqual(NumberOfEmployees.FIFTY_ONE_TO_ONE_HUNDRED)
       expect(res.body.data.currency_code).toEqual(CurrencyCodes.AED)
+      expect(res.body.data).toHaveProperty('checkout_counters')
+      expect(res.body.data.checkout_counters).toHaveLength(1)
+      expect(res.body.data.checkout_counters[0]).toHaveProperty('id')
+      expect(res.body.data.checkout_counters[0]).toHaveProperty('alias_value')
+      expect(res.body.data.checkout_counters[0].alias_value).toEqual('N33')
 
       const updatedMerchant = await AppDataSource.manager.findOne(
         MerchantEntity,
@@ -162,7 +175,7 @@ describe('Merchant Routes Tests', () => {
       )
       await AppDataSource.manager.delete(
         CheckoutCounterEntity,
-        { alias_value: res.body.data.id }
+        { id: res.body.data.checkout_counters[0].id }
       )
       await AppDataSource.manager.delete(
         BusinessLicenseEntity,
@@ -191,7 +204,7 @@ describe('Merchant Routes Tests', () => {
           dba_trading_name: 'Test Merchant 1',
           registered_name: 'Test Merchant 1',
           employees_num: NumberOfEmployees.ONE_TO_FIVE,
-          monthly_turnover: 0.5,
+          monthly_turnover: '0.5',
           currency_code: CurrencyCodes.USD,
           category_code: '01110',
           payinto_alias: 'merchant1',
@@ -272,6 +285,13 @@ describe('Merchant Routes Tests', () => {
 
   describe('POST /api/v1/merchants/:id/locations', () => {
     it('should respond with 201 status when create location valid data', async () => {
+      const checkoutCounter = await AppDataSource.manager.save(
+        CheckoutCounterEntity,
+        {
+          alias_value: 'P0055',
+          description: 'Test Checkout Counter'
+        }
+      )
       // Arrange
       const merchant = await AppDataSource.manager.save(
         MerchantEntity,
@@ -279,10 +299,10 @@ describe('Merchant Routes Tests', () => {
           dba_trading_name: 'Test Merchant 1',
           registered_name: 'Test Merchant 1',
           employees_num: NumberOfEmployees.ONE_TO_FIVE,
-          monthly_turnover: 0.5,
+          monthly_turnover: '0.5',
           currency_code: CurrencyCodes.PHP,
           category_code: '10410',
-          payinto_alias: 'P00331'
+          checkout_counters: [checkoutCounter]
         }
       )
 
@@ -318,6 +338,10 @@ describe('Merchant Routes Tests', () => {
         MerchantEntity,
         { id: merchant.id }
       )
+      await AppDataSource.manager.delete(
+        CheckoutCounterEntity,
+        { id: checkoutCounter.id }
+      )
     })
   })
 
@@ -330,7 +354,7 @@ describe('Merchant Routes Tests', () => {
           dba_trading_name: 'Test Merchant 1',
           registered_name: 'Test Merchant 1',
           employees_num: NumberOfEmployees.ONE_TO_FIVE,
-          monthly_turnover: 0.5,
+          monthly_turnover: '0.5',
           currency_code: CurrencyCodes.PHP,
           category_code: '10410',
           payinto_alias: 'merchant1'
@@ -394,7 +418,7 @@ describe('Merchant Routes Tests', () => {
           dba_trading_name: 'Test Merchant 1',
           registered_name: 'Test Merchant 1',
           employees_num: NumberOfEmployees.ONE_TO_FIVE,
-          monthly_turnover: 0.5,
+          monthly_turnover: '0.5',
           currency_code: CurrencyCodes.PHP,
           category_code: '10410',
           payinto_alias: 'merchant1',
@@ -464,10 +488,9 @@ describe('Merchant Routes Tests', () => {
           dba_trading_name: 'Test Merchant 1',
           registered_name: 'Test Merchant 1',
           employees_num: NumberOfEmployees.ONE_TO_FIVE,
-          monthly_turnover: 0.5,
+          monthly_turnover: '0.5',
           currency_code: 'PHP',
-          category_code: '10410',
-          payinto_alias: 'merchant1'
+          category_code: '10410'
         }
       )
 
@@ -478,12 +501,19 @@ describe('Merchant Routes Tests', () => {
           email: 'john.doe@example.com',
           phone_number: '1234567890',
           identificaton_type: 'National ID',
-          identification_number: '123456789'
+          identification_number: '123456789',
+          country: Countries.Afghanistan,
+          street_name: 'Street #1'
         })
 
       expect(res.statusCode).toEqual(201)
       expect(res.body).toHaveProperty('message')
       expect(res.body).toHaveProperty('data')
+      expect(res.body.data).toHaveProperty('businessPersonLocation')
+      expect(res.body.data.businessPersonLocation).toHaveProperty('country')
+      expect(res.body.data.businessPersonLocation.country).toEqual(Countries.Afghanistan)
+      expect(res.body.data.businessPersonLocation).toHaveProperty('street_name')
+      expect(res.body.data.businessPersonLocation.street_name).toEqual('Street #1')
 
       // Clean up
       await AppDataSource.manager.delete(

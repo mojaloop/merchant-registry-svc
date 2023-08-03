@@ -9,6 +9,7 @@ import logger from '../logger'
 import { CheckoutCounterEntity } from '../entity/CheckoutCounterEntity'
 import { ContactPersonEntity } from '../entity/ContactPersonEntity'
 import { BusinessOwnerEntity } from '../entity/BusinessOwnerEntity'
+import { BusinessPersonLocationEntity } from '../entity/BusinessPersonLocationEntity'
 import { BusinessLicenseEntity } from '../entity/BusinessLicenseEntity'
 import { PortalUserEntity } from '../entity/PortalUserEntity'
 import {
@@ -253,41 +254,6 @@ router.post('/merchants/draft', pdfUpload.single('file'), async (req: Request, r
     }
   }
 
-  // PayInto Alias is set, then create checkout counter
-  // TODO: Separate this into a separate endpoint
-  let checkoutCounter = null
-  const alias = req.body.payinto_alias
-  if (
-    alias !== undefined &&
-    alias !== null &&
-      alias !== ''
-  ) {
-    // TODO: Talk to Merchant Registry Oracle Service to create merchant_registry_id first ?
-    checkoutCounter = await AppDataSource.manager.findOne(
-      CheckoutCounterEntity,
-      { where: { alias_value: alias } }
-    )
-    if (checkoutCounter != null) {
-      const errorMsg = `Alias Value already exists: ${checkoutCounter.alias_value} `
-      logger.error(errorMsg)
-      return res.status(422).send({ error: errorMsg })
-    }
-
-    if (checkoutCounter === null) {
-      checkoutCounter = new CheckoutCounterEntity()
-      checkoutCounter.alias_value = alias
-
-      try {
-        await AppDataSource.manager.save(checkoutCounter)
-      } catch (err) {
-        if (err instanceof QueryFailedError) {
-          logger.error('Query failed: %o', err.message)
-          return res.status(500).send({ error: err.message })
-        }
-      }
-    }
-  }
-
   const merchantRepository = AppDataSource.getRepository(MerchantEntity)
   let merchant = merchantRepository.create()
   if (req.body.id !== undefined && req.body.id !== null && req.body.id !== '') {
@@ -303,6 +269,43 @@ router.post('/merchants/draft', pdfUpload.single('file'), async (req: Request, r
     }
     merchant = m
     logger.info('Updating Merchant: %o', merchant.id)
+  }
+
+  const alias: string = req.body.payinto_alias
+  // TODO: Talk to Merchant Registry Oracle Service to create merchant_registry_id ?
+  let checkoutCounter = null
+  if (merchant?.checkout_counters?.length === 1) {
+    // Just use the existing checkout counter
+    checkoutCounter = merchant.checkout_counters[0]
+    logger.debug('Using existing checkout counter: %o', checkoutCounter.id)
+  } else {
+    // Check if alias already exists, if it does, return error
+    // if alias not exists, create new checkout counter with new alias
+    const isExists = await AppDataSource.manager.exists(
+      CheckoutCounterEntity,
+      { where: { alias_value: alias } }
+    )
+    if (isExists) {
+      const errorMsg = `PayInto Alias Value already exists: ${alias} `
+      logger.error(errorMsg)
+      return res.status(422).send({ error: errorMsg })
+    }
+    if (checkoutCounter === null) {
+      checkoutCounter = new CheckoutCounterEntity()
+      logger.debug('Creating new checkout counter: %o', checkoutCounter)
+    }
+  }
+
+  // Update PayInto Alias Value
+  checkoutCounter.alias_value = alias
+
+  try {
+    await AppDataSource.manager.save(checkoutCounter)
+  } catch (err) {
+    if (err instanceof QueryFailedError) {
+      logger.error('Query failed: %o', err.message)
+      return res.status(500).send({ error: err.message })
+    }
   }
 
   merchant.dba_trading_name = req.body.dba_trading_name
@@ -337,7 +340,7 @@ router.post('/merchants/draft', pdfUpload.single('file'), async (req: Request, r
       if (documentPath == null) {
         logger.error('Failed to upload the PDF to Storage Server')
       } else {
-        logger.info('Successfully uploaded the PDF \'%s\' to Storage', documentPath)
+        logger.debug('Successfully uploaded the PDF \'%s\' to Storage', documentPath)
         // Save the file info to the database
         const license = new BusinessLicenseEntity()
         license.license_number = req.body.license_number
@@ -348,12 +351,12 @@ router.post('/merchants/draft', pdfUpload.single('file'), async (req: Request, r
         await merchantRepository.save(merchant)
       }
     } else {
-      logger.error('No PDF file submitted for the merchant')
+      logger.debug('No PDF file submitted for the merchant')
     }
   } catch (err) {
     // Revert the checkout counter creation
     if (checkoutCounter !== null) {
-      await AppDataSource.manager.delete(CheckoutCounterEntity, checkoutCounter)
+      await AppDataSource.manager.delete(CheckoutCounterEntity, checkoutCounter.id)
     }
 
     if (err instanceof QueryFailedError) {
@@ -378,185 +381,6 @@ router.post('/merchants/draft', pdfUpload.single('file'), async (req: Request, r
   return res.status(201).send({ message: 'Drafting Merchant Successful', data: merchantData })
 })
 
-router.put('/merchants/draft/:id/update', async (req: Request, res: Response) => {
-  // TODO: Remove This! and replace with Keycloak Authentication
-  const token = req.headers.authorization === undefined
-    ? undefined
-    : req.headers.authorization.replace('Bearer', '').trim()
-  logger.info('Token: %s', token)
-  let portalUser = null
-  if (token === process.env.TEST1_DUMMY_AUTH_TOKEN) {
-    portalUser = await AppDataSource.manager.findOne(
-      PortalUserEntity,
-      { where: { email: process.env.TEST1_EMAIL } }
-    )
-  } else if (token === process.env.TEST2_DUMMY_AUTH_TOKEN) {
-    portalUser = await AppDataSource.manager.findOne(
-      PortalUserEntity,
-      { where: { email: process.env.TEST2_EMAIL } }
-    )
-  } else {
-    return res.status(401).send({ message: 'Unauthorized' })
-  }
-
-  try {
-    MerchantSubmitDataSchema.parse(req.body)
-  } catch (err) {
-    if (err instanceof z.ZodError) {
-      logger.error('Validation error: %o', err.issues.map((issue) => issue.message))
-      return res.status(422).send({ error: err })
-    }
-  }
-
-  try {
-    const id = Number(req.params.id)
-    if (isNaN(id)) {
-      logger.error('Invalid ID')
-      res.status(422).send({ message: 'Invalid ID' })
-      return
-    }
-
-    // Validate the Request Body
-    try {
-      z.nativeEnum(MerchantRegistrationStatus).parse(req.body.registration_status)
-    } catch (err) {
-      if (err instanceof z.ZodError) {
-        logger.error('Validation error: %o', err.issues.map((issue) => issue.message))
-        return res.status(422).send({ error: err.issues.map((issue) => issue.message) })
-      }
-    }
-
-    const merchantRepository = AppDataSource.getRepository(MerchantEntity)
-    const merchant = await merchantRepository.findOne({
-      where: { id: Number(req.params.id) },
-      relations: [
-        'created_by',
-        'checkout_counters',
-        'business_licenses'
-      ]
-    })
-
-    if (merchant == null) {
-      return res.status(404).send({ message: 'Merchant not found' })
-    }
-
-    if (portalUser == null) {
-      return res.status(401).send({ message: 'User not found!. Unauthorized' })
-    }
-
-    if (merchant.created_by.id !== portalUser.id) {
-      return res.status(401).send({
-        message: 'Only The Same Drafted User is allowed.'
-      })
-    }
-
-    merchant.dba_trading_name = req.body.dba_trading_name
-    merchant.registered_name = req.body.registered_name // TODO: check if already registered
-    merchant.employees_num = req.body.employees_num
-    merchant.monthly_turnover = req.body.monthly_turnover
-    merchant.currency_code = req.body.currency_code
-    merchant.category_code = req.body.category_code
-    merchant.registration_status = req.body.registration_status
-    merchant.registration_status_reason = MerchantRegistrationStatus.DRAFT
-    merchant.allow_block_status = MerchantAllowBlockStatus.PENDING
-
-    // Update Checkout Counter
-    // TODO: Separate this into a separate endpoint
-    const alias = req.body.payinto_alias
-    if (
-      alias !== undefined &&
-      alias !== null &&
-      alias !== ''
-    ) {
-      let checkoutCounter = null
-      if (merchant.checkout_counters.length > 0) {
-        checkoutCounter = merchant.checkout_counters[0]
-        checkoutCounter.alias_value = req.body.payinto_alias
-        await AppDataSource.manager.save(checkoutCounter)
-      } else {
-        // Check if Alias Value already exists when creating a new checkout counter
-        checkoutCounter = await AppDataSource.manager.findOne(
-          CheckoutCounterEntity,
-          { where: { alias_value: alias } }
-        )
-        if (checkoutCounter != null) {
-          const errorMsg = `Alias Value already exists: ${checkoutCounter.alias_value} `
-          logger.error(errorMsg)
-          return res.status(422).send({ error: errorMsg })
-        }
-        checkoutCounter = new CheckoutCounterEntity()
-        checkoutCounter.alias_value = alias
-        checkoutCounter.merchant = merchant
-        await AppDataSource.manager.save(checkoutCounter)
-      }
-    }
-
-    // Update Business Licenses
-    // TODO: Separate this into a separate endpoint
-    await AppDataSource.manager.delete(BusinessLicenseEntity, { merchant })
-    // TODO: delete actual documents from S3 to save space
-
-    const licenses = []
-    const licenseRepository = AppDataSource.getRepository(BusinessLicenseEntity)
-    for (const license of req.body.business_licenses) {
-      let licenseObj = new BusinessLicenseEntity()
-      licenseObj.license_number = license.license_number
-      licenseObj.license_document_link = license.license_document_link
-      licenseObj = await licenseRepository.save(licenseObj)
-      licenses.push(licenseObj)
-    }
-
-    if (licenses.length > 0) {
-      merchant.business_licenses = licenses
-    }
-
-    try {
-      await merchantRepository.save(merchant)
-    } catch (err) {
-      if (err instanceof QueryFailedError) {
-        logger.error('Query Failed: %o', err.message)
-        return res.status(500).send({ error: err.message })
-      }
-    }
-
-    // Remove created_by, checked_by from the response to prevent password hash leaking
-    const merchantData = {
-      ...merchant,
-      created_by: undefined,
-      checked_by: undefined
-    }
-    res.status(200).send({ message: 'Status Updated', data: merchantData })
-  } catch (e) {
-    logger.error(e)
-    res.status(500).send({ message: e })
-  }
-})
-
-router.post('/merchants/:id/upload-license-document',
-  pdfUpload.single('file'),
-  async (req, res) => {
-    // TODO: Permission Check
-    const id = req.params.id
-    const file = req.file
-
-    if (file == null) {
-      return res.status(400).send({ message: 'No file uploaded' })
-    }
-
-    const merchantRepository = AppDataSource.getRepository(MerchantEntity)
-    const merchant = await merchantRepository.findOne({
-      where: { id: Number(id) },
-      relations: [
-        'created_by',
-        'business_licenses'
-      ]
-    })
-    if (merchant == null) {
-      return res.status(404).send({ message: 'Merchant not found' })
-    }
-
-    // Upload the file to MinIO
-  })
 /**
  * @openapi
  * /merchants/{id}/registration-status:
@@ -798,13 +622,38 @@ router.post('/merchants/:id/locations', async (req: Request, res: Response) => {
   const merchantRepository = AppDataSource.getRepository(MerchantEntity)
   const locationRepository = AppDataSource.getRepository(MerchantLocationEntity)
 
-  const merchant = await merchantRepository.findOne(
-    { where: { id } }
-  )
+  const merchant = await merchantRepository.findOne({
+    where: { id },
+    relations: [
+      'checkout_counters'
+    ]
+  })
 
   if (merchant == null) {
     logger.error('Merchant not found')
     return res.status(404).json({ error: 'Merchant not found' })
+  }
+
+  const checkoutDescription: string = req.body.checkout_description
+  if (checkoutDescription !== null && checkoutDescription !== '') {
+    if (merchant.checkout_counters.length > 0) {
+      merchant.checkout_counters[0].description = req.body.checkout_description
+
+      try {
+        await AppDataSource.getRepository(CheckoutCounterEntity).update(
+          merchant.checkout_counters[0].id,
+          merchant.checkout_counters[0]
+        )
+      } catch (err) {
+        if (err instanceof QueryFailedError) {
+          logger.error('Query Failed: %o', err.message)
+          return res.status(500).send({ error: err.message })
+        }
+      }
+    } else {
+      logger.error('Merchant Checkout Counter not found')
+      return res.status(404).json({ error: 'Merchant Checkout Counter not found' })
+    }
   }
 
   const newLocation = locationRepository.create({
@@ -969,6 +818,22 @@ router.post('/merchants/:id/contact-persons', async (req: Request, res: Response
  *               identification_number:
  *                 type: string
  *                 example: "123456789"
+ *               country:
+ *                 type: string
+ *                 example: "Australia"
+ *               country_subdivision:
+ *                 type: string
+ *                 example: "State"
+ *               address_line:
+ *                 type: string
+ *                 example: "123 Main Street, Townsville"
+ *               latitude:
+ *                 type: string
+ *                 example: "40.7128"
+ *               longitude:
+ *                 type: string
+ *                 example: "74.0060"
+ *
  *     responses:
  *       201:
  *         description: Business Owner Saved
@@ -984,7 +849,7 @@ router.post('/merchants/:id/contact-persons', async (req: Request, res: Response
  */
 router.post('/merchants/:id/business-owners', async (req: Request, res: Response) => {
   const id = Number(req.params.id)
-  if (isNaN(id)) {
+  if (isNaN(id) || id <= 0) {
     logger.error('Invalid ID')
     res.status(422).send({ message: 'Invalid ID' })
     return
@@ -1004,6 +869,7 @@ router.post('/merchants/:id/business-owners', async (req: Request, res: Response
 
   const merchantRepository = AppDataSource.getRepository(MerchantEntity)
   const businessOwnerRepository = AppDataSource.getRepository(BusinessOwnerEntity)
+  const locationRepository = AppDataSource.getRepository(BusinessPersonLocationEntity)
 
   const merchant = await merchantRepository.findOne(
     {
@@ -1017,24 +883,51 @@ router.post('/merchants/:id/business-owners', async (req: Request, res: Response
     return res.status(404).json({ error: 'Merchant not found' })
   }
 
-  const newBusinessOwner = businessOwnerRepository.create()
-  newBusinessOwner.name = businessOwnerData.name
-  newBusinessOwner.phone_number = businessOwnerData.phone_number
-  newBusinessOwner.email = businessOwnerData.email
-  newBusinessOwner.identificaton_type = businessOwnerData.identificaton_type
-  newBusinessOwner.identification_number = businessOwnerData.identification_number
+  const locationObj = locationRepository.create({
+    ...businessOwnerData
+  })
 
-  await businessOwnerRepository.save(newBusinessOwner)
+  let savedLocation: BusinessPersonLocationEntity | null = null
+  try {
+    logger.debug('creating location obj: %o', locationObj)
+    // use 'as any' to solve eslint typecast issue.
+    savedLocation = await locationRepository.save(locationObj as any)
+    // businessOwner.businessPersonLocation = savedLocation
+  } catch (err) {
+    logger.error('error creating business owner location: %o', err)
+    return res.status(500).send({ error: 'error creating business owner location' })
+  }
+
+  const businessOwner: BusinessOwnerEntity = businessOwnerRepository.create({})
+
+  businessOwner.name = businessOwnerData.name
+  businessOwner.phone_number = businessOwnerData.phone_number
+  businessOwner.email = businessOwnerData.email
+  businessOwner.identificaton_type = businessOwnerData.identificaton_type
+  businessOwner.identification_number = businessOwnerData.identification_number
+  if (savedLocation !== null) {
+    businessOwner.businessPersonLocation = savedLocation
+  }
+
+  logger.debug('%o', businessOwner)
+
+  try {
+    await businessOwnerRepository.save(businessOwner)
+  } catch (err) {
+    logger.error('error creating business owner: %o', err)
+    return res.status(500).send({ error: 'error creating business owner' })
+  }
+
   if (merchant.business_owners == null || merchant.business_owners.length === 0) {
-    merchant.business_owners = [newBusinessOwner]
+    merchant.business_owners = [businessOwner]
   } else {
-    merchant.business_owners.push(newBusinessOwner)
+    merchant.business_owners.push(businessOwner)
   }
   await merchantRepository.save(merchant)
 
   return res.status(201).send({
     message: 'Business Owner Saved',
-    data: newBusinessOwner
+    data: businessOwner
   })
 })
 export default router

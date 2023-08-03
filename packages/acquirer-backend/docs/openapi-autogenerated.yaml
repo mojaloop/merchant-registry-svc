@@ -382,6 +382,21 @@ paths:
                 identification_number:
                   type: string
                   example: '123456789'
+                country:
+                  type: string
+                  example: Australia
+                country_subdivision:
+                  type: string
+                  example: State
+                address_line:
+                  type: string
+                  example: 123 Main Street, Townsville
+                latitude:
+                  type: string
+                  example: '40.7128'
+                longitude:
+                  type: string
+                  example: '74.0060'
       responses:
         '201':
           description: Business Owner Saved

@@ -35,7 +35,7 @@ export const MerchantSubmitDataSchema = z.object({
 
 export const MerchantLocationSubmitDataSchema = z.object({
   location_type: z.nativeEnum(MerchantLocationType),
-  country: z.nativeEnum(Countries),
+  country: z.nativeEnum(Countries).or(z.null()),
   web_url: z.string().optional(),
   address_type: z.string().optional(),
   department: z.string().optional(),
@@ -64,9 +64,27 @@ export const ContactPersonSubmitDataSchema = z.object({
 }).strict()
 
 export const BusinessOwnerSubmitDataSchema = z.object({
+  id: z.number().optional(), // only needed for updating
   name: z.string(),
-  email: z.string().email(),
+  email: z.string().email().or(z.null()).optional(),
   phone_number: z.string(),
   identificaton_type: z.nativeEnum(BusinessOwnerIDType),
-  identification_number: z.string()
+  identification_number: z.string(),
+  address_type: z.string().optional(),
+  department: z.string().optional(),
+  sub_department: z.string().optional(),
+  street_name: z.string().optional(),
+  building_number: z.string().optional(),
+  building_name: z.string().optional(),
+  floor_number: z.string().optional(),
+  room_number: z.string().optional(),
+  post_box: z.string().optional(),
+  postal_code: z.string().optional(),
+  town_name: z.string().optional(),
+  district_name: z.string().optional(),
+  country: z.nativeEnum(Countries).optional(),
+  country_subdivision: z.string().optional(),
+  address_line: z.string().optional(),
+  latitude: z.string().optional(),
+  longitude: z.string().optional()
 }).strict()
