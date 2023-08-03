@@ -21,13 +21,12 @@ export const businessInfoSchema = z.object({
   employees_num: z.nativeEnum(NumberOfEmployees),
   monthly_turnover: z.string().optional(),
   category_code: z.string().nonempty({ message: 'Category code is required' }),
-  merchant_type: z.nativeEnum(MerchantType).or(z.null()),
-
-  registeredDFSPName: z.string().optional(),
+  merchant_type: z.nativeEnum(MerchantType),
+  dfsp_name: z.string().optional(),
   currency_code: z.nativeEnum(CurrencyCodes),
-  haveBusinessLicense: z.union([z.literal('yes'), z.literal('no')]).or(z.undefined()),
+  have_business_license: z.union([z.literal('yes'), z.literal('no')]).or(z.undefined()),
   license_number: z.string().optional(),
-  licenseDocument: z.custom<File>(val => val instanceof File).or(z.null()),
+  license_document: z.custom<File>(val => val instanceof File).or(z.null()),
 })
 
 export const locationInfoSchema = z.object({
