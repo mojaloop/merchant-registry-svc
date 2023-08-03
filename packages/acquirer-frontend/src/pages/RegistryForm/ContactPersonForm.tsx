@@ -27,6 +27,7 @@ const ContactPersonForm = ({ setActiveStep }: ContactPersonProps) => {
   } = useForm<ContactPerson>({
     resolver: zodResolver(contactPersonSchema),
     defaultValues: {
+      is_same_as_business_owner: false,
       email: null,
     },
   })
@@ -77,13 +78,7 @@ const ContactPersonForm = ({ setActiveStep }: ContactPersonProps) => {
     <>
       <MerchantInformationModal isOpen={isOpen} onClose={onClose} />
 
-      <Stack
-        as='form'
-        id='contact_person'
-        onSubmit={handleSubmit(onSubmit)}
-        pt='20'
-        noValidate
-      >
+      <Stack as='form' onSubmit={handleSubmit(onSubmit)} pt='20' noValidate>
         <GridShell>
           <Box w='20rem' justifySelf={{ md: 'center' }}>
             <Heading size='sm' as='h3'>
@@ -141,9 +136,7 @@ const ContactPersonForm = ({ setActiveStep }: ContactPersonProps) => {
             Back
           </CustomButton>
 
-          <CustomButton type='submit' form='contact_person'>
-            Save and Review Submission
-          </CustomButton>
+          <CustomButton type='submit'>Save and Review Submission</CustomButton>
         </Box>
       </Stack>
     </>
