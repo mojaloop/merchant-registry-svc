@@ -21,13 +21,12 @@ export const businessInfoSchema = z.object({
   employees_num: z.nativeEnum(NumberOfEmployees),
   monthly_turnover: z.string().optional(),
   category_code: z.string().nonempty({ message: 'Category code is required' }),
-  merchant_type: z.nativeEnum(MerchantType).or(z.null()),
-
-  registeredDFSPName: z.string().optional(),
+  merchant_type: z.nativeEnum(MerchantType),
+  dfsp_name: z.string().optional(),
   currency_code: z.nativeEnum(CurrencyCodes),
-  haveBusinessLicense: z.union([z.literal('yes'), z.literal('no')]).or(z.undefined()),
+  have_business_license: z.union([z.literal('yes'), z.literal('no')]).or(z.undefined()),
   license_number: z.string().optional(),
-  licenseDocument: z.custom<File>(val => val instanceof File).or(z.null()),
+  license_document: z.custom<File>(val => val instanceof File).or(z.null()),
 })
 
 export const locationInfoSchema = z.object({
@@ -58,7 +57,7 @@ export const ownerInfoSchema = z.object({
   identification_number: z.string().nonempty({ message: 'National ID is required' }),
   identificaton_type: z.nativeEnum(BusinessOwnerIDType),
   department: z.string().optional(),
-  sub_cepartment: z.string().optional(),
+  sub_department: z.string().optional(),
   street_name: z.string().optional(),
   building_number: z.string().optional(),
   building_name: z.string().optional(),
@@ -73,11 +72,12 @@ export const ownerInfoSchema = z.object({
   longitude: z.string().optional(),
   latitude: z.string().optional(),
   phone_number: z.string().nonempty({ message: 'Phone number is required' }),
-  email: z.string().email().or(z.literal('')),
+  email: z.string().email().or(z.literal(null)),
 })
 
 export const contactPersonSchema = z.object({
+  is_same_as_business_owner: z.boolean(),
   name: z.string().nonempty({ message: 'Name is required' }),
   phone_number: z.string().nonempty({ message: 'Phone number is required' }),
-  email: z.string().email().or(z.literal('')),
+  email: z.string().email().or(z.literal(null)),
 })

@@ -1,5 +1,4 @@
 import { useEffect, useRef } from 'react'
-import axiosInstance from '../../lib/axiosInstance'
 import { useNavigate } from 'react-router-dom'
 import {
   Box,
@@ -15,14 +14,10 @@ import {
   Text,
   VisuallyHiddenInput,
 } from '@chakra-ui/react'
+import { isAxiosError } from 'axios'
 import { Controller, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { MdFileUpload } from 'react-icons/md'
-
-import { type BusinessInfo, businessInfoSchema } from '@/lib/validations/registry'
-import { CustomButton } from '@/components/ui'
-import { FormInput, FormSelect } from '@/components/form'
-import GridShell from './GridShell'
 import {
   CurrencyDescriptions,
   MerchantCategoryCodes,
@@ -30,12 +25,18 @@ import {
   MerchantType,
 } from 'shared-lib'
 
+import instance from '@/lib/axiosInstance'
+import { type BusinessInfo, businessInfoSchema } from '@/lib/validations/registry'
+import { CustomButton } from '@/components/ui'
+import { FormInput, FormSelect } from '@/components/form'
+import GridShell from './GridShell'
+
 const EMPLOYEE_COUNTS = Object.values(NumberOfEmployees).map(value => ({
   value,
   label: value,
 }))
 
-const MERCHANT_TYPES = Object.entries(MerchantType).map(([_value, label]) => ({
+const MERCHANT_TYPES = Object.entries(MerchantType).map(([, label]) => ({
   value: label,
   label,
 }))
@@ -73,44 +74,49 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
   } = useForm<BusinessInfo>({
     resolver: zodResolver(businessInfoSchema),
     defaultValues: {
-      merchantType: null,
-      currency: null,
-      licenseDocument: null,
+      license_document: null,
     },
   })
 
-  const watchedLicenseDocument = watch('licenseDocument')
-  const watchedHaveLicense = watch('haveBusinessLicense')
+  const watchedLicenseDocument = watch('license_document')
+  const watchedHaveLicense = watch('have_business_license')
   const haveLicense = watchedHaveLicense === 'yes'
 
   const onSubmit = async (values: BusinessInfo) => {
-    console.log(values)
     const formData = new FormData()
 
     // Loop over the form values and append each one to the form data.
-    for (const [key, value] of Object.entries(values)) {
-      formData.append(key, value)
-    }
+    Object.entries(values).forEach(([key, value]) => {
+      if (value instanceof File || typeof value === 'string') {
+        formData.append(key, value)
+      }
+    })
 
     try {
-      const response = await axiosInstance.post('/merchants/draft', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-          Authorization: `Bearer test_1_dummy_auth_token`,
-        },
-      })
-      console.log(response)
-      if (response.data?.data?.id) {
-        sessionStorage.setItem('merchantId', response.data.data.id)
+      const response = await instance.post<{ data: { id: number }; message: string }>(
+        '/merchants/draft',
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            Authorization: `Bearer test_1_dummy_auth_token`,
+          },
+        }
+      )
+
+      if (response.data.data?.id) {
+        sessionStorage.setItem('merchantId', response.data.data.id.toString())
         alert(response.data.message)
         setActiveStep(activeStep => activeStep + 1)
       }
-
-      // ... handle response
     } catch (error) {
-      alert('Error: ' + error?.response?.data?.error || error)
-      console.log(error)
-      // ... handle error
+      if (isAxiosError(error)) {
+        console.log(error)
+        alert(
+          'Error: ' + error.response?.data?.error ||
+            'Something went wrong! Please check your data and try again.'
+        )
+      }
     }
   }
 
@@ -125,7 +131,7 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
 
   useEffect(() => {
     if (watchedHaveLicense === 'no') {
-      setValue('licenseDocument', null)
+      setValue('license_document', null)
     }
   }, [watchedHaveLicense, setValue])
 
@@ -198,7 +204,7 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
         />
 
         <FormSelect
-          name='registeredDFSPName'
+          name='dfsp_name'
           register={register}
           errors={errors}
           label='Registered DFSP Name'
@@ -226,7 +232,7 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
           <Text mb='4'>Do you have Business license?</Text>
           <Controller
             control={control}
-            name='haveBusinessLicense'
+            name='have_business_license'
             render={({ field }) => (
               <RadioGroup {...field} onChange={value => field.onChange(value)}>
                 <Stack>
@@ -252,7 +258,7 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
         <Box w='full' maxW={{ md: '20rem' }}>
           <FormControl
             isDisabled={!haveLicense}
-            isInvalid={!!errors.licenseDocument}
+            isInvalid={!!errors.license_document}
             maxW={{ md: '20rem' }}
           >
             <FormLabel
@@ -264,7 +270,7 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
             </FormLabel>
             <Controller
               control={control}
-              name='licenseDocument'
+              name='license_document'
               render={({ field: { name, onBlur, onChange } }) => (
                 <VisuallyHiddenInput
                   id='licenseDocument'
@@ -314,7 +320,7 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
                 }}
               />
             </HStack>
-            <FormErrorMessage>{errors.licenseDocument?.message}</FormErrorMessage>
+            <FormErrorMessage>{errors.license_document?.message}</FormErrorMessage>
           </FormControl>
 
           {haveLicense && (
