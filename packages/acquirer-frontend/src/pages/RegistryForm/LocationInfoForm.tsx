@@ -2,20 +2,23 @@ import { useEffect } from 'react'
 import { Box, Heading, Stack } from '@chakra-ui/react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import axiosInstance from '../../lib/axiosInstance'
 
 import { type LocationInfo, locationInfoSchema } from '@/lib/validations/registry'
 import { CustomButton } from '@/components/ui'
 import { FormInput, FormSelect } from '@/components/form'
 import GridShell from './GridShell'
+import { MerchantLocationType, Countries } from 'shared-lib'
 
-const LOCATION_TYPES = [
-  { value: 'physical', label: 'Physical' },
-  { value: 'virtual', label: 'Virtual' },
-]
-const COUNTRIES = [
-  { value: 'Afghanistan', label: 'Afghanistan' },
-  { value: 'Albania', label: 'Albania' },
-]
+const LOCATION_TYPES = Object.entries(MerchantLocationType).map(([value, label]) => ({
+  value: label,
+  label,
+}))
+
+const COUNTRIES = Object.entries(Countries).map(([value, label]) => ({
+  value: label,
+  label,
+}))
 
 interface LocationInfoFormProps {
   setActiveStep: React.Dispatch<React.SetStateAction<number>>
@@ -34,9 +37,34 @@ const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
     },
   })
 
-  const onSubmit = (values: LocationInfo) => {
+  const onSubmit = async (values: LocationInfo) => {
     console.log(values)
-    setActiveStep(activeStep => activeStep + 1)
+    const merchantId = sessionStorage.getItem('merchantId')
+    if (merchantId == null) {
+      alert('Merchant ID not found. Go back to the previous page and try again')
+      return
+    }
+
+    try {
+      const response = await axiosInstance.post(
+        `/merchants/${merchantId}/locations`,
+        values,
+        {
+          headers: {
+            Authorization: `Bearer test_1_dummy_auth_token`,
+          },
+        }
+      )
+
+      if (response.data?.data?.id) {
+        alert(response.data.message)
+        setActiveStep(activeStep => activeStep + 1)
+      }
+    } catch (error) {
+      alert('Error: ' + error?.response?.data?.error || error)
+      console.log(error)
+      // ... handle error
+    }
   }
 
   // focus on first input that has error after validation
@@ -53,7 +81,7 @@ const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
       <GridShell justifyItems='center'>
         <FormSelect
           isRequired
-          name='locationType'
+          name='location_type'
           register={register}
           errors={errors}
           label='Location Type'
@@ -63,7 +91,7 @@ const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
         />
 
         <FormInput
-          name='websiteUrl'
+          name='web_url'
           register={register}
           errors={errors}
           label='Website URL'
@@ -87,7 +115,7 @@ const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
         />
 
         <FormInput
-          name='subDepartment'
+          name='sub_department'
           register={register}
           errors={errors}
           label='Sub Department'
@@ -95,7 +123,7 @@ const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
         />
 
         <FormInput
-          name='streetName'
+          name='street_name'
           register={register}
           errors={errors}
           label='Street Name'
@@ -103,7 +131,7 @@ const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
         />
 
         <FormInput
-          name='buildingNumber'
+          name='building_number'
           register={register}
           errors={errors}
           label='Building Number'
@@ -111,7 +139,7 @@ const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
         />
 
         <FormInput
-          name='buildingName'
+          name='building_name'
           register={register}
           errors={errors}
           label='Building Name'
@@ -119,7 +147,7 @@ const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
         />
 
         <FormInput
-          name='floorNumber'
+          name='floor_number'
           register={register}
           errors={errors}
           label='Floor Number'
@@ -127,7 +155,7 @@ const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
         />
 
         <FormInput
-          name='roomNumber'
+          name='room_number'
           register={register}
           errors={errors}
           label='Room Number'
@@ -135,7 +163,7 @@ const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
         />
 
         <FormInput
-          name='postBox'
+          name='post_box'
           register={register}
           errors={errors}
           label='Post Box'
@@ -143,7 +171,7 @@ const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
         />
 
         <FormInput
-          name='postalCode'
+          name='postal_code'
           register={register}
           errors={errors}
           label='Postal Code'
@@ -151,7 +179,7 @@ const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
         />
 
         <FormInput
-          name='township'
+          name='town_name'
           register={register}
           errors={errors}
           label='Township'
@@ -159,7 +187,7 @@ const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
         />
 
         <FormInput
-          name='district'
+          name='district_name'
           register={register}
           errors={errors}
           label='District'
@@ -167,7 +195,7 @@ const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
         />
 
         <FormInput
-          name='countrySubdivision'
+          name='country_subdivision'
           register={register}
           errors={errors}
           label='Country Subdivision (State/Divison)'
@@ -205,7 +233,7 @@ const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
 
       <GridShell justifyItems='center' pb={{ base: '8', sm: '12' }}>
         <FormInput
-          name='checkoutDescription'
+          name='checkout_description'
           register={register}
           errors={errors}
           label='Checkout Counter Description'

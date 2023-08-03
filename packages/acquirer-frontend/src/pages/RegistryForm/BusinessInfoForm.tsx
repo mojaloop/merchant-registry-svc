@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react'
+import axiosInstance from '../../lib/axiosInstance'
 import { useNavigate } from 'react-router-dom'
 import {
   Box,
@@ -22,23 +23,34 @@ import { type BusinessInfo, businessInfoSchema } from '@/lib/validations/registr
 import { CustomButton } from '@/components/ui'
 import { FormInput, FormSelect } from '@/components/form'
 import GridShell from './GridShell'
+import {
+  CurrencyDescriptions,
+  MerchantCategoryCodes,
+  NumberOfEmployees,
+  MerchantType,
+} from 'shared-lib'
 
-const EMPLOYEE_COUNTS = [
-  { value: '1 - 10', label: '1 - 10' },
-  { value: '11 - 50', label: '11 - 50' },
-  { value: '51 - 100', label: '51 - 100' },
-  { value: '100 +', label: '100 +' },
-]
-const MERCHANT_TYPES = [
-  { value: 'individual', label: 'Individual' },
-  { value: 'small-shop', label: 'Small Shop' },
-  { value: 'chain-store', label: 'Chain Store' },
-]
-const CURRENCIES = [
-  { value: 'USD', label: 'USD' },
-  { value: 'EUR', label: 'EUR' },
-  { value: 'MMK', label: 'MMK' },
-]
+const EMPLOYEE_COUNTS = Object.values(NumberOfEmployees).map(value => ({
+  value,
+  label: value,
+}))
+
+const MERCHANT_TYPES = Object.entries(MerchantType).map(([_value, label]) => ({
+  value: label,
+  label,
+}))
+
+const MERCHANT_CATEGORY_CODES = Object.entries(MerchantCategoryCodes).map(
+  ([value, label]) => ({
+    value,
+    label,
+  })
+)
+
+const CURRENCIES = Object.entries(CurrencyDescriptions).map(([value, label]) => ({
+  value,
+  label: `${value} (${label})`,
+}))
 
 interface BusinessInfoFormProps {
   setActiveStep: React.Dispatch<React.SetStateAction<number>>
@@ -71,9 +83,39 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
   const watchedHaveLicense = watch('haveBusinessLicense')
   const haveLicense = watchedHaveLicense === 'yes'
 
-  const onSubmit = (values: BusinessInfo) => {
+  const onSubmit = async (values: BusinessInfo) => {
     console.log(values)
-    setActiveStep(activeStep => activeStep + 1)
+    const formData = new FormData()
+
+    // Loop over the form values and append each one to the form data.
+    for (const [key, value] of Object.entries(values)) {
+      if (key === 'licenseDocument') {
+        formData.append('file', value)
+      } else {
+        formData.append(key, value)
+      }
+    }
+
+    try {
+      const response = await axiosInstance.post('/merchants/draft', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer test_1_dummy_auth_token`,
+        },
+      })
+      console.log(response)
+      if (response.data?.data?.id) {
+        sessionStorage.setItem('merchantId', response.data.data.id)
+        alert(response.data.message)
+        setActiveStep(activeStep => activeStep + 1)
+      }
+
+      // ... handle response
+    } catch (error) {
+      alert('Error: ' + error?.response?.data?.error || error)
+      console.log(error)
+      // ... handle error
+    }
   }
 
   // focus on first input that has error after validation
@@ -96,7 +138,7 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
       <GridShell justifyItems='center'>
         <FormInput
           isRequired
-          name='dbaName'
+          name='dba_trading_name'
           register={register}
           errors={errors}
           label='Doing Business As Name'
@@ -104,7 +146,7 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
         />
 
         <FormInput
-          name='registeredName'
+          name='registered_name'
           register={register}
           errors={errors}
           label='Registered Name'
@@ -113,7 +155,7 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
 
         <FormInput
           isRequired
-          name='payintoAccount'
+          name='payinto_alias'
           register={register}
           errors={errors}
           label='Payinto Account'
@@ -122,7 +164,7 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
 
         <FormSelect
           isRequired
-          name='numberOfEmployee'
+          name='employees_num'
           register={register}
           errors={errors}
           label='Number of Employee'
@@ -132,7 +174,7 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
         />
 
         <FormInput
-          name='monthlyTurnOver'
+          name='monthly_turnover'
           register={register}
           errors={errors}
           label='Monthly Turn Over'
@@ -141,17 +183,17 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
 
         <FormSelect
           isRequired
-          name='merchantCategory'
+          name='category_code'
           register={register}
           errors={errors}
           label='Merchant Category'
-          placeholder='Merchant Type'
-          options={MERCHANT_TYPES}
+          placeholder='Merchant Category'
+          options={MERCHANT_CATEGORY_CODES}
           errorMsg='Please select a category'
         />
 
         <FormSelect
-          name='merchantType'
+          name='merchant_type'
           register={register}
           errors={errors}
           label='Merchant Type'
@@ -173,12 +215,13 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
         />
 
         <FormSelect
-          name='currency'
+          name='currency_code'
           register={register}
           errors={errors}
           label='Currency'
           placeholder='Currency'
           options={CURRENCIES}
+          errorMsg='Please select a currency'
         />
       </GridShell>
 
@@ -203,7 +246,7 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
       <GridShell justifyItems='center' pb={{ base: '8', sm: '12' }}>
         <FormInput
           isDisabled={!haveLicense}
-          name='licenseNumber'
+          name='license_number'
           register={register}
           errors={errors}
           label='License Number'

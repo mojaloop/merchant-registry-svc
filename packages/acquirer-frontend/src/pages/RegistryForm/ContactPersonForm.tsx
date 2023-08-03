@@ -1,7 +1,8 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { Box, Checkbox, Heading, Stack, useDisclosure } from '@chakra-ui/react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import axiosInstance from '../../lib/axiosInstance'
 
 import { type ContactPerson, contactPersonSchema } from '@/lib/validations/registry'
 import { CustomButton, MerchantInformationModal } from '@/components/ui'
@@ -14,6 +15,7 @@ interface ContactPersonProps {
 
 const ContactPersonForm = ({ setActiveStep }: ContactPersonProps) => {
   const { isOpen, onOpen, onClose } = useDisclosure()
+  const [isSameAsOwner, setIsSameAsOwner] = useState(false)
 
   const {
     register,
@@ -24,9 +26,35 @@ const ContactPersonForm = ({ setActiveStep }: ContactPersonProps) => {
     resolver: zodResolver(contactPersonSchema),
   })
 
-  const onSubmit = (values: ContactPerson) => {
+  const onSubmit = async (values: ContactPerson) => {
     console.log(values)
-    onOpen()
+
+    const merchantId = sessionStorage.getItem('merchantId')
+    if (merchantId == null) {
+      alert('Merchant ID not found. Go back to the previous page and try again')
+      return
+    }
+    values.is_same_as_business_owner = isSameAsOwner
+    try {
+      const response = await axiosInstance.post(
+        `/merchants/${merchantId}/contact-persons`,
+        values,
+        {
+          headers: {
+            Authorization: `Bearer test_1_dummy_auth_token`,
+          },
+        }
+      )
+      console.log(response)
+
+      if (response.data?.data?.id) {
+        alert(response.data.message)
+        onOpen()
+      }
+    } catch (error) {
+      alert('Error: ' + error?.response?.data?.error || error)
+      console.log(error)
+    }
   }
 
   // focus on first input that has error after validation
@@ -49,7 +77,15 @@ const ContactPersonForm = ({ setActiveStep }: ContactPersonProps) => {
               Contact Person
             </Heading>
 
-            <Checkbox mt='4'>Same as business owner</Checkbox>
+            <Checkbox
+              mt='4'
+              isChecked={isSameAsOwner}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                setIsSameAsOwner(e.target.checked)
+              }
+            >
+              Same as business owner
+            </Checkbox>
           </Box>
         </GridShell>
 
@@ -65,7 +101,7 @@ const ContactPersonForm = ({ setActiveStep }: ContactPersonProps) => {
 
           <FormInput
             isRequired
-            name='phoneNumber'
+            name='phone_number'
             register={register}
             errors={errors}
             label='Phone Number'
@@ -92,7 +128,7 @@ const ContactPersonForm = ({ setActiveStep }: ContactPersonProps) => {
             Back
           </CustomButton>
 
-          <CustomButton type='submit'>Review Submission</CustomButton>
+          <CustomButton type='submit'>Save and Review Submission</CustomButton>
         </Box>
       </Stack>
     </>
