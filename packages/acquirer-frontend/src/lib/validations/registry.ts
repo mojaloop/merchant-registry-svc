@@ -76,7 +76,8 @@ export const ownerInfoSchema = z.object({
 })
 
 export const contactPersonSchema = z.object({
+  is_same_as_business_owner: z.boolean(),
   name: z.string().nonempty({ message: 'Name is required' }),
   phone_number: z.string().nonempty({ message: 'Phone number is required' }),
-  email: z.string().email().or(z.literal('')),
+  email: z.string().email().or(z.literal(null)),
 })
