@@ -93,7 +93,7 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
     })
 
     try {
-      const response = await instance.post<{ data: { id: number } }>(
+      const response = await instance.post<{ data: { id: number }; message: string }>(
         '/merchants/draft',
         formData,
         {
@@ -106,6 +106,7 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
 
       if (response.data.data?.id) {
         sessionStorage.setItem('merchantId', response.data.data.id.toString())
+        alert(response.data.message)
         setActiveStep(activeStep => activeStep + 1)
       }
     } catch (error) {
