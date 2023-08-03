@@ -4,6 +4,7 @@ import { isAxiosError } from 'axios'
 import { Controller, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 
+import { FormReponse } from '@/types/form'
 import instance from '@/lib/axiosInstance'
 import { type ContactPerson, contactPersonSchema } from '@/lib/validations/registry'
 import { CustomButton, MerchantInformationModal } from '@/components/ui'
@@ -26,6 +27,7 @@ const ContactPersonForm = ({ setActiveStep }: ContactPersonProps) => {
   } = useForm<ContactPerson>({
     resolver: zodResolver(contactPersonSchema),
     defaultValues: {
+      is_same_as_business_owner: false,
       email: null,
     },
   })
@@ -38,7 +40,7 @@ const ContactPersonForm = ({ setActiveStep }: ContactPersonProps) => {
     }
 
     try {
-      const response = await instance.post<{ data: { id: number }; message: string }>(
+      const response = await instance.post<FormReponse>(
         `/merchants/${merchantId}/contact-persons`,
         values,
         {
@@ -76,13 +78,7 @@ const ContactPersonForm = ({ setActiveStep }: ContactPersonProps) => {
     <>
       <MerchantInformationModal isOpen={isOpen} onClose={onClose} />
 
-      <Stack
-        as='form'
-        id='contact_person'
-        onSubmit={handleSubmit(onSubmit)}
-        pt='20'
-        noValidate
-      >
+      <Stack as='form' onSubmit={handleSubmit(onSubmit)} pt='20' noValidate>
         <GridShell>
           <Box w='20rem' justifySelf={{ md: 'center' }}>
             <Heading size='sm' as='h3'>
@@ -140,9 +136,7 @@ const ContactPersonForm = ({ setActiveStep }: ContactPersonProps) => {
             Back
           </CustomButton>
 
-          <CustomButton type='submit' form='contact_person'>
-            Save and Review Submission
-          </CustomButton>
+          <CustomButton type='submit'>Save and Review Submission</CustomButton>
         </Box>
       </Stack>
     </>
