@@ -2,16 +2,23 @@ import { useEffect } from 'react'
 import { Box, Heading, Stack } from '@chakra-ui/react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import axiosInstance from '../../lib/axiosInstance'
 
 import { type OwnerInfo, ownerInfoSchema } from '@/lib/validations/registry'
 import { CustomButton } from '@/components/ui'
 import { FormInput, FormSelect } from '@/components/form'
+import { Countries, BusinessOwnerIDType } from 'shared-lib'
 import GridShell from './GridShell'
 
-const COUNTRIES = [
-  { value: 'Afghanistan', label: 'Afghanistan' },
-  { value: 'Albania', label: 'Albania' },
-]
+const COUNTRIES = Object.entries(Countries).map(([value, label]) => ({
+  value: label,
+  label,
+}))
+
+const ID_TYPES = Object.entries(BusinessOwnerIDType).map(([value, label]) => ({
+  value: label,
+  label,
+}))
 
 interface OwnerInfoFormProps {
   setActiveStep: React.Dispatch<React.SetStateAction<number>>
@@ -27,9 +34,40 @@ const OwnerInfoForm = ({ setActiveStep }: OwnerInfoFormProps) => {
     resolver: zodResolver(ownerInfoSchema),
   })
 
-  const onSubmit = (values: OwnerInfo) => {
+  const onSubmit = async (values: OwnerInfo) => {
     console.log(values)
-    setActiveStep(activeStep => activeStep + 1)
+
+    const merchantId = sessionStorage.getItem('merchantId')
+    if (merchantId == null) {
+      alert('Merchant ID not found. Go back to the previous page and try again')
+      return
+    }
+
+    if (values.email === '') {
+      // Server expect null instead of empty string
+      values.email = null
+    }
+
+    try {
+      const response = await axiosInstance.post(
+        `/merchants/${merchantId}/business-owners`,
+        values,
+        {
+          headers: {
+            Authorization: `Bearer test_1_dummy_auth_token`,
+          },
+        }
+      )
+      console.log(response)
+
+      if (response.data?.data?.id) {
+        alert(response.data.message)
+        setActiveStep(activeStep => activeStep + 1)
+      }
+    } catch (error) {
+      alert('Error: ' + error?.response?.data?.error || error)
+      console.log(error)
+    }
   }
 
   // focus on first input that has error after validation
@@ -53,22 +91,23 @@ const OwnerInfoForm = ({ setActiveStep }: OwnerInfoFormProps) => {
           placeholder='Name'
         />
 
-        <FormInput
+        <FormSelect
           isRequired
-          name='nationalId'
+          name='identificaton_type'
           register={register}
           errors={errors}
-          label='National ID'
-          placeholder='National ID'
+          label='ID Type'
+          placeholder='Chosse National ID Type'
+          options={ID_TYPES}
+          errorMsg='Please select a ID Type'
         />
-
         <FormInput
           isRequired
-          name='nationality'
+          name='identification_number'
           register={register}
           errors={errors}
-          label='Nationality'
-          placeholder='Nationality'
+          label='Identification Number'
+          placeholder='Identification Number'
         />
       </GridShell>
 
@@ -88,7 +127,7 @@ const OwnerInfoForm = ({ setActiveStep }: OwnerInfoFormProps) => {
         />
 
         <FormInput
-          name='subDepartment'
+          name='sub_department'
           register={register}
           errors={errors}
           label='Sub Department'
@@ -96,7 +135,7 @@ const OwnerInfoForm = ({ setActiveStep }: OwnerInfoFormProps) => {
         />
 
         <FormInput
-          name='streetName'
+          name='street_name'
           register={register}
           errors={errors}
           label='Street Name'
@@ -104,7 +143,7 @@ const OwnerInfoForm = ({ setActiveStep }: OwnerInfoFormProps) => {
         />
 
         <FormInput
-          name='buildingNumber'
+          name='building_number'
           register={register}
           errors={errors}
           label='Building Number'
@@ -112,7 +151,7 @@ const OwnerInfoForm = ({ setActiveStep }: OwnerInfoFormProps) => {
         />
 
         <FormInput
-          name='buildingName'
+          name='building_name'
           register={register}
           errors={errors}
           label='Building Name'
@@ -120,7 +159,7 @@ const OwnerInfoForm = ({ setActiveStep }: OwnerInfoFormProps) => {
         />
 
         <FormInput
-          name='floorNumber'
+          name='floor_number'
           register={register}
           errors={errors}
           label='Floor Number'
@@ -128,7 +167,7 @@ const OwnerInfoForm = ({ setActiveStep }: OwnerInfoFormProps) => {
         />
 
         <FormInput
-          name='roomNumber'
+          name='room_number'
           register={register}
           errors={errors}
           label='Room Number'
@@ -136,7 +175,7 @@ const OwnerInfoForm = ({ setActiveStep }: OwnerInfoFormProps) => {
         />
 
         <FormInput
-          name='postBox'
+          name='post_box'
           register={register}
           errors={errors}
           label='Post Box'
@@ -144,7 +183,7 @@ const OwnerInfoForm = ({ setActiveStep }: OwnerInfoFormProps) => {
         />
 
         <FormInput
-          name='postalCode'
+          name='postal_code'
           register={register}
           errors={errors}
           label='Postal Code'
@@ -152,7 +191,7 @@ const OwnerInfoForm = ({ setActiveStep }: OwnerInfoFormProps) => {
         />
 
         <FormInput
-          name='township'
+          name='town_name'
           register={register}
           errors={errors}
           label='Township'
@@ -160,7 +199,7 @@ const OwnerInfoForm = ({ setActiveStep }: OwnerInfoFormProps) => {
         />
 
         <FormInput
-          name='district'
+          name='district_name'
           register={register}
           errors={errors}
           label='District'
@@ -168,7 +207,7 @@ const OwnerInfoForm = ({ setActiveStep }: OwnerInfoFormProps) => {
         />
 
         <FormInput
-          name='countrySubdivision'
+          name='country_subdivision'
           register={register}
           errors={errors}
           label='Country Subdivision (State/Divison)'
@@ -177,7 +216,7 @@ const OwnerInfoForm = ({ setActiveStep }: OwnerInfoFormProps) => {
 
         <FormSelect
           isRequired
-          name='physicalAddressCountry'
+          name='country'
           register={register}
           errors={errors}
           label='Country'
@@ -208,7 +247,7 @@ const OwnerInfoForm = ({ setActiveStep }: OwnerInfoFormProps) => {
       <GridShell justifyItems='center' pb={{ base: '8', sm: '12' }}>
         <FormInput
           isRequired
-          name='phoneNumber'
+          name='phone_number'
           register={register}
           errors={errors}
           label='Phone Number'
