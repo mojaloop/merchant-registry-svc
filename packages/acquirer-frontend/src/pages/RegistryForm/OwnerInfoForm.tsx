@@ -1,21 +1,22 @@
 import { useEffect } from 'react'
 import { Box, Heading, Stack } from '@chakra-ui/react'
+import { isAxiosError } from 'axios'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import axiosInstance from '../../lib/axiosInstance'
 
+import instance from '@/lib/axiosInstance'
 import { type OwnerInfo, ownerInfoSchema } from '@/lib/validations/registry'
 import { CustomButton } from '@/components/ui'
 import { FormInput, FormSelect } from '@/components/form'
 import { Countries, BusinessOwnerIDType } from 'shared-lib'
 import GridShell from './GridShell'
 
-const COUNTRIES = Object.entries(Countries).map(([value, label]) => ({
+const COUNTRIES = Object.entries(Countries).map(([, label]) => ({
   value: label,
   label,
 }))
 
-const ID_TYPES = Object.entries(BusinessOwnerIDType).map(([value, label]) => ({
+const ID_TYPES = Object.entries(BusinessOwnerIDType).map(([, label]) => ({
   value: label,
   label,
 }))
@@ -32,24 +33,20 @@ const OwnerInfoForm = ({ setActiveStep }: OwnerInfoFormProps) => {
     handleSubmit,
   } = useForm<OwnerInfo>({
     resolver: zodResolver(ownerInfoSchema),
+    defaultValues: {
+      email: null,
+    },
   })
 
   const onSubmit = async (values: OwnerInfo) => {
-    console.log(values)
-
     const merchantId = sessionStorage.getItem('merchantId')
     if (merchantId == null) {
       alert('Merchant ID not found. Go back to the previous page and try again')
       return
     }
 
-    if (values.email === '') {
-      // Server expect null instead of empty string
-      values.email = null
-    }
-
     try {
-      const response = await axiosInstance.post(
+      const response = await instance.post<{ data: { id: number }; message: string }>(
         `/merchants/${merchantId}/business-owners`,
         values,
         {
@@ -58,15 +55,19 @@ const OwnerInfoForm = ({ setActiveStep }: OwnerInfoFormProps) => {
           },
         }
       )
-      console.log(response)
 
-      if (response.data?.data?.id) {
+      if (response.data.data?.id) {
         alert(response.data.message)
         setActiveStep(activeStep => activeStep + 1)
       }
     } catch (error) {
-      alert('Error: ' + error?.response?.data?.error || error)
-      console.log(error)
+      if (isAxiosError(error)) {
+        console.log(error)
+        alert(
+          'Error: ' + error.response?.data?.error ||
+            'Something went wrong! Please check your data and try again.'
+        )
+      }
     }
   }
 

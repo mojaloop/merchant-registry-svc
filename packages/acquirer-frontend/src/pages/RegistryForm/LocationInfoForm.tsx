@@ -1,21 +1,22 @@
 import { useEffect } from 'react'
 import { Box, Heading, Stack } from '@chakra-ui/react'
+import { isAxiosError } from 'axios'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import axiosInstance from '../../lib/axiosInstance'
+import { MerchantLocationType, Countries } from 'shared-lib'
 
+import instance from '@/lib/axiosInstance'
 import { type LocationInfo, locationInfoSchema } from '@/lib/validations/registry'
 import { CustomButton } from '@/components/ui'
 import { FormInput, FormSelect } from '@/components/form'
 import GridShell from './GridShell'
-import { MerchantLocationType, Countries } from 'shared-lib'
 
-const LOCATION_TYPES = Object.entries(MerchantLocationType).map(([value, label]) => ({
+const LOCATION_TYPES = Object.entries(MerchantLocationType).map(([, label]) => ({
   value: label,
   label,
 }))
 
-const COUNTRIES = Object.entries(Countries).map(([value, label]) => ({
+const COUNTRIES = Object.entries(Countries).map(([, label]) => ({
   value: label,
   label,
 }))
@@ -38,7 +39,6 @@ const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
   })
 
   const onSubmit = async (values: LocationInfo) => {
-    console.log(values)
     const merchantId = sessionStorage.getItem('merchantId')
     if (merchantId == null) {
       alert('Merchant ID not found. Go back to the previous page and try again')
@@ -46,7 +46,7 @@ const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
     }
 
     try {
-      const response = await axiosInstance.post(
+      const response = await instance.post<{ data: { id: number }; message: string }>(
         `/merchants/${merchantId}/locations`,
         values,
         {
@@ -56,14 +56,18 @@ const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
         }
       )
 
-      if (response.data?.data?.id) {
+      if (response.data.data?.id) {
         alert(response.data.message)
         setActiveStep(activeStep => activeStep + 1)
       }
     } catch (error) {
-      alert('Error: ' + error?.response?.data?.error || error)
-      console.log(error)
-      // ... handle error
+      if (isAxiosError(error)) {
+        console.log(error)
+        alert(
+          'Error: ' + error.response?.data?.error ||
+            'Something went wrong! Please check your data and try again.'
+        )
+      }
     }
   }
 

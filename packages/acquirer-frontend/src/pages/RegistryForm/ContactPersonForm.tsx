@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react'
 import { Box, Checkbox, Heading, Stack, useDisclosure } from '@chakra-ui/react'
+import { isAxiosError } from 'axios'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import axiosInstance from '../../lib/axiosInstance'
 
+import instance from '@/lib/axiosInstance'
 import { type ContactPerson, contactPersonSchema } from '@/lib/validations/registry'
 import { CustomButton, MerchantInformationModal } from '@/components/ui'
 import { FormInput } from '@/components/form'
@@ -27,16 +28,16 @@ const ContactPersonForm = ({ setActiveStep }: ContactPersonProps) => {
   })
 
   const onSubmit = async (values: ContactPerson) => {
-    console.log(values)
-
     const merchantId = sessionStorage.getItem('merchantId')
     if (merchantId == null) {
       alert('Merchant ID not found. Go back to the previous page and try again')
       return
     }
+
     values.is_same_as_business_owner = isSameAsOwner
+
     try {
-      const response = await axiosInstance.post(
+      const response = await instance.post<{ data: { id: number }; message: string }>(
         `/merchants/${merchantId}/contact-persons`,
         values,
         {
@@ -45,15 +46,19 @@ const ContactPersonForm = ({ setActiveStep }: ContactPersonProps) => {
           },
         }
       )
-      console.log(response)
 
-      if (response.data?.data?.id) {
+      if (response.data.data?.id) {
         alert(response.data.message)
         onOpen()
       }
     } catch (error) {
-      alert('Error: ' + error?.response?.data?.error || error)
-      console.log(error)
+      if (isAxiosError(error)) {
+        console.log(error)
+        alert(
+          'Error: ' + error.response?.data?.error ||
+            'Something went wrong! Please check your data and try again.'
+        )
+      }
     }
   }
 

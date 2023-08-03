@@ -57,7 +57,7 @@ export const ownerInfoSchema = z.object({
   identification_number: z.string().nonempty({ message: 'National ID is required' }),
   identificaton_type: z.nativeEnum(BusinessOwnerIDType),
   department: z.string().optional(),
-  sub_cepartment: z.string().optional(),
+  sub_department: z.string().optional(),
   street_name: z.string().optional(),
   building_number: z.string().optional(),
   building_name: z.string().optional(),
@@ -72,7 +72,7 @@ export const ownerInfoSchema = z.object({
   longitude: z.string().optional(),
   latitude: z.string().optional(),
   phone_number: z.string().nonempty({ message: 'Phone number is required' }),
-  email: z.string().email().or(z.literal('')),
+  email: z.string().email().or(z.literal(null)),
 })
 
 export const contactPersonSchema = z.object({
