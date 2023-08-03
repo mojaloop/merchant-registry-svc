@@ -41,13 +41,9 @@ export class MerchantEntity {
     employees_num!: NumberOfEmployees
 
   @Column({
-    nullable: false,
-    type: 'decimal',
-    precision: 10,
-    scale: 2,
-    default: 0
+    nullable: true
   })
-    monthly_turnover!: number
+    monthly_turnover!: string
 
   @Column({
     type: 'enum',

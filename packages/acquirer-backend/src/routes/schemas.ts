@@ -27,7 +27,7 @@ export const MerchantSubmitDataSchema = z.object({
   merchant_type: z.nativeEnum(MerchantType),
   // registration_status: z.nativeEnum(SubmitRegistratonStatus),
   // registration_status_reason: z.string(),
-  payinto_alias: z.string().optional(),
+  payinto_alias: z.string().nonempty(),
   license_number: z.string().optional(),
   file: z.custom<File>(val => val instanceof File).or(z.null())
 
@@ -53,7 +53,7 @@ export const MerchantLocationSubmitDataSchema = z.object({
   address_line: z.string().optional(),
   latitude: z.string().optional(),
   longitude: z.string().optional(),
-  checkout_counters: z.array(z.number()).optional() // The IDs of the associated checkout counters
+  checkout_description: z.string().optional()
 }).strict()
 
 export const ContactPersonSubmitDataSchema = z.object({

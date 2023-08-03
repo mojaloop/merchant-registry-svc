@@ -18,7 +18,7 @@ export class PersonEntity {
   @Column({ nullable: false, length: 255 })
     phone_number!: string
 
-  @OneToOne(() => BusinessPersonLocationEntity, location => location.person)
+  @OneToOne(() => BusinessPersonLocationEntity)
     businessPersonLocation!: BusinessPersonLocationEntity
 
   @CreateDateColumn()

@@ -1,5 +1,5 @@
 import {
-  Entity, Column, ManyToMany, OneToOne
+  Entity, Column, ManyToMany, OneToOne, JoinColumn
 } from 'typeorm'
 import { MerchantEntity } from './MerchantEntity'
 import { BusinessOwnerIDType } from 'shared-lib'
@@ -19,7 +19,8 @@ export class BusinessOwnerEntity extends PersonEntity {
   @Column({ nullable: false, length: 255 })
     identification_number!: string
 
-  @OneToOne(() => BusinessPersonLocationEntity, location => location.person)
+  @OneToOne(() => BusinessPersonLocationEntity)
+  @JoinColumn()
     businessPersonLocation!: BusinessPersonLocationEntity
 
   @ManyToMany(() => MerchantEntity, merchant => merchant.business_owners)
