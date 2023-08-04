@@ -460,6 +460,75 @@ describe('Merchant Routes Tests', () => {
     })
   })
 
+  describe('PUT /api/v1/merchants/:id/ready-to-review', () => {
+    let makerUser: PortalUserEntity | null
+    let merchant: MerchantEntity | null
+
+    beforeAll(async () => {
+      const userRepository = AppDataSource.getRepository(PortalUserEntity)
+      makerUser = await userRepository.findOne({
+        where: { email: process.env.TEST1_EMAIL ?? '' }
+      })
+    })
+
+    beforeEach(async () => {
+      merchant = await AppDataSource.manager.save(
+        MerchantEntity,
+        {
+          dba_trading_name: 'Test Merchant 1',
+          registered_name: 'Test Merchant 1',
+          employees_num: NumberOfEmployees.ONE_TO_FIVE,
+          monthly_turnover: '0.5',
+          currency_code: CurrencyCodes.USD,
+          category_code: '01110',
+          registration_status: MerchantRegistrationStatus.DRAFT,
+          registration_status_reason: 'Drafting Merchant',
+          created_by: makerUser ?? {}
+        }
+      )
+    })
+
+    afterEach(async () => {
+      await AppDataSource.manager.delete(
+        MerchantEntity,
+        { id: merchant?.id }
+      )
+    })
+
+    it('should respond with 200 status and the updated merchant', async () => {
+      // Arrange
+
+      // Act
+      const res = await request(app)
+        .put(`/api/v1/merchants/${merchant?.id}/ready-to-review`)
+        .set('Authorization', `Bearer ${process.env.TEST1_DUMMY_AUTH_TOKEN ?? ''}`)
+
+      // Assert
+      expect(res.statusCode).toEqual(200)
+      expect(res.body).toHaveProperty('message')
+      expect(res.body.message).toEqual('Status Updated to Review')
+      expect(res.body).toHaveProperty('data')
+      expect(res.body.data).toHaveProperty('id')
+      expect(res.body.data.registration_status).toEqual(MerchantRegistrationStatus.REVIEW)
+    })
+
+    // eslint-disable-next-line
+    it('should respond with 401 status with message \'Only the Hub User who submitted the Draft Merchant can mark it as Review\'', async () => {
+      // Arrange
+
+      // Act
+      const res = await request(app)
+        .put(`/api/v1/merchants/${merchant?.id}/ready-to-review`)
+        // Different User is trying to mark this as ready to review
+        .set('Authorization', `Bearer ${process.env.TEST2_DUMMY_AUTH_TOKEN ?? ''}`)
+
+      // Assert
+      expect(res.statusCode).toEqual(401)
+      expect(res.body).toHaveProperty('message')
+      expect(res.body.message).toEqual('Only the Hub User who submitted the Draft Merchant can mark it as Review')
+    })
+  })
+
   describe('POST /api/v1/merchants/:id/locations', () => {
     it('should respond with 201 status when create location valid data', async () => {
       const checkoutCounter = await AppDataSource.manager.save(
