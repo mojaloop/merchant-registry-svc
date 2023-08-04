@@ -12,6 +12,7 @@ const Layout = () => {
         <Sidebar />
 
         <Box
+          id='main'
           position={'relative'}
           as='main'
           ml={{ base: '0', lg: '24' }}
