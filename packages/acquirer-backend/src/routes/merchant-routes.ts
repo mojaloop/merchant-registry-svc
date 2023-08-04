@@ -24,6 +24,7 @@ import {
   BusinessOwnerSubmitDataSchema
 } from './schemas'
 import { pdfUpload, uploadMerchantDocument } from '../middleware/minioClient'
+import { isValidDate } from '../utils/utils'
 
 const router = express.Router()
 
@@ -55,10 +56,110 @@ const router = express.Router()
  */
 // TODO: Protect the route
 router.get('/merchants', async (req: Request, res: Response) => {
-  // TODO: Filtering... e.g. by status
   try {
+    const {
+      addedBy,
+      approvedBy,
+      addedTime,
+      updatedTime,
+      dbaName,
+      merchantId,
+      payintoId,
+      registrationStatus
+    } = req.query
+
+    logger.debug('req.query: %o', req.query)
+
     const merchantRepository = AppDataSource.getRepository(MerchantEntity)
-    const merchants = await merchantRepository.find({})
+    const portalUserRepository = AppDataSource.getRepository(PortalUserEntity)
+    const checkoutCounterRepository = AppDataSource.getRepository(CheckoutCounterEntity)
+
+    const whereClause: Partial<MerchantEntity> = {}
+
+    if (!isNaN(Number(addedBy))) {
+      const user = await portalUserRepository.findOne({ where: { id: Number(addedBy) } })
+      if (user != null) whereClause.created_by = user
+    }
+
+    if (!isNaN(Number(approvedBy))) {
+      const user = await portalUserRepository.findOne({ where: { id: Number(approvedBy) } })
+      if (user != null) whereClause.checked_by = user
+    }
+
+    if (!isNaN(Number(merchantId))) {
+      whereClause.id = Number(merchantId)
+    }
+
+    if (typeof payintoId === 'string' && payintoId.length > 0) {
+      const checkoutCounter = await checkoutCounterRepository.findOne({
+        where: { alias_value: payintoId },
+        relations: ['merchant']
+      })
+      if (checkoutCounter != null) {
+        whereClause.id = checkoutCounter.merchant.id
+      }
+    }
+
+    if (typeof registrationStatus === 'string' && registrationStatus.length > 0) {
+      whereClause.registration_status = registrationStatus as MerchantRegistrationStatus
+    }
+
+    // Need to use query builder to do a LIKE query
+    const queryBuilder = merchantRepository.createQueryBuilder('merchant')
+    queryBuilder
+      .leftJoinAndSelect('merchant.created_by', 'created_by')
+      .leftJoinAndSelect('merchant.checked_by', 'checked_by')
+      .addSelect(['created_by.id', 'created_by.name'])
+      .addSelect(['checked_by.id', 'checked_by.name'])
+      .where(whereClause)
+
+    logger.debug('WhereClause: %o', whereClause)
+    // queryBuilder.where(whereClause)
+
+    if (typeof dbaName === 'string' && dbaName.length > 0) {
+      queryBuilder.andWhere('merchant.dba_trading_name LIKE :name', { name: `%${dbaName}%` })
+    }
+
+    if (typeof addedTime === 'string' && addedTime.length > 0) {
+      const startOfDay = new Date(addedTime)
+      if (isValidDate(startOfDay)) {
+        startOfDay.setHours(0, 0, 0, 0)
+
+        const endOfDay = new Date(addedTime)
+        endOfDay.setHours(23, 59, 59, 999)
+
+        queryBuilder.andWhere(
+          'merchant.created_at BETWEEN :start AND :end',
+          { start: startOfDay, end: endOfDay }
+        )
+      }
+    }
+
+    if (typeof updatedTime === 'string' && updatedTime.length > 0) {
+      const startOfDay = new Date(updatedTime)
+      if (isValidDate(startOfDay)) {
+        startOfDay.setHours(0, 0, 0, 0)
+
+        const endOfDay = new Date(updatedTime)
+        endOfDay.setHours(23, 59, 59, 999)
+
+        queryBuilder.andWhere(
+          'merchant.updated_at BETWEEN :start AND :end',
+          { start: startOfDay, end: endOfDay }
+        )
+      }
+    }
+
+    const merchants = await queryBuilder.getMany()
+    merchants.forEach((merchant: any) => {
+      delete merchant.created_by?.password
+      delete merchant.created_by?.created_at
+      delete merchant.created_by?.updated_at
+
+      delete merchant.checked_by?.password
+      delete merchant.checked_by?.created_at
+      delete merchant.checked_by?.updated_at
+    })
     res.send({ message: 'OK', data: merchants })
   } catch (e) {
     logger.error(e)

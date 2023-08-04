@@ -12,3 +12,7 @@ export function convertURLFriendly (input: string): string {
   // convert to lowercase, replace spaces with hyphens, remove non-alphanumeric
   return input.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')
 }
+
+export function isValidDate (d: any): boolean {
+  return d instanceof Date && !isNaN(d as any as number)
+}

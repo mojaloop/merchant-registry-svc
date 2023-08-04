@@ -43,6 +43,179 @@ describe('Merchant Routes Tests', () => {
     await removeMerchantDocumentBucket()
   })
 
+  describe('GET /api/v1/merchants', () => {
+    let makerUser: PortalUserEntity | null
+    let checkerUser: PortalUserEntity | null
+    let merchant1: MerchantEntity
+    let merchant2: MerchantEntity
+    let merchant3: MerchantEntity
+    //
+    beforeAll(async () => {
+      const userRepository = AppDataSource.getRepository(PortalUserEntity)
+      makerUser = await userRepository.findOne({
+        where: { email: process.env.TEST1_EMAIL ?? '' }
+      })
+      checkerUser = await userRepository.findOne({
+        where: { email: process.env.TEST2_EMAIL ?? '' }
+      })
+
+      merchant1 = await AppDataSource.manager.save(MerchantEntity, {
+        dba_trading_name: 'Test Merchant 1 For Filter',
+        registered_name: 'Test Registered 1',
+        employees_num: NumberOfEmployees.ONE_TO_FIVE,
+        merchant_type: MerchantType.INDIVIDUAL,
+
+        // checked_by will be undefined when registration_status is DRAFT
+        registration_status: MerchantRegistrationStatus.DRAFT,
+        created_by: makerUser ?? undefined,
+        checked_by: undefined
+      })
+      merchant2 = await AppDataSource.manager.save(MerchantEntity, {
+        dba_trading_name: 'Test Merchant 2 For Filter',
+        registered_name: 'Test Registered 2',
+        employees_num: NumberOfEmployees.ELEVEN_TO_FIFTY,
+        merchant_type: MerchantType.CHAIN_STORE,
+
+        // checked_by will be undefined when registration_status is REVIEW
+        registration_status: MerchantRegistrationStatus.REVIEW,
+        created_by: makerUser ?? undefined,
+        checked_by: undefined
+      })
+
+      merchant3 = await AppDataSource.manager.save(MerchantEntity, {
+        dba_trading_name: 'Test Merchant 3 For Filter',
+        registered_name: 'Test Registered 3',
+        employees_num: NumberOfEmployees.HUNDRED_PLUS_PLUS,
+        merchant_type: MerchantType.SMALL_SHOP,
+
+        // checked_by is not undefined when registration_status is APPROVED
+        registration_status: MerchantRegistrationStatus.APPROVED,
+        created_by: makerUser ?? undefined,
+        checked_by: checkerUser ?? undefined
+      })
+    })
+
+    afterAll(async () => {
+      await AppDataSource.manager.delete(MerchantEntity, {})
+    })
+
+    it('should respond 200 with only 1 record for dba_trading_name filter', async () => {
+    // Act
+      const res = await request(app)
+        .get('/api/v1/merchants')
+        .query({
+          dbaName: 'Test Merchant 1'
+        })
+        .set('Authorization', `Bearer ${process.env.TEST1_DUMMY_AUTH_TOKEN ?? ''}`)
+
+      // Assert
+      expect(res.statusCode).toEqual(200)
+      expect(res.body).toHaveProperty('message')
+      expect(res.body.message).toEqual('OK')
+      expect(res.body).toHaveProperty('data')
+      expect(res.body.data).toHaveLength(1) // Only one merchant should match the filter
+      expect(res.body.data[0].dba_trading_name).toEqual('Test Merchant 1 For Filter')
+    })
+
+    it('should respond 200 with 3 records for partial dba_trading_name', async () => {
+    // Act
+      const res = await request(app)
+        .get('/api/v1/merchants')
+        .query({
+          dbaName: 'Test'
+        })
+        .set('Authorization', `Bearer ${process.env.TEST1_DUMMY_AUTH_TOKEN ?? ''}`)
+
+      // Assert
+      expect(res.statusCode).toEqual(200)
+      expect(res.body).toHaveProperty('message')
+      expect(res.body.message).toEqual('OK')
+      expect(res.body).toHaveProperty('data')
+      expect(res.body.data).toHaveLength(3) // 3 merchants should match the filter
+      expect(res.body.data[0]).toHaveProperty('dba_trading_name')
+    })
+
+    it('should respond 200 for only filter DRAFT status', async () => {
+    // Arrange
+
+      // Act
+      const res = await request(app)
+        .get('/api/v1/merchants')
+        .query({
+          registrationStatus: MerchantRegistrationStatus.DRAFT
+        })
+        .set('Authorization', `Bearer ${process.env.TEST1_DUMMY_AUTH_TOKEN ?? ''}`)
+
+      // Assert
+      expect(res.statusCode).toEqual(200)
+      expect(res.body).toHaveProperty('message')
+      expect(res.body.message).toEqual('OK')
+      expect(res.body).toHaveProperty('data')
+      expect(res.body.data).toHaveLength(1) // Only one merchant should match the filter
+      expect(res.body.data[0].registration_status).toEqual(MerchantRegistrationStatus.DRAFT)
+    })
+
+    it('should respond 200 for only filter APPROVED status', async () => {
+    // Act
+      const res = await request(app)
+        .get('/api/v1/merchants')
+        .query({
+          registrationStatus: MerchantRegistrationStatus.APPROVED
+        })
+        .set('Authorization', `Bearer ${process.env.TEST1_DUMMY_AUTH_TOKEN ?? ''}`)
+
+      // Assert
+      expect(res.statusCode).toEqual(200)
+      expect(res.body).toHaveProperty('message')
+      expect(res.body.message).toEqual('OK')
+      expect(res.body).toHaveProperty('data')
+      expect(res.body.data).toHaveLength(1) // Only one merchant should match the filter
+      expect(res.body.data[0].registration_status).toEqual(MerchantRegistrationStatus.APPROVED)
+
+      // Approved merchant should have a checker
+      expect(res.body.data[0]).toHaveProperty('checked_by')
+      expect(res.body.data[0].checked_by).toHaveProperty('id')
+    })
+
+    it('should respond 200 with 1 record for approvedBy', async () => {
+      // Act
+      const res = await request(app)
+        .get('/api/v1/merchants')
+        .query({
+          approvedBy: checkerUser?.id
+        })
+
+      // Assert
+      expect(res.statusCode).toEqual(200)
+      expect(res.body).toHaveProperty('message')
+      expect(res.body.message).toEqual('OK')
+      expect(res.body).toHaveProperty('data')
+      expect(res.body.data).toHaveLength(1) // Only one merchant should match the filter
+      expect(res.body.data[0].checked_by).toHaveProperty('id')
+      expect(res.body.data[0].checked_by.id).toEqual(checkerUser?.id)
+      expect(res.body.data[0]).toHaveProperty('registration_status')
+      expect(res.body.data[0].registration_status).toEqual(MerchantRegistrationStatus.APPROVED)
+    })
+
+    it('should respond 200 with 3 records for addedBy', async () => {
+      // Act
+      const res = await request(app)
+        .get('/api/v1/merchants')
+        .query({
+          addedBy: makerUser?.id
+        })
+
+      // Assert
+      expect(res.statusCode).toEqual(200)
+      expect(res.body).toHaveProperty('message')
+      expect(res.body.message).toEqual('OK')
+      expect(res.body).toHaveProperty('data')
+      expect(res.body.data).toHaveLength(3) // Only one merchant should match the filter
+      expect(res.body.data[0].created_by).toHaveProperty('id')
+      expect(res.body.data[0].created_by.id).toEqual(makerUser?.id)
+    })
+  })
+
   describe('POST /api/v1/merchants/draft', () => {
     beforeEach(async () => {
       await AppDataSource.manager.delete(BusinessLicenseEntity, {})
@@ -144,7 +317,6 @@ describe('Merchant Routes Tests', () => {
         .attach('licenseDocument', path.join(__dirname, '../test-files/dummy.pdf'))
 
       // Assert
-
       expect(res.statusCode).toEqual(201)
       expect(res.body).toHaveProperty('message')
       expect(res.body.message).toEqual('Drafting Merchant Successful')
