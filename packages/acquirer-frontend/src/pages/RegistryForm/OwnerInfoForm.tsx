@@ -7,6 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { FormReponse } from '@/types/form'
 import instance from '@/lib/axiosInstance'
 import { type OwnerInfo, ownerInfoSchema } from '@/lib/validations/registry'
+import { scrollToTop } from '@/utils'
 import { CustomButton } from '@/components/ui'
 import { FormInput, FormSelect } from '@/components/form'
 import { Countries, BusinessOwnerIDType } from 'shared-lib'
@@ -60,6 +61,7 @@ const OwnerInfoForm = ({ setActiveStep }: OwnerInfoFormProps) => {
       if (response.data.data?.id) {
         alert(response.data.message)
         setActiveStep(activeStep => activeStep + 1)
+        scrollToTop()
       }
     } catch (error) {
       if (isAxiosError(error)) {

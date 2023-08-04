@@ -8,6 +8,7 @@ import { MerchantLocationType, Countries } from 'shared-lib'
 import { FormReponse } from '@/types/form'
 import instance from '@/lib/axiosInstance'
 import { type LocationInfo, locationInfoSchema } from '@/lib/validations/registry'
+import { scrollToTop } from '@/utils'
 import { CustomButton } from '@/components/ui'
 import { FormInput, FormSelect } from '@/components/form'
 import GridShell from './GridShell'
@@ -63,6 +64,7 @@ const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
       if (response.data.data?.id) {
         alert(response.data.message)
         setActiveStep(activeStep => activeStep + 1)
+        scrollToTop()
       }
     } catch (error) {
       if (isAxiosError(error)) {

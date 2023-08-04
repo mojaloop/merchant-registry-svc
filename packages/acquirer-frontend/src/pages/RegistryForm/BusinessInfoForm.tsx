@@ -28,6 +28,7 @@ import {
 import { FormReponse } from '@/types/form'
 import instance from '@/lib/axiosInstance'
 import { type BusinessInfo, businessInfoSchema } from '@/lib/validations/registry'
+import { scrollToTop } from '@/utils'
 import { CustomButton } from '@/components/ui'
 import { FormInput, FormSelect } from '@/components/form'
 import GridShell from './GridShell'
@@ -105,6 +106,7 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
         sessionStorage.setItem('merchantId', response.data.data.id.toString())
         alert(response.data.message)
         setActiveStep(activeStep => activeStep + 1)
+        scrollToTop()
       }
     } catch (error) {
       if (isAxiosError(error)) {
