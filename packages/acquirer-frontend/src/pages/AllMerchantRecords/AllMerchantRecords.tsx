@@ -202,7 +202,7 @@ const AllMerchantRecords = () => {
             errors={errors}
             label='Added Time'
             placeholder='Choose added date and time'
-            inputProps={{ type: 'datetime-local' }}
+            inputProps={{ type: 'date' }}
           />
 
           <FormInput
@@ -211,7 +211,7 @@ const AllMerchantRecords = () => {
             errors={errors}
             label='Updated Time'
             placeholder='Choose updated date and time'
-            inputProps={{ type: 'datetime-local' }}
+            inputProps={{ type: 'date' }}
           />
 
           <FormInput
