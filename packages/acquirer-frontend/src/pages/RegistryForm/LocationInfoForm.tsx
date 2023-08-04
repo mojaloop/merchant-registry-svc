@@ -95,7 +95,6 @@ const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
           label='Location Type'
           placeholder='Location Type'
           options={LOCATION_TYPES}
-          errorMsg='Please select a location type'
         />
 
         <FormInput
@@ -217,7 +216,6 @@ const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
           label='Country'
           placeholder='Choose Country'
           options={COUNTRIES}
-          errorMsg='Please select a country'
         />
 
         <FormInput
