@@ -7,7 +7,7 @@ export const pendingMerchantsSchema = z.object({
   approvedBy: z.string().optional(),
   addedTime: z.string().optional(),
   updatedTime: z.string().optional(),
-  dabName: z.string().optional(),
+  dbaName: z.string().optional(),
   merchantId: z.string().optional(),
   payintoId: z.string().optional(),
 })

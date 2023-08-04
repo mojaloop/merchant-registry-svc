@@ -215,11 +215,11 @@ const AllMerchantRecords = () => {
           />
 
           <FormInput
-            name='dabName'
+            name='dbaName'
             register={register}
             errors={errors}
-            label='DAB Name'
-            placeholder='Enter DAB name'
+            label='DBA Name'
+            placeholder='Enter DBA name'
           />
 
           <FormInput
