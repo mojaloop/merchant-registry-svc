@@ -35,6 +35,49 @@ const router = express.Router()
  *     tags:
  *       - Merchants
  *     summary: GET Merchants List
+ *     parameters:
+ *       - in: query
+ *         name: merchantId
+ *         schema:
+ *           type: integer
+ *         description: The ID of the merchant
+ *       - in: query
+ *         name: dbaName
+ *         schema:
+ *           type: string
+ *         description: The trading name of the merchant
+ *       - in: query
+ *         name: registrationStatus
+ *         schema:
+ *           type: string
+ *         description: The registration status of the merchant
+ *       - in: query
+ *         name: payintoId
+ *         schema:
+ *           type: string
+ *         description: The ID of the payment recipient for the merchant
+ *       - in: query
+ *         name: addedBy
+ *         schema:
+ *           type: integer
+ *         description: The ID of the user who added the merchant
+ *       - in: query
+ *         name: approvedBy
+ *         schema:
+ *           type: integer
+ *         description: The ID of the user who approved the merchant
+ *       - in: query
+ *         name: addedTime
+ *         schema:
+ *           type: string
+ *           format: date-time
+ *         description: The time the merchant was added
+ *       - in: query
+ *         name: updatedTime
+ *         schema:
+ *           type: string
+ *           format: date-time
+ *         description: The last time the merchant was updated
  *     responses:
  *       200:
  *         description: GET Merchants List
@@ -52,7 +95,6 @@ const router = express.Router()
  *                   description: The list of merchants
  *                   items:
  *                     type: object
- *
  */
 // TODO: Protect the route
 router.get('/merchants', async (req: Request, res: Response) => {
