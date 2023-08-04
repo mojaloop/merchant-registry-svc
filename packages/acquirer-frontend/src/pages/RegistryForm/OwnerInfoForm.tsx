@@ -65,7 +65,7 @@ const OwnerInfoForm = ({ setActiveStep }: OwnerInfoFormProps) => {
       if (isAxiosError(error)) {
         console.log(error)
         alert(
-          'Error: ' + error.response?.data?.error ||
+          error.response?.data?.error ||
             'Something went wrong! Please check your data and try again.'
         )
       }
