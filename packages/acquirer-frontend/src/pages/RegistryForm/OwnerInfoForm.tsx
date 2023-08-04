@@ -101,8 +101,8 @@ const OwnerInfoForm = ({ setActiveStep }: OwnerInfoFormProps) => {
           label='ID Type'
           placeholder='Chosse National ID Type'
           options={ID_TYPES}
-          errorMsg='Please select a ID Type'
         />
+
         <FormInput
           isRequired
           name='identification_number'
@@ -224,7 +224,6 @@ const OwnerInfoForm = ({ setActiveStep }: OwnerInfoFormProps) => {
           label='Country'
           placeholder='Choose Country'
           options={COUNTRIES}
-          errorMsg='Please select a country'
         />
 
         <FormInput

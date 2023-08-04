@@ -169,7 +169,6 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
           label='Number of Employee'
           placeholder='Number of Employee'
           options={EMPLOYEE_COUNTS}
-          errorMsg='Please select an option'
         />
 
         <FormInput
@@ -188,10 +187,10 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
           label='Merchant Category'
           placeholder='Merchant Category'
           options={MERCHANT_CATEGORY_CODES}
-          errorMsg='Please select a category'
         />
 
         <FormSelect
+          isRequired
           name='merchant_type'
           register={register}
           errors={errors}
@@ -214,13 +213,13 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
         />
 
         <FormSelect
+          isRequired
           name='currency_code'
           register={register}
           errors={errors}
           label='Currency'
           placeholder='Currency'
           options={CURRENCIES}
-          errorMsg='Please select a currency'
         />
       </GridShell>
 
