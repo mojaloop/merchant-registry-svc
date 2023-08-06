@@ -23,6 +23,13 @@ const theme = extendTheme({
     warning: '#F9C937',
     primaryBackground: '#E1E9F4',
   },
+  styles: {
+    global: {
+      'input, select': {
+        fontSize: '0.9375rem !important',
+      },
+    },
+  },
 })
 
 export default theme

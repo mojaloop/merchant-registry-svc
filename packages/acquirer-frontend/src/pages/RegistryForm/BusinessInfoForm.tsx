@@ -289,7 +289,9 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
 
       <GridShell justifyItems='center'>
         <FormControl maxW={{ md: '20rem' }}>
-          <Text mb='4'>Do you have Business license?</Text>
+          <Text mb='4' fontSize='0.9375rem'>
+            Do you have Business license?
+          </Text>
           <Controller
             control={control}
             name='have_business_license'

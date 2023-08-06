@@ -1,0 +1,8 @@
+/* This is a workaround as Chakra UI's Radio and Checkbox items can't be set a custom font size */
+.chakra-radio__label {
+  font-size: 0.9375rem !important;
+}
+
+.chakra-checkbox {
+  font-size: 0.9375rem !important;
+}
