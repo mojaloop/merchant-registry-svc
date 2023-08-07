@@ -1,3 +1,4 @@
+import { MerchantRegistrationStatus } from 'shared-lib'
 export interface PendingMerchantInfo {
   no: number
   dbaName: string
@@ -8,5 +9,5 @@ export interface PendingMerchantInfo {
   city: string
   counterDescription: string
   registeredDfspName: string
-  registrationStatus: 'pending'
+  registrationStatus: MerchantRegistrationStatus.REVIEW
 }

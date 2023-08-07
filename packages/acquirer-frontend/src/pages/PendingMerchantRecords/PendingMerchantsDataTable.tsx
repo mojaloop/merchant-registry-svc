@@ -26,14 +26,14 @@ import MobileTable from '@/components/ui/DataTable/MobileTable'
 import PaginationControl from '@/components/ui/DataTable/PaginationControl'
 
 interface PendingMerchantsDataTableProps<T> extends TableContainerProps {
-  data: T[]
+  data: any[]
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   columns: ColumnDef<T, any>[]
   alwaysVisibleColumns: number[]
   breakpoint: 'sm' | 'md' | 'lg' | 'xl' | '2xl'
   onExport: () => void
-  onReject: () => void
-  onApprove: () => void
+  onReject: (ids: number[]) => void
+  onApprove: (ids: number[]) => void
   onRevert: () => void
   hidePerPage?: boolean
   rowStyle?: TableRowProps
@@ -72,6 +72,17 @@ const PendingMerchantsDataTable = <T,>({
 
   const { getHeaderGroups, getRowModel } = table
 
+  const getSelectedMerchantIds = (): number[] => {
+    // Extracting the selected row keys (IDs) from the rowSelection state.
+    const selectedRowKeys = Object.keys(rowSelection).filter(key => rowSelection[key])
+
+    // Map over the selected row keys and extract the actual merchant ID from the data.
+    return selectedRowKeys.map(key => {
+      const rowIndex = Number(key)
+      return data[rowIndex].no // 'no' is the actual merchant ID in the data
+    })
+  }
+
   return (
     <>
       <HStack spacing='3'>
@@ -88,7 +99,7 @@ const PendingMerchantsDataTable = <T,>({
           px='6'
           mb='4'
           isDisabled={!table.getIsSomeRowsSelected() && !table.getIsAllRowsSelected()}
-          onClick={onReject}
+          onClick={() => onReject(getSelectedMerchantIds())}
         >
           Reject
         </CustomButton>
@@ -97,7 +108,7 @@ const PendingMerchantsDataTable = <T,>({
           px='6'
           mb='4'
           isDisabled={!table.getIsSomeRowsSelected() && !table.getIsAllRowsSelected()}
-          onClick={onApprove}
+          onClick={() => onApprove(getSelectedMerchantIds())}
         >
           Approve
         </CustomButton>
