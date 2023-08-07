@@ -83,6 +83,16 @@ const PendingMerchantsDataTable = <T,>({
     })
   }
 
+  const handleApprove = () => {
+    onApprove(getSelectedMerchantIds())
+    setRowSelection({}) // Clear the row selection state to fix undefined error
+  }
+
+  const handleReject = () => {
+    onReject(getSelectedMerchantIds())
+    setRowSelection({}) // Clear the row selection state to fix undefined error
+  }
+
   return (
     <>
       <HStack spacing='3'>
@@ -99,7 +109,7 @@ const PendingMerchantsDataTable = <T,>({
           px='6'
           mb='4'
           isDisabled={!table.getIsSomeRowsSelected() && !table.getIsAllRowsSelected()}
-          onClick={() => onReject(getSelectedMerchantIds())}
+          onClick={handleReject}
         >
           Reject
         </CustomButton>
@@ -108,7 +118,7 @@ const PendingMerchantsDataTable = <T,>({
           px='6'
           mb='4'
           isDisabled={!table.getIsSomeRowsSelected() && !table.getIsAllRowsSelected()}
-          onClick={() => onApprove(getSelectedMerchantIds())}
+          onClick={handleApprove}
         >
           Approve
         </CustomButton>
