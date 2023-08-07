@@ -373,7 +373,7 @@ router.get('/merchants/:id', async (req: Request, res: Response) => {
 // TODO: Protect the route with User Authentication (Keycloak)
 // TODO: check if the authenticated user is a Maker
 router.post('/merchants/draft',
-  pdfUpload.single('licenseDocument'),
+  pdfUpload.single('license_document'),
   async (req: Request, res: Response) => {
   // TODO: Remove This! and replace with Keycloak Authentication
     const token = req.headers.authorization === undefined
