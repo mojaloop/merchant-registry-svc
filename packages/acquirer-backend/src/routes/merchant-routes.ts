@@ -118,17 +118,17 @@ router.get('/merchants', async (req: Request, res: Response) => {
 
     const whereClause: Partial<MerchantEntity> = {}
 
-    if (!isNaN(Number(addedBy))) {
+    if (!isNaN(Number(addedBy)) && Number(addedBy) > 0) {
       const user = await portalUserRepository.findOne({ where: { id: Number(addedBy) } })
       if (user != null) whereClause.created_by = user
     }
 
-    if (!isNaN(Number(approvedBy))) {
+    if (!isNaN(Number(approvedBy)) && Number(approvedBy) > 0) {
       const user = await portalUserRepository.findOne({ where: { id: Number(approvedBy) } })
       if (user != null) whereClause.checked_by = user
     }
 
-    if (!isNaN(Number(merchantId))) {
+    if (!isNaN(Number(merchantId)) && Number(merchantId) > 0) {
       whereClause.id = Number(merchantId)
     }
 
@@ -149,11 +149,16 @@ router.get('/merchants', async (req: Request, res: Response) => {
     // Need to use query builder to do a LIKE query
     const queryBuilder = merchantRepository.createQueryBuilder('merchant')
     queryBuilder
-      .leftJoinAndSelect('merchant.created_by', 'created_by')
-      .leftJoinAndSelect('merchant.checked_by', 'checked_by')
+      .leftJoin('merchant.created_by', 'created_by')
+      .leftJoin('merchant.checked_by', 'checked_by')
+      .leftJoin('merchant.locations', 'locations')
+      .leftJoin('merchant.checkout_counters', 'checkout_counters')
       .addSelect(['created_by.id', 'created_by.name'])
       .addSelect(['checked_by.id', 'checked_by.name'])
+      .addSelect(['locations.country_subdivision', 'locations.town_name'])
+      .addSelect(['checkout_counters.alias_value', 'checkout_counters.description'])
       .where(whereClause)
+      .orderBy('merchant.created_at', 'DESC') // Sort by latest
 
     logger.debug('WhereClause: %o', whereClause)
     // queryBuilder.where(whereClause)
