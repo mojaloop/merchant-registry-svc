@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { createColumnHelper } from '@tanstack/react-table'
 import {
   Box,
@@ -13,6 +13,8 @@ import {
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 
+import { MerchantRegistrationStatus } from 'shared-lib'
+import instance from '@/lib/axiosInstance'
 import type { AllMerchantInfo } from '@/types/allMerchants'
 import { type AllMerchants, allMerchantsSchema } from '@/lib/validations/allMerchants'
 import { convertKebabCaseToReadable } from '@/utils'
@@ -20,16 +22,16 @@ import { CustomButton, MerchantInformationModal } from '@/components/ui'
 import { FormInput, FormSelect } from '@/components/form'
 import AllMerchantsDataTable from './AllMerchantsDataTable'
 
-const REGISTRATION_STATUSES = [
-  { value: 'approved', label: 'Approved' },
-  { value: 'pending', label: 'Pending' },
-  { value: 'rejected', label: 'Rejected' },
-]
+const REGISTRATION_STATUSES = Object.values(MerchantRegistrationStatus).map(value => ({
+  value,
+  label: value,
+}))
 
 const REGISTRATION_STATUS_COLORS = {
-  approved: 'success',
-  pending: 'warning',
-  rejected: 'danger',
+  Draft: 'gray',
+  Review: 'warning',
+  Approved: 'success',
+  Rejected: 'danger',
 }
 
 type StatusKey = keyof typeof REGISTRATION_STATUS_COLORS
@@ -65,6 +67,42 @@ const AllMerchantRecords = () => {
   })
 
   const { isOpen, onOpen, onClose } = useDisclosure()
+
+  const [data, setData] = useState<AllMerchantInfo[]>(dummyData) // Use state to store fetched data
+
+  const transformData = (merchantData: any): AllMerchantInfo => {
+    return {
+      no: merchantData.id, // Assuming 'no' is the id of the merchant
+      dbaName: merchantData.dba_trading_name,
+      registeredName: merchantData.registered_name,
+
+      // Assuming the first checkout counter's alias value is the payintoAccount
+      payintoAccount: merchantData.checkout_counters[0]?.alias_value || 'N/A',
+      merchantType: merchantData.merchant_type,
+
+      // Assuming the first location's country subdivision is the state
+      state: merchantData.locations[0]?.country_subdivision || 'N/A',
+      city: merchantData.locations[0]?.town_name || 'N/A',
+
+      // Assuming the first checkout counter's description is the counterDescription
+      counterDescription: merchantData.checkout_counters[0]?.description || '',
+      registeredDfspName: 'N/A', // Not provided yet by API Backend Server
+      registrationStatus: merchantData.registration_status,
+    }
+  }
+  const fetchData = async (values?: AllMerchants) => {
+    try {
+      const response = await instance.get('/merchants', { params: values })
+      console.log(response)
+      if (response.data && response.data.data) {
+        const transformedData = response.data.data.map(transformData)
+        setData(transformedData)
+      }
+    } catch (error) {
+      alert('Error fetching merchants: ' + error.message)
+      console.error('Error fetching merchants:', error)
+    }
+  }
 
   const columns = useMemo(() => {
     const columnHelper = createColumnHelper<AllMerchantInfo>()
@@ -134,7 +172,7 @@ const AllMerchantRecords = () => {
               w='2'
               h='2'
               borderRadius='full'
-              bg={REGISTRATION_STATUS_COLORS[info.getValue().toLowerCase() as StatusKey]}
+              bg={REGISTRATION_STATUS_COLORS[info.getValue() as StatusKey]}
             />
 
             <Text>{convertKebabCaseToReadable(info.getValue())}</Text>
@@ -160,7 +198,12 @@ const AllMerchantRecords = () => {
 
   const onSubmit = (values: AllMerchants) => {
     console.log(values)
+    fetchData(values)
   }
+
+  useEffect(() => {
+    fetchData()
+  }, [])
 
   return (
     <Box mb='-14'>
@@ -249,7 +292,14 @@ const AllMerchantRecords = () => {
         </SimpleGrid>
 
         <Box alignSelf='end'>
-          <CustomButton colorVariant='accent-outline' mr='4' onClick={() => reset()}>
+          <CustomButton
+            colorVariant='accent-outline'
+            mr='4'
+            onClick={() => {
+              fetchData()
+              reset()
+            }}
+          >
             Clear Filter
           </CustomButton>
 
@@ -271,7 +321,7 @@ const AllMerchantRecords = () => {
       >
         <AllMerchantsDataTable
           columns={columns}
-          data={dummyData}
+          data={data}
           breakpoint='xl'
           alwaysVisibleColumns={[1]}
           onExport={() => console.log('exported')}

@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { MerchantRegistrationStatus } from 'shared-lib'
 
 export type AllMerchants = z.infer<typeof allMerchantsSchema>
 
@@ -10,7 +11,5 @@ export const allMerchantsSchema = z.object({
   dbaName: z.string().optional(),
   merchantId: z.string().optional(),
   payintoId: z.string().optional(),
-  registrationStatus: z
-    .union([z.literal('approved'), z.literal('pending'), z.literal('rejected')])
-    .or(z.null()),
+  registrationStatus: z.nativeEnum(MerchantRegistrationStatus).optional(),
 })
