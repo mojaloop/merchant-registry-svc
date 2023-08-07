@@ -11,5 +11,5 @@ export const allMerchantsSchema = z.object({
   dbaName: z.string().optional(),
   merchantId: z.string().optional(),
   payintoId: z.string().optional(),
-  registrationStatus: z.nativeEnum(MerchantRegistrationStatus).optional(),
+  registrationStatus: z.nativeEnum(MerchantRegistrationStatus).or(z.null()),
 })
