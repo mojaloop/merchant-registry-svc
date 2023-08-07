@@ -13,13 +13,21 @@ import {
   Heading,
   type GridItemProps,
 } from '@chakra-ui/react'
-
+import { useEffect, useState } from 'react'
+import instance from '@/lib/axiosInstance'
 import { CustomButton } from '@/components/ui'
 import DetailsItem from './DetailsItem'
+import { MerchantDetails } from './MerchantDetailsType'
 
 interface MerchantInformationModalProps {
+  selectedMerchantId: number | null
   isOpen: boolean
   onClose: () => void
+}
+
+interface MerchantDetailsAxiosData {
+  data: MerchantDetails
+  message: string
 }
 
 const SubHeading = ({ children, ...props }: HeadingProps) => {
@@ -38,7 +46,29 @@ const GridItemShell = ({ children, ...props }: GridItemProps) => {
   )
 }
 
-const MerchantInformationModal = ({ isOpen, onClose }: MerchantInformationModalProps) => {
+const MerchantInformationModal = ({
+  isOpen,
+  onClose,
+  selectedMerchantId,
+}: MerchantInformationModalProps) => {
+  const [merchantDetails, setMerchantDetails] = useState<MerchantDetails | null>(null)
+  useEffect(() => {
+    if (isOpen && selectedMerchantId) {
+      const fetchMerchantDetails = async () => {
+        try {
+          const response = await instance.get<MerchantDetailsAxiosData>(
+            `/merchants/${selectedMerchantId}`
+          )
+          console.log(response)
+          setMerchantDetails(response.data.data)
+        } catch (error) {
+          console.error('Error fetching merchant details:', error)
+        }
+      }
+
+      fetchMerchantDetails()
+    }
+  }, [isOpen, selectedMerchantId])
   return (
     <Modal isOpen={isOpen} onClose={onClose} scrollBehavior='inside'>
       <ModalOverlay bg='hsl(0, 0%, 100%, 0.6)' backdropFilter='blur(4px)' />
@@ -62,17 +92,32 @@ const MerchantInformationModal = ({ isOpen, onClose }: MerchantInformationModalP
               <SubHeading>Business Information</SubHeading>
 
               <Stack spacing='3'>
-                <DetailsItem label='Doing Business As Name' value='K Online Shop' />
+                <DetailsItem
+                  label='Doing Business As Name'
+                  value={merchantDetails?.dba_trading_name || 'N/A'}
+                />
 
-                <DetailsItem label='Registered Name' value='K Company Pte.Ltd' />
+                <DetailsItem
+                  label='Registered Name'
+                  value={merchantDetails?.registered_name || 'N/A'}
+                />
 
-                <DetailsItem label='Number of Employee' value='11-50' />
+                <DetailsItem
+                  label='Number of Employee'
+                  value={merchantDetails?.employees_num || 'N/A'}
+                />
 
-                <DetailsItem label='Monthly Turnover' value='20%' />
+                <DetailsItem
+                  label='Monthly Turnover'
+                  value={merchantDetails?.monthly_turnover || 'N/A'}
+                />
 
-                <DetailsItem label='Merchant Category' value='Food and Beverage' />
+                <DetailsItem
+                  label='Merchant Category'
+                  value={merchantDetails?.category_code.description || 'N/A'}
+                />
 
-                <DetailsItem label='DFSP Name' value='AA' />
+                <DetailsItem label='DFSP Name' value='N/A' />
               </Stack>
             </GridItemShell>
 
@@ -80,21 +125,43 @@ const MerchantInformationModal = ({ isOpen, onClose }: MerchantInformationModalP
               <SubHeading>Location Information</SubHeading>
 
               <Stack spacing='3'>
-                <DetailsItem label='Location Type' value='Virtual' />
+                <DetailsItem
+                  label='Location Type'
+                  value={merchantDetails?.locations[0]?.location_type || 'N/A'}
+                />
 
-                <DetailsItem label='Country' value='Myanmar' />
+                <DetailsItem
+                  label='Country'
+                  value={merchantDetails?.locations[0]?.country || 'N/A'}
+                />
 
-                <DetailsItem label='State' value='Myanmar' />
+                <DetailsItem
+                  label='State'
+                  value={merchantDetails?.locations[0]?.country_subdivision || 'N/A'}
+                />
 
-                <DetailsItem label='City' value='Myanmar' />
+                <DetailsItem
+                  label='City'
+                  value={merchantDetails?.locations[0]?.town_name || 'N/A'}
+                />
 
-                <DetailsItem label='Longitude Latitude' value='16.8409° N, 96.1735° E' />
+                <DetailsItem
+                  label='Longitude Latitude'
+                  value={
+                    (merchantDetails?.locations[0]?.longitude || 'N/A') +
+                    ' ' +
+                    (merchantDetails?.locations[0]?.latitude || 'N/A')
+                  }
+                />
 
-                <DetailsItem label='Website URL' value='konlineship.com.mm' />
+                <DetailsItem
+                  label='Website URL'
+                  value={merchantDetails?.locations[0]?.web_url || 'N/A'}
+                />
 
                 <DetailsItem
                   label='Full Address'
-                  value='No(33/A), Room No(701), (7th) Fl, Sky View Tower, Aung Zaya Rd, Yankin Tsp.'
+                  value={merchantDetails?.locations[0]?.address_line || 'N/A'}
                 />
               </Stack>
             </GridItemShell>
@@ -103,20 +170,39 @@ const MerchantInformationModal = ({ isOpen, onClose }: MerchantInformationModalP
               <SubHeading>Business Owner Information</SubHeading>
 
               <Stack spacing='3'>
-                <DetailsItem label='Name' value='John' />
+                <DetailsItem
+                  label='Name'
+                  value={merchantDetails?.business_owners[0]?.name || 'N/A'}
+                />
 
-                <DetailsItem label='National ID' value='0075981' />
-
-                <DetailsItem label='Nationality' value='Burmese' />
+                <DetailsItem
+                  label='ID Type'
+                  value={merchantDetails?.business_owners[0]?.identificaton_type || 'N/A'}
+                />
+                <DetailsItem
+                  label='ID'
+                  value={
+                    merchantDetails?.business_owners[0]?.identification_number || 'N/A'
+                  }
+                />
 
                 <DetailsItem
                   label='Address'
-                  value='No(33/A),Room No(701),(7th) Fl, Sky View Tower, Aung Zaya Rd,Yankin Tsp.'
+                  value={
+                    merchantDetails?.business_owners[0]?.businessPersonLocation
+                      ?.address_line || 'N/A'
+                  }
                 />
 
-                <DetailsItem label='Phone Number' value='09756290742' />
+                <DetailsItem
+                  label='Phone Number'
+                  value={merchantDetails?.business_owners[0]?.phone_number || 'N/A'}
+                />
 
-                <DetailsItem label='Email' value='konlineshop@gmail.com' />
+                <DetailsItem
+                  label='Email'
+                  value={merchantDetails?.business_owners[0]?.email || 'N/A'}
+                />
               </Stack>
             </GridItemShell>
 
@@ -124,22 +210,39 @@ const MerchantInformationModal = ({ isOpen, onClose }: MerchantInformationModalP
               <SubHeading>Contact Person Information</SubHeading>
 
               <Stack spacing='3'>
-                <DetailsItem label='Name' value='John' />
+                <DetailsItem
+                  label='Name'
+                  value={merchantDetails?.contact_persons[0]?.name || 'N/A'}
+                />
 
-                <DetailsItem label='Phone Number' value='09756290742' />
+                <DetailsItem
+                  label='Phone Number'
+                  value={merchantDetails?.contact_persons[0]?.phone_number || 'N/A'}
+                />
 
-                <DetailsItem label='Email' value='konlineshop@gmail.com' />
+                <DetailsItem
+                  label='Email'
+                  value={merchantDetails?.contact_persons[0]?.email || 'N/A'}
+                />
               </Stack>
             </GridItemShell>
 
             <GridItemShell>
               <SubHeading>Checkout Information</SubHeading>
 
-              <Stack spacing='3'>
-                <DetailsItem label='Counter Description' value='Online Shopping - 01' />
+              {merchantDetails?.checkout_counters.map((counter, index) => (
+                <Stack key={index} spacing='3'>
+                  <DetailsItem
+                    label='Counter Alias PayInto'
+                    value={counter.alias_value || 'N/A'}
+                  />
 
-                <DetailsItem label='Counter Description2' value='Online Shopping - 02' />
-              </Stack>
+                  <DetailsItem
+                    label='Counter Description'
+                    value={counter.description || 'N/A'}
+                  />
+                </Stack>
+              ))}
             </GridItemShell>
           </Grid>
         </ModalBody>

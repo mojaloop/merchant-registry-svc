@@ -67,7 +67,12 @@ const AllMerchantRecords = () => {
   })
 
   const { isOpen, onOpen, onClose } = useDisclosure()
+  const [selectedMerchantId, setSelectedMerchantId] = useState<number | null>(null)
 
+  const handleMerchantDetails = (id: number) => {
+    setSelectedMerchantId(id)
+    onOpen()
+  }
   const [data, setData] = useState<AllMerchantInfo[]>(dummyData) // Use state to store fetched data
 
   const transformData = (merchantData: any): AllMerchantInfo => {
@@ -182,11 +187,11 @@ const AllMerchantRecords = () => {
       }),
       columnHelper.display({
         id: 'view-details',
-        cell: () => (
+        cell: ({ row }) => (
           <CustomButton
             mt={{ base: '2', xl: '0' }}
             mr={{ base: '-2', xl: '3' }}
-            onClick={onOpen}
+            onClick={() => handleMerchantDetails(row.original.no)}
           >
             View Details
           </CustomButton>
@@ -309,7 +314,11 @@ const AllMerchantRecords = () => {
         </Box>
       </Stack>
 
-      <MerchantInformationModal isOpen={isOpen} onClose={onClose} />
+      <MerchantInformationModal
+        isOpen={isOpen}
+        onClose={onClose}
+        selectedMerchantId={selectedMerchantId}
+      />
 
       <Box
         bg='primaryBackground'
