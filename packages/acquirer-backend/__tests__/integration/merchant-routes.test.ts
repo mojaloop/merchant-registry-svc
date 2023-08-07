@@ -241,7 +241,7 @@ describe('Merchant Routes Tests', () => {
         .field('registration_status', MerchantRegistrationStatus.DRAFT)
         .field('registration_status_reason', 'Drafting Merchant')
         .field('license_number', '007')
-        .attach('licenseDocument', path.join(__dirname, '../test-files/dummy.pdf'))
+        .attach('license_document', path.join(__dirname, '../test-files/dummy.pdf'))
 
       // Assert
       expect(res.statusCode).toEqual(201)
@@ -314,7 +314,7 @@ describe('Merchant Routes Tests', () => {
         .field('merchant_type', MerchantType.INDIVIDUAL)
         .field('payinto_alias', 'N33')
         .field('license_number', '007')
-        .attach('licenseDocument', path.join(__dirname, '../test-files/dummy.pdf'))
+        .attach('license_document', path.join(__dirname, '../test-files/dummy.pdf'))
 
       // Assert
       expect(res.statusCode).toEqual(201)
