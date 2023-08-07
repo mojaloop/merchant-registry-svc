@@ -58,8 +58,8 @@ export const MerchantLocationSubmitDataSchema = z.object({
 
 export const ContactPersonSubmitDataSchema = z.object({
   name: z.string(),
-  email: z.string().email(),
   phone_number: z.string(),
+  email: z.string().email().or(z.literal(null)),
   is_same_as_business_owner: z.boolean().default(false)
 }).strict()
 
