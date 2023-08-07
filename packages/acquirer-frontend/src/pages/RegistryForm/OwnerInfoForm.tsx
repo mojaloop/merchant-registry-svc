@@ -45,7 +45,7 @@ const OwnerInfoForm = ({ draftData, setActiveStep }: OwnerInfoFormProps) => {
   useEffect(() => {
     if (!draftData) return
 
-    if (draftData?.business_owners[0]) {
+    if (draftData?.business_owners && draftData.business_owners[0]) {
       const { name, identificaton_type, identification_number, phone_number, email } =
         draftData.business_owners[0]
 
@@ -56,7 +56,10 @@ const OwnerInfoForm = ({ draftData, setActiveStep }: OwnerInfoFormProps) => {
       email && setValue('email', email)
     }
 
-    if (draftData?.business_owners[0]?.businessPersonLocation) {
+    if (
+      draftData?.business_owners &&
+      draftData.business_owners[0]?.businessPersonLocation
+    ) {
       const {
         department,
         sub_department,

@@ -22,6 +22,7 @@ const ContactPersonForm = ({ draftData, setActiveStep }: ContactPersonProps) => 
   const {
     register,
     control,
+    watch,
     formState: { errors },
     setValue,
     setFocus,
@@ -46,6 +47,20 @@ const ContactPersonForm = ({ draftData, setActiveStep }: ContactPersonProps) => 
     phone_number && setValue('phone_number', phone_number)
     email && setValue('email', email)
   }, [draftData, setValue])
+
+  const watchedIsSameAsBusinessOwner = watch('is_same_as_business_owner')
+
+  useEffect(() => {
+    if (!watchedIsSameAsBusinessOwner) return
+
+    const business_owner = draftData?.business_owners[0]
+    if (!business_owner) return
+
+    const { name, phone_number, email } = business_owner
+    setValue('name', name)
+    setValue('phone_number', phone_number)
+    setValue('email', email)
+  }, [watchedIsSameAsBusinessOwner, draftData, setValue])
 
   const onSubmit = async (values: ContactPerson) => {
     const merchantId = sessionStorage.getItem('merchantId')

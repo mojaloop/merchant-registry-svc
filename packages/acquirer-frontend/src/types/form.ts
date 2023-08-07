@@ -71,11 +71,11 @@ export interface DraftData {
       longitude?: string
     }
     phone_number: string
-    email?: string
+    email: string | null
   }[]
   contact_persons: {
     name: string
     phone_number: string
-    email?: string
+    email: string | null
   }[]
 }
