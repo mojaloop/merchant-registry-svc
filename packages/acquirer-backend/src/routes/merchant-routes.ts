@@ -542,6 +542,7 @@ router.post('/merchants/draft',
     return res.status(201).send({ message: 'Drafting Merchant Successful', data: merchantData })
   })
 
+
 /**
  * @openapi
  * /merchants/{id}/registration-status:
@@ -669,6 +670,83 @@ router.put('/merchants/:id/registration-status', async (req: Request, res: Respo
   }
 })
 
+/**
+ * @openapi
+ * /merchants/registration-status:
+ *   put:
+ *     tags:
+ *       - Merchants
+ *     security:
+ *       - Authorization: []
+ *     summary: Bulk Update the registration status of multiple Merchant Records
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               ids:
+ *                 type: array
+ *                 items:
+ *                   type: number
+ *                 description: List of Merchant Record IDs to be updated
+ *                 example: [1, 2, 3]
+ *               registration_status:
+ *                 type: string
+ *                 description: The registration status of the merchants
+ *                 example: "Approved"
+ *     responses:
+ *       200:
+ *         description: Status Updated
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ */
+
+router.put('/merchants/registration-status', async (req: Request, res: Response) => {
+  // TODO: Handle Authentication as per previous endpoint
+
+  const ids: number[] = req.body.ids
+  const registrationStatus: string = req.body.registration_status
+
+  // Validate the Request Body
+  try {
+    if (!Array.isArray(ids)) throw new Error('IDs must be an array of numbers.')
+    ids.forEach(id => {
+      if (isNaN(Number(id)) || Number(id) < 1) {
+        throw new Error('Each ID in the array must be a valid ID number.')
+      }
+    })
+    z.nativeEnum(MerchantRegistrationStatus).parse(registrationStatus)
+  } catch (err) {
+    logger.error('Validation error: %o', err)
+    return res.status(422).send({ error: err })
+  }
+
+  const merchantRepository = AppDataSource.getRepository(MerchantEntity)
+
+  try {
+    await merchantRepository
+      .createQueryBuilder()
+      .update(MerchantEntity)
+      .set({
+        registration_status: registrationStatus as MerchantRegistrationStatus,
+        registration_status_reason: 'Bulk Updated'
+      })
+      .whereInIds(ids)
+      .execute()
+
+    res.status(200).send({ message: 'Status Updated for multiple merchants' })
+  } catch (e) {
+    logger.error(e)
+    res.status(500).send({ message: e })
+  }
+})
 /**
  * @openapi
  * /merchants/{id}/ready-to-review:

@@ -260,6 +260,43 @@ paths:
                     type: string
                   data:
                     type: object
+  /merchants/registration-status:
+    put:
+      tags:
+        - Merchants
+      security:
+        - Authorization: []
+      summary: Bulk Update the registration status of multiple Merchant Records
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                ids:
+                  type: array
+                  items:
+                    type: number
+                  description: List of Merchant Record IDs to be updated
+                  example:
+                    - 1
+                    - 2
+                    - 3
+                registration_status:
+                  type: string
+                  description: The registration status of the merchants
+                  example: Approved
+      responses:
+        '200':
+          description: Status Updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
   /merchants/{id}/ready-to-review:
     put:
       tags:
