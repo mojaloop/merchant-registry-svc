@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
 import express, { type Request, type Response } from 'express'
-import { QueryFailedError } from 'typeorm'
+import { In, QueryFailedError } from 'typeorm'
 import * as z from 'zod'
 import { AppDataSource } from '../database/data-source'
 import { MerchantEntity } from '../entity/MerchantEntity'
@@ -251,21 +251,32 @@ router.get('/merchants/:id', async (req: Request, res: Response) => {
       return
     }
     const merchantRepository = AppDataSource.getRepository(MerchantEntity)
-    const merchant = await merchantRepository.findOne({
-      where: { id: Number(req.params.id) },
-      relations: [
-        'locations',
-        'checkout_counters',
-        'business_licenses',
-        'contact_persons',
-        'created_by',
-        'business_owners',
-        'checked_by'
-      ]
-    })
+    let merchant: MerchantEntity | null
+    try {
+      merchant = await merchantRepository.findOne({
+        where: { id: Number(req.params.id) },
+        relations: [
+          'locations',
+          'category_code',
+          'checkout_counters',
+          'business_licenses',
+          'contact_persons',
+          'created_by',
+          'business_owners',
+          'business_owners.businessPersonLocation',
+          'checked_by'
+        ]
+      })
+    } catch (e) {
+      logger.error('Error fetching merchant: %o', e)
+      res.status(500).send({ message: e })
+      return
+    }
+
     if (merchant == null) {
       return res.status(404).send({ message: 'Merchant not found' })
     }
+
     // Create a new object that excludes the created_by's hasheded password field
     let checkedBy = null
     if (merchant.checked_by !== null && merchant.checked_by !== undefined) {
