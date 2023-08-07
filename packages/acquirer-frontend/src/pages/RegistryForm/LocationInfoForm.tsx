@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { MerchantLocationType, Countries } from 'shared-lib'
 
-import { FormReponse } from '@/types/form'
+import type { DraftData, FormReponse } from '@/types/form'
 import instance from '@/lib/axiosInstance'
 import { type LocationInfo, locationInfoSchema } from '@/lib/validations/registry'
 import { scrollToTop } from '@/utils'
@@ -24,13 +24,15 @@ const COUNTRIES = Object.entries(Countries).map(([, label]) => ({
 }))
 
 interface LocationInfoFormProps {
+  draftData: DraftData | null
   setActiveStep: React.Dispatch<React.SetStateAction<number>>
 }
 
-const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
+const LocationInfoForm = ({ draftData, setActiveStep }: LocationInfoFormProps) => {
   const {
     register,
     formState: { errors },
+    setValue,
     setFocus,
     handleSubmit,
   } = useForm<LocationInfo>({
@@ -39,6 +41,53 @@ const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
       country: null,
     },
   })
+
+  useEffect(() => {
+    if (!draftData) return
+
+    const checkout_description = draftData.checkout_counters[0]?.description
+    checkout_description && setValue('checkout_description', checkout_description)
+
+    if (!draftData?.locations && draftData.locations[0]) return
+
+    const {
+      location_type,
+      web_url,
+      department,
+      sub_department,
+      street_name,
+      building_number,
+      building_name,
+      floor_number,
+      room_number,
+      post_box,
+      postal_code,
+      town_name,
+      district_name,
+      country,
+      country_subdivision,
+      longitude,
+      latitude,
+    } = draftData.locations[0]
+
+    location_type && setValue('location_type', location_type)
+    web_url && setValue('web_url', web_url)
+    department && setValue('department', department)
+    sub_department && setValue('sub_department', sub_department)
+    street_name && setValue('street_name', street_name)
+    building_number && setValue('building_number', building_number)
+    building_name && setValue('building_name', building_name)
+    floor_number && setValue('floor_number', floor_number)
+    room_number && setValue('room_number', room_number)
+    post_box && setValue('post_box', post_box)
+    postal_code && setValue('postal_code', postal_code)
+    town_name && setValue('town_name', town_name)
+    district_name && setValue('district_name', district_name)
+    country && setValue('country', country)
+    country_subdivision && setValue('country_subdivision', country_subdivision)
+    longitude && setValue('longitude', longitude)
+    latitude && setValue('latitude', latitude)
+  }, [draftData, setValue])
 
   const onSubmit = async (values: LocationInfo) => {
     const merchantId = sessionStorage.getItem('merchantId')

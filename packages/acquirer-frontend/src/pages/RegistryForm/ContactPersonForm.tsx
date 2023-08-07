@@ -4,7 +4,7 @@ import { isAxiosError } from 'axios'
 import { Controller, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 
-import { FormReponse } from '@/types/form'
+import type { DraftData, FormReponse } from '@/types/form'
 import instance from '@/lib/axiosInstance'
 import { type ContactPerson, contactPersonSchema } from '@/lib/validations/registry'
 import { CustomButton, MerchantInformationModal } from '@/components/ui'
@@ -12,16 +12,19 @@ import { FormInput } from '@/components/form'
 import GridShell from './GridShell'
 
 interface ContactPersonProps {
+  draftData: DraftData | null
   setActiveStep: React.Dispatch<React.SetStateAction<number>>
 }
 
-const ContactPersonForm = ({ setActiveStep }: ContactPersonProps) => {
+const ContactPersonForm = ({ draftData, setActiveStep }: ContactPersonProps) => {
   const { isOpen, onOpen, onClose } = useDisclosure()
 
   const {
     register,
     control,
+    watch,
     formState: { errors },
+    setValue,
     setFocus,
     handleSubmit,
   } = useForm<ContactPerson>({
@@ -31,6 +34,33 @@ const ContactPersonForm = ({ setActiveStep }: ContactPersonProps) => {
       email: null,
     },
   })
+
+  useEffect(() => {
+    if (!draftData) return
+
+    const contact_person = draftData.contact_persons[0]
+    if (!contact_person) return
+
+    const { name, phone_number, email } = contact_person
+
+    name && setValue('name', name)
+    phone_number && setValue('phone_number', phone_number)
+    email && setValue('email', email)
+  }, [draftData, setValue])
+
+  const watchedIsSameAsBusinessOwner = watch('is_same_as_business_owner')
+
+  useEffect(() => {
+    if (!watchedIsSameAsBusinessOwner) return
+
+    const business_owner = draftData?.business_owners[0]
+    if (!business_owner) return
+
+    const { name, phone_number, email } = business_owner
+    setValue('name', name)
+    setValue('phone_number', phone_number)
+    setValue('email', email)
+  }, [watchedIsSameAsBusinessOwner, draftData, setValue])
 
   const onSubmit = async (values: ContactPerson) => {
     const merchantId = sessionStorage.getItem('merchantId')
