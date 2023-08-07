@@ -1,6 +1,6 @@
 import {
   Entity, Column, PrimaryGeneratedColumn,
-  CreateDateColumn, UpdateDateColumn, OneToOne
+  CreateDateColumn, UpdateDateColumn, OneToOne, JoinColumn
 } from 'typeorm'
 import { BusinessPersonLocationEntity } from './BusinessPersonLocationEntity'
 
@@ -19,6 +19,7 @@ export class PersonEntity {
     phone_number!: string
 
   @OneToOne(() => BusinessPersonLocationEntity)
+  @JoinColumn()
     businessPersonLocation!: BusinessPersonLocationEntity
 
   @CreateDateColumn()
