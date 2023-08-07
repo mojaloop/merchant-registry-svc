@@ -4,7 +4,7 @@ import { isAxiosError } from 'axios'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 
-import { FormReponse } from '@/types/form'
+import type { DraftData, FormReponse } from '@/types/form'
 import instance from '@/lib/axiosInstance'
 import { type OwnerInfo, ownerInfoSchema } from '@/lib/validations/registry'
 import { scrollToTop } from '@/utils'
@@ -24,13 +24,15 @@ const ID_TYPES = Object.entries(BusinessOwnerIDType).map(([, label]) => ({
 }))
 
 interface OwnerInfoFormProps {
+  draftData: DraftData | null
   setActiveStep: React.Dispatch<React.SetStateAction<number>>
 }
 
-const OwnerInfoForm = ({ setActiveStep }: OwnerInfoFormProps) => {
+const OwnerInfoForm = ({ draftData, setActiveStep }: OwnerInfoFormProps) => {
   const {
     register,
     formState: { errors },
+    setValue,
     setFocus,
     handleSubmit,
   } = useForm<OwnerInfo>({
@@ -39,6 +41,57 @@ const OwnerInfoForm = ({ setActiveStep }: OwnerInfoFormProps) => {
       email: null,
     },
   })
+
+  useEffect(() => {
+    if (!draftData) return
+
+    if (draftData?.business_owners[0]) {
+      const { name, identificaton_type, identification_number, phone_number, email } =
+        draftData.business_owners[0]
+
+      name && setValue('name', name)
+      identificaton_type && setValue('identificaton_type', identificaton_type)
+      identification_number && setValue('identification_number', identification_number)
+      phone_number && setValue('phone_number', phone_number)
+      email && setValue('email', email)
+    }
+
+    if (draftData?.business_owners[0]?.businessPersonLocation) {
+      const {
+        department,
+        sub_department,
+        street_name,
+        building_number,
+        building_name,
+        floor_number,
+        room_number,
+        post_box,
+        postal_code,
+        town_name,
+        district_name,
+        country,
+        country_subdivision,
+        longitude,
+        latitude,
+      } = draftData.business_owners[0].businessPersonLocation
+
+      department && setValue('department', department)
+      sub_department && setValue('sub_department', sub_department)
+      street_name && setValue('street_name', street_name)
+      building_number && setValue('building_number', building_number)
+      building_name && setValue('building_name', building_name)
+      floor_number && setValue('floor_number', floor_number)
+      room_number && setValue('room_number', room_number)
+      post_box && setValue('post_box', post_box)
+      postal_code && setValue('postal_code', postal_code)
+      town_name && setValue('town_name', town_name)
+      district_name && setValue('district_name', district_name)
+      country && setValue('country', country)
+      country_subdivision && setValue('country_subdivision', country_subdivision)
+      longitude && setValue('longitude', longitude)
+      latitude && setValue('latitude', latitude)
+    }
+  }, [draftData, setValue])
 
   const onSubmit = async (values: OwnerInfo) => {
     const merchantId = sessionStorage.getItem('merchantId')

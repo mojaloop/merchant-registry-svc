@@ -1,10 +1,29 @@
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Box, Heading, Link, Text } from '@chakra-ui/react'
 
+import instance from '@/lib/axiosInstance'
 import { CustomButton } from '@/components/ui'
 
 const Registry = () => {
   const navigate = useNavigate()
+
+  const [draftData, setDraftData] = useState(null)
+
+  const getDraftData = async () => {
+    const merchantId = sessionStorage.getItem('merchantId')
+    if (!merchantId) return
+
+    try {
+      return await instance.get(`/merchants/${merchantId}`)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  useEffect(() => {
+    getDraftData().then(res => setDraftData(res?.data?.data))
+  }, [])
 
   return (
     <Box>
@@ -19,7 +38,12 @@ const Registry = () => {
       <CustomButton mr='4' onClick={() => navigate('/registry/registry-form')}>
         Add new record
       </CustomButton>
-      <CustomButton isDisabled>Continue with saved draft</CustomButton>
+      <CustomButton
+        isDisabled={!draftData}
+        onClick={() => navigate('/registry/registry-form', { state: draftData })}
+      >
+        Continue with saved draft
+      </CustomButton>
 
       <Heading as='h3' size='sm' fontWeight='medium' mt='10' mb='5'>
         Import bulk record file

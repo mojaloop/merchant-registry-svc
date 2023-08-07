@@ -25,7 +25,7 @@ import {
   MerchantType,
 } from 'shared-lib'
 
-import { FormReponse } from '@/types/form'
+import type { DraftData, FormReponse } from '@/types/form'
 import instance from '@/lib/axiosInstance'
 import { type BusinessInfo, businessInfoSchema } from '@/lib/validations/registry'
 import { scrollToTop } from '@/utils'
@@ -56,10 +56,11 @@ const CURRENCIES = Object.entries(CurrencyDescriptions).map(([value, label]) => 
 }))
 
 interface BusinessInfoFormProps {
+  draftData: DraftData | null
   setActiveStep: React.Dispatch<React.SetStateAction<number>>
 }
 
-const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
+const BusinessInfoForm = ({ draftData, setActiveStep }: BusinessInfoFormProps) => {
   const navigate = useNavigate()
 
   const licenseDocumentRef = useRef<HTMLInputElement>(null)
@@ -79,6 +80,37 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
       license_document: null,
     },
   })
+
+  useEffect(() => {
+    if (!draftData) return
+
+    const {
+      dba_trading_name,
+      registered_name,
+      checkout_counters,
+      employees_num,
+      monthly_turnover,
+      category_code,
+      merchant_type,
+      dfsp_name,
+      currency_code,
+      have_business_license,
+    } = draftData
+
+    const payinto_alias = checkout_counters[0]?.alias_value
+    const merchant_category = category_code?.category_code
+
+    dba_trading_name && setValue('dba_trading_name', dba_trading_name)
+    registered_name && setValue('registered_name', registered_name)
+    payinto_alias && setValue('payinto_alias', payinto_alias)
+    employees_num && setValue('employees_num', employees_num)
+    monthly_turnover && setValue('monthly_turnover', monthly_turnover)
+    merchant_category && setValue('category_code', merchant_category)
+    merchant_type && setValue('merchant_type', merchant_type)
+    dfsp_name && setValue('dfsp_name', dfsp_name)
+    currency_code && setValue('currency_code', currency_code)
+    have_business_license && setValue('have_business_license', have_business_license)
+  }, [draftData, setValue])
 
   const watchedLicenseDocument = watch('license_document')
   const watchedHaveLicense = watch('have_business_license')
