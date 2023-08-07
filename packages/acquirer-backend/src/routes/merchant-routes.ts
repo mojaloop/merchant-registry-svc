@@ -684,7 +684,7 @@ router.put('/merchants/:id/registration-status', async (req: Request, res: Respo
  *         required: true
  *         description: The ID of the merchant to update
  *     security:
- *       - BearerAuth: []
+ *       - Authorization: []
  *     responses:
  *       200:
  *         description: Merchant status successfully updated to Review
