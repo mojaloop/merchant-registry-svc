@@ -48,7 +48,7 @@ const LocationInfoForm = ({ draftData, setActiveStep }: LocationInfoFormProps) =
     const checkout_description = draftData.checkout_counters[0]?.description
     checkout_description && setValue('checkout_description', checkout_description)
 
-    if (!draftData?.locations && draftData.locations[0]) return
+    if (!draftData.locations?.[0]) return
 
     const {
       location_type,
