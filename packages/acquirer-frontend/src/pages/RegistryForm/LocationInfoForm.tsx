@@ -5,10 +5,11 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { MerchantLocationType, Countries } from 'shared-lib'
 
-import type { DraftData, FormReponse } from '@/types/form'
+import type { FormReponse } from '@/types/form'
 import instance from '@/lib/axiosInstance'
 import { type LocationInfo, locationInfoSchema } from '@/lib/validations/registry'
 import { scrollToTop } from '@/utils'
+import { useDraftData } from '@/context/DraftDataContext'
 import { CustomButton } from '@/components/ui'
 import { FormInput, FormSelect } from '@/components/form'
 import GridShell from './GridShell'
@@ -24,11 +25,10 @@ const COUNTRIES = Object.entries(Countries).map(([, label]) => ({
 }))
 
 interface LocationInfoFormProps {
-  draftData: DraftData | null
   setActiveStep: React.Dispatch<React.SetStateAction<number>>
 }
 
-const LocationInfoForm = ({ draftData, setActiveStep }: LocationInfoFormProps) => {
+const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
   const {
     register,
     formState: { errors },
@@ -42,10 +42,12 @@ const LocationInfoForm = ({ draftData, setActiveStep }: LocationInfoFormProps) =
     },
   })
 
+  const { draftData, setDraftData } = useDraftData()
+
   useEffect(() => {
     if (!draftData) return
 
-    const checkout_description = draftData.checkout_counters[0]?.description
+    const checkout_description = draftData.checkout_counters?.[0]?.description
     checkout_description && setValue('checkout_description', checkout_description)
 
     if (!draftData.locations?.[0]) return
@@ -111,6 +113,35 @@ const LocationInfoForm = ({ draftData, setActiveStep }: LocationInfoFormProps) =
       )
 
       if (response.data.data?.id) {
+        setDraftData(prevDraftData => ({
+          ...prevDraftData,
+          locations: [
+            {
+              location_type: values.location_type,
+              web_url: values.web_url,
+              department: values.department,
+              sub_department: values.sub_department,
+              street_name: values.street_name,
+              building_number: values.building_number,
+              building_name: values.building_name,
+              floor_number: values.floor_number,
+              room_number: values.room_number,
+              post_box: values.post_box,
+              postal_code: values.postal_code,
+              town_name: values.town_name,
+              district_name: values.district_name,
+              country_subdivision: values.country_subdivision,
+              country: values.country,
+              longitude: values.longitude,
+              latitude: values.latitude,
+            },
+          ],
+          checkout_counters: [
+            {
+              description: values.checkout_description,
+            },
+          ],
+        }))
         alert(response.data.message)
         setActiveStep(activeStep => activeStep + 1)
         scrollToTop()

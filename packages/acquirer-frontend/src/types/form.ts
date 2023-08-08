@@ -15,25 +15,25 @@ export interface FormReponse {
 }
 
 export interface DraftData {
-  dba_trading_name: string
+  dba_trading_name?: string
   registered_name?: string
-  checkout_counters: {
-    alias_value: string
+  checkout_counters?: {
+    alias_value?: string
     description?: string
   }[]
-  employees_num: NumberOfEmployees
+  employees_num?: NumberOfEmployees
   monthly_turnover?: string
-  category_code: { category_code: string }
-  merchant_type: MerchantType
+  category_code?: { category_code: string }
+  merchant_type?: MerchantType
   dfsp_name?: string
-  currency_code: {
-    iso_code: CurrencyCodes
+  currency_code?: {
+    iso_code?: CurrencyCodes
   }
   have_business_license?: 'yes' | 'no'
   license_number?: string
-  license_document?: File
-  locations: {
-    location_type: MerchantLocationType
+  license_document?: File | null
+  locations?: {
+    location_type?: MerchantLocationType
     web_url?: string
     department?: string
     sub_department?: string
@@ -44,18 +44,18 @@ export interface DraftData {
     room_number?: string
     post_box?: string
     postal_code?: string
-    country?: Countries
+    country?: Countries | '' | null
     town_name?: string
     district_name?: string
     country_subdivision?: string
     latitude?: string
     longitude?: string
   }[]
-  business_owners: {
-    name: string
-    identificaton_type: BusinessOwnerIDType
-    identification_number: string
-    businessPersonLocation: {
+  business_owners?: {
+    name?: string
+    identificaton_type?: BusinessOwnerIDType
+    identification_number?: string
+    businessPersonLocation?: {
       department?: string
       sub_department?: string
       street_name?: string
@@ -65,19 +65,19 @@ export interface DraftData {
       room_number?: string
       post_box?: string
       postal_code?: string
-      country: Countries
+      country?: Countries
       town_name?: string
       district_name?: string
       country_subdivision?: string
       latitude?: string
       longitude?: string
     }
-    phone_number: string
-    email: string | null
+    phone_number?: string
+    email?: string | null
   }[]
-  contact_persons: {
-    name: string
-    phone_number: string
-    email: string | null
+  contact_persons?: {
+    name?: string
+    phone_number?: string
+    email?: string | null
   }[]
 }

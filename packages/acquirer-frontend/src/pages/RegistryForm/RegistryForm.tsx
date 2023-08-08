@@ -1,4 +1,3 @@
-import { useLocation } from 'react-router-dom'
 import {
   Box,
   Heading,
@@ -13,7 +12,6 @@ import {
   useSteps,
 } from '@chakra-ui/react'
 
-import type { DraftData } from '@/types/form'
 import BusinessInfoForm from './BusinessInfoForm'
 import LocationInfoForm from './LocationInfoForm'
 import OwnerInfoForm from './OwnerInfoForm'
@@ -27,9 +25,6 @@ const STEPS = [
 ]
 
 const RegistryForm = () => {
-  const location = useLocation()
-  const state = location.state as DraftData | null
-
   const { activeStep, setActiveStep } = useSteps({
     index: 1,
     count: STEPS.length,
@@ -66,18 +61,10 @@ const RegistryForm = () => {
           ))}
         </Stepper>
 
-        {activeStep === 1 && (
-          <BusinessInfoForm draftData={state} setActiveStep={setActiveStep} />
-        )}
-        {activeStep === 2 && (
-          <LocationInfoForm draftData={state} setActiveStep={setActiveStep} />
-        )}
-        {activeStep === 3 && (
-          <OwnerInfoForm draftData={state} setActiveStep={setActiveStep} />
-        )}
-        {activeStep === 4 && (
-          <ContactPersonForm draftData={state} setActiveStep={setActiveStep} />
-        )}
+        {activeStep === 1 && <BusinessInfoForm setActiveStep={setActiveStep} />}
+        {activeStep === 2 && <LocationInfoForm setActiveStep={setActiveStep} />}
+        {activeStep === 3 && <OwnerInfoForm setActiveStep={setActiveStep} />}
+        {activeStep === 4 && <ContactPersonForm setActiveStep={setActiveStep} />}
       </Box>
     </Box>
   )

@@ -4,10 +4,11 @@ import { isAxiosError } from 'axios'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 
-import type { DraftData, FormReponse } from '@/types/form'
+import type { FormReponse } from '@/types/form'
 import instance from '@/lib/axiosInstance'
 import { type OwnerInfo, ownerInfoSchema } from '@/lib/validations/registry'
 import { scrollToTop } from '@/utils'
+import { useDraftData } from '@/context/DraftDataContext'
 import { CustomButton } from '@/components/ui'
 import { FormInput, FormSelect } from '@/components/form'
 import { Countries, BusinessOwnerIDType } from 'shared-lib'
@@ -24,11 +25,10 @@ const ID_TYPES = Object.entries(BusinessOwnerIDType).map(([, label]) => ({
 }))
 
 interface OwnerInfoFormProps {
-  draftData: DraftData | null
   setActiveStep: React.Dispatch<React.SetStateAction<number>>
 }
 
-const OwnerInfoForm = ({ draftData, setActiveStep }: OwnerInfoFormProps) => {
+const OwnerInfoForm = ({ setActiveStep }: OwnerInfoFormProps) => {
   const {
     register,
     formState: { errors },
@@ -41,6 +41,8 @@ const OwnerInfoForm = ({ draftData, setActiveStep }: OwnerInfoFormProps) => {
       email: null,
     },
   })
+
+  const { draftData, setDraftData } = useDraftData()
 
   useEffect(() => {
     if (!draftData) return
@@ -112,6 +114,35 @@ const OwnerInfoForm = ({ draftData, setActiveStep }: OwnerInfoFormProps) => {
       )
 
       if (response.data.data?.id) {
+        setDraftData(prevDraftData => ({
+          ...prevDraftData,
+          business_owners: [
+            {
+              name: values.name,
+              identificaton_type: values.identificaton_type,
+              identification_number: values.identification_number,
+              phone_number: values.phone_number,
+              email: values.email,
+              businessPersonLocation: {
+                department: values.department,
+                sub_department: values.sub_department,
+                street_name: values.street_name,
+                building_number: values.building_number,
+                building_name: values.building_name,
+                floor_number: values.floor_number,
+                room_number: values.room_number,
+                post_box: values.post_box,
+                postal_code: values.postal_code,
+                town_name: values.town_name,
+                district_name: values.district_name,
+                country_subdivision: values.country_subdivision,
+                country: values.country,
+                longitude: values.longitude,
+                latitude: values.latitude,
+              },
+            },
+          ],
+        }))
         alert(response.data.message)
         setActiveStep(activeStep => activeStep + 1)
         scrollToTop()
