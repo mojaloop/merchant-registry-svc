@@ -42,7 +42,7 @@ const Registry = () => {
       </CustomButton>
       <CustomButton
         isDisabled={!draftData}
-        onClick={() => navigate('/registry/registry-form', { state: draftData })}
+        onClick={() => navigate('/registry/registry-form?draft=true')}
       >
         Continue with saved draft
       </CustomButton>

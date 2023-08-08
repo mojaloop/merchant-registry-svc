@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import {
   Box,
   FormControl,
@@ -62,6 +62,9 @@ interface BusinessInfoFormProps {
 
 const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
   const navigate = useNavigate()
+  const location = useLocation()
+  const searchParams = new URLSearchParams(location.search)
+  const isEditingDraft = searchParams.get('draft')
 
   const licenseDocumentRef = useRef<HTMLInputElement>(null)
   const uploadFileButtonRef = useRef<HTMLButtonElement>(null)
@@ -84,6 +87,8 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
   const { draftData, setDraftData } = useDraftData()
 
   useEffect(() => {
+    if (!isEditingDraft) return
+
     if (!draftData) return
 
     const {
@@ -112,7 +117,7 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
     dfsp_name && setValue('dfsp_name', dfsp_name)
     currency_code?.iso_code && setValue('currency_code', currency_code.iso_code)
     have_business_license && setValue('have_business_license', have_business_license)
-  }, [draftData, setValue])
+  }, [isEditingDraft, draftData, setValue])
 
   const watchedLicenseDocument = watch('license_document')
   const watchedHaveLicense = watch('have_business_license')
