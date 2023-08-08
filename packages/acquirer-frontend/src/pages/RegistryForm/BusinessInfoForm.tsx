@@ -142,7 +142,12 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
           ...prevDraftData,
           dba_trading_name: values.dba_trading_name,
           registered_name: values.registered_name,
-          checkout_counters: [{ alias_value: values.payinto_alias }],
+          checkout_counters: [
+            {
+              ...prevDraftData?.checkout_counters?.[0],
+              alias_value: values.payinto_alias,
+            },
+          ],
           employees_num: values.employees_num,
           monthly_turnover: values.monthly_turnover,
           category_code: {
