@@ -77,6 +77,11 @@ interface CategoryCode {
   description: string
 }
 
+interface CurrencyCode {
+  iso_code: string
+  description: string
+}
+
 export interface MerchantDetails {
   id: number
   dba_trading_name: string
@@ -85,6 +90,7 @@ export interface MerchantDetails {
   monthly_turnover: string
   merchant_type: string
   category_code: CategoryCode
+  currency_code: CurrencyCode
   allow_block_status: string
   registration_status: string
   registration_status_reason: string | null

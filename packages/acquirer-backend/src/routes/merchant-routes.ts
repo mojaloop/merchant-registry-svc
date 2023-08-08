@@ -258,6 +258,7 @@ router.get('/merchants/:id', async (req: Request, res: Response) => {
         relations: [
           'locations',
           'category_code',
+          'currency_code',
           'checkout_counters',
           'business_licenses',
           'contact_persons',
