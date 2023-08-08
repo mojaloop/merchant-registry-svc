@@ -26,7 +26,9 @@ export interface DraftData {
   category_code: { category_code: string }
   merchant_type: MerchantType
   dfsp_name?: string
-  currency_code: CurrencyCodes
+  currency_code: {
+    iso_code: CurrencyCodes
+  }
   have_business_license?: 'yes' | 'no'
   license_number?: string
   license_document?: File

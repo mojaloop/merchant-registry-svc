@@ -108,7 +108,7 @@ const BusinessInfoForm = ({ draftData, setActiveStep }: BusinessInfoFormProps) =
     merchant_category && setValue('category_code', merchant_category)
     merchant_type && setValue('merchant_type', merchant_type)
     dfsp_name && setValue('dfsp_name', dfsp_name)
-    currency_code && setValue('currency_code', currency_code)
+    currency_code.iso_code && setValue('currency_code', currency_code.iso_code)
     have_business_license && setValue('have_business_license', have_business_license)
   }, [draftData, setValue])
 
