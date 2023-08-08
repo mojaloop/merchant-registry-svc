@@ -64,9 +64,9 @@ const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
       room_number,
       post_box,
       postal_code,
+      country,
       town_name,
       district_name,
-      country,
       country_subdivision,
       longitude,
       latitude,
@@ -83,9 +83,9 @@ const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
     room_number && setValue('room_number', room_number)
     post_box && setValue('post_box', post_box)
     postal_code && setValue('postal_code', postal_code)
+    country && setValue('country', country)
     town_name && setValue('town_name', town_name)
     district_name && setValue('district_name', district_name)
-    country && setValue('country', country)
     country_subdivision && setValue('country_subdivision', country_subdivision)
     longitude && setValue('longitude', longitude)
     latitude && setValue('latitude', latitude)
@@ -128,10 +128,10 @@ const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
               room_number: values.room_number,
               post_box: values.post_box,
               postal_code: values.postal_code,
+              country: values.country,
               town_name: values.town_name,
               district_name: values.district_name,
               country_subdivision: values.country_subdivision,
-              country: values.country,
               longitude: values.longitude,
               latitude: values.latitude,
             },
@@ -267,6 +267,15 @@ const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
           placeholder='Postal Code'
         />
 
+        <FormSelect
+          name='country'
+          register={register}
+          errors={errors}
+          label='Country'
+          placeholder='Choose Country'
+          options={COUNTRIES}
+        />
+
         <FormInput
           name='town_name'
           register={register}
@@ -289,15 +298,6 @@ const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
           errors={errors}
           label='Country Subdivision (State/Divison)'
           placeholder='Country Subdivision'
-        />
-
-        <FormSelect
-          name='country'
-          register={register}
-          errors={errors}
-          label='Country'
-          placeholder='Choose Country'
-          options={COUNTRIES}
         />
 
         <FormInput
