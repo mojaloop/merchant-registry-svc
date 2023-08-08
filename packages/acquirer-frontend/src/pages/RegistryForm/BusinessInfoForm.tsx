@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import {
   Box,
   FormControl,
@@ -25,10 +25,11 @@ import {
   MerchantType,
 } from 'shared-lib'
 
-import type { DraftData, FormReponse } from '@/types/form'
+import type { FormReponse } from '@/types/form'
 import instance from '@/lib/axiosInstance'
 import { type BusinessInfo, businessInfoSchema } from '@/lib/validations/registry'
 import { scrollToTop } from '@/utils'
+import { useDraftData } from '@/context/DraftDataContext'
 import { CustomButton } from '@/components/ui'
 import { FormInput, FormSelect } from '@/components/form'
 import GridShell from './GridShell'
@@ -56,12 +57,14 @@ const CURRENCIES = Object.entries(CurrencyDescriptions).map(([value, label]) => 
 }))
 
 interface BusinessInfoFormProps {
-  draftData: DraftData | null
   setActiveStep: React.Dispatch<React.SetStateAction<number>>
 }
 
-const BusinessInfoForm = ({ draftData, setActiveStep }: BusinessInfoFormProps) => {
+const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
   const navigate = useNavigate()
+  const location = useLocation()
+  const searchParams = new URLSearchParams(location.search)
+  const isEditingDraft = searchParams.get('draft')
 
   const licenseDocumentRef = useRef<HTMLInputElement>(null)
   const uploadFileButtonRef = useRef<HTMLButtonElement>(null)
@@ -81,7 +84,11 @@ const BusinessInfoForm = ({ draftData, setActiveStep }: BusinessInfoFormProps) =
     },
   })
 
+  const { draftData, setDraftData } = useDraftData()
+
   useEffect(() => {
+    if (!isEditingDraft) return
+
     if (!draftData) return
 
     const {
@@ -97,7 +104,7 @@ const BusinessInfoForm = ({ draftData, setActiveStep }: BusinessInfoFormProps) =
       have_business_license,
     } = draftData
 
-    const payinto_alias = checkout_counters[0]?.alias_value
+    const payinto_alias = checkout_counters?.[0]?.alias_value
     const merchant_category = category_code?.category_code
 
     dba_trading_name && setValue('dba_trading_name', dba_trading_name)
@@ -108,9 +115,9 @@ const BusinessInfoForm = ({ draftData, setActiveStep }: BusinessInfoFormProps) =
     merchant_category && setValue('category_code', merchant_category)
     merchant_type && setValue('merchant_type', merchant_type)
     dfsp_name && setValue('dfsp_name', dfsp_name)
-    currency_code.iso_code && setValue('currency_code', currency_code.iso_code)
+    currency_code?.iso_code && setValue('currency_code', currency_code.iso_code)
     have_business_license && setValue('have_business_license', have_business_license)
-  }, [draftData, setValue])
+  }, [isEditingDraft, draftData, setValue])
 
   const watchedLicenseDocument = watch('license_document')
   const watchedHaveLicense = watch('have_business_license')
@@ -136,6 +143,29 @@ const BusinessInfoForm = ({ draftData, setActiveStep }: BusinessInfoFormProps) =
 
       if (response.data.data?.id) {
         sessionStorage.setItem('merchantId', response.data.data.id.toString())
+        setDraftData(prevDraftData => ({
+          ...prevDraftData,
+          dba_trading_name: values.dba_trading_name,
+          registered_name: values.registered_name,
+          checkout_counters: [
+            {
+              ...prevDraftData?.checkout_counters?.[0],
+              alias_value: values.payinto_alias,
+            },
+          ],
+          employees_num: values.employees_num,
+          monthly_turnover: values.monthly_turnover,
+          category_code: {
+            category_code: values.category_code,
+          },
+          merchant_type: values.merchant_type,
+          dfsp_name: values.dfsp_name,
+          currency_code: {
+            iso_code: values.currency_code,
+          },
+          license_number: values.license_number,
+          license_document: values.license_document,
+        }))
         alert(response.data.message)
         setActiveStep(activeStep => activeStep + 1)
         scrollToTop()

@@ -4,10 +4,11 @@ import { isAxiosError } from 'axios'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 
-import type { DraftData, FormReponse } from '@/types/form'
+import type { FormReponse } from '@/types/form'
 import instance from '@/lib/axiosInstance'
 import { type OwnerInfo, ownerInfoSchema } from '@/lib/validations/registry'
 import { scrollToTop } from '@/utils'
+import { useDraftData } from '@/context/DraftDataContext'
 import { CustomButton } from '@/components/ui'
 import { FormInput, FormSelect } from '@/components/form'
 import { Countries, BusinessOwnerIDType } from 'shared-lib'
@@ -24,11 +25,10 @@ const ID_TYPES = Object.entries(BusinessOwnerIDType).map(([, label]) => ({
 }))
 
 interface OwnerInfoFormProps {
-  draftData: DraftData | null
   setActiveStep: React.Dispatch<React.SetStateAction<number>>
 }
 
-const OwnerInfoForm = ({ draftData, setActiveStep }: OwnerInfoFormProps) => {
+const OwnerInfoForm = ({ setActiveStep }: OwnerInfoFormProps) => {
   const {
     register,
     formState: { errors },
@@ -42,10 +42,12 @@ const OwnerInfoForm = ({ draftData, setActiveStep }: OwnerInfoFormProps) => {
     },
   })
 
+  const { draftData, setDraftData } = useDraftData()
+
   useEffect(() => {
     if (!draftData) return
 
-    if (draftData?.business_owners && draftData.business_owners[0]) {
+    if (draftData.business_owners?.[0]) {
       const { name, identificaton_type, identification_number, phone_number, email } =
         draftData.business_owners[0]
 
@@ -56,10 +58,7 @@ const OwnerInfoForm = ({ draftData, setActiveStep }: OwnerInfoFormProps) => {
       email && setValue('email', email)
     }
 
-    if (
-      draftData?.business_owners &&
-      draftData.business_owners[0]?.businessPersonLocation
-    ) {
+    if (draftData.business_owners?.[0]?.businessPersonLocation) {
       const {
         department,
         sub_department,
@@ -70,9 +69,9 @@ const OwnerInfoForm = ({ draftData, setActiveStep }: OwnerInfoFormProps) => {
         room_number,
         post_box,
         postal_code,
+        country,
         town_name,
         district_name,
-        country,
         country_subdivision,
         longitude,
         latitude,
@@ -87,9 +86,9 @@ const OwnerInfoForm = ({ draftData, setActiveStep }: OwnerInfoFormProps) => {
       room_number && setValue('room_number', room_number)
       post_box && setValue('post_box', post_box)
       postal_code && setValue('postal_code', postal_code)
+      country && setValue('country', country)
       town_name && setValue('town_name', town_name)
       district_name && setValue('district_name', district_name)
-      country && setValue('country', country)
       country_subdivision && setValue('country_subdivision', country_subdivision)
       longitude && setValue('longitude', longitude)
       latitude && setValue('latitude', latitude)
@@ -115,6 +114,35 @@ const OwnerInfoForm = ({ draftData, setActiveStep }: OwnerInfoFormProps) => {
       )
 
       if (response.data.data?.id) {
+        setDraftData(prevDraftData => ({
+          ...prevDraftData,
+          business_owners: [
+            {
+              name: values.name,
+              identificaton_type: values.identificaton_type,
+              identification_number: values.identification_number,
+              phone_number: values.phone_number,
+              email: values.email,
+              businessPersonLocation: {
+                department: values.department,
+                sub_department: values.sub_department,
+                street_name: values.street_name,
+                building_number: values.building_number,
+                building_name: values.building_name,
+                floor_number: values.floor_number,
+                room_number: values.room_number,
+                post_box: values.post_box,
+                postal_code: values.postal_code,
+                country: values.country,
+                town_name: values.town_name,
+                district_name: values.district_name,
+                country_subdivision: values.country_subdivision,
+                longitude: values.longitude,
+                latitude: values.latitude,
+              },
+            },
+          ],
+        }))
         alert(response.data.message)
         setActiveStep(activeStep => activeStep + 1)
         scrollToTop()
@@ -250,6 +278,16 @@ const OwnerInfoForm = ({ draftData, setActiveStep }: OwnerInfoFormProps) => {
           placeholder='Postal Code'
         />
 
+        <FormSelect
+          isRequired
+          name='country'
+          register={register}
+          errors={errors}
+          label='Country'
+          placeholder='Choose Country'
+          options={COUNTRIES}
+        />
+
         <FormInput
           name='town_name'
           register={register}
@@ -272,16 +310,6 @@ const OwnerInfoForm = ({ draftData, setActiveStep }: OwnerInfoFormProps) => {
           errors={errors}
           label='Country Subdivision (State/Divison)'
           placeholder='Country Subdivision'
-        />
-
-        <FormSelect
-          isRequired
-          name='country'
-          register={register}
-          errors={errors}
-          label='Country'
-          placeholder='Choose Country'
-          options={COUNTRIES}
         />
 
         <FormInput

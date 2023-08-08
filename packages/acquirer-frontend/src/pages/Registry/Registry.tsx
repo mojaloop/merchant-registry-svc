@@ -1,29 +1,31 @@
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Box, Heading, Link, Text } from '@chakra-ui/react'
 
+import type { DraftData } from '@/types/form'
 import instance from '@/lib/axiosInstance'
+import { useDraftData } from '@/context/DraftDataContext'
 import { CustomButton } from '@/components/ui'
 
 const Registry = () => {
   const navigate = useNavigate()
 
-  const [draftData, setDraftData] = useState(null)
+  const { draftData, setDraftData } = useDraftData()
 
   const getDraftData = async () => {
     const merchantId = sessionStorage.getItem('merchantId')
     if (!merchantId) return
 
     try {
-      return await instance.get(`/merchants/${merchantId}`)
+      return await instance.get<{ data: DraftData }>(`/merchants/${merchantId}`)
     } catch (error) {
       console.log(error)
     }
   }
 
   useEffect(() => {
-    getDraftData().then(res => setDraftData(res?.data?.data))
-  }, [])
+    getDraftData().then(res => setDraftData(res?.data?.data ?? null))
+  }, [setDraftData])
 
   return (
     <Box>
@@ -40,7 +42,7 @@ const Registry = () => {
       </CustomButton>
       <CustomButton
         isDisabled={!draftData}
-        onClick={() => navigate('/registry/registry-form', { state: draftData })}
+        onClick={() => navigate('/registry/registry-form?draft=true')}
       >
         Continue with saved draft
       </CustomButton>

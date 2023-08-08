@@ -5,10 +5,11 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { MerchantLocationType, Countries } from 'shared-lib'
 
-import type { DraftData, FormReponse } from '@/types/form'
+import type { FormReponse } from '@/types/form'
 import instance from '@/lib/axiosInstance'
 import { type LocationInfo, locationInfoSchema } from '@/lib/validations/registry'
 import { scrollToTop } from '@/utils'
+import { useDraftData } from '@/context/DraftDataContext'
 import { CustomButton } from '@/components/ui'
 import { FormInput, FormSelect } from '@/components/form'
 import GridShell from './GridShell'
@@ -24,11 +25,10 @@ const COUNTRIES = Object.entries(Countries).map(([, label]) => ({
 }))
 
 interface LocationInfoFormProps {
-  draftData: DraftData | null
   setActiveStep: React.Dispatch<React.SetStateAction<number>>
 }
 
-const LocationInfoForm = ({ draftData, setActiveStep }: LocationInfoFormProps) => {
+const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
   const {
     register,
     formState: { errors },
@@ -42,13 +42,15 @@ const LocationInfoForm = ({ draftData, setActiveStep }: LocationInfoFormProps) =
     },
   })
 
+  const { draftData, setDraftData } = useDraftData()
+
   useEffect(() => {
     if (!draftData) return
 
-    const checkout_description = draftData.checkout_counters[0]?.description
+    const checkout_description = draftData.checkout_counters?.[0]?.description
     checkout_description && setValue('checkout_description', checkout_description)
 
-    if (!draftData?.locations && draftData.locations[0]) return
+    if (!draftData.locations?.[0]) return
 
     const {
       location_type,
@@ -62,9 +64,9 @@ const LocationInfoForm = ({ draftData, setActiveStep }: LocationInfoFormProps) =
       room_number,
       post_box,
       postal_code,
+      country,
       town_name,
       district_name,
-      country,
       country_subdivision,
       longitude,
       latitude,
@@ -81,9 +83,9 @@ const LocationInfoForm = ({ draftData, setActiveStep }: LocationInfoFormProps) =
     room_number && setValue('room_number', room_number)
     post_box && setValue('post_box', post_box)
     postal_code && setValue('postal_code', postal_code)
+    country && setValue('country', country)
     town_name && setValue('town_name', town_name)
     district_name && setValue('district_name', district_name)
-    country && setValue('country', country)
     country_subdivision && setValue('country_subdivision', country_subdivision)
     longitude && setValue('longitude', longitude)
     latitude && setValue('latitude', latitude)
@@ -111,6 +113,35 @@ const LocationInfoForm = ({ draftData, setActiveStep }: LocationInfoFormProps) =
       )
 
       if (response.data.data?.id) {
+        setDraftData(prevDraftData => ({
+          ...prevDraftData,
+          locations: [
+            {
+              location_type: values.location_type,
+              web_url: values.web_url,
+              department: values.department,
+              sub_department: values.sub_department,
+              street_name: values.street_name,
+              building_number: values.building_number,
+              building_name: values.building_name,
+              floor_number: values.floor_number,
+              room_number: values.room_number,
+              post_box: values.post_box,
+              postal_code: values.postal_code,
+              country: values.country,
+              town_name: values.town_name,
+              district_name: values.district_name,
+              country_subdivision: values.country_subdivision,
+              longitude: values.longitude,
+              latitude: values.latitude,
+            },
+          ],
+          checkout_counters: [
+            {
+              description: values.checkout_description,
+            },
+          ],
+        }))
         alert(response.data.message)
         setActiveStep(activeStep => activeStep + 1)
         scrollToTop()
@@ -236,6 +267,15 @@ const LocationInfoForm = ({ draftData, setActiveStep }: LocationInfoFormProps) =
           placeholder='Postal Code'
         />
 
+        <FormSelect
+          name='country'
+          register={register}
+          errors={errors}
+          label='Country'
+          placeholder='Choose Country'
+          options={COUNTRIES}
+        />
+
         <FormInput
           name='town_name'
           register={register}
@@ -258,15 +298,6 @@ const LocationInfoForm = ({ draftData, setActiveStep }: LocationInfoFormProps) =
           errors={errors}
           label='Country Subdivision (State/Divison)'
           placeholder='Country Subdivision'
-        />
-
-        <FormSelect
-          name='country'
-          register={register}
-          errors={errors}
-          label='Country'
-          placeholder='Choose Country'
-          options={COUNTRIES}
         />
 
         <FormInput
