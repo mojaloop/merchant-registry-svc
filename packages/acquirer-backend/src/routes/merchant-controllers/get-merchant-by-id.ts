@@ -83,7 +83,8 @@ export async function getMerhcantById (req: Request, res: Response) {
     if (merchant.business_licenses?.length > 0) {
       for (let i = 0; i < merchant.business_licenses.length; i++) {
         if (merchant.business_licenses[i].license_document_link !== null &&
-            merchant.business_licenses[i].license_document_link !== undefined
+            merchant.business_licenses[i].license_document_link !== undefined &&
+            merchant.business_licenses[i].license_document_link !== ''
         ) {
           merchant.business_licenses[i].license_document_link =
             await getMerchantDocumentURL(merchant.business_licenses[i].license_document_link)
