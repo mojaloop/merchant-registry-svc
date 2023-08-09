@@ -23,7 +23,10 @@ export interface DraftData {
   }[]
   employees_num?: NumberOfEmployees
   monthly_turnover?: string
-  category_code?: { category_code: string }
+  category_code?: {
+    category_code?: string
+    description?: string
+  }
   merchant_type?: MerchantType
   dfsp_name?: string
   currency_code?: {

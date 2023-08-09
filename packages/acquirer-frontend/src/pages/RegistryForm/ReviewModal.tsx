@@ -14,12 +14,15 @@ import {
   type GridItemProps,
 } from '@chakra-ui/react'
 
+import type { DraftData } from '@/types/form'
+import instance from '@/lib/axiosInstance'
 import { CustomButton } from '@/components/ui'
 import DetailsItem from '@/components/ui/MerchantInformationModal/DetailsItem'
 
 interface ReviewModalProps {
   isOpen: boolean
   onClose: () => void
+  draftData: DraftData
 }
 
 const SubHeading = ({ children, ...props }: HeadingProps) => {
@@ -38,7 +41,39 @@ const GridItemShell = ({ children, ...props }: GridItemProps) => {
   )
 }
 
-const ReviewModal = ({ isOpen, onClose }: ReviewModalProps) => {
+const ReviewModal = ({ isOpen, onClose, draftData }: ReviewModalProps) => {
+  const {
+    dba_trading_name,
+    registered_name,
+    employees_num,
+    monthly_turnover,
+    category_code,
+    merchant_type,
+    dfsp_name,
+    currency_code,
+    checkout_counters,
+    locations,
+    business_owners,
+    contact_persons,
+  } = draftData
+
+  const checkoutCounter = checkout_counters?.[0]
+  const location = locations?.[0]
+  const businessOwner = business_owners?.[0]
+  const contactPerson = contact_persons?.[0]
+
+  const handleSubmit = async () => {
+    const merchantId = sessionStorage.getItem('merchantId')
+
+    await instance.put(`/merchants/${merchantId}/ready-to-review`, null, {
+      headers: {
+        Authorization: `Bearer test_1_dummy_auth_token`,
+      },
+    })
+
+    onClose()
+  }
+
   return (
     <Modal isOpen={isOpen} onClose={onClose} scrollBehavior='inside'>
       <ModalOverlay bg='hsl(0, 0%, 100%, 0.6)' backdropFilter='blur(4px)' />
@@ -62,17 +97,35 @@ const ReviewModal = ({ isOpen, onClose }: ReviewModalProps) => {
               <SubHeading>Business Information</SubHeading>
 
               <Stack spacing='3'>
-                <DetailsItem label='Doing Business As Name' value='K Online Shop' />
+                <DetailsItem
+                  label='Doing Business As Name'
+                  value={dba_trading_name ?? ''}
+                />
 
-                <DetailsItem label='Registered Name' value='K Company Pte.Ltd' />
+                <DetailsItem label='Registered Name' value={registered_name ?? ''} />
 
-                <DetailsItem label='Number of Employee' value='11-50' />
+                <DetailsItem
+                  label='Payinto Account'
+                  value={checkoutCounter?.alias_value ?? ''}
+                />
 
-                <DetailsItem label='Monthly Turnover' value='20%' />
+                <DetailsItem label='Number of Employee' value={employees_num ?? ''} />
 
-                <DetailsItem label='Merchant Category' value='Food and Beverage' />
+                <DetailsItem
+                  label='Monthly Turnover'
+                  value={`${monthly_turnover}%` ?? ''}
+                />
 
-                <DetailsItem label='DFSP Name' value='AA' />
+                <DetailsItem
+                  label='Merchant Category'
+                  value={category_code?.description ?? ''}
+                />
+
+                <DetailsItem label='Merchant Type' value={merchant_type ?? ''} />
+
+                <DetailsItem label='DFSP Name' value={dfsp_name ?? ''} />
+
+                <DetailsItem label='Currency' value={currency_code?.iso_code ?? ''} />
               </Stack>
             </GridItemShell>
 
@@ -80,21 +133,56 @@ const ReviewModal = ({ isOpen, onClose }: ReviewModalProps) => {
               <SubHeading>Location Information</SubHeading>
 
               <Stack spacing='3'>
-                <DetailsItem label='Location Type' value='Virtual' />
+                <DetailsItem
+                  label='Location Type'
+                  value={location?.location_type ?? ''}
+                />
 
-                <DetailsItem label='Country' value='Myanmar' />
-
-                <DetailsItem label='State' value='Myanmar' />
-
-                <DetailsItem label='City' value='Myanmar' />
-
-                <DetailsItem label='Longitude Latitude' value='16.8409° N, 96.1735° E' />
-
-                <DetailsItem label='Website URL' value='konlineship.com.mm' />
+                <DetailsItem label='Country' value={location?.country ?? ''} />
 
                 <DetailsItem
-                  label='Full Address'
-                  value='No(33/A), Room No(701), (7th) Fl, Sky View Tower, Aung Zaya Rd, Yankin Tsp.'
+                  label='Latitude Longitude'
+                  value={`${location?.latitude ?? ''}° N, ${
+                    location?.longitude ?? ''
+                  }° E`}
+                />
+
+                <DetailsItem label='Website URL' value={location?.web_url ?? ''} />
+
+                <DetailsItem label='Department' value={location?.department ?? ''} />
+
+                <DetailsItem
+                  label='Sub Department'
+                  value={location?.sub_department ?? ''}
+                />
+
+                <DetailsItem label='Street Name' value={location?.street_name ?? ''} />
+
+                <DetailsItem
+                  label='Building Number'
+                  value={location?.building_number ?? ''}
+                />
+
+                <DetailsItem
+                  label='Building Name'
+                  value={location?.building_name ?? ''}
+                />
+
+                <DetailsItem label='Floor Number' value={location?.floor_number ?? ''} />
+
+                <DetailsItem label='Room Number' value={location?.room_number ?? ''} />
+
+                <DetailsItem label='Post Box' value={location?.post_box ?? ''} />
+
+                <DetailsItem label='Postal Code' value={location?.postal_code ?? ''} />
+
+                <DetailsItem label='Township' value={location?.town_name ?? ''} />
+
+                <DetailsItem label='District' value={location?.district_name ?? ''} />
+
+                <DetailsItem
+                  label='Country Subdivision'
+                  value={location?.country_subdivision ?? ''}
                 />
               </Stack>
             </GridItemShell>
@@ -103,20 +191,96 @@ const ReviewModal = ({ isOpen, onClose }: ReviewModalProps) => {
               <SubHeading>Business Owner Information</SubHeading>
 
               <Stack spacing='3'>
-                <DetailsItem label='Name' value='John' />
-
-                <DetailsItem label='National ID' value='0075981' />
-
-                <DetailsItem label='Nationality' value='Burmese' />
+                <DetailsItem label='Name' value={businessOwner?.name ?? ''} />
 
                 <DetailsItem
-                  label='Address'
-                  value='No(33/A),Room No(701),(7th) Fl, Sky View Tower, Aung Zaya Rd,Yankin Tsp.'
+                  label='National ID'
+                  value={businessOwner?.identificaton_type ?? ''}
                 />
 
-                <DetailsItem label='Phone Number' value='09756290742' />
+                <DetailsItem
+                  label='Nationality'
+                  value={businessOwner?.identification_number ?? ''}
+                />
 
-                <DetailsItem label='Email' value='konlineshop@gmail.com' />
+                <DetailsItem
+                  label='Phone Number'
+                  value={businessOwner?.phone_number ?? ''}
+                />
+
+                <DetailsItem label='Email' value={businessOwner?.email ?? ''} />
+
+                <DetailsItem
+                  label='Country'
+                  value={businessOwner?.businessPersonLocation?.country ?? ''}
+                />
+
+                <DetailsItem
+                  label='Latitude Longitude'
+                  value={`${businessOwner?.businessPersonLocation?.latitude ?? ''}° N, ${
+                    businessOwner?.businessPersonLocation?.longitude ?? ''
+                  }° E`}
+                />
+
+                <DetailsItem
+                  label='Department'
+                  value={businessOwner?.businessPersonLocation?.department ?? ''}
+                />
+
+                <DetailsItem
+                  label='Sub Department'
+                  value={businessOwner?.businessPersonLocation?.sub_department ?? ''}
+                />
+
+                <DetailsItem
+                  label='Street Name'
+                  value={businessOwner?.businessPersonLocation?.street_name ?? ''}
+                />
+
+                <DetailsItem
+                  label='Building Number'
+                  value={businessOwner?.businessPersonLocation?.building_number ?? ''}
+                />
+
+                <DetailsItem
+                  label='Building Name'
+                  value={businessOwner?.businessPersonLocation?.building_name ?? ''}
+                />
+
+                <DetailsItem
+                  label='Floor Number'
+                  value={businessOwner?.businessPersonLocation?.floor_number ?? ''}
+                />
+
+                <DetailsItem
+                  label='Room Number'
+                  value={businessOwner?.businessPersonLocation?.room_number ?? ''}
+                />
+
+                <DetailsItem
+                  label='Post Box'
+                  value={businessOwner?.businessPersonLocation?.post_box ?? ''}
+                />
+
+                <DetailsItem
+                  label='Postal Code'
+                  value={businessOwner?.businessPersonLocation?.postal_code ?? ''}
+                />
+
+                <DetailsItem
+                  label='Township'
+                  value={businessOwner?.businessPersonLocation?.town_name ?? ''}
+                />
+
+                <DetailsItem
+                  label='District'
+                  value={businessOwner?.businessPersonLocation?.district_name ?? ''}
+                />
+
+                <DetailsItem
+                  label='Country Subdivision'
+                  value={businessOwner?.businessPersonLocation?.country_subdivision ?? ''}
+                />
               </Stack>
             </GridItemShell>
 
@@ -124,11 +288,14 @@ const ReviewModal = ({ isOpen, onClose }: ReviewModalProps) => {
               <SubHeading>Contact Person Information</SubHeading>
 
               <Stack spacing='3'>
-                <DetailsItem label='Name' value='John' />
+                <DetailsItem label='Name' value={contactPerson?.name ?? ''} />
 
-                <DetailsItem label='Phone Number' value='09756290742' />
+                <DetailsItem
+                  label='Phone Number'
+                  value={contactPerson?.phone_number ?? ''}
+                />
 
-                <DetailsItem label='Email' value='konlineshop@gmail.com' />
+                <DetailsItem label='Email' value={contactPerson?.email ?? ''} />
               </Stack>
             </GridItemShell>
 
@@ -136,9 +303,10 @@ const ReviewModal = ({ isOpen, onClose }: ReviewModalProps) => {
               <SubHeading>Checkout Information</SubHeading>
 
               <Stack spacing='3'>
-                <DetailsItem label='Counter Description' value='Online Shopping - 01' />
-
-                <DetailsItem label='Counter Description2' value='Online Shopping - 02' />
+                <DetailsItem
+                  label='Counter Description'
+                  value={checkoutCounter?.description ?? ''}
+                />
               </Stack>
             </GridItemShell>
           </Grid>
@@ -149,7 +317,7 @@ const ReviewModal = ({ isOpen, onClose }: ReviewModalProps) => {
             Close
           </CustomButton>
 
-          <CustomButton>Submit</CustomButton>
+          <CustomButton onClick={handleSubmit}>Submit</CustomButton>
         </ModalFooter>
       </ModalContent>
     </Modal>

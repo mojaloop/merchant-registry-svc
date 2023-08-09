@@ -8,8 +8,9 @@ import { FormReponse } from '@/types/form'
 import instance from '@/lib/axiosInstance'
 import { type ContactPerson, contactPersonSchema } from '@/lib/validations/registry'
 import { useDraftData } from '@/context/DraftDataContext'
-import { CustomButton, MerchantInformationModal } from '@/components/ui'
+import { CustomButton } from '@/components/ui'
 import { FormInput } from '@/components/form'
+import ReviewModal from './ReviewModal'
 import GridShell from './GridShell'
 
 interface ContactPersonProps {
@@ -118,7 +119,9 @@ const ContactPersonForm = ({ setActiveStep }: ContactPersonProps) => {
 
   return (
     <>
-      <MerchantInformationModal isOpen={isOpen} onClose={onClose} />
+      {draftData && (
+        <ReviewModal draftData={draftData} isOpen={isOpen} onClose={onClose} />
+      )}
 
       <Stack as='form' onSubmit={handleSubmit(onSubmit)} pt='20' noValidate>
         <GridShell>

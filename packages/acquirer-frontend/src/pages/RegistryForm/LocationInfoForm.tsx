@@ -138,6 +138,7 @@ const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
           ],
           checkout_counters: [
             {
+              ...prevDraftData?.checkout_counters?.[0],
               description: values.checkout_description,
             },
           ],
