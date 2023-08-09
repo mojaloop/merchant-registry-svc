@@ -65,6 +65,30 @@ paths:
       responses:
         '200':
           description: Health Check
+  /merchants/{id}:
+    get:
+      tags:
+        - Merchants
+      summary: GET Merchant by ID
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: number
+          required: true
+          description: Numeric ID of the Merchant Record
+      responses:
+        '200':
+          description: GET Merchant by ID
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  data:
+                    type: object
   /merchants:
     get:
       tags:
@@ -130,11 +154,11 @@ paths:
                     description: The list of merchants
                     items:
                       type: object
-  /merchants/{id}:
-    get:
+  /merchants/{id}/contact-persons:
+    post:
       tags:
         - Merchants
-      summary: GET Merchant by ID
+      summary: Create a new contact person for a Merchant
       parameters:
         - in: path
           name: id
@@ -142,9 +166,28 @@ paths:
             type: number
           required: true
           description: Numeric ID of the Merchant Record
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                is_same_as_business_owner:
+                  type: boolean
+                  example: false
+                name:
+                  type: string
+                  example: John Doe
+                email:
+                  type: string
+                  example: john.doe@example.com
+                phone_number:
+                  type: string
+                  example: 123-456-7890
       responses:
-        '200':
-          description: GET Merchant by ID
+        '201':
+          description: Contact Person Saved
           content:
             application/json:
               schema:
@@ -221,117 +264,6 @@ paths:
                     type: object
         '422':
           description: Validation error
-        '500':
-          description: Server error
-  /merchants/{id}/registration-status:
-    put:
-      tags:
-        - Merchants
-      security:
-        - Authorization: []
-      summary: Update the registration status of Merchant Record
-      parameters:
-        - in: path
-          name: id
-          schema:
-            type: number
-          required: true
-          description: Numeric ID of the Merchant Record
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                registration_status:
-                  type: string
-                  description: The registration status of the merchant
-                  example: Approved
-      responses:
-        '200':
-          description: Status Updated
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                  data:
-                    type: object
-  /merchants/registration-status:
-    put:
-      tags:
-        - Merchants
-      security:
-        - Authorization: []
-      summary: Bulk Update the registration status of multiple Merchant Records
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                ids:
-                  type: array
-                  items:
-                    type: number
-                  description: List of Merchant Record IDs to be updated
-                  example:
-                    - 1
-                    - 2
-                    - 3
-                registration_status:
-                  type: string
-                  description: The registration status of the merchants
-                  example: Approved
-      responses:
-        '200':
-          description: Status Updated
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-  /merchants/{id}/ready-to-review:
-    put:
-      tags:
-        - Merchants
-      summary: Updates the status of a Merchant to 'Review'
-      parameters:
-        - in: path
-          name: id
-          schema:
-            type: integer
-          required: true
-          description: The ID of the merchant to update
-      security:
-        - Authorization: []
-      responses:
-        '200':
-          description: Merchant status successfully updated to Review
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    description: The response message
-                    example: Status Updated to Review
-                  data:
-                    type: object
-                    description: The updated merchant data
-        '401':
-          description: Unauthorized request
-        '404':
-          description: Merchant not found
-        '422':
-          description: Invalid merchant ID
         '500':
           description: Server error
   /merchants/{id}/locations:
@@ -422,49 +354,6 @@ paths:
                     type: string
                   data:
                     type: object
-  /merchants/{id}/contact-persons:
-    post:
-      tags:
-        - Merchants
-      summary: Create a new contact person for a Merchant
-      parameters:
-        - in: path
-          name: id
-          schema:
-            type: number
-          required: true
-          description: Numeric ID of the Merchant Record
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                is_same_as_business_owner:
-                  type: boolean
-                  example: false
-                name:
-                  type: string
-                  example: John Doe
-                email:
-                  type: string
-                  example: john.doe@example.com
-                phone_number:
-                  type: string
-                  example: 123-456-7890
-      responses:
-        '201':
-          description: Contact Person Saved
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                  data:
-                    type: object
   /merchants/{id}/business-owners:
     post:
       tags:
@@ -526,6 +415,117 @@ paths:
                     type: string
                   data:
                     type: object
+  /merchants/{id}/registration-status:
+    put:
+      tags:
+        - Merchants
+      security:
+        - Authorization: []
+      summary: Update the registration status of Merchant Record
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: number
+          required: true
+          description: Numeric ID of the Merchant Record
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                registration_status:
+                  type: string
+                  description: The registration status of the merchant
+                  example: Approved
+      responses:
+        '200':
+          description: Status Updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  data:
+                    type: object
+  /merchants/{id}/ready-to-review:
+    put:
+      tags:
+        - Merchants
+      summary: Updates the status of a Merchant to 'Review'
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: The ID of the merchant to update
+      security:
+        - Authorization: []
+      responses:
+        '200':
+          description: Merchant status successfully updated to Review
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: The response message
+                    example: Status Updated to Review
+                  data:
+                    type: object
+                    description: The updated merchant data
+        '401':
+          description: Unauthorized request
+        '404':
+          description: Merchant not found
+        '422':
+          description: Invalid merchant ID
+        '500':
+          description: Server error
+  /merchants/registration-status:
+    put:
+      tags:
+        - Merchants
+      security:
+        - Authorization: []
+      summary: Bulk Update the registration status of multiple Merchant Records
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                ids:
+                  type: array
+                  items:
+                    type: number
+                  description: List of Merchant Record IDs to be updated
+                  example:
+                    - 1
+                    - 2
+                    - 3
+                registration_status:
+                  type: string
+                  description: The registration status of the merchants
+                  example: Approved
+      responses:
+        '200':
+          description: Status Updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
   /users:
     get:
       tags:

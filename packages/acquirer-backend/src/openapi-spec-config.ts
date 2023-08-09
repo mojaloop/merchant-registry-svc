@@ -3,8 +3,8 @@ import path from 'path'
 import fs from 'fs'
 import yaml from 'js-yaml'
 
-const ROUTE_PATH = path.join(__dirname, './routes/*.ts')
-const ENTITY_PATH = path.join(__dirname, './entities/*.ts')
+const ROUTE_PATH = path.join(__dirname, './routes/**/*.ts')
+const ENTITY_PATH = path.join(__dirname, './entities/**/*.ts')
 
 const options = {
   failOnErrors: true,
