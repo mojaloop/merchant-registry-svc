@@ -1,4 +1,4 @@
-import { NavLink } from 'react-router-dom'
+import { NavLink, useNavigate } from 'react-router-dom'
 import {
   Box,
   Checkbox,
@@ -11,15 +11,19 @@ import {
   Text,
   VStack,
 } from '@chakra-ui/react'
+import { isAxiosError } from 'axios'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 
 import mojaloopLogo from '@/assets/mojaloop-logo.png'
+import instance from '@/lib/axiosInstance'
 import { type Login, loginSchema } from '@/lib/validations/login'
 import { CustomButton } from '@/components/ui'
 import { FormInput } from '@/components/form'
 
 const Login = () => {
+  const navigate = useNavigate()
+
   const {
     register,
     formState: { errors },
@@ -28,8 +32,23 @@ const Login = () => {
     resolver: zodResolver(loginSchema),
   })
 
-  const onSubmit = (values: Login) => {
-    console.log(values)
+  const onSubmit = async (values: Login) => {
+    try {
+      await instance.post('/users/login', {
+        email: values.email,
+        password: values.password,
+      })
+
+      navigate('/')
+    } catch (error) {
+      if (isAxiosError(error)) {
+        console.log(error)
+        alert(
+          error.response?.data?.error ||
+            'Something went wrong! Please check your credentials and try again.'
+        )
+      }
+    }
   }
 
   return (
@@ -66,11 +85,11 @@ const Login = () => {
 
           <Stack as='form' onSubmit={handleSubmit(onSubmit)} w='full'>
             <FormInput
-              name='username'
+              name='email'
               register={register}
               errors={errors}
-              label='Username'
-              placeholder='Enter username'
+              label='Email'
+              placeholder='Enter email'
               maxW='full'
               mb='4'
             />
