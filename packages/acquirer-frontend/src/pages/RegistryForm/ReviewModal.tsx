@@ -13,6 +13,7 @@ import {
   Heading,
   type GridItemProps,
 } from '@chakra-ui/react'
+import { isAxiosError } from 'axios'
 
 import type { DraftData } from '@/types/form'
 import instance from '@/lib/axiosInstance'
@@ -65,13 +66,23 @@ const ReviewModal = ({ isOpen, onClose, draftData }: ReviewModalProps) => {
   const handleSubmit = async () => {
     const merchantId = sessionStorage.getItem('merchantId')
 
-    await instance.put(`/merchants/${merchantId}/ready-to-review`, null, {
-      headers: {
-        Authorization: `Bearer test_1_dummy_auth_token`,
-      },
-    })
+    try {
+      await instance.put(`/merchants/${merchantId}/ready-to-review`, null, {
+        headers: {
+          Authorization: `Bearer test_1_dummy_auth_token`,
+        },
+      })
 
-    onClose()
+      sessionStorage.removeItem('merchantId')
+      onClose()
+    } catch (error) {
+      if (isAxiosError(error)) {
+        console.log(error)
+        alert(
+          error.response?.data?.error || 'Something went wrong! Please try again later.'
+        )
+      }
+    }
   }
 
   return (
@@ -142,9 +153,9 @@ const ReviewModal = ({ isOpen, onClose, draftData }: ReviewModalProps) => {
 
                 <DetailsItem
                   label='Latitude Longitude'
-                  value={`${location?.latitude ?? ''}° N, ${
-                    location?.longitude ?? ''
-                  }° E`}
+                  value={`${location?.latitude ?? ''}${
+                    location?.latitude && location?.longitude ? ',' : ''
+                  } ${location?.longitude ?? ''}`}
                 />
 
                 <DetailsItem label='Website URL' value={location?.web_url ?? ''} />
@@ -217,9 +228,12 @@ const ReviewModal = ({ isOpen, onClose, draftData }: ReviewModalProps) => {
 
                 <DetailsItem
                   label='Latitude Longitude'
-                  value={`${businessOwner?.businessPersonLocation?.latitude ?? ''}° N, ${
-                    businessOwner?.businessPersonLocation?.longitude ?? ''
-                  }° E`}
+                  value={`${businessOwner?.businessPersonLocation?.latitude ?? ''}${
+                    businessOwner?.businessPersonLocation?.latitude &&
+                    businessOwner?.businessPersonLocation?.longitude
+                      ? ','
+                      : ''
+                  } ${businessOwner?.businessPersonLocation?.longitude ?? ''}`}
                 />
 
                 <DetailsItem
