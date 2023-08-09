@@ -4,26 +4,11 @@ import { QueryFailedError } from 'typeorm'
 import * as z from 'zod'
 import { AppDataSource } from '../../database/data-source'
 import { MerchantEntity } from '../../entity/MerchantEntity'
-import { MerchantLocationEntity } from '../../entity/MerchantLocationEntity'
 import logger from '../../logger'
-import { CheckoutCounterEntity } from '../../entity/CheckoutCounterEntity'
-import { ContactPersonEntity } from '../../entity/ContactPersonEntity'
-import { BusinessOwnerEntity } from '../../entity/BusinessOwnerEntity'
-import { BusinessPersonLocationEntity } from '../../entity/BusinessPersonLocationEntity'
-import { BusinessLicenseEntity } from '../../entity/BusinessLicenseEntity'
 import { PortalUserEntity } from '../../entity/PortalUserEntity'
 import {
-  MerchantAllowBlockStatus,
   MerchantRegistrationStatus
 } from 'shared-lib'
-
-import {
-  MerchantSubmitDataSchema,
-  MerchantLocationSubmitDataSchema,
-  ContactPersonSubmitDataSchema,
-  BusinessOwnerSubmitDataSchema
-} from '../schemas'
-import { pdfUpload, uploadMerchantDocument } from '../../middleware/minioClient'
 
 /**
  * @openapi

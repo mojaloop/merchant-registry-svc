@@ -203,7 +203,7 @@ paths:
         - Merchants
       security:
         - Authorization: []
-      summary: Create a new Merchant Draft or Submit for Approval
+      summary: Create a new Merchant Draft
       requestBody:
         required: true
         content:
@@ -246,7 +246,7 @@ paths:
                   type: string
                   example: '123456789'
                   required: true
-                file:
+                license_document:
                   type: string
                   format: binary
       responses:
@@ -452,6 +452,82 @@ paths:
                     type: string
                   data:
                     type: object
+  /merchants/{id}/draft:
+    put:
+      tags:
+        - Merchants
+      security:
+        - Authorization: []
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: number
+          required: true
+          description: Numeric ID of the Merchant Record
+      summary: Update Merchant Draft
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                dba_trading_name:
+                  type: string
+                  example: Merchant 1
+                registered_name:
+                  type: string
+                  example: Merchant 1
+                employees_num:
+                  type: string
+                  example: 1 - 5
+                monthly_turnover:
+                  type: number
+                  example: 0.5
+                currency_code:
+                  type: string
+                  example: PHP
+                category_code:
+                  type: string
+                  example: '10410'
+                merchant_type:
+                  type: string
+                  example: Individual
+                payinto_alias:
+                  type: string
+                  example: merchant1
+                  required: false
+                registration_status:
+                  type: string
+                  example: Draft
+                registration_status_reason:
+                  type: string
+                  example: Drafted by Maker
+                license_number:
+                  type: string
+                  example: '123456789'
+                  required: true
+                license_document:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: The merchant draft has been created successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Drafting Merchant Successful.
+                  data:
+                    type: object
+        '422':
+          description: Validation error
+        '500':
+          description: Server error
   /merchants/{id}/ready-to-review:
     put:
       tags:

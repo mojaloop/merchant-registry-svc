@@ -72,6 +72,7 @@ export async function removeMerchantDocument (documentPath: string): Promise<voi
 
 export async function uploadMerchantDocument (
   merchant: MerchantEntity,
+  licenseNumber: string,
   file: Express.Multer.File
 ): Promise<string | null> {
   const metaData = {
@@ -80,7 +81,8 @@ export async function uploadMerchantDocument (
   }
 
   const name = convertURLFriendly(merchant.dba_trading_name)
-  const objectName = `${name}/${name}-license-document.pdf`
+  const postfix = convertURLFriendly(licenseNumber)
+  const objectName = `${name}/${name}-license-document-${postfix}.pdf`
   let uploadedPDFInfo: UploadedObjectInfo | null = null
   try {
     uploadedPDFInfo = await minioClient.putObject(

@@ -9,7 +9,8 @@ import { CheckoutCounterEntity } from '../../entity/CheckoutCounterEntity'
 import { BusinessLicenseEntity } from '../../entity/BusinessLicenseEntity'
 import { PortalUserEntity } from '../../entity/PortalUserEntity'
 import {
-  MerchantAllowBlockStatus
+  MerchantAllowBlockStatus,
+  MerchantRegistrationStatus
 } from 'shared-lib'
 
 import {
@@ -19,13 +20,20 @@ import { uploadMerchantDocument } from '../../middleware/minioClient'
 
 /**
  * @openapi
- * /merchants/draft:
- *   post:
+ * /merchants/{id}/draft:
+ *   put:
  *     tags:
  *       - Merchants
  *     security:
  *       - Authorization: []
- *     summary: Create a new Merchant Draft
+ *     parameters:
+ *      - in: path
+ *        name: id
+ *        schema:
+ *          type: number
+ *        required: true
+ *        description: Numeric ID of the Merchant Record
+ *     summary: Update Merchant Draft
  *     requestBody:
  *       required: true
  *       content:
@@ -94,7 +102,7 @@ import { uploadMerchantDocument } from '../../middleware/minioClient'
  */
 // TODO: Protect the route with User Authentication (Keycloak)
 // TODO: check if the authenticated user is a Maker
-export async function postMerchantDraft (req: Request, res: Response) {
+export async function putMerchantDraft (req: Request, res: Response) {
   // TODO: Remove This! and replace with Keycloak Authentication
   const token = req.headers.authorization === undefined
     ? undefined
@@ -124,30 +132,63 @@ export async function postMerchantDraft (req: Request, res: Response) {
     }
   }
 
-  const merchantRepository = AppDataSource.getRepository(MerchantEntity)
-  const merchant = merchantRepository.create()
-
-  const alias: string = req.body.payinto_alias
-  const isExists = await AppDataSource.manager.exists(
-    CheckoutCounterEntity,
-    { where: { alias_value: alias } }
-  )
-  if (isExists) {
-    const errorMsg = `PayInto Alias Value already exists: ${alias} `
-    logger.error(errorMsg)
-    return res.status(422).send({ error: errorMsg })
+  // Merchant ID validation
+  const id = Number(req.params.id)
+  if (isNaN(id)) {
+    logger.error('Invalid ID')
+    res.status(422).send({ message: 'Invalid ID' })
+    return
   }
 
-  // Update PayInto Alias Value
-  const checkoutCounter = new CheckoutCounterEntity()
-  checkoutCounter.alias_value = alias
+  const merchantRepository = AppDataSource.getRepository(MerchantEntity)
+  const merchant = await merchantRepository.findOne({
+    where: { id },
+    relations: ['checkout_counters', 'business_licenses']
+  })
+  if (merchant === null) {
+    return res.status(422).send({ error: 'Merchant ID does not exist' })
+  }
+  if (merchant.registration_status !== MerchantRegistrationStatus.DRAFT) {
+    return res.status(422).send({
+      error: `Merchant is not in Draft Status. Current Status: ${merchant.registration_status}`
+    })
+  }
 
-  try {
-    await AppDataSource.manager.save(checkoutCounter)
-  } catch (err) {
-    if (err instanceof QueryFailedError) {
-      logger.error('Query failed: %o', err.message)
-      return res.status(500).send({ error: err.message })
+  logger.debug('Updating Merchant: %o', merchant.id)
+
+  // Checkout Counter Update
+  const alias: string = req.body.payinto_alias
+  let checkoutCounter = null
+  if (merchant?.checkout_counters?.length === 1) {
+    checkoutCounter = merchant.checkout_counters[0]
+    logger.debug('Updating checkout counter: %o', checkoutCounter)
+  }
+
+  if (checkoutCounter === null) {
+    checkoutCounter = new CheckoutCounterEntity()
+    logger.debug('Creating new checkout counter: %o', checkoutCounter)
+  }
+
+  if (checkoutCounter?.alias_value !== alias) {
+    const isExists = await AppDataSource.manager.exists(
+      CheckoutCounterEntity,
+      { where: { alias_value: alias } }
+    )
+    if (isExists) {
+      const errorMsg = `PayInto Alias Value already exists: ${alias}`
+      logger.error(errorMsg)
+      return res.status(422).send({ error: errorMsg })
+    } else {
+      // Update PayInto Alias Value
+      checkoutCounter.alias_value = alias
+      try {
+        await AppDataSource.manager.save(checkoutCounter)
+      } catch (err) {
+        if (err instanceof QueryFailedError) {
+          logger.error('Query failed: %o', err.message)
+          return res.status(500).send({ error: err.message })
+        }
+      }
     }
   }
 
@@ -172,30 +213,34 @@ export async function postMerchantDraft (req: Request, res: Response) {
   try {
     await merchantRepository.save(merchant)
 
-    // Upload Business License Document
-    const licenseRepository = AppDataSource.getRepository(BusinessLicenseEntity)
+    // Update License Data
     const file = req.file
     const licenseNumber = req.body.license_number
-    const license = new BusinessLicenseEntity()
-    let documentPath = null
+    const licenseRepository = AppDataSource.getRepository(BusinessLicenseEntity)
+    let license: BusinessLicenseEntity | null = merchant.business_licenses[0] ?? null
+
+    if (license === null) {
+      license = new BusinessLicenseEntity()
+    }
+
+    license.license_number = licenseNumber
+    license.merchant = merchant
 
     if (file != null) {
-      documentPath = await uploadMerchantDocument(merchant, licenseNumber, file)
+      const documentPath = await uploadMerchantDocument(merchant, licenseNumber, file)
       if (documentPath == null) {
         logger.error('Failed to upload the PDF to Storage Server')
       } else {
         logger.debug('Successfully uploaded the PDF \'%s\' to Storage', documentPath)
+        // Save the file info to the database
+        license.license_document_link = documentPath
+        await licenseRepository.save(license)
+        merchant.business_licenses = [license]
+        await merchantRepository.save(merchant)
       }
     } else {
-      logger.debug('No file uploaded')
+      logger.debug('No PDF file submitted for the merchant')
     }
-    // Save the license info to the database
-    license.license_number = licenseNumber
-    license.license_document_link = documentPath ?? ''
-    license.merchant = merchant
-    await licenseRepository.save(license)
-    merchant.business_licenses = [license]
-    await merchantRepository.save(merchant)
   } catch (err) {
     // Revert the checkout counter creation
     if (checkoutCounter !== null) {
@@ -221,5 +266,5 @@ export async function postMerchantDraft (req: Request, res: Response) {
       return licenseData
     })
   }
-  return res.status(201).send({ message: 'Drafting Merchant Successful', data: merchantData })
+  return res.status(201).send({ message: 'Updating Merchant Draft Successful', data: merchantData })
 }

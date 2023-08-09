@@ -13,6 +13,7 @@ import { putMerchantStatusReadyToReview } from './merchant-controllers/put-merch
 import { postMerchantLocation } from './merchant-controllers/post-merchant-location'
 import { postMerchantContactPerson } from './merchant-controllers/post-merchant-contact-person'
 import { postMerchantOwner } from './merchant-controllers/post-merchant-owner'
+import { putMerchantDraft } from './merchant-controllers/put-merchant-draft'
 
 const router = express.Router()
 
@@ -21,6 +22,8 @@ router.get('/merchants', getMerchants)
 router.get('/merchants/:id', getMerhcantById)
 
 router.post('/merchants/draft', pdfUpload.single('license_document'), postMerchantDraft)
+
+router.put('/merchants/:id/draft', pdfUpload.single('license_document'), putMerchantDraft)
 
 router.put('/merchants/:id/registration-status', putMerchantRegistrationStatus)
 

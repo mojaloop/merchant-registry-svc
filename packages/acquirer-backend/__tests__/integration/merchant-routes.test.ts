@@ -210,7 +210,7 @@ describe('Merchant Routes Tests', () => {
       expect(res.body).toHaveProperty('message')
       expect(res.body.message).toEqual('OK')
       expect(res.body).toHaveProperty('data')
-      expect(res.body.data).toHaveLength(3) // Only one merchant should match the filter
+      expect(res.body.data).toHaveLength(3)
       expect(res.body.data[0].created_by).toHaveProperty('id')
       expect(res.body.data[0].created_by.id).toEqual(makerUser?.id)
     })
@@ -273,6 +273,15 @@ describe('Merchant Routes Tests', () => {
       await removeMerchantDocument(res.body.data.business_licenses[0].license_document_link)
     })
     // TODO: Add more tests and failure cases
+  })
+
+  describe('POST /api/v1/merchants/:id/draft', () => {
+    beforeEach(async () => {
+      await AppDataSource.manager.delete(BusinessLicenseEntity, {})
+      await AppDataSource.manager.delete(CheckoutCounterEntity, {})
+
+      await AppDataSource.manager.delete(MerchantEntity, {})
+    })
 
     it('should respond with 201 status and when updating existing drafted merchant', async () => {
       // Arrange
@@ -302,9 +311,8 @@ describe('Merchant Routes Tests', () => {
 
       // Act
       const res = await request(app)
-        .post('/api/v1/merchants/draft')
+        .put(`/api/v1/merchants/${merchant.id}/draft`)
         .set('Authorization', `Bearer ${process.env.TEST1_DUMMY_AUTH_TOKEN ?? ''}`)
-        .field('id', merchant.id) // Updating existing merchant using id
         .field('dba_trading_name', 'Updated Merchant 1')
         .field('registered_name', 'Updated Merchant 1')
         .field('employees_num', NumberOfEmployees.FIFTY_ONE_TO_ONE_HUNDRED)
@@ -319,7 +327,7 @@ describe('Merchant Routes Tests', () => {
       // Assert
       expect(res.statusCode).toEqual(201)
       expect(res.body).toHaveProperty('message')
-      expect(res.body.message).toEqual('Drafting Merchant Successful')
+      expect(res.body.message).toEqual('Updating Merchant Draft Successful')
       expect(res.body).toHaveProperty('data')
       expect(res.body.data).toHaveProperty('id')
       expect(res.body.data.id).toEqual(merchant.id)

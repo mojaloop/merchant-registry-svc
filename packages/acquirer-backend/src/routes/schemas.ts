@@ -1,15 +1,9 @@
 import {
   BusinessOwnerIDType, Countries, CurrencyCodes, MerchantLocationType,
-  MerchantRegistrationStatus,
   MerchantType,
   NumberOfEmployees
 } from 'shared-lib'
 import * as z from 'zod'
-
-enum SubmitRegistratonStatus {
-  DRAFT = MerchantRegistrationStatus.DRAFT,
-  REVIEW = MerchantRegistrationStatus.REVIEW,
-}
 
 export const BusinessLicenseSubmitDataSchema = z.object({
   license_number: z.string(),
@@ -17,7 +11,6 @@ export const BusinessLicenseSubmitDataSchema = z.object({
 }).strict()
 
 export const MerchantSubmitDataSchema = z.object({
-  id: z.number().optional(), // only needed for updating
   dba_trading_name: z.string(),
   registered_name: z.string().optional().nullable().default(null),
   employees_num: z.nativeEnum(NumberOfEmployees),
