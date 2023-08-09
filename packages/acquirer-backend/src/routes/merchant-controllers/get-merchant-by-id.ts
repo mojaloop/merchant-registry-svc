@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { type Request, type Response } from 'express'
+import { getMerchantDocumentURL } from '../../middleware/minioClient'
 import { AppDataSource } from '../../database/data-source'
 import { MerchantEntity } from '../../entity/MerchantEntity'
 import logger from '../../logger'
@@ -76,6 +77,17 @@ export async function getMerhcantById (req: Request, res: Response) {
         name: merchant.checked_by.name,
         email: merchant.checked_by.email,
         phone_number: merchant.checked_by.phone_number
+      }
+    }
+
+    if (merchant.business_licenses?.length > 0) {
+      for (let i = 0; i < merchant.business_licenses.length; i++) {
+        if (merchant.business_licenses[i].license_document_link !== null &&
+            merchant.business_licenses[i].license_document_link !== undefined
+        ) {
+          merchant.business_licenses[i].license_document_link =
+            await getMerchantDocumentURL(merchant.business_licenses[i].license_document_link)
+        }
       }
     }
 
