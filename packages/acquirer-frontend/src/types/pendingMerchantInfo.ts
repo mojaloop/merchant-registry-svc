@@ -1,4 +1,5 @@
-import { MerchantRegistrationStatus } from 'shared-lib'
+import type { MerchantRegistrationStatus } from 'shared-lib'
+
 export interface PendingMerchantInfo {
   no: number
   dbaName: string

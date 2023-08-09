@@ -3,6 +3,7 @@ import { Box, Heading, Stack } from '@chakra-ui/react'
 import { isAxiosError } from 'axios'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { Countries, BusinessOwnerIDType } from 'shared-lib'
 
 import type { FormReponse } from '@/types/form'
 import instance from '@/lib/axiosInstance'
@@ -11,7 +12,6 @@ import { scrollToTop } from '@/utils'
 import { useDraftData } from '@/context/DraftDataContext'
 import { CustomButton } from '@/components/ui'
 import { FormInput, FormSelect } from '@/components/form'
-import { Countries, BusinessOwnerIDType } from 'shared-lib'
 import GridShell from './GridShell'
 
 const COUNTRIES = Object.entries(Countries).map(([, label]) => ({

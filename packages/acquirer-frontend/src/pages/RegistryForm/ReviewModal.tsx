@@ -19,6 +19,7 @@ import type { DraftData } from '@/types/form'
 import instance from '@/lib/axiosInstance'
 import { CustomButton } from '@/components/ui'
 import DetailsItem from '@/components/ui/MerchantInformationModal/DetailsItem'
+import { useNavigate } from 'react-router-dom'
 
 interface ReviewModalProps {
   isOpen: boolean
@@ -43,6 +44,8 @@ const GridItemShell = ({ children, ...props }: GridItemProps) => {
 }
 
 const ReviewModal = ({ isOpen, onClose, draftData }: ReviewModalProps) => {
+  const navigate = useNavigate()
+
   const {
     dba_trading_name,
     registered_name,
@@ -75,6 +78,7 @@ const ReviewModal = ({ isOpen, onClose, draftData }: ReviewModalProps) => {
 
       sessionStorage.removeItem('merchantId')
       onClose()
+      navigate('/registry')
     } catch (error) {
       if (isAxiosError(error)) {
         console.log(error)
