@@ -156,6 +156,7 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
           employees_num: values.employees_num,
           monthly_turnover: values.monthly_turnover,
           category_code: {
+            ...draftData?.category_code,
             category_code: values.category_code,
           },
           merchant_type: values.merchant_type,

@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import {
   Grid,
   GridItem,
@@ -13,11 +14,11 @@ import {
   Heading,
   type GridItemProps,
 } from '@chakra-ui/react'
-import { useEffect, useState } from 'react'
+
+import type { MerchantDetails } from '@/types/merchantDetails'
 import instance from '@/lib/axiosInstance'
 import { CustomButton } from '@/components/ui'
 import DetailsItem from './DetailsItem'
-import { MerchantDetails } from './MerchantDetailsType'
 
 interface MerchantInformationModalProps {
   selectedMerchantId: number | null

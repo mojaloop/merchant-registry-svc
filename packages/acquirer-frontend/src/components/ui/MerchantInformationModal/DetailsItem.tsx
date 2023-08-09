@@ -2,7 +2,7 @@ import { Grid, GridItem } from '@chakra-ui/react'
 
 interface DetailsItemProps {
   label: string
-  value: string | number
+  value: string
 }
 
 const DetailsItem = ({ label, value }: DetailsItemProps) => {
