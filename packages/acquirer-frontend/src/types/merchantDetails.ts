@@ -1,4 +1,4 @@
-import { Countries, BusinessOwnerIDType } from 'shared-lib'
+import type { Countries, BusinessOwnerIDType } from 'shared-lib'
 
 interface CheckoutCounter {
   id: number
