@@ -31,6 +31,9 @@ services:
     build:
       context: .
       dockerfile: Dockerfile-acquirer-frontend
+    environment:
+      - VITE_HOST=0.0.0.0
+      - VITE_PORT=5172
     ports:
       - "5172:5172"
 
