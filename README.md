@@ -16,23 +16,35 @@ and proceed with the necessary steps in the payment transaction.
 
 ## Workspaces
 
-* [Shared Library](./packages/shared-lib)
-  * Usable Types, Enums, Methods etc..
-* [Merchant Acquirer Backend Service](./packages/acquirer-backend)
-  * Backend Service for handling Merchants Informations.
-* [Merchant Acquirer Frontend](./packages/acquirer-frontend)
-  * Portal for Hub Users, Makers, Checkers to manage and onboarding Merchants.
-* [Merchant Registry Backend](./packages/acquirer-backend)
-  * Will Serve as Oracle for Mojaloop ALS.
+- [Shared Library](./packages/shared-lib)
+  - Usable Types, Enums, Methods etc..
+- [Merchant Acquirer Backend Service](./packages/acquirer-backend)
+  - Backend Service for handling Merchants Informations.
+- [Merchant Acquirer Frontend](./packages/acquirer-frontend)
+  - Portal for Hub Users, Makers, Checkers to manage and onboarding Merchants.
+- [Merchant Registry Backend](./packages/acquirer-backend)
+  - Will Serve as Oracle for Mojaloop ALS.
 
 ## Deploying on Docker
-* Requirements
-    - `docker` and `docker-compose`
 
-* Run 
-    ```bash 
-    $ docker-compose up --build
-    ```
-    * Acquirer Frontend should be running at: http://localhost:5173
-    * Acquirer Backend should be running at: http://localhost:5555/api/v1/health-check
-        * Swagger API Doc should be at: http://localhost:5555/docs
+- Requirements
+
+  - `docker` and `docker-compose`
+
+- Getting Started
+  <br />
+  <br />
+  First, run the server:
+  ```bash
+  $ docker-compose up --build
+  ```
+  and then run the client:
+  ```bash
+  cd packages/acquirer-frontend
+  ```
+  ```bash
+  pnpm dev
+  ```
+  - Acquirer Frontend should be running at: http://localhost:5173
+  - Acquirer Backend should be running at: http://localhost:5555/api/v1/health-check
+    - Swagger API Doc should be at: http://localhost:5555/docs
