@@ -20,7 +20,7 @@ export class CheckoutCounterEntity {
   @Column({ nullable: false, length: 255, default: 'PAYINTO_ID' })
     alias_type!: string
 
-  @Column({ nullable: false, length: 255, unique: true })
+  @Column({ nullable: true, length: 255 })
     alias_value!: string
 
   @Column({ nullable: true })

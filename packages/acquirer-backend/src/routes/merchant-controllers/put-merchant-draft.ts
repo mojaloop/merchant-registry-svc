@@ -155,24 +155,14 @@ export async function putMerchantDraft (req: Request, res: Response) {
   }
 
   if (checkoutCounter?.alias_value !== alias) {
-    const isExists = await AppDataSource.manager.exists(
-      CheckoutCounterEntity,
-      { where: { alias_value: alias } }
-    )
-    if (isExists) {
-      const errorMsg = `PayInto Alias Value already exists: ${alias}`
-      logger.error(errorMsg)
-      return res.status(422).send({ error: errorMsg })
-    } else {
-      // Update PayInto Alias Value
-      checkoutCounter.alias_value = alias
-      try {
-        await AppDataSource.manager.save(checkoutCounter)
-      } catch (err) {
-        if (err instanceof QueryFailedError) {
-          logger.error('Query failed: %o', err.message)
-          return res.status(500).send({ error: err.message })
-        }
+    // Update PayInto Alias Value
+    checkoutCounter.alias_value = alias
+    try {
+      await AppDataSource.manager.save(checkoutCounter)
+    } catch (err) {
+      if (err instanceof QueryFailedError) {
+        logger.error('Query failed: %o', err.message)
+        return res.status(500).send({ error: err.message })
       }
     }
   }

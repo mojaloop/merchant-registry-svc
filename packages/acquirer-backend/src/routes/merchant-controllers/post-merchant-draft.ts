@@ -113,16 +113,6 @@ export async function postMerchantDraft (req: Request, res: Response) {
   const merchant = merchantRepository.create()
 
   const alias: string = req.body.payinto_alias
-  const isExists = await AppDataSource.manager.exists(
-    CheckoutCounterEntity,
-    { where: { alias_value: alias } }
-  )
-  if (isExists) {
-    const errorMsg = `PayInto Alias Value already exists: ${alias} `
-    logger.error(errorMsg)
-    return res.status(422).send({ error: errorMsg })
-  }
-
   // Update PayInto Alias Value
   const checkoutCounter = new CheckoutCounterEntity()
   checkoutCounter.alias_value = alias
