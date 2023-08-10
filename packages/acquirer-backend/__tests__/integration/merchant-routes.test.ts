@@ -184,6 +184,7 @@ describe('Merchant Routes Tests', () => {
         .query({
           approvedBy: checkerUser?.id
         })
+        .set('Authorization', `Bearer ${process.env.TEST2_DUMMY_AUTH_TOKEN ?? ''}`)
 
       // Assert
       expect(res.statusCode).toEqual(200)
@@ -204,6 +205,7 @@ describe('Merchant Routes Tests', () => {
         .query({
           addedBy: makerUser?.id
         })
+        .set('Authorization', `Bearer ${process.env.TEST2_DUMMY_AUTH_TOKEN ?? ''}`)
 
       // Assert
       expect(res.statusCode).toEqual(200)
@@ -275,7 +277,7 @@ describe('Merchant Routes Tests', () => {
     // TODO: Add more tests and failure cases
   })
 
-  describe('POST /api/v1/merchants/:id/draft', () => {
+  describe('PUT /api/v1/merchants/:id/draft', () => {
     beforeEach(async () => {
       await AppDataSource.manager.delete(BusinessLicenseEntity, {})
       await AppDataSource.manager.delete(CheckoutCounterEntity, {})
@@ -533,7 +535,9 @@ describe('Merchant Routes Tests', () => {
       // Assert
       expect(res.statusCode).toEqual(401)
       expect(res.body).toHaveProperty('message')
-      expect(res.body.message).toEqual('Only the Hub User who submitted the Draft Merchant can mark it as Review')
+      expect(res.body.message).toEqual(
+        'Only the Hub User who submitted the Draft Merchant can mark it as Review'
+      )
     })
   })
 
@@ -572,6 +576,7 @@ describe('Merchant Routes Tests', () => {
           town_name: 'Test Town 1',
           district_name: 'Test District 1'
         })
+        .set('Authorization', `Bearer ${process.env.TEST2_DUMMY_AUTH_TOKEN ?? ''}`)
 
       // Assert
       expect(res.statusCode).toEqual(201)
@@ -623,6 +628,7 @@ describe('Merchant Routes Tests', () => {
           email: 'john.doe@example.com',
           phone_number: '1234567890'
         })
+        .set('Authorization', `Bearer ${process.env.TEST2_DUMMY_AUTH_TOKEN ?? ''}`)
 
       const merchantTest = await AppDataSource.manager.findOneOrFail(
         MerchantEntity,
@@ -690,6 +696,7 @@ describe('Merchant Routes Tests', () => {
           // email: '',
           // phone_number: ''
         })
+        .set('Authorization', `Bearer ${process.env.TEST2_DUMMY_AUTH_TOKEN ?? ''}`)
 
       const merchantTest = await AppDataSource.manager.findOneOrFail(
         MerchantEntity,
@@ -759,6 +766,7 @@ describe('Merchant Routes Tests', () => {
           country: Countries.Afghanistan,
           street_name: 'Street #1'
         })
+        .set('Authorization', `Bearer ${process.env.TEST2_DUMMY_AUTH_TOKEN ?? ''}`)
 
       expect(res.statusCode).toEqual(201)
       expect(res.body).toHaveProperty('message')
