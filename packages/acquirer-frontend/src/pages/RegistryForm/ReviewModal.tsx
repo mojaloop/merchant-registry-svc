@@ -12,6 +12,7 @@ import {
   Stack,
   Heading,
   type GridItemProps,
+  Link,
 } from '@chakra-ui/react'
 import { isAxiosError } from 'axios'
 
@@ -55,12 +56,14 @@ const ReviewModal = ({ isOpen, onClose, draftData }: ReviewModalProps) => {
     merchant_type,
     dfsp_name,
     currency_code,
+    business_licenses,
     checkout_counters,
     locations,
     business_owners,
     contact_persons,
   } = draftData
 
+  const businessLicense = business_licenses?.[0]
   const checkoutCounter = checkout_counters?.[0]
   const location = locations?.[0]
   const businessOwner = business_owners?.[0]
@@ -128,7 +131,7 @@ const ReviewModal = ({ isOpen, onClose, draftData }: ReviewModalProps) => {
 
                 <DetailsItem
                   label='Monthly Turnover'
-                  value={`${monthly_turnover}%` ?? ''}
+                  value={monthly_turnover ? `${monthly_turnover}%` : ''}
                 />
 
                 <DetailsItem
@@ -141,6 +144,28 @@ const ReviewModal = ({ isOpen, onClose, draftData }: ReviewModalProps) => {
                 <DetailsItem label='DFSP Name' value={dfsp_name ?? ''} />
 
                 <DetailsItem label='Currency' value={currency_code?.iso_code ?? ''} />
+
+                <DetailsItem
+                  label='Licence Number'
+                  value={businessLicense?.license_number ?? ''}
+                />
+
+                <DetailsItem
+                  label='Licence Document'
+                  value={
+                    businessLicense?.license_document_link ? (
+                      <Link
+                        href={businessLicense.license_document_link}
+                        download
+                        color='blue.500'
+                      >
+                        License Document
+                      </Link>
+                    ) : (
+                      ''
+                    )
+                  }
+                />
               </Stack>
             </GridItemShell>
 
