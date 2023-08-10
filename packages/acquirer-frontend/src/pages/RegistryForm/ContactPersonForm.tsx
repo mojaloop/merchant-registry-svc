@@ -19,6 +19,7 @@ interface ContactPersonProps {
 }
 
 const ContactPersonForm = ({ setActiveStep }: ContactPersonProps) => {
+  const navigate = useNavigate()
   const { isOpen, onOpen, onClose } = useDisclosure()
 
   const [formData, setFormData] = useState<DraftData | null>(null)
@@ -38,7 +39,6 @@ const ContactPersonForm = ({ setActiveStep }: ContactPersonProps) => {
       email: null,
     },
   })
-  const navigate = useNavigate()
 
   const watchedIsSameAsBusinessOwner = watch('is_same_as_business_owner')
 
@@ -93,6 +93,9 @@ const ContactPersonForm = ({ setActiveStep }: ContactPersonProps) => {
       navigate('/login')
       return
     }
+
+    // Server expects null instead of empty string or any other falsy value
+    values.email = values.email || null
 
     try {
       const response = await instance.post<FormReponse>(
