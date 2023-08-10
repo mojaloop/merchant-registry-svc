@@ -16,6 +16,8 @@ paths:
     put:
       tags:
         - Server Configuration
+      security:
+        - Authorization: []
       summary: Set the log level
       description: This endpoint allows you to set the logging level
       requestBody:
@@ -69,6 +71,8 @@ paths:
     get:
       tags:
         - Merchants
+      security:
+        - Authorization: []
       summary: GET Merchant by ID
       parameters:
         - in: path
@@ -89,10 +93,186 @@ paths:
                     type: string
                   data:
                     type: object
+  /merchants/{id}/checkout-counters:
+    get:
+      tags:
+        - Merchants
+      security:
+        - Authorization: []
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: number
+          required: true
+          description: Numeric ID of the Merchant Record
+      summary: GET Merchant Location List
+      responses:
+        '200':
+          description: GET Merchant Checkout Counter List
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: The response message
+                    example: OK
+                  data:
+                    type: array
+                    description: The list of merchants
+                    items:
+                      type: object
+  /merchants/draft-counts:
+    get:
+      tags:
+        - Merchants
+      security:
+        - Authorization: []
+      summary: GET Merchants Draft Count
+      responses:
+        '200':
+          description: GET Merchants List
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: The response message
+                    example: OK
+                  data:
+                    type: string
+                    description: merchant drafts counts
+                    example: 4
+  /merchants/{id}/locations:
+    get:
+      tags:
+        - Merchants
+      security:
+        - Authorization: []
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: number
+          required: true
+          description: Numeric ID of the Merchant Record
+      summary: GET Merchant Location List
+      responses:
+        '200':
+          description: GET Merchant Location List
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: The response message
+                    example: OK
+                  data:
+                    type: array
+                    description: The list of merchants
+                    items:
+                      type: object
+    post:
+      tags:
+        - Merchants
+      security:
+        - Authorization: []
+      summary: Create a new location for a Merchant
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: number
+          required: true
+          description: Numeric ID of the Merchant Record
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                location_type:
+                  type: string
+                  example: Physical
+                web_url:
+                  type: string
+                  example: http://www.example.com
+                address_type:
+                  type: string
+                  example: Office
+                department:
+                  type: string
+                  example: Sales
+                sub_department:
+                  type: string
+                  example: Support
+                street_name:
+                  type: string
+                  example: Main Street
+                building_number:
+                  type: string
+                  example: '123'
+                building_name:
+                  type: string
+                  example: Big Building
+                floor_number:
+                  type: string
+                  example: '4'
+                room_number:
+                  type: string
+                  example: '101'
+                post_box:
+                  type: string
+                  example: PO Box 123
+                postal_code:
+                  type: string
+                  example: '12345'
+                town_name:
+                  type: string
+                  example: Townsville
+                district_name:
+                  type: string
+                  example: District 1
+                country_subdivision:
+                  type: string
+                  example: State
+                country:
+                  type: string
+                  example: United States of America
+                address_line:
+                  type: string
+                  example: 123 Main Street, Townsville
+                latitude:
+                  type: string
+                  example: '40.7128'
+                longitude:
+                  type: string
+                  example: '74.0060'
+      responses:
+        '201':
+          description: Merchant location created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  data:
+                    type: object
   /merchants:
     get:
       tags:
         - Merchants
+      security:
+        - Authorization: []
       summary: GET Merchants List
       parameters:
         - in: query
@@ -158,6 +338,8 @@ paths:
     post:
       tags:
         - Merchants
+      security:
+        - Authorization: []
       summary: Create a new contact person for a Merchant
       parameters:
         - in: path
@@ -266,98 +448,12 @@ paths:
           description: Validation error
         '500':
           description: Server error
-  /merchants/{id}/locations:
-    post:
-      tags:
-        - Merchants
-      summary: Create a new location for a Merchant
-      parameters:
-        - in: path
-          name: id
-          schema:
-            type: number
-          required: true
-          description: Numeric ID of the Merchant Record
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                location_type:
-                  type: string
-                  example: Physical
-                web_url:
-                  type: string
-                  example: http://www.example.com
-                address_type:
-                  type: string
-                  example: Office
-                department:
-                  type: string
-                  example: Sales
-                sub_department:
-                  type: string
-                  example: Support
-                street_name:
-                  type: string
-                  example: Main Street
-                building_number:
-                  type: string
-                  example: '123'
-                building_name:
-                  type: string
-                  example: Big Building
-                floor_number:
-                  type: string
-                  example: '4'
-                room_number:
-                  type: string
-                  example: '101'
-                post_box:
-                  type: string
-                  example: PO Box 123
-                postal_code:
-                  type: string
-                  example: '12345'
-                town_name:
-                  type: string
-                  example: Townsville
-                district_name:
-                  type: string
-                  example: District 1
-                country_subdivision:
-                  type: string
-                  example: State
-                country:
-                  type: string
-                  example: United States of America
-                address_line:
-                  type: string
-                  example: 123 Main Street, Townsville
-                latitude:
-                  type: string
-                  example: '40.7128'
-                longitude:
-                  type: string
-                  example: '74.0060'
-      responses:
-        '201':
-          description: Merchant location created
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                  data:
-                    type: object
   /merchants/{id}/business-owners:
     post:
       tags:
         - Merchants
+      security:
+        - Authorization: []
       summary: Create a new business owner for a Merchant
       parameters:
         - in: path
@@ -406,43 +502,6 @@ paths:
       responses:
         '201':
           description: Business Owner Saved
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                  data:
-                    type: object
-  /merchants/{id}/registration-status:
-    put:
-      tags:
-        - Merchants
-      security:
-        - Authorization: []
-      summary: Update the registration status of Merchant Record
-      parameters:
-        - in: path
-          name: id
-          schema:
-            type: number
-          required: true
-          description: Numeric ID of the Merchant Record
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                registration_status:
-                  type: string
-                  description: The registration status of the merchant
-                  example: Approved
-      responses:
-        '200':
-          description: Status Updated
           content:
             application/json:
               schema:
@@ -528,6 +587,102 @@ paths:
           description: Validation error
         '500':
           description: Server error
+  /merchants/{merchantId}/locations/{locationId}:
+    put:
+      tags:
+        - Merchants
+      security:
+        - Authorization: []
+      summary: Update old location for a Merchant
+      parameters:
+        - in: path
+          name: merchantId
+          schema:
+            type: number
+          required: true
+          description: Numeric ID of the Merchant Record
+        - in: path
+          name: locationId
+          schema:
+            type: number
+          required: true
+          description: Numeric ID of the Location
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                location_type:
+                  type: string
+                  example: Physical
+                web_url:
+                  type: string
+                  example: http://www.example.com
+                address_type:
+                  type: string
+                  example: Office
+                department:
+                  type: string
+                  example: Sales
+                sub_department:
+                  type: string
+                  example: Support
+                street_name:
+                  type: string
+                  example: Main Street
+                building_number:
+                  type: string
+                  example: '123'
+                building_name:
+                  type: string
+                  example: Big Building
+                floor_number:
+                  type: string
+                  example: '4'
+                room_number:
+                  type: string
+                  example: '101'
+                post_box:
+                  type: string
+                  example: PO Box 123
+                postal_code:
+                  type: string
+                  example: '12345'
+                town_name:
+                  type: string
+                  example: Townsville
+                district_name:
+                  type: string
+                  example: District 1
+                country_subdivision:
+                  type: string
+                  example: State
+                country:
+                  type: string
+                  example: United States of America
+                address_line:
+                  type: string
+                  example: 123 Main Street, Townsville
+                latitude:
+                  type: string
+                  example: '40.7128'
+                longitude:
+                  type: string
+                  example: '74.0060'
+      responses:
+        '200':
+          description: Merchant Location Updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  data:
+                    type: object
   /merchants/{id}/ready-to-review:
     put:
       tags:
@@ -565,6 +720,43 @@ paths:
           description: Invalid merchant ID
         '500':
           description: Server error
+  /merchants/{id}/registration-status:
+    put:
+      tags:
+        - Merchants
+      security:
+        - Authorization: []
+      summary: Update the registration status of Merchant Record
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: number
+          required: true
+          description: Numeric ID of the Merchant Record
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                registration_status:
+                  type: string
+                  description: The registration status of the merchant
+                  example: Approved
+      responses:
+        '200':
+          description: Status Updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  data:
+                    type: object
   /merchants/registration-status:
     put:
       tags:
@@ -606,6 +798,8 @@ paths:
     get:
       tags:
         - Portal Users
+      security:
+        - Authorization: []
       summary: GET Portal Users List
       responses:
         '200':

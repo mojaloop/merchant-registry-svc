@@ -1,5 +1,6 @@
-
+/* eslint-disable @typescript-eslint/no-misused-promises */
 import express, { type Request, type Response } from 'express'
+import { getAuthenticatedPortalUser } from '../middleware/authenticate'
 import logger from '../logger'
 
 /**
@@ -8,6 +9,8 @@ import logger from '../logger'
  *   put:
  *     tags:
  *       - Server Configuration
+ *     security:
+ *       - Authorization: []
  *     summary: Set the log level
  *     description: This endpoint allows you to set the logging level
  *     requestBody:
@@ -44,7 +47,11 @@ import logger from '../logger'
  *                   example: "Invalid log level: error"
  */
 const router = express.Router()
-router.put('/config/trace-level', (req: Request, res: Response) => {
+router.put('/config/trace-level', async (req: Request, res: Response) => {
+  const portalUser = await getAuthenticatedPortalUser(req.headers.authorization)
+  if (portalUser == null) {
+    return res.status(401).send({ message: 'Unauthorized' })
+  }
   const level: string = req.body.level
 
   if (

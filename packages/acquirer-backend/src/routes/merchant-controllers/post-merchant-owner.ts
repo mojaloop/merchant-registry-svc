@@ -10,6 +10,7 @@ import { BusinessPersonLocationEntity } from '../../entity/BusinessPersonLocatio
 import {
   BusinessOwnerSubmitDataSchema
 } from '../schemas'
+import { getAuthenticatedPortalUser } from '../../middleware/authenticate'
 
 /**
  * @openapi
@@ -17,6 +18,8 @@ import {
  *   post:
  *     tags:
  *       - Merchants
+ *     security:
+ *       - Authorization: []
  *     summary: Create a new business owner for a Merchant
  *     parameters:
  *      - in: path
@@ -77,6 +80,10 @@ import {
  *                   type: object
  */
 export async function postMerchantOwner (req: Request, res: Response) {
+  const portalUser = await getAuthenticatedPortalUser(req.headers.authorization)
+  if (portalUser == null) {
+    return res.status(401).send({ message: 'Unauthorized' })
+  }
   const id = Number(req.params.id)
   if (isNaN(id) || id <= 0) {
     logger.error('Invalid ID')

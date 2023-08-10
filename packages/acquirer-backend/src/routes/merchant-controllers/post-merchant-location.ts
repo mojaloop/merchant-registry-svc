@@ -11,6 +11,7 @@ import { CheckoutCounterEntity } from '../../entity/CheckoutCounterEntity'
 import {
   MerchantLocationSubmitDataSchema
 } from '../schemas'
+import { getAuthenticatedPortalUser } from '../../middleware/authenticate'
 
 /**
  * @openapi
@@ -18,6 +19,8 @@ import {
  *   post:
  *     tags:
  *       - Merchants
+ *     security:
+ *       - Authorization: []
  *     summary: Create a new location for a Merchant
  *     parameters:
  *      - in: path
@@ -104,6 +107,11 @@ import {
  *                   type: object
  */
 export async function postMerchantLocation (req: Request, res: Response) {
+  const portalUser = await getAuthenticatedPortalUser(req.headers.authorization)
+  if (portalUser == null) {
+    return res.status(401).send({ message: 'Unauthorized' })
+  }
+
   const id = Number(req.params.id)
   if (isNaN(id)) {
     logger.error('Invalid ID')

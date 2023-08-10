@@ -8,6 +8,7 @@ import { PortalUserEntity } from '../../entity/PortalUserEntity'
 import { type MerchantRegistrationStatus } from 'shared-lib'
 
 import { isValidDate } from '../../utils/utils'
+import { getAuthenticatedPortalUser } from '../../middleware/authenticate'
 
 /**
  * @openapi
@@ -15,6 +16,8 @@ import { isValidDate } from '../../utils/utils'
  *   get:
  *     tags:
  *       - Merchants
+ *     security:
+ *       - Authorization: []
  *     summary: GET Merchants List
  *     parameters:
  *       - in: query
@@ -79,6 +82,11 @@ import { isValidDate } from '../../utils/utils'
  */
 // TODO: Protect the route
 export async function getMerchants (req: Request, res: Response) {
+  const portalUser = await getAuthenticatedPortalUser(req.headers.authorization)
+  if (portalUser == null) {
+    return res.status(401).send({ message: 'Unauthorized' })
+  }
+
   try {
     const {
       addedBy,

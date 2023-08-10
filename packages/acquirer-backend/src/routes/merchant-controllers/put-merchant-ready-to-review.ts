@@ -4,10 +4,10 @@ import { QueryFailedError } from 'typeorm'
 import { AppDataSource } from '../../database/data-source'
 import { MerchantEntity } from '../../entity/MerchantEntity'
 import logger from '../../logger'
-import { PortalUserEntity } from '../../entity/PortalUserEntity'
 import {
   MerchantRegistrationStatus
 } from 'shared-lib'
+import { getAuthenticatedPortalUser } from '../../middleware/authenticate'
 
 /**
  * @openapi
@@ -50,25 +50,8 @@ import {
  *         description: Server error
  */
 export async function putMerchantStatusReadyToReview (req: Request, res: Response) {
-  // TODO: Remove This! and replace with Keycloak Authentication
-  const token = req.headers.authorization === undefined
-    ? undefined
-    : req.headers.authorization.replace('Bearer', '').trim()
-  logger.info('Token: %s', token)
-  let portalUser = null
-  if (token === process.env.TEST1_DUMMY_AUTH_TOKEN) {
-    logger.info('TEST1_DUMMY_AUTH_TOKEN')
-    portalUser = await AppDataSource.manager.findOne(
-      PortalUserEntity,
-      { where: { email: process.env.TEST1_EMAIL } }
-    )
-  } else if (token === process.env.TEST2_DUMMY_AUTH_TOKEN) {
-    logger.info('TEST2_DUMMY_AUTH_TOKEN')
-    portalUser = await AppDataSource.manager.findOne(
-      PortalUserEntity,
-      { where: { email: process.env.TEST2_EMAIL } }
-    )
-  } else {
+  const portalUser = await getAuthenticatedPortalUser(req.headers.authorization)
+  if (portalUser == null) {
     return res.status(401).send({ message: 'Unauthorized' })
   }
 

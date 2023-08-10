@@ -11,6 +11,7 @@ import { CheckoutCounterEntity } from '../../entity/CheckoutCounterEntity'
 import {
   MerchantLocationSubmitDataSchema
 } from '../schemas'
+import { getAuthenticatedPortalUser } from '../../middleware/authenticate'
 
 /**
  * @openapi
@@ -18,6 +19,8 @@ import {
  *   put:
  *     tags:
  *       - Merchants
+ *     security:
+ *       - Authorization: []
  *     summary: Update old location for a Merchant
  *     parameters:
  *      - in: path
@@ -110,6 +113,11 @@ import {
  *                   type: object
  */
 export async function putMerchantLocation (req: Request, res: Response) {
+  const portalUser = await getAuthenticatedPortalUser(req.headers.authorization)
+  if (portalUser == null) {
+    return res.status(401).send({ message: 'Unauthorized' })
+  }
+
   const merchantId = Number(req.params.merchantId)
   if (isNaN(merchantId) || merchantId < 1) {
     logger.error('Invalid ID')
@@ -159,6 +167,7 @@ export async function putMerchantLocation (req: Request, res: Response) {
   logger.info('Merchant Checkout Counters: %o', merchant.checkout_counters)
   logger.info('location: %o', location)
   logger.info('location.checkout_counters: %o', location?.checkout_counters)
+  logger.info('locationData: %o', locationData)
   if (location == null || location === undefined) {
     logger.error('Merchant Location not found')
     return res.status(404).json({ error: 'Merchant Location not found' })
@@ -188,14 +197,10 @@ export async function putMerchantLocation (req: Request, res: Response) {
   }
 
   try {
-    const updatedLocation = await AppDataSource.getRepository(MerchantLocationEntity).update(
+    await AppDataSource.getRepository(MerchantLocationEntity).update(
       location.id,
       locationData
     )
-    if (updatedLocation.affected == null) {
-      logger.error('Merchant Location not found')
-      return res.status(404).json({ error: 'Merchant Location not found' })
-    }
   } catch (err) {
     if (err instanceof QueryFailedError) {
       logger.error('Query Failed: %o', err.message)
