@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { Box, Heading, Stack } from '@chakra-ui/react'
 import { isAxiosError } from 'axios'
 import { useForm } from 'react-hook-form'
+import { useNavigate } from 'react-router-dom'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Countries, BusinessOwnerIDType } from 'shared-lib'
 
@@ -104,10 +105,18 @@ const OwnerInfoForm = ({ setActiveStep }: OwnerInfoFormProps) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  const navigate = useNavigate()
   const onSubmit = async (values: OwnerInfo) => {
     const merchantId = sessionStorage.getItem('merchantId')
     if (merchantId == null) {
       alert('Merchant ID not found. Go back to the previous page and try again')
+      return
+    }
+
+    const token = sessionStorage.getItem('token')
+    if (token === null) {
+      alert('Token not found. Please login again.')
+      navigate('/login')
       return
     }
 
@@ -117,7 +126,7 @@ const OwnerInfoForm = ({ setActiveStep }: OwnerInfoFormProps) => {
         values,
         {
           headers: {
-            Authorization: `Bearer test_1_dummy_auth_token`,
+            Authorization: `Bearer ${token}`,
           },
         }
       )

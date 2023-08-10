@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { Box, Heading, Stack } from '@chakra-ui/react'
 import { isAxiosError } from 'axios'
 import { useForm } from 'react-hook-form'
+import { useNavigate } from 'react-router-dom'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { MerchantLocationType, Countries } from 'shared-lib'
 
@@ -50,7 +51,7 @@ const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
     const draftData = res?.data?.data
 
     if (!draftData) return
-
+    const navigate = useNavigate()
     if (!draftData.locations?.[0]) return
 
     const {
@@ -111,13 +112,20 @@ const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
     // Server expects null instead of empty string or any other falsy value
     values.country = values.country || null
 
+    const token = sessionStorage.getItem('token')
+    if (token == null) {
+      alert('Authentication Token not found. Try Login again')
+      navigate('/login')
+      return
+    }
+
     try {
       const response = await instance.post<FormReponse>(
         `/merchants/${merchantId}/locations`,
         values,
         {
           headers: {
-            Authorization: `Bearer test_1_dummy_auth_token`,
+            Authorization: `Bearer ${token}`,
           },
         }
       )

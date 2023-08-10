@@ -17,6 +17,8 @@ import {
  *   post:
  *     tags:
  *       - Merchants
+ *     security:
+ *       - Authorization: []
  *     summary: Create a new contact person for a Merchant
  *     parameters:
  *      - in: path

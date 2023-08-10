@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Box, Checkbox, Heading, Stack, useDisclosure } from '@chakra-ui/react'
 import { isAxiosError } from 'axios'
 import { Controller, useForm } from 'react-hook-form'
@@ -37,6 +38,7 @@ const ContactPersonForm = ({ setActiveStep }: ContactPersonProps) => {
       email: null,
     },
   })
+  const navigate = useNavigate()
 
   const watchedIsSameAsBusinessOwner = watch('is_same_as_business_owner')
 
@@ -85,13 +87,20 @@ const ContactPersonForm = ({ setActiveStep }: ContactPersonProps) => {
       return
     }
 
+    const token = sessionStorage.getItem('token')
+    if (token == null) {
+      alert('Token not found. Try logging in again.')
+      navigate('/login')
+      return
+    }
+
     try {
       const response = await instance.post<FormReponse>(
         `/merchants/${merchantId}/contact-persons`,
         values,
         {
           headers: {
-            Authorization: `Bearer test_1_dummy_auth_token`,
+            Authorization: `Bearer ${token}`,
           },
         }
       )

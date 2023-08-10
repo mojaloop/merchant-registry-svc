@@ -4,6 +4,7 @@ import { getMerchantDocumentURL } from '../../middleware/minioClient'
 import { AppDataSource } from '../../database/data-source'
 import { MerchantEntity } from '../../entity/MerchantEntity'
 import logger from '../../logger'
+import { getAuthenticatedPortalUser } from '../../middleware/authenticate'
 
 /**
  * @openapi
@@ -11,6 +12,8 @@ import logger from '../../logger'
  *   get:
  *     tags:
  *       - Merchants
+ *     security:
+ *       - Authorization: []
  *     summary: GET Merchant by ID
  *     parameters:
  *      - in: path
@@ -34,6 +37,11 @@ import logger from '../../logger'
  */
 // TODO: Protect the route
 export async function getMerhcantById (req: Request, res: Response) {
+  const portalUser = await getAuthenticatedPortalUser(req.headers.authorization)
+  if (portalUser == null) {
+    return res.status(401).send({ message: 'Unauthorized' })
+  }
+
   try {
     const id = Number(req.params.id)
     if (isNaN(id)) {

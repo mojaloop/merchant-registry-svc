@@ -7,6 +7,7 @@ import logger from '../../logger'
 import {
   MerchantRegistrationStatus
 } from 'shared-lib'
+import { getAuthenticatedPortalUser } from '../../middleware/authenticate'
 
 /**
  * @openapi
@@ -47,7 +48,10 @@ import {
  */
 
 export async function putBulkMerchantRegistrationStatus (req: Request, res: Response) {
-  // TODO: Handle Authentication as per previous endpoint
+  const portalUser = await getAuthenticatedPortalUser(req.headers.authorization)
+  if (portalUser == null) {
+    return res.status(401).send({ message: 'Unauthorized' })
+  }
 
   const ids: number[] = req.body.ids
   const registrationStatus: string = req.body.registration_status

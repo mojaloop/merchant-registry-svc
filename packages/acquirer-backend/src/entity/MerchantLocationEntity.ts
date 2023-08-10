@@ -1,4 +1,4 @@
-import { Entity, Column, ManyToOne } from 'typeorm'
+import { Entity, Column, ManyToOne, OneToMany } from 'typeorm'
 import { LocationEntity } from './LocationEntity'
 import { MerchantLocationType } from 'shared-lib'
 import { MerchantEntity } from './MerchantEntity'
@@ -21,7 +21,7 @@ export class MerchantLocationEntity extends LocationEntity {
   @ManyToOne(() => MerchantEntity, merchant => merchant.locations)
     merchant!: MerchantEntity
 
-  @ManyToOne(
+  @OneToMany(
     () => CheckoutCounterEntity,
     checkoutCounter => checkoutCounter.checkout_location
   )

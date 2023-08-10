@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import {
   Grid,
@@ -53,12 +54,26 @@ const MerchantInformationModal = ({
   selectedMerchantId,
 }: MerchantInformationModalProps) => {
   const [merchantDetails, setMerchantDetails] = useState<MerchantDetails | null>(null)
+
+  const navigate = useNavigate()
+
   useEffect(() => {
     if (isOpen && selectedMerchantId) {
       const fetchMerchantDetails = async () => {
+        const token = sessionStorage.getItem('token')
+        if (token === null) {
+          alert('Token not found. Please login again.')
+          navigate('/login')
+          return
+        }
         try {
           const response = await instance.get<MerchantDetailsAxiosData>(
-            `/merchants/${selectedMerchantId}`
+            `/merchants/${selectedMerchantId}`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
           )
           console.log(response)
           setMerchantDetails(response.data.data)

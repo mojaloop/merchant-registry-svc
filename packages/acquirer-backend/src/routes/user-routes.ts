@@ -5,6 +5,7 @@ import * as z from 'zod'
 import { AppDataSource } from '../database/data-source'
 import { PortalUserEntity } from '../entity/PortalUserEntity'
 import logger from '../logger'
+import { getAuthenticatedPortalUser } from '../middleware/authenticate'
 
 export const LoginFormSchema = z.object({
   email: z.string().email(),
@@ -17,6 +18,8 @@ export const LoginFormSchema = z.object({
  *   get:
  *     tags:
  *       - Portal Users
+ *     security:
+ *       - Authorization: []
  *     summary: GET Portal Users List
  *     responses:
  *       200:
@@ -24,7 +27,12 @@ export const LoginFormSchema = z.object({
  */
 // TODO: Protect the route with Keycloak middleware
 const router = express.Router()
-router.get('/users', async (_req: Request, res: Response) => {
+router.get('/users', async (req: Request, res: Response) => {
+  const portalUser = await getAuthenticatedPortalUser(req.headers.authorization)
+  if (portalUser == null) {
+    return res.status(401).send({ message: 'Unauthorized' })
+  }
+
   const users = await AppDataSource.manager.find(PortalUserEntity)
   res.send({ message: 'List of users', data: users })
 })

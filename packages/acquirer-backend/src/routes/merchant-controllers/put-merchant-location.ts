@@ -15,20 +15,26 @@ import { getAuthenticatedPortalUser } from '../../middleware/authenticate'
 
 /**
  * @openapi
- * /merchants/{id}/locations:
- *   post:
+ * /merchants/{merchantId}/locations/{locationId}:
+ *   put:
  *     tags:
  *       - Merchants
  *     security:
  *       - Authorization: []
- *     summary: Create a new location for a Merchant
+ *     summary: Update old location for a Merchant
  *     parameters:
  *      - in: path
- *        name: id
+ *        name: merchantId
  *        schema:
  *          type: number
  *        required: true
  *        description: Numeric ID of the Merchant Record
+ *      - in: path
+ *        name: locationId
+ *        schema:
+ *          type: number
+ *        required: true
+ *        description: Numeric ID of the Location
  *     requestBody:
  *       required: true
  *       content:
@@ -94,8 +100,8 @@ import { getAuthenticatedPortalUser } from '../../middleware/authenticate'
  *                 type: string
  *                 example: "74.0060"
  *     responses:
- *       201:
- *         description: Merchant location created
+ *       200:
+ *         description: Merchant Location Updated
  *         content:
  *           application/json:
  *             schema:
@@ -106,14 +112,21 @@ import { getAuthenticatedPortalUser } from '../../middleware/authenticate'
  *                 data:
  *                   type: object
  */
-export async function postMerchantLocation (req: Request, res: Response) {
+export async function putMerchantLocation (req: Request, res: Response) {
   const portalUser = await getAuthenticatedPortalUser(req.headers.authorization)
   if (portalUser == null) {
     return res.status(401).send({ message: 'Unauthorized' })
   }
 
-  const id = Number(req.params.id)
-  if (isNaN(id)) {
+  const merchantId = Number(req.params.merchantId)
+  if (isNaN(merchantId) || merchantId < 1) {
+    logger.error('Invalid ID')
+    res.status(422).send({ message: 'Invalid ID' })
+    return
+  }
+
+  const locationId = Number(req.params.locationId)
+  if (isNaN(locationId) || locationId < 1) {
     logger.error('Invalid ID')
     res.status(422).send({ message: 'Invalid ID' })
     return
@@ -131,53 +144,69 @@ export async function postMerchantLocation (req: Request, res: Response) {
     }
   }
 
+  // Find merchant
   const merchantRepository = AppDataSource.getRepository(MerchantEntity)
-  const locationRepository = AppDataSource.getRepository(MerchantLocationEntity)
-
   const merchant = await merchantRepository.findOne({
-    where: { id },
+    where: { id: merchantId },
     relations: [
-      'checkout_counters'
+      // 'checkout_counters',
+      'locations',
+      'locations.checkout_counters'
+
     ]
   })
-
   if (merchant == null) {
     logger.error('Merchant not found')
     return res.status(404).json({ error: 'Merchant not found' })
   }
 
-  const newLocation = locationRepository.create({
-    ...locationData,
-    merchant
-  })
+  // Find Location
+  const location = merchant.locations.find(location => location.id === locationId)
+  logger.info('Merchant: %o', merchant)
+  logger.info('Merchant Locations: %o', merchant.locations)
+  logger.info('Merchant Checkout Counters: %o', merchant.checkout_counters)
+  logger.info('location: %o', location)
+  logger.info('location.checkout_counters: %o', location?.checkout_counters)
+  logger.info('locationData: %o', locationData)
+  if (location == null || location === undefined) {
+    logger.error('Merchant Location not found')
+    return res.status(404).json({ error: 'Merchant Location not found' })
+  }
 
-  const savedLocation = await locationRepository.save(newLocation)
+  if (location.checkout_counters == null || location.checkout_counters.length === 0) {
+    logger.error('location\'s Checkout Counter not found')
+    return res.status(404).json({ error: 'location\'s Checkout Counter not found' })
+  }
 
+  // Assuming one checkoutout counter, one location, and one merchant
   const checkoutDescription: string = req.body.checkout_description
   if (checkoutDescription !== null && checkoutDescription !== '') {
-    if (merchant.checkout_counters.length > 0) {
-      merchant.checkout_counters[0].description = req.body.checkout_description
-      if (savedLocation instanceof MerchantLocationEntity) {
-        logger.info('Saved Location for checkoutcoutner: %o', savedLocation)
-        merchant.checkout_counters[0].checkout_location = savedLocation as MerchantLocationEntity
-      }
+    location.checkout_counters[0].description = req.body.checkout_description
 
-      try {
-        await AppDataSource.getRepository(CheckoutCounterEntity).update(
-          merchant.checkout_counters[0].id,
-          merchant.checkout_counters[0]
-        )
-      } catch (err) {
-        if (err instanceof QueryFailedError) {
-          logger.error('Query Failed: %o', err.message)
-          return res.status(500).send({ error: err.message })
-        }
+    try {
+      await AppDataSource.getRepository(CheckoutCounterEntity).update(
+        location.checkout_counters[0].id,
+        location.checkout_counters[0]
+      )
+    } catch (err) {
+      if (err instanceof QueryFailedError) {
+        logger.error('Query Failed: %o', err.message)
+        return res.status(500).send({ error: err.message })
       }
-    } else {
-      logger.error('Merchant Checkout Counter not found')
-      return res.status(404).json({ error: 'Merchant Checkout Counter not found' })
     }
   }
 
-  return res.status(201).send({ message: 'Merchant Location Saved', data: savedLocation })
+  try {
+    await AppDataSource.getRepository(MerchantLocationEntity).update(
+      location.id,
+      locationData
+    )
+  } catch (err) {
+    if (err instanceof QueryFailedError) {
+      logger.error('Query Failed: %o', err.message)
+      return res.status(500).send({ error: err.message })
+    }
+  }
+
+  return res.status(200).send({ message: 'Merchant Location Updated' })
 }

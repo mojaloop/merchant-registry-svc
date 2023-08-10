@@ -7,7 +7,6 @@ import { MerchantEntity } from '../../entity/MerchantEntity'
 import logger from '../../logger'
 import { CheckoutCounterEntity } from '../../entity/CheckoutCounterEntity'
 import { BusinessLicenseEntity } from '../../entity/BusinessLicenseEntity'
-import { PortalUserEntity } from '../../entity/PortalUserEntity'
 import {
   MerchantAllowBlockStatus,
   MerchantRegistrationStatus
@@ -17,6 +16,7 @@ import {
   MerchantSubmitDataSchema
 } from '../schemas'
 import { uploadMerchantDocument } from '../../middleware/minioClient'
+import { getAuthenticatedPortalUser } from '../../middleware/authenticate'
 
 /**
  * @openapi
@@ -103,23 +103,8 @@ import { uploadMerchantDocument } from '../../middleware/minioClient'
 // TODO: Protect the route with User Authentication (Keycloak)
 // TODO: check if the authenticated user is a Maker
 export async function putMerchantDraft (req: Request, res: Response) {
-  // TODO: Remove This! and replace with Keycloak Authentication
-  const token = req.headers.authorization === undefined
-    ? undefined
-    : req.headers.authorization.replace('Bearer', '').trim()
-  logger.info('Token: %s', token)
-  let portalUser = null
-  if (token === process.env.TEST1_DUMMY_AUTH_TOKEN) {
-    portalUser = await AppDataSource.manager.findOne(
-      PortalUserEntity,
-      { where: { email: process.env.TEST1_EMAIL } }
-    )
-  } else if (token === process.env.TEST2_DUMMY_AUTH_TOKEN) {
-    portalUser = await AppDataSource.manager.findOne(
-      PortalUserEntity,
-      { where: { email: process.env.TEST2_EMAIL } }
-    )
-  } else {
+  const portalUser = await getAuthenticatedPortalUser(req.headers.authorization)
+  if (portalUser == null) {
     return res.status(401).send({ message: 'Unauthorized' })
   }
 

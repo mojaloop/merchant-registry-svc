@@ -12,6 +12,13 @@ const Registry = () => {
   const { draftData, setDraftData } = useDraftData()
 
   useEffect(() => {
+    const token = sessionStorage.getItem('token')
+    if (token === null) {
+      alert('Token not found. Please login again.')
+      navigate('/login')
+      return
+    }
+
     const merchantId = sessionStorage.getItem('merchantId')
     if (!merchantId) return
 

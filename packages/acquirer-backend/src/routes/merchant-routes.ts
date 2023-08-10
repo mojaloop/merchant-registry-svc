@@ -14,10 +14,17 @@ import { postMerchantLocation } from './merchant-controllers/post-merchant-locat
 import { postMerchantContactPerson } from './merchant-controllers/post-merchant-contact-person'
 import { postMerchantOwner } from './merchant-controllers/post-merchant-owner'
 import { putMerchantDraft } from './merchant-controllers/put-merchant-draft'
+import { putMerchantLocation } from './merchant-controllers/put-merchant-location'
+import { getMerchantLocations } from './merchant-controllers/get-merchant-locations'
+import { getMerchantCheckoutCounters } from './merchant-controllers/get-merchant-checkout-counters'
+import { getMerchantDraftCountsByUser } from
+  './merchant-controllers/get-merchant-draft-counts-by-user'
 
 const router = express.Router()
 
 router.get('/merchants', getMerchants)
+
+router.get('/merchants/draft-counts', getMerchantDraftCountsByUser)
 
 router.get('/merchants/:id', getMerhcantById)
 
@@ -31,10 +38,16 @@ router.put('/merchants/registration-status', putBulkMerchantRegistrationStatus)
 
 router.put('/merchants/:id/ready-to-review', putMerchantStatusReadyToReview)
 
+router.get('/merchants/:id/locations', getMerchantLocations)
+
 router.post('/merchants/:id/locations', postMerchantLocation)
+
+router.put('/merchants/:merchantId/locations/:locationId', putMerchantLocation)
 
 router.post('/merchants/:id/contact-persons', postMerchantContactPerson)
 
 router.post('/merchants/:id/business-owners', postMerchantOwner)
+
+router.get('/merchants/:id/checkout-counters', getMerchantCheckoutCounters)
 
 export default router
