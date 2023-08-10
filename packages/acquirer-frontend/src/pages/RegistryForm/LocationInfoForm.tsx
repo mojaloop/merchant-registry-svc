@@ -1,8 +1,8 @@
 import { useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Box, Heading, Stack } from '@chakra-ui/react'
 import { isAxiosError } from 'axios'
 import { useForm } from 'react-hook-form'
-import { useNavigate } from 'react-router-dom'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { MerchantLocationType, Countries } from 'shared-lib'
 
@@ -30,6 +30,8 @@ interface LocationInfoFormProps {
 }
 
 const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
+  const navigate = useNavigate()
+
   const {
     register,
     formState: { errors },
@@ -51,7 +53,7 @@ const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
     const draftData = res?.data?.data
 
     if (!draftData) return
-    const navigate = useNavigate()
+
     if (!draftData.locations?.[0]) return
 
     const {

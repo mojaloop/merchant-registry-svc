@@ -1,8 +1,8 @@
 import { useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Box, Heading, Stack } from '@chakra-ui/react'
 import { isAxiosError } from 'axios'
 import { useForm } from 'react-hook-form'
-import { useNavigate } from 'react-router-dom'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Countries, BusinessOwnerIDType } from 'shared-lib'
 
@@ -30,6 +30,8 @@ interface OwnerInfoFormProps {
 }
 
 const OwnerInfoForm = ({ setActiveStep }: OwnerInfoFormProps) => {
+  const navigate = useNavigate()
+
   const {
     register,
     formState: { errors },
@@ -105,7 +107,6 @@ const OwnerInfoForm = ({ setActiveStep }: OwnerInfoFormProps) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  const navigate = useNavigate()
   const onSubmit = async (values: OwnerInfo) => {
     const merchantId = sessionStorage.getItem('merchantId')
     if (merchantId == null) {

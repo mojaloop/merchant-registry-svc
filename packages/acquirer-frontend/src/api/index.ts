@@ -7,6 +7,7 @@ export const getDraftData = async (merchantId: string) => {
     alert('You are not logged in!')
     return
   }
+
   try {
     return await instance.get<{ data: DraftData }>(`/merchants/${merchantId}`, {
       headers: {

@@ -1,5 +1,5 @@
-import { useNavigate } from 'react-router-dom'
 import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import {
   Grid,
   GridItem,
@@ -53,38 +53,39 @@ const MerchantInformationModal = ({
   onClose,
   selectedMerchantId,
 }: MerchantInformationModalProps) => {
-  const [merchantDetails, setMerchantDetails] = useState<MerchantDetails | null>(null)
-
   const navigate = useNavigate()
 
+  const [merchantDetails, setMerchantDetails] = useState<MerchantDetails | null>(null)
+
   useEffect(() => {
-    if (isOpen && selectedMerchantId) {
-      const fetchMerchantDetails = async () => {
-        const token = sessionStorage.getItem('token')
-        if (token === null) {
-          alert('Token not found. Please login again.')
-          navigate('/login')
-          return
-        }
-        try {
-          const response = await instance.get<MerchantDetailsAxiosData>(
-            `/merchants/${selectedMerchantId}`,
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            }
-          )
-          console.log(response)
-          setMerchantDetails(response.data.data)
-        } catch (error) {
-          console.error('Error fetching merchant details:', error)
-        }
+    if (!selectedMerchantId) return
+
+    const fetchMerchantDetails = async () => {
+      const token = sessionStorage.getItem('token')
+      if (token === null) {
+        alert('Token not found. Please login again.')
+        navigate('/login')
+        return
       }
 
-      fetchMerchantDetails()
+      try {
+        const response = await instance.get<MerchantDetailsAxiosData>(
+          `/merchants/${selectedMerchantId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        )
+        setMerchantDetails(response.data.data)
+      } catch (error) {
+        console.error('Error fetching merchant details:', error)
+      }
     }
-  }, [isOpen, selectedMerchantId])
+
+    fetchMerchantDetails()
+  }, [navigate, selectedMerchantId])
+
   return (
     <Modal isOpen={isOpen} onClose={onClose} scrollBehavior='inside'>
       <ModalOverlay bg='hsl(0, 0%, 100%, 0.6)' backdropFilter='blur(4px)' />
@@ -110,27 +111,27 @@ const MerchantInformationModal = ({
               <Stack spacing='3'>
                 <DetailsItem
                   label='Doing Business As Name'
-                  value={merchantDetails?.dba_trading_name || 'N/A'}
+                  value={merchantDetails?.dba_trading_name ?? 'N/A'}
                 />
 
                 <DetailsItem
                   label='Registered Name'
-                  value={merchantDetails?.registered_name || 'N/A'}
+                  value={merchantDetails?.registered_name ?? 'N/A'}
                 />
 
                 <DetailsItem
                   label='Number of Employee'
-                  value={merchantDetails?.employees_num || 'N/A'}
+                  value={merchantDetails?.employees_num ?? 'N/A'}
                 />
 
                 <DetailsItem
                   label='Monthly Turnover'
-                  value={merchantDetails?.monthly_turnover || 'N/A'}
+                  value={merchantDetails?.monthly_turnover ?? 'N/A'}
                 />
 
                 <DetailsItem
                   label='Merchant Category'
-                  value={merchantDetails?.category_code.description || 'N/A'}
+                  value={merchantDetails?.category_code.description ?? 'N/A'}
                 />
 
                 <DetailsItem label='DFSP Name' value='N/A' />
@@ -143,41 +144,41 @@ const MerchantInformationModal = ({
               <Stack spacing='3'>
                 <DetailsItem
                   label='Location Type'
-                  value={merchantDetails?.locations[0]?.location_type || 'N/A'}
+                  value={merchantDetails?.locations[0]?.location_type ?? 'N/A'}
                 />
 
                 <DetailsItem
                   label='Country'
-                  value={merchantDetails?.locations[0]?.country || 'N/A'}
+                  value={merchantDetails?.locations[0]?.country ?? 'N/A'}
                 />
 
                 <DetailsItem
                   label='State'
-                  value={merchantDetails?.locations[0]?.country_subdivision || 'N/A'}
+                  value={merchantDetails?.locations[0]?.country_subdivision ?? 'N/A'}
                 />
 
                 <DetailsItem
                   label='City'
-                  value={merchantDetails?.locations[0]?.town_name || 'N/A'}
+                  value={merchantDetails?.locations[0]?.town_name ?? 'N/A'}
                 />
 
                 <DetailsItem
                   label='Longitude Latitude'
                   value={
-                    (merchantDetails?.locations[0]?.longitude || 'N/A') +
+                    (merchantDetails?.locations[0]?.longitude ?? 'N/A') +
                     ' ' +
-                    (merchantDetails?.locations[0]?.latitude || 'N/A')
+                    (merchantDetails?.locations[0]?.latitude ?? 'N/A')
                   }
                 />
 
                 <DetailsItem
                   label='Website URL'
-                  value={merchantDetails?.locations[0]?.web_url || 'N/A'}
+                  value={merchantDetails?.locations[0]?.web_url ?? 'N/A'}
                 />
 
                 <DetailsItem
                   label='Full Address'
-                  value={merchantDetails?.locations[0]?.address_line || 'N/A'}
+                  value={merchantDetails?.locations[0]?.address_line ?? 'N/A'}
                 />
               </Stack>
             </GridItemShell>
@@ -188,17 +189,17 @@ const MerchantInformationModal = ({
               <Stack spacing='3'>
                 <DetailsItem
                   label='Name'
-                  value={merchantDetails?.business_owners[0]?.name || 'N/A'}
+                  value={merchantDetails?.business_owners[0]?.name ?? 'N/A'}
                 />
 
                 <DetailsItem
                   label='ID Type'
-                  value={merchantDetails?.business_owners[0]?.identificaton_type || 'N/A'}
+                  value={merchantDetails?.business_owners[0]?.identificaton_type ?? 'N/A'}
                 />
                 <DetailsItem
                   label='ID'
                   value={
-                    merchantDetails?.business_owners[0]?.identification_number || 'N/A'
+                    merchantDetails?.business_owners[0]?.identification_number ?? 'N/A'
                   }
                 />
 
@@ -206,18 +207,18 @@ const MerchantInformationModal = ({
                   label='Address'
                   value={
                     merchantDetails?.business_owners[0]?.businessPersonLocation
-                      ?.address_line || 'N/A'
+                      ?.address_line ?? 'N/A'
                   }
                 />
 
                 <DetailsItem
                   label='Phone Number'
-                  value={merchantDetails?.business_owners[0]?.phone_number || 'N/A'}
+                  value={merchantDetails?.business_owners[0]?.phone_number ?? 'N/A'}
                 />
 
                 <DetailsItem
                   label='Email'
-                  value={merchantDetails?.business_owners[0]?.email || 'N/A'}
+                  value={merchantDetails?.business_owners[0]?.email ?? 'N/A'}
                 />
               </Stack>
             </GridItemShell>
@@ -228,17 +229,17 @@ const MerchantInformationModal = ({
               <Stack spacing='3'>
                 <DetailsItem
                   label='Name'
-                  value={merchantDetails?.contact_persons[0]?.name || 'N/A'}
+                  value={merchantDetails?.contact_persons[0]?.name ?? 'N/A'}
                 />
 
                 <DetailsItem
                   label='Phone Number'
-                  value={merchantDetails?.contact_persons[0]?.phone_number || 'N/A'}
+                  value={merchantDetails?.contact_persons[0]?.phone_number ?? 'N/A'}
                 />
 
                 <DetailsItem
                   label='Email'
-                  value={merchantDetails?.contact_persons[0]?.email || 'N/A'}
+                  value={merchantDetails?.contact_persons[0]?.email ?? 'N/A'}
                 />
               </Stack>
             </GridItemShell>
@@ -250,12 +251,12 @@ const MerchantInformationModal = ({
                 <Stack key={index} spacing='3'>
                   <DetailsItem
                     label='Counter Alias PayInto'
-                    value={counter.alias_value || 'N/A'}
+                    value={counter.alias_value ?? 'N/A'}
                   />
 
                   <DetailsItem
                     label='Counter Description'
-                    value={counter.description || 'N/A'}
+                    value={counter.description ?? 'N/A'}
                   />
                 </Stack>
               ))}
