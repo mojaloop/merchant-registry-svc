@@ -14,6 +14,7 @@ import { postMerchantLocation } from './merchant-controllers/post-merchant-locat
 import { postMerchantContactPerson } from './merchant-controllers/post-merchant-contact-person'
 import { postMerchantOwner } from './merchant-controllers/post-merchant-owner'
 import { putMerchantDraft } from './merchant-controllers/put-merchant-draft'
+import { putMerchantLocation } from './merchant-controllers/put-merchant-location'
 
 const router = express.Router()
 
@@ -33,6 +34,7 @@ router.put('/merchants/:id/ready-to-review', putMerchantStatusReadyToReview)
 
 router.post('/merchants/:id/locations', postMerchantLocation)
 
+router.put('/merchants/:merchantId/locations/:locationId', putMerchantLocation)
 router.post('/merchants/:id/contact-persons', postMerchantContactPerson)
 
 router.post('/merchants/:id/business-owners', postMerchantOwner)
