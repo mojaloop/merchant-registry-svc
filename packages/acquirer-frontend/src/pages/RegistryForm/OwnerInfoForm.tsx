@@ -8,8 +8,8 @@ import { Countries, BusinessOwnerIDType } from 'shared-lib'
 import type { FormReponse } from '@/types/form'
 import instance from '@/lib/axiosInstance'
 import { type OwnerInfo, ownerInfoSchema } from '@/lib/validations/registry'
+import { getDraftData } from '@/api'
 import { scrollToTop } from '@/utils'
-import { useDraftData } from '@/context/DraftDataContext'
 import { CustomButton } from '@/components/ui'
 import { FormInput, FormSelect } from '@/components/form'
 import GridShell from './GridShell'
@@ -42,9 +42,13 @@ const OwnerInfoForm = ({ setActiveStep }: OwnerInfoFormProps) => {
     },
   })
 
-  const { draftData, setDraftData } = useDraftData()
+  const setDraftData = async () => {
+    const merchantId = sessionStorage.getItem('merchantId')
+    if (!merchantId) return
 
-  useEffect(() => {
+    const res = await getDraftData(merchantId)
+    const draftData = res?.data?.data
+
     if (!draftData) return
 
     if (draftData.business_owners?.[0]) {
@@ -93,7 +97,12 @@ const OwnerInfoForm = ({ setActiveStep }: OwnerInfoFormProps) => {
       longitude && setValue('longitude', longitude)
       latitude && setValue('latitude', latitude)
     }
-  }, [draftData, setValue])
+  }
+
+  useEffect(() => {
+    setDraftData()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const onSubmit = async (values: OwnerInfo) => {
     const merchantId = sessionStorage.getItem('merchantId')
@@ -114,35 +123,6 @@ const OwnerInfoForm = ({ setActiveStep }: OwnerInfoFormProps) => {
       )
 
       if (response.data.data?.id) {
-        setDraftData(prevDraftData => ({
-          ...prevDraftData,
-          business_owners: [
-            {
-              name: values.name,
-              identificaton_type: values.identificaton_type,
-              identification_number: values.identification_number,
-              phone_number: values.phone_number,
-              email: values.email,
-              businessPersonLocation: {
-                department: values.department,
-                sub_department: values.sub_department,
-                street_name: values.street_name,
-                building_number: values.building_number,
-                building_name: values.building_name,
-                floor_number: values.floor_number,
-                room_number: values.room_number,
-                post_box: values.post_box,
-                postal_code: values.postal_code,
-                country: values.country,
-                town_name: values.town_name,
-                district_name: values.district_name,
-                country_subdivision: values.country_subdivision,
-                longitude: values.longitude,
-                latitude: values.latitude,
-              },
-            },
-          ],
-        }))
         alert(response.data.message)
         setActiveStep(activeStep => activeStep + 1)
         scrollToTop()

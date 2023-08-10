@@ -1,5 +1,5 @@
-import { useEffect, useRef } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useEffect, useRef, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import {
   Box,
   FormControl,
@@ -28,8 +28,8 @@ import {
 import type { FormReponse } from '@/types/form'
 import instance from '@/lib/axiosInstance'
 import { type BusinessInfo, businessInfoSchema } from '@/lib/validations/registry'
+import { getDraftData } from '@/api'
 import { scrollToTop } from '@/utils'
-import { useDraftData } from '@/context/DraftDataContext'
 import { CustomButton } from '@/components/ui'
 import { FormInput, FormSelect } from '@/components/form'
 import GridShell from './GridShell'
@@ -62,9 +62,7 @@ interface BusinessInfoFormProps {
 
 const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
   const navigate = useNavigate()
-  const location = useLocation()
-  const searchParams = new URLSearchParams(location.search)
-  const isEditingDraft = searchParams.get('draft')
+  const [licenseDocument, setLicenseDocument] = useState('')
 
   const licenseDocumentRef = useRef<HTMLInputElement>(null)
   const uploadFileButtonRef = useRef<HTMLButtonElement>(null)
@@ -84,10 +82,12 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
     },
   })
 
-  const { draftData, setDraftData } = useDraftData()
+  const setDraftData = async () => {
+    const merchantId = sessionStorage.getItem('merchantId')
+    if (!merchantId) return
 
-  useEffect(() => {
-    if (!isEditingDraft) return
+    const res = await getDraftData(merchantId)
+    const draftData = res?.data?.data
 
     if (!draftData) return
 
@@ -101,11 +101,12 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
       merchant_type,
       dfsp_name,
       currency_code,
-      have_business_license,
+      business_licenses,
     } = draftData
 
     const payinto_alias = checkout_counters?.[0]?.alias_value
     const merchant_category = category_code?.category_code
+    const business_license = business_licenses?.[0]
 
     dba_trading_name && setValue('dba_trading_name', dba_trading_name)
     registered_name && setValue('registered_name', registered_name)
@@ -116,8 +117,22 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
     merchant_type && setValue('merchant_type', merchant_type)
     dfsp_name && setValue('dfsp_name', dfsp_name)
     currency_code?.iso_code && setValue('currency_code', currency_code.iso_code)
-    have_business_license && setValue('have_business_license', have_business_license)
-  }, [isEditingDraft, draftData, setValue])
+    setValue(
+      'have_business_license',
+      business_license?.license_number || business_license?.license_document_link
+        ? 'yes'
+        : 'no'
+    )
+    business_license?.license_number &&
+      setValue('license_number', business_license.license_number)
+    business_license?.license_document_link &&
+      setLicenseDocument(business_license.license_document_link)
+  }
+
+  useEffect(() => {
+    setDraftData()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const watchedLicenseDocument = watch('license_document')
   const watchedHaveLicense = watch('have_business_license')
@@ -143,30 +158,6 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
 
       if (response.data.data?.id) {
         sessionStorage.setItem('merchantId', response.data.data.id.toString())
-        setDraftData(prevDraftData => ({
-          ...prevDraftData,
-          dba_trading_name: values.dba_trading_name,
-          registered_name: values.registered_name,
-          checkout_counters: [
-            {
-              ...prevDraftData?.checkout_counters?.[0],
-              alias_value: values.payinto_alias,
-            },
-          ],
-          employees_num: values.employees_num,
-          monthly_turnover: values.monthly_turnover,
-          category_code: {
-            category_code: values.category_code,
-            description: MerchantCategoryCodes[values.category_code],
-          },
-          merchant_type: values.merchant_type,
-          dfsp_name: values.dfsp_name,
-          currency_code: {
-            iso_code: values.currency_code,
-          },
-          license_number: values.license_number,
-          license_document: values.license_document,
-        }))
         alert(response.data.message)
         setActiveStep(activeStep => activeStep + 1)
         scrollToTop()
@@ -386,8 +377,14 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
             <FormErrorMessage>{errors.license_document?.message}</FormErrorMessage>
           </FormControl>
 
+          {licenseDocument && (
+            <Text fontSize='sm' mt='3'>
+              Document is already uploaded.
+            </Text>
+          )}
+
           {haveLicense && (
-            <Box mt='4'>
+            <Box mt='2'>
               <Text mb='1.5' fontSize='sm'>
                 Download sample files here.
               </Text>

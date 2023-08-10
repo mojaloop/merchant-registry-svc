@@ -32,9 +32,12 @@ export interface DraftData {
   currency_code?: {
     iso_code?: CurrencyCodes
   }
-  have_business_license?: 'yes' | 'no'
-  license_number?: string
-  license_document?: File | null
+  business_licenses?: [
+    {
+      license_number?: string
+      license_document_link?: string
+    },
+  ]
   locations?: {
     location_type?: MerchantLocationType
     web_url?: string
