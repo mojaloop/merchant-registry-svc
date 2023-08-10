@@ -72,10 +72,17 @@ const ReviewModal = ({ isOpen, onClose, draftData }: ReviewModalProps) => {
   const handleSubmit = async () => {
     const merchantId = sessionStorage.getItem('merchantId')
 
+    const token = sessionStorage.getItem('token')
+    if (token == null) {
+      alert('You are not logged in!')
+      navigate('/login')
+      return
+    }
+
     try {
       await instance.put(`/merchants/${merchantId}/ready-to-review`, null, {
         headers: {
-          Authorization: `Bearer test_1_dummy_auth_token`,
+          Authorization: `Bearer ${token}`,
         },
       })
 

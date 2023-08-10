@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { createColumnHelper } from '@tanstack/react-table'
 import {
   Box,
@@ -63,6 +64,8 @@ const PendingMerchantRecords = () => {
 
   const { isOpen, onOpen, onClose } = useDisclosure()
 
+  const navigate = useNavigate()
+
   const [selectedMerchantId, setSelectedMerchantId] = useState<number | null>(null)
   const [data, setData] = useState<PendingMerchantInfo[]>(dummyData) // Use state to store fetched data
 
@@ -96,8 +99,18 @@ const PendingMerchantRecords = () => {
     if (query === undefined) query = {}
     query.registrationStatus = MerchantRegistrationStatus.REVIEW
 
+    const token = sessionStorage.getItem('token')
+    if (token === null) {
+      alert('Token not found. Please login again.')
+      navigate('/login')
+      return
+    }
+
     try {
-      const response = await instance.get('/merchants', { params: query })
+      const response = await instance.get('/merchants', {
+        params: query,
+        headers: { Authorization: `Bearer ${token}` },
+      })
       console.log(response)
       if (response.data && response.data.data) {
         const transformedData = response.data.data.map(transformData)
@@ -211,11 +224,22 @@ const PendingMerchantRecords = () => {
   }, [])
 
   const ApproveMerchants = async (selectedMerchantIds: number[]) => {
+    const token = sessionStorage.getItem('token')
+    if (token === null) {
+      alert('Token not found. Please login again.')
+      navigate('/login')
+      return
+    }
+
     try {
-      const response = await instance.put('/merchants/registration-status', {
-        ids: selectedMerchantIds,
-        registration_status: MerchantRegistrationStatus.APPROVED,
-      })
+      const response = await instance.put(
+        '/merchants/registration-status',
+        {
+          ids: selectedMerchantIds,
+          registration_status: MerchantRegistrationStatus.APPROVED,
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      )
 
       console.log('Merchants Approved:', response.data)
       fetchData()
@@ -225,11 +249,22 @@ const PendingMerchantRecords = () => {
   }
 
   const RejectMerchants = async (selectedMerchantIds: number[]) => {
+    const token = sessionStorage.getItem('token')
+    if (token === null) {
+      alert('Token not found. Please login again.')
+      navigate('/login')
+      return
+    }
+
     try {
-      const response = await instance.put('/merchants/registration-status', {
-        ids: selectedMerchantIds,
-        registration_status: MerchantRegistrationStatus.REJECTED,
-      })
+      const response = await instance.put(
+        '/merchants/registration-status',
+        {
+          ids: selectedMerchantIds,
+          registration_status: MerchantRegistrationStatus.REJECTED,
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      )
 
       console.log('Merchants Rejected:', response.data)
       fetchData()

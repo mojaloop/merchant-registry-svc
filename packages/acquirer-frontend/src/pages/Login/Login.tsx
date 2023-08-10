@@ -34,12 +34,16 @@ const Login = () => {
 
   const onSubmit = async (values: Login) => {
     try {
-      await instance.post('/users/login', {
+      const response = await instance.post('/users/login', {
         email: values.email,
         password: values.password,
       })
 
-      navigate('/')
+      if (response.data.token) {
+        alert('Login Successful')
+        sessionStorage.setItem('token', response.data.token)
+        navigate('/')
+      }
     } catch (error) {
       if (isAxiosError(error)) {
         console.log(error)

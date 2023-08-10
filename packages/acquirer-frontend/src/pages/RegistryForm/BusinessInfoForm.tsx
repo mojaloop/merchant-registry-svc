@@ -148,11 +148,18 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
       }
     })
 
+    const token = sessionStorage.getItem('token')
+    if (token === null) {
+      alert('Token not found. Please login again.')
+      navigate('/login')
+      return
+    }
+
     try {
       const response = await instance.post<FormReponse>('/merchants/draft', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
-          Authorization: `Bearer test_1_dummy_auth_token`,
+          Authorization: `Bearer ${token}`,
         },
       })
 
