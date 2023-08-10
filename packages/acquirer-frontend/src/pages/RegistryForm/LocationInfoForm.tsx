@@ -8,8 +8,8 @@ import { MerchantLocationType, Countries } from 'shared-lib'
 import type { FormReponse } from '@/types/form'
 import instance from '@/lib/axiosInstance'
 import { type LocationInfo, locationInfoSchema } from '@/lib/validations/registry'
+import { getDraftData } from '@/api'
 import { scrollToTop } from '@/utils'
-import { useDraftData } from '@/context/DraftDataContext'
 import { CustomButton } from '@/components/ui'
 import { FormInput, FormSelect } from '@/components/form'
 import GridShell from './GridShell'
@@ -42,13 +42,14 @@ const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
     },
   })
 
-  const { draftData, setDraftData } = useDraftData()
+  const setDraftData = async () => {
+    const merchantId = sessionStorage.getItem('merchantId')
+    if (!merchantId) return
 
-  useEffect(() => {
+    const res = await getDraftData(merchantId)
+    const draftData = res?.data?.data
+
     if (!draftData) return
-
-    const checkout_description = draftData.checkout_counters?.[0]?.description
-    checkout_description && setValue('checkout_description', checkout_description)
 
     if (!draftData.locations?.[0]) return
 
@@ -89,7 +90,12 @@ const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
     country_subdivision && setValue('country_subdivision', country_subdivision)
     longitude && setValue('longitude', longitude)
     latitude && setValue('latitude', latitude)
-  }, [draftData, setValue])
+  }
+
+  useEffect(() => {
+    setDraftData()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const onSubmit = async (values: LocationInfo) => {
     const merchantId = sessionStorage.getItem('merchantId')
@@ -113,36 +119,6 @@ const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
       )
 
       if (response.data.data?.id) {
-        setDraftData(prevDraftData => ({
-          ...prevDraftData,
-          locations: [
-            {
-              location_type: values.location_type,
-              web_url: values.web_url,
-              department: values.department,
-              sub_department: values.sub_department,
-              street_name: values.street_name,
-              building_number: values.building_number,
-              building_name: values.building_name,
-              floor_number: values.floor_number,
-              room_number: values.room_number,
-              post_box: values.post_box,
-              postal_code: values.postal_code,
-              country: values.country,
-              town_name: values.town_name,
-              district_name: values.district_name,
-              country_subdivision: values.country_subdivision,
-              longitude: values.longitude,
-              latitude: values.latitude,
-            },
-          ],
-          checkout_counters: [
-            {
-              ...prevDraftData?.checkout_counters?.[0],
-              description: values.checkout_description,
-            },
-          ],
-        }))
         alert(response.data.message)
         setActiveStep(activeStep => activeStep + 1)
         scrollToTop()

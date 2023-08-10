@@ -2,8 +2,7 @@ import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Box, Heading, Link, Text } from '@chakra-ui/react'
 
-import type { DraftData } from '@/types/form'
-import instance from '@/lib/axiosInstance'
+import { getDraftData } from '@/api'
 import { useDraftData } from '@/context/DraftDataContext'
 import { CustomButton } from '@/components/ui'
 
@@ -12,19 +11,11 @@ const Registry = () => {
 
   const { draftData, setDraftData } = useDraftData()
 
-  const getDraftData = async () => {
+  useEffect(() => {
     const merchantId = sessionStorage.getItem('merchantId')
     if (!merchantId) return
 
-    try {
-      return await instance.get<{ data: DraftData }>(`/merchants/${merchantId}`)
-    } catch (error) {
-      console.log(error)
-    }
-  }
-
-  useEffect(() => {
-    getDraftData().then(res => setDraftData(res?.data?.data ?? null))
+    getDraftData(merchantId).then(res => setDraftData(res?.data?.data ?? null))
   }, [setDraftData])
 
   return (

@@ -1,13 +1,13 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { Box, Checkbox, Heading, Stack, useDisclosure } from '@chakra-ui/react'
 import { isAxiosError } from 'axios'
 import { Controller, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 
-import { FormReponse } from '@/types/form'
+import type { DraftData, FormReponse } from '@/types/form'
 import instance from '@/lib/axiosInstance'
 import { type ContactPerson, contactPersonSchema } from '@/lib/validations/registry'
-import { useDraftData } from '@/context/DraftDataContext'
+import { getDraftData } from '@/api'
 import { CustomButton } from '@/components/ui'
 import { FormInput } from '@/components/form'
 import ReviewModal from './ReviewModal'
@@ -19,6 +19,8 @@ interface ContactPersonProps {
 
 const ContactPersonForm = ({ setActiveStep }: ContactPersonProps) => {
   const { isOpen, onOpen, onClose } = useDisclosure()
+
+  const [formData, setFormData] = useState<DraftData | null>(null)
 
   const {
     register,
@@ -36,10 +38,18 @@ const ContactPersonForm = ({ setActiveStep }: ContactPersonProps) => {
     },
   })
 
-  const { draftData, setDraftData } = useDraftData()
+  const watchedIsSameAsBusinessOwner = watch('is_same_as_business_owner')
 
-  useEffect(() => {
+  const setInitDraftData = async () => {
+    const merchantId = sessionStorage.getItem('merchantId')
+    if (!merchantId) return
+
+    const res = await getDraftData(merchantId)
+    const draftData = res?.data?.data
+
     if (!draftData) return
+
+    setFormData(draftData)
 
     const contact_person = draftData.contact_persons?.[0]
     if (!contact_person) return
@@ -49,21 +59,24 @@ const ContactPersonForm = ({ setActiveStep }: ContactPersonProps) => {
     name && setValue('name', name)
     phone_number && setValue('phone_number', phone_number)
     email && setValue('email', email)
-  }, [draftData, setValue])
+  }
 
-  const watchedIsSameAsBusinessOwner = watch('is_same_as_business_owner')
+  useEffect(() => {
+    setInitDraftData()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   useEffect(() => {
     if (!watchedIsSameAsBusinessOwner) return
 
-    const business_owner = draftData?.business_owners?.[0]
+    const business_owner = formData?.business_owners?.[0]
     if (!business_owner) return
 
     const { name, phone_number, email } = business_owner
     name && setValue('name', name)
     phone_number && setValue('phone_number', phone_number)
     email && setValue('email', email)
-  }, [watchedIsSameAsBusinessOwner, draftData, setValue])
+  }, [watchedIsSameAsBusinessOwner, formData, setValue])
 
   const onSubmit = async (values: ContactPerson) => {
     const merchantId = sessionStorage.getItem('merchantId')
@@ -84,16 +97,6 @@ const ContactPersonForm = ({ setActiveStep }: ContactPersonProps) => {
       )
 
       if (response.data.data?.id) {
-        setDraftData(prevDraftData => ({
-          ...prevDraftData,
-          contact_persons: [
-            {
-              name: values.name,
-              phone_number: values.phone_number,
-              email: values.email,
-            },
-          ],
-        }))
         alert(response.data.message)
         onOpen()
       }
@@ -119,9 +122,7 @@ const ContactPersonForm = ({ setActiveStep }: ContactPersonProps) => {
 
   return (
     <>
-      {draftData && (
-        <ReviewModal draftData={draftData} isOpen={isOpen} onClose={onClose} />
-      )}
+      {formData && <ReviewModal draftData={formData} isOpen={isOpen} onClose={onClose} />}
 
       <Stack as='form' onSubmit={handleSubmit(onSubmit)} pt='20' noValidate>
         <GridShell>
