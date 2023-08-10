@@ -73,6 +73,8 @@ const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
       latitude,
     } = draftData.locations[0]
 
+    const checkoutCounter = draftData.checkout_counters?.[0]
+
     location_type && setValue('location_type', location_type)
     web_url && setValue('web_url', web_url)
     department && setValue('department', department)
@@ -90,6 +92,8 @@ const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
     country_subdivision && setValue('country_subdivision', country_subdivision)
     longitude && setValue('longitude', longitude)
     latitude && setValue('latitude', latitude)
+    checkoutCounter?.description &&
+      setValue('checkout_description', checkoutCounter.description)
   }
 
   useEffect(() => {
