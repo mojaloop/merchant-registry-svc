@@ -36,3 +36,5 @@ and proceed with the necessary steps in the payment transaction.
     * Acquirer Frontend should be running at: http://localhost:5173
     * Acquirer Backend should be running at: http://localhost:5555/api/v1/health-check
         * Swagger API Doc should be at: http://localhost:5555/docs
+    * MinIO S3 Compatible Storage Server is running at http://minio:9000 (Service).
+        * To be able to download document file, add this line `127.0.0.1 minio` in the `/etc/hosts`, otherwise `minio:9000` link will be unreachable.
