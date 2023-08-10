@@ -138,10 +138,21 @@ export async function postMerchantLocation (req: Request, res: Response) {
     return res.status(404).json({ error: 'Merchant not found' })
   }
 
+  const newLocation = locationRepository.create({
+    ...locationData,
+    merchant
+  })
+
+  const savedLocation = await locationRepository.save(newLocation)
+
   const checkoutDescription: string = req.body.checkout_description
   if (checkoutDescription !== null && checkoutDescription !== '') {
     if (merchant.checkout_counters.length > 0) {
       merchant.checkout_counters[0].description = req.body.checkout_description
+      if (savedLocation instanceof MerchantLocationEntity) {
+        logger.info('Saved Location for checkoutcoutner: %o', savedLocation)
+        merchant.checkout_counters[0].checkout_location = savedLocation as MerchantLocationEntity
+      }
 
       try {
         await AppDataSource.getRepository(CheckoutCounterEntity).update(
@@ -159,13 +170,6 @@ export async function postMerchantLocation (req: Request, res: Response) {
       return res.status(404).json({ error: 'Merchant Checkout Counter not found' })
     }
   }
-
-  const newLocation = locationRepository.create({
-    ...locationData,
-    merchant
-  })
-
-  const savedLocation = await locationRepository.save(newLocation)
 
   return res.status(201).send({ message: 'Merchant Location Saved', data: savedLocation })
 }
