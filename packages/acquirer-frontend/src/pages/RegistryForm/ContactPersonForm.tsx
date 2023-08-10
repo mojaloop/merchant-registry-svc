@@ -94,6 +94,9 @@ const ContactPersonForm = ({ setActiveStep }: ContactPersonProps) => {
       return
     }
 
+    // Server expects null instead of empty string or any other falsy value
+    values.email = values.email || null
+
     try {
       const response = await instance.post<FormReponse>(
         `/merchants/${merchantId}/contact-persons`,

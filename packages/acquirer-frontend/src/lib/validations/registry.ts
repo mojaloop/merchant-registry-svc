@@ -86,12 +86,12 @@ export const ownerInfoSchema = z.object({
   longitude: z.string().optional(),
   latitude: z.string().optional(),
   phone_number: z.string().nonempty({ message: 'Phone number is required' }),
-  email: z.string().email().or(z.literal(null)),
+  email: z.string().email().or(z.literal(null)).or(z.literal('')),
 })
 
 export const contactPersonSchema = z.object({
   is_same_as_business_owner: z.boolean(),
   name: z.string().nonempty({ message: 'Name is required' }),
   phone_number: z.string().nonempty({ message: 'Phone number is required' }),
-  email: z.string().email().or(z.literal(null)),
+  email: z.string().email().or(z.literal(null)).or(z.literal('')),
 })
