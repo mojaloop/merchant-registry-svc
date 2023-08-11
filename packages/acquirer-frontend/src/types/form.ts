@@ -3,6 +3,7 @@ import type {
   Countries,
   CurrencyCodes,
   MerchantLocationType,
+  MerchantRegistrationStatus,
   MerchantType,
   NumberOfEmployees,
 } from 'shared-lib'
@@ -86,4 +87,5 @@ export interface DraftData {
     phone_number?: string
     email?: string | null
   }[]
+  registration_status: MerchantRegistrationStatus
 }

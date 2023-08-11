@@ -1,6 +1,5 @@
 import { Navigate, useRoutes } from 'react-router-dom'
 
-import DraftDataProvider from '@/context/DraftDataContext'
 import { Layout } from '@/components/layout'
 import {
   AllMerchantRecords,
@@ -24,20 +23,12 @@ const Routes = () => {
         },
         {
           path: 'registry',
-          element: (
-            <DraftDataProvider>
-              <Registry />
-            </DraftDataProvider>
-          ),
+          element: <Registry />,
           caseSensitive: true,
         },
         {
           path: 'registry/registry-form',
-          element: (
-            <DraftDataProvider>
-              <RegistryForm />
-            </DraftDataProvider>
-          ),
+          element: <RegistryForm />,
           caseSensitive: true,
         },
         {

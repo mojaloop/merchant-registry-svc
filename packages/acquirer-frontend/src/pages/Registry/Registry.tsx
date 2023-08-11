@@ -1,15 +1,15 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Box, Heading, Link, Text } from '@chakra-ui/react'
 
+import type { DraftData } from '@/types/form'
 import { getDraftData } from '@/api'
-import { useDraftData } from '@/context/DraftDataContext'
 import { CustomButton } from '@/components/ui'
 
 const Registry = () => {
   const navigate = useNavigate()
 
-  const { draftData, setDraftData } = useDraftData()
+  const [draftData, setDraftData] = useState<DraftData | null>()
 
   useEffect(() => {
     const token = sessionStorage.getItem('token')
@@ -23,7 +23,7 @@ const Registry = () => {
     if (!merchantId) return
 
     getDraftData(merchantId).then(res => setDraftData(res?.data?.data ?? null))
-  }, [setDraftData])
+  }, [navigate, setDraftData])
 
   return (
     <Box>
