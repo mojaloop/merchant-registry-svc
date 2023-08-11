@@ -96,7 +96,7 @@ export async function putMerchantStatusReadyToReview (req: Request, res: Respons
     } catch (err) {
       if (err instanceof QueryFailedError) {
         logger.error('Query Failed: %o', err.message)
-        return res.status(500).send({ error: err.message })
+        return res.status(500).send({ message: err.message })
       }
     }
 

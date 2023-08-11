@@ -79,7 +79,7 @@ export async function postMerchantContactPerson (req: Request, res: Response) {
 
   if (merchant == null) {
     logger.error('Merchant not found')
-    return res.status(404).json({ error: 'Merchant not found' })
+    return res.status(404).json({ message: 'Merchant not found' })
   }
 
   const newContactPerson = contactPersonRepository.create({})
@@ -87,7 +87,7 @@ export async function postMerchantContactPerson (req: Request, res: Response) {
     const businessOwners = merchant.business_owners
     if (businessOwners == null || businessOwners.length === 0) {
       logger.error('Business Owner not found')
-      return res.status(404).json({ error: 'Business Owner not found' })
+      return res.status(404).json({ message: 'Business Owner not found' })
     }
 
     // Create a new Contact Person record from the Business Owner record
@@ -104,7 +104,7 @@ export async function postMerchantContactPerson (req: Request, res: Response) {
     } catch (err) {
       if (err instanceof z.ZodError) {
         logger.error('Contact Person Validation error: %o', err.issues.map(issue => issue.message))
-        return res.status(422).send({ error: err.issues.map(issue => issue.message) })
+        return res.status(422).send({ message: err.issues.map(issue => issue.message) })
       }
     }
     // Create a new Contact Person record from the Request Body
@@ -119,7 +119,7 @@ export async function postMerchantContactPerson (req: Request, res: Response) {
   } catch (err) {
     if (err instanceof QueryFailedError) {
       logger.error('Contact Person Validation error: %o', err.message)
-      return res.status(422).send({ error: err.message })
+      return res.status(422).send({ message: err.message })
     }
   }
 

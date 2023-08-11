@@ -112,7 +112,7 @@ export async function putMerchantOwner (req: Request, res: Response) {
   } catch (err) {
     if (err instanceof z.ZodError) {
       logger.error('Business Owner Validation error: %o', err.issues.map(issue => issue.message))
-      return res.status(422).send({ error: err.issues.map(issue => issue.message) })
+      return res.status(422).send({ message: err.issues.map(issue => issue.message) })
     }
   }
 
@@ -132,13 +132,13 @@ export async function putMerchantOwner (req: Request, res: Response) {
 
   if (merchant == null) {
     logger.error('Merchant not found')
-    return res.status(404).json({ error: 'Merchant not found' })
+    return res.status(404).json({ message: 'Merchant not found' })
   }
 
   const businessOwner = merchant.business_owners.find(owner => owner.id === ownerId)
   if (businessOwner == null) {
     logger.error('Business Owner with provided Merchant not found')
-    return res.status(404).json({ error: 'Business Owner with provided Merchant not found' })
+    return res.status(404).json({ message: 'Business Owner with provided Merchant not found' })
   }
 
   try {
@@ -158,7 +158,7 @@ export async function putMerchantOwner (req: Request, res: Response) {
     logger.debug('Updated Owner\'s Location')
   } catch (err) {
     logger.error('Error updating business owner location: %o', err)
-    return res.status(500).send({ error: 'Error updating business owner location' })
+    return res.status(500).send({ message: 'Error updating business owner location' })
   }
 
   try {
@@ -174,7 +174,7 @@ export async function putMerchantOwner (req: Request, res: Response) {
     await businessOwnerRepository.update(businessOwner.id, newBusinessOwnerData)
   } catch (err) {
     logger.error('Error Updating Business Owner: %o', err)
-    return res.status(500).send({ error: 'Error Updating Business Owner' })
+    return res.status(500).send({ message: 'Error Updating Business Owner' })
   }
 
   return res.status(201).send({

@@ -99,7 +99,7 @@ export async function postMerchantOwner (req: Request, res: Response) {
   } catch (err) {
     if (err instanceof z.ZodError) {
       logger.error('Business Owner Validation error: %o', err.issues.map(issue => issue.message))
-      return res.status(422).send({ error: err.issues.map(issue => issue.message) })
+      return res.status(422).send({ message: err.issues.map(issue => issue.message) })
     }
   }
 
@@ -116,7 +116,7 @@ export async function postMerchantOwner (req: Request, res: Response) {
 
   if (merchant == null) {
     logger.error('Merchant not found')
-    return res.status(404).json({ error: 'Merchant not found' })
+    return res.status(404).json({ message: 'Merchant not found' })
   }
 
   const locationObj = locationRepository.create({
@@ -131,7 +131,7 @@ export async function postMerchantOwner (req: Request, res: Response) {
     // businessOwner.businessPersonLocation = savedLocation
   } catch (err) {
     logger.error('error creating business owner location: %o', err)
-    return res.status(500).send({ error: 'error creating business owner location' })
+    return res.status(500).send({ message: 'error creating business owner location' })
   }
 
   const businessOwner: BusinessOwnerEntity = businessOwnerRepository.create({})
@@ -151,7 +151,7 @@ export async function postMerchantOwner (req: Request, res: Response) {
     await businessOwnerRepository.save(businessOwner)
   } catch (err) {
     logger.error('error creating business owner: %o', err)
-    return res.status(500).send({ error: 'error creating business owner' })
+    return res.status(500).send({ message: 'error creating business owner' })
   }
 
   if (merchant.business_owners == null || merchant.business_owners.length === 0) {

@@ -140,7 +140,7 @@ export async function putMerchantLocation (req: Request, res: Response) {
   } catch (err) {
     if (err instanceof z.ZodError) {
       logger.error('Merchant Location Validation error: %o', err.issues.map(issue => issue.message))
-      return res.status(422).send({ error: err.issues.map(issue => issue.message) })
+      return res.status(422).send({ message: err.issues.map(issue => issue.message) })
     }
   }
 
@@ -157,19 +157,19 @@ export async function putMerchantLocation (req: Request, res: Response) {
   })
   if (merchant == null) {
     logger.error('Merchant not found')
-    return res.status(404).json({ error: 'Merchant not found' })
+    return res.status(404).json({ message: 'Merchant not found' })
   }
 
   // Find Location
   const location = merchant.locations.find(location => location.id === locationId)
   if (location == null || location === undefined) {
     logger.error('Merchant Location not found')
-    return res.status(404).json({ error: 'Merchant Location not found' })
+    return res.status(404).json({ message: 'Merchant Location not found' })
   }
 
   if (location.checkout_counters == null || location.checkout_counters.length === 0) {
     logger.error('location\'s Checkout Counter not found')
-    return res.status(404).json({ error: 'location\'s Checkout Counter not found' })
+    return res.status(404).json({ message: 'location\'s Checkout Counter not found' })
   }
 
   // Assuming one checkoutout counter, one location, and one merchant
@@ -185,7 +185,7 @@ export async function putMerchantLocation (req: Request, res: Response) {
     } catch (err) {
       if (err instanceof QueryFailedError) {
         logger.error('Query Failed: %o', err.message)
-        return res.status(500).send({ error: err.message })
+        return res.status(500).send({ message: err.message })
       }
     }
   }
@@ -198,7 +198,7 @@ export async function putMerchantLocation (req: Request, res: Response) {
   } catch (err) {
     if (err instanceof QueryFailedError) {
       logger.error('Query Failed: %o', err.message)
-      return res.status(500).send({ error: err.message })
+      return res.status(500).send({ message: err.message })
     }
   }
 

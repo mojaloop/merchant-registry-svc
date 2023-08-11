@@ -67,7 +67,7 @@ export async function putBulkMerchantRegistrationStatus (req: Request, res: Resp
     z.nativeEnum(MerchantRegistrationStatus).parse(registrationStatus)
   } catch (err) {
     logger.error('Validation error: %o', err)
-    return res.status(422).send({ error: err })
+    return res.status(422).send({ message: err })
   }
 
   const merchantRepository = AppDataSource.getRepository(MerchantEntity)

@@ -95,7 +95,7 @@ export async function putMerchantContactPerson (req: Request, res: Response) {
 
   if (merchant == null) {
     logger.error('Merchant not found')
-    return res.status(404).json({ error: 'Merchant not found' })
+    return res.status(404).json({ message: 'Merchant not found' })
   }
 
   const contactPerson = merchant.contact_persons.find(
@@ -104,7 +104,7 @@ export async function putMerchantContactPerson (req: Request, res: Response) {
 
   if (contactPerson == null) {
     logger.error('Contact Person not found')
-    return res.status(404).json({ error: 'Contact Person not found' })
+    return res.status(404).json({ message: 'Contact Person not found' })
   }
 
   if (req.body.is_same_as_business_owner === true) {
@@ -130,7 +130,7 @@ export async function putMerchantContactPerson (req: Request, res: Response) {
     } catch (err) {
       if (err instanceof z.ZodError) {
         logger.error('Contact Person Validation error: %o', err.issues.map(issue => issue.message))
-        return res.status(422).send({ error: err.issues.map(issue => issue.message) })
+        return res.status(422).send({ message: err.issues.map(issue => issue.message) })
       }
     }
     // Create a new Contact Person record from the Request Body
@@ -145,7 +145,7 @@ export async function putMerchantContactPerson (req: Request, res: Response) {
   } catch (err) {
     if (err instanceof QueryFailedError) {
       logger.error('Contact Person Validation error: %o', err.message)
-      return res.status(422).send({ error: err.message })
+      return res.status(422).send({ message: err.message })
     }
   }
 

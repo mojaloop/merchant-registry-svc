@@ -71,7 +71,7 @@ export async function putMerchantRegistrationStatus (req: Request, res: Response
     } catch (err) {
       if (err instanceof z.ZodError) {
         logger.error('Validation error: %o', err.issues.map((issue) => issue.message))
-        return res.status(422).send({ error: err.issues.map((issue) => issue.message) })
+        return res.status(422).send({ message: err.issues.map((issue) => issue.message) })
       }
     }
 
@@ -103,7 +103,7 @@ export async function putMerchantRegistrationStatus (req: Request, res: Response
     } catch (err) {
       if (err instanceof QueryFailedError) {
         logger.error('Query Failed: %o', err.message)
-        return res.status(500).send({ error: err.message })
+        return res.status(500).send({ message: err.message })
       }
     }
 
