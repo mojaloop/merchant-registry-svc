@@ -19,6 +19,8 @@ import { getMerchantLocations } from './merchant-controllers/get-merchant-locati
 import { getMerchantCheckoutCounters } from './merchant-controllers/get-merchant-checkout-counters'
 import { getMerchantDraftCountsByUser } from
   './merchant-controllers/get-merchant-draft-counts-by-user'
+import { putMerchantOwner } from './merchant-controllers/put-merchant-owner'
+import { putMerchantContactPerson } from './merchant-controllers/put-merchant-contact-person'
 
 const router = express.Router()
 
@@ -46,7 +48,11 @@ router.put('/merchants/:merchantId/locations/:locationId', putMerchantLocation)
 
 router.post('/merchants/:id/contact-persons', postMerchantContactPerson)
 
+router.put('/merchants/:merchantId/contact-persons/:contactPersonId', putMerchantContactPerson)
+
 router.post('/merchants/:id/business-owners', postMerchantOwner)
+
+router.put('/merchants/:merchantId/business-owners/:ownerId', putMerchantOwner)
 
 router.get('/merchants/:id/checkout-counters', getMerchantCheckoutCounters)
 

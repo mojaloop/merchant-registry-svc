@@ -511,6 +511,57 @@ paths:
                     type: string
                   data:
                     type: object
+  /merchants/{merchantId}/contact-persons/{contactPersonId}:
+    put:
+      tags:
+        - Merchants
+      security:
+        - Authorization: []
+      summary: Update contact person of Merchant
+      parameters:
+        - in: path
+          name: merchantId
+          schema:
+            type: number
+          required: true
+          description: Numeric ID of the Merchant Record
+        - in: path
+          name: contactPersonId
+          schema:
+            type: number
+          required: true
+          description: Numeric ID of the Contact Person
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                is_same_as_business_owner:
+                  type: boolean
+                  example: false
+                name:
+                  type: string
+                  example: John Doe Updated 2
+                email:
+                  type: string
+                  example: john.doe.updated.2@example.com
+                phone_number:
+                  type: string
+                  example: 123-456-7890-333
+      responses:
+        '201':
+          description: Contact Person Updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  data:
+                    type: object
   /merchants/{id}/draft:
     put:
       tags:
@@ -674,6 +725,75 @@ paths:
       responses:
         '200':
           description: Merchant Location Updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  data:
+                    type: object
+  /merchants/{merchantId}/business-owners/{ownerId}:
+    put:
+      tags:
+        - Merchants
+      security:
+        - Authorization: []
+      summary: Update a business owner of Merchant
+      parameters:
+        - in: path
+          name: merchantId
+          schema:
+            type: number
+          required: true
+          description: Numeric ID of the Merchant Record
+        - in: path
+          name: ownerId
+          schema:
+            type: number
+          required: true
+          description: Numeric ID of the Business Owner Record
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: John Doe Updated
+                email:
+                  type: string
+                  example: john.doe.updated@example.com
+                phone_number:
+                  type: string
+                  example: '1234567890222'
+                identificaton_type:
+                  type: string
+                  example: National ID
+                identification_number:
+                  type: string
+                  example: '1234567892222'
+                country:
+                  type: string
+                  example: Argentina
+                country_subdivision:
+                  type: string
+                  example: State Updated
+                address_line:
+                  type: string
+                  example: 123 Main Street, Townsville Updated
+                latitude:
+                  type: string
+                  example: '99.7128'
+                longitude:
+                  type: string
+                  example: '99.0060'
+      responses:
+        '201':
+          description: Business Owner Updated
           content:
             application/json:
               schema:

@@ -120,15 +120,15 @@ export async function putMerchantLocation (req: Request, res: Response) {
 
   const merchantId = Number(req.params.merchantId)
   if (isNaN(merchantId) || merchantId < 1) {
-    logger.error('Invalid ID')
-    res.status(422).send({ message: 'Invalid ID' })
+    logger.error('Invalid Merchant ID')
+    res.status(422).send({ message: 'Invalid Merchant ID' })
     return
   }
 
   const locationId = Number(req.params.locationId)
   if (isNaN(locationId) || locationId < 1) {
-    logger.error('Invalid ID')
-    res.status(422).send({ message: 'Invalid ID' })
+    logger.error('Invalid Location ID')
+    res.status(422).send({ message: 'Invalid Location ID' })
     return
   }
 
@@ -162,12 +162,6 @@ export async function putMerchantLocation (req: Request, res: Response) {
 
   // Find Location
   const location = merchant.locations.find(location => location.id === locationId)
-  logger.info('Merchant: %o', merchant)
-  logger.info('Merchant Locations: %o', merchant.locations)
-  logger.info('Merchant Checkout Counters: %o', merchant.checkout_counters)
-  logger.info('location: %o', location)
-  logger.info('location.checkout_counters: %o', location?.checkout_counters)
-  logger.info('locationData: %o', locationData)
   if (location == null || location === undefined) {
     logger.error('Merchant Location not found')
     return res.status(404).json({ error: 'Merchant Location not found' })
