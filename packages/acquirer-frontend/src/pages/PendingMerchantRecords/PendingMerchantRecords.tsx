@@ -187,7 +187,7 @@ const PendingMerchantRecords = () => {
   }, [])
 
   return (
-    <Box mb='-14'>
+    <Stack h='full'>
       <Heading size='md' mb='10'>
         View Registered Merchants
       </Heading>
@@ -294,6 +294,8 @@ const PendingMerchantRecords = () => {
         pt='6'
         px='4'
         pb='14'
+        flexGrow='1'
+        mb='-14'
       >
         <PendingMerchantsDataTable
           columns={columns}
@@ -312,7 +314,7 @@ const PendingMerchantRecords = () => {
           onRevert={() => console.log('reverted')}
         />
       </Box>
-    </Box>
+    </Stack>
   )
 }
 

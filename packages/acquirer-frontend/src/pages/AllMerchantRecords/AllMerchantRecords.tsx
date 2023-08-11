@@ -190,7 +190,7 @@ const AllMerchantRecords = () => {
   }, [])
 
   return (
-    <Box mb='-14'>
+    <Stack h='full'>
       <Heading size='md' mb='10'>
         View Registered Merchants
       </Heading>
@@ -306,6 +306,8 @@ const AllMerchantRecords = () => {
         pt='6'
         px='4'
         pb='14'
+        flexGrow='1'
+        mb='-14'
       >
         <AllMerchantsDataTable
           columns={columns}
@@ -315,7 +317,7 @@ const AllMerchantRecords = () => {
           onExport={() => console.log('exported')}
         />
       </Box>
-    </Box>
+    </Stack>
   )
 }
 
