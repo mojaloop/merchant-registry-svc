@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { createColumnHelper } from '@tanstack/react-table'
 import {
   Box,
@@ -15,12 +14,12 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 
 import { MerchantRegistrationStatus } from 'shared-lib'
-import instance from '@/lib/axiosInstance'
-import type { PendingMerchantInfo } from '@/types/pendingMerchantInfo'
+import type { PendingMerchantInfo, PendingMerchantRecord } from '@/types/pendingMerchants'
 import {
   type PendingMerchants,
   pendingMerchantsSchema,
 } from '@/lib/validations/pendingMerchants'
+import { approveMerchants, getPendingMerchants, rejectMerchants } from '@/api'
 import { convertKebabCaseToReadable } from '@/utils'
 import { CustomButton, MerchantInformationModal } from '@/components/ui'
 import { FormInput } from '@/components/form'
@@ -35,23 +34,6 @@ const REGISTRATION_STATUS_COLORS = {
 
 type StatusKey = keyof typeof REGISTRATION_STATUS_COLORS
 
-const registeredMerchant: PendingMerchantInfo = {
-  no: 1,
-  dbaName: 'K Company Pte.Ltd',
-  registeredName: '122132',
-  payintoAccount: '06103461954',
-  merchantType: 'individual',
-  state: 'Shan',
-  city: 'Taunggyi',
-  counterDescription: 'Online Shopping - 01',
-  registeredDfspName: 'AA',
-  registrationStatus: 'pending',
-}
-
-const dummyData = new Array(10)
-  .fill(0)
-  .map((_, index) => ({ ...registeredMerchant, no: index + 1 }))
-
 const PendingMerchantRecords = () => {
   const {
     register,
@@ -64,63 +46,8 @@ const PendingMerchantRecords = () => {
 
   const { isOpen, onOpen, onClose } = useDisclosure()
 
-  const navigate = useNavigate()
-
   const [selectedMerchantId, setSelectedMerchantId] = useState<number | null>(null)
-  const [data, setData] = useState<PendingMerchantInfo[]>(dummyData) // Use state to store fetched data
-
-  const handleMerchantDetails = (id: number) => {
-    setSelectedMerchantId(id)
-    onOpen()
-  }
-
-  const transformData = (merchantData: any): PendingMerchantInfo => {
-    return {
-      no: merchantData.id, // Assuming 'no' is the id of the merchant
-      dbaName: merchantData.dba_trading_name,
-      registeredName: merchantData.registered_name,
-
-      // Assuming the first checkout counter's alias value is the payintoAccount
-      payintoAccount: merchantData.checkout_counters[0]?.alias_value || 'N/A',
-      merchantType: merchantData.merchant_type,
-
-      // Assuming the first location's country subdivision is the state
-      state: merchantData.locations[0]?.country_subdivision || 'N/A',
-      city: merchantData.locations[0]?.town_name || 'N/A',
-
-      // Assuming the first checkout counter's description is the counterDescription
-      counterDescription: merchantData.checkout_counters[0]?.description || '',
-      registeredDfspName: 'N/A', // Not provided yet by API Backend Server
-      registrationStatus: merchantData.registration_status,
-    }
-  }
-  const fetchData = async (values?: PendingMerchantInfo) => {
-    let query = values as any
-    if (query === undefined) query = {}
-    query.registrationStatus = MerchantRegistrationStatus.REVIEW
-
-    const token = sessionStorage.getItem('token')
-    if (token === null) {
-      alert('Token not found. Please login again.')
-      navigate('/login')
-      return
-    }
-
-    try {
-      const response = await instance.get('/merchants', {
-        params: query,
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      console.log(response)
-      if (response.data && response.data.data) {
-        const transformedData = response.data.data.map(transformData)
-        setData(transformedData)
-      }
-    } catch (error) {
-      alert('Error fetching merchants: ' + error.message)
-      console.error('Error fetching merchants:', error)
-    }
-  }
+  const [data, setData] = useState<PendingMerchantInfo[]>([])
 
   const columns = useMemo(() => {
     const columnHelper = createColumnHelper<PendingMerchantInfo>()
@@ -204,7 +131,10 @@ const PendingMerchantRecords = () => {
           <CustomButton
             mt={{ base: '2', xl: '0' }}
             mr={{ base: '-2', xl: '3' }}
-            onClick={() => handleMerchantDetails(row.original.no)}
+            onClick={() => {
+              setSelectedMerchantId(row.original.no)
+              onOpen()
+            }}
           >
             View Details
           </CustomButton>
@@ -214,64 +144,47 @@ const PendingMerchantRecords = () => {
     ]
   }, [onOpen])
 
+  const transformData = (merchantData: PendingMerchantRecord) => {
+    return {
+      no: merchantData.id, // Assuming 'no' is the id of the merchant
+      dbaName: merchantData.dba_trading_name,
+      registeredName: merchantData.registered_name,
+
+      // Assuming the first checkout counter's alias value is the payintoAccount
+      payintoAccount: merchantData.checkout_counters[0]?.alias_value || 'N/A',
+      merchantType: merchantData.merchant_type,
+
+      // Assuming the first location's country subdivision is the state
+      state: merchantData.locations[0]?.country_subdivision || 'N/A',
+      city: merchantData.locations[0]?.town_name || 'N/A',
+
+      // Assuming the first checkout counter's description is the counterDescription
+      counterDescription: merchantData.checkout_counters[0]?.description || '',
+      registeredDfspName: 'N/A', // Not provided yet by API Backend Server
+      registrationStatus: merchantData.registration_status,
+    }
+  }
+
+  const getPendingMerchantRecords = async (values?: PendingMerchants) => {
+    const params = values
+      ? { ...values, registrationStatus: MerchantRegistrationStatus.REVIEW }
+      : { registrationStatus: MerchantRegistrationStatus.REVIEW }
+    const pendingMerchants = await getPendingMerchants(params)
+
+    if (pendingMerchants) {
+      const transformedData = pendingMerchants.map(transformData)
+      setData(transformedData)
+    }
+  }
+
   const onSubmit = (values: PendingMerchants) => {
-    console.log(values)
-    fetchData(values)
+    getPendingMerchantRecords(values)
   }
 
   useEffect(() => {
-    fetchData()
+    getPendingMerchantRecords()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
-
-  const ApproveMerchants = async (selectedMerchantIds: number[]) => {
-    const token = sessionStorage.getItem('token')
-    if (token === null) {
-      alert('Token not found. Please login again.')
-      navigate('/login')
-      return
-    }
-
-    try {
-      const response = await instance.put(
-        '/merchants/registration-status',
-        {
-          ids: selectedMerchantIds,
-          registration_status: MerchantRegistrationStatus.APPROVED,
-        },
-        { headers: { Authorization: `Bearer ${token}` } }
-      )
-
-      console.log('Merchants Approved:', response.data)
-      fetchData()
-    } catch (error) {
-      console.error('Error approving merchants:', error)
-    }
-  }
-
-  const RejectMerchants = async (selectedMerchantIds: number[]) => {
-    const token = sessionStorage.getItem('token')
-    if (token === null) {
-      alert('Token not found. Please login again.')
-      navigate('/login')
-      return
-    }
-
-    try {
-      const response = await instance.put(
-        '/merchants/registration-status',
-        {
-          ids: selectedMerchantIds,
-          registration_status: MerchantRegistrationStatus.REJECTED,
-        },
-        { headers: { Authorization: `Bearer ${token}` } }
-      )
-
-      console.log('Merchants Rejected:', response.data)
-      fetchData()
-    } catch (error) {
-      console.error('Error rejecting merchants:', error)
-    }
-  }
 
   return (
     <Box mb='-14'>
@@ -355,7 +268,7 @@ const PendingMerchantRecords = () => {
             colorVariant='accent-outline'
             mr='4'
             onClick={() => {
-              fetchData()
+              getPendingMerchantRecords()
               reset()
             }}
           >
@@ -388,8 +301,14 @@ const PendingMerchantRecords = () => {
           breakpoint='xl'
           alwaysVisibleColumns={[1]}
           onExport={() => console.log('exported')}
-          onReject={RejectMerchants}
-          onApprove={ApproveMerchants}
+          onReject={async (selectedMerchantIds: number[]) => {
+            await rejectMerchants(selectedMerchantIds)
+            getPendingMerchantRecords()
+          }}
+          onApprove={async (selectedMerchantIds: number[]) => {
+            await approveMerchants(selectedMerchantIds)
+            getPendingMerchantRecords()
+          }}
           onRevert={() => console.log('reverted')}
         />
       </Box>

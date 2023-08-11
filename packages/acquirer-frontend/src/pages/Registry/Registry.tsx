@@ -23,7 +23,7 @@ const Registry = () => {
     if (!merchantId) return
 
     getDraftData(merchantId).then(res => setDraftData(res?.data?.data ?? null))
-  }, [setDraftData])
+  }, [navigate, setDraftData])
 
   return (
     <Box>
