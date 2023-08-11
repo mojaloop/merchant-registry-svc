@@ -14,7 +14,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { MerchantRegistrationStatus } from 'shared-lib'
 
-import type { AllMerchantInfo, AllMerchantRecord } from '@/types/allMerchants'
+import type { MerchantInfo, MerchantRecord } from '@/types/merchants'
 import { type AllMerchants, allMerchantsSchema } from '@/lib/validations/allMerchants'
 import { getMerchants } from '@/api'
 import { convertKebabCaseToReadable } from '@/utils'
@@ -52,10 +52,10 @@ const AllMerchantRecords = () => {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [selectedMerchantId, setSelectedMerchantId] = useState<number | null>(null)
 
-  const [data, setData] = useState<AllMerchantInfo[]>([])
+  const [data, setData] = useState<MerchantInfo[]>([])
 
   const columns = useMemo(() => {
-    const columnHelper = createColumnHelper<AllMerchantInfo>()
+    const columnHelper = createColumnHelper<MerchantInfo>()
 
     return [
       columnHelper.display({
@@ -149,7 +149,7 @@ const AllMerchantRecords = () => {
     ]
   }, [onOpen])
 
-  const transformData = (merchantData: AllMerchantRecord): AllMerchantInfo => {
+  const transformData = (merchantData: MerchantRecord) => {
     return {
       no: merchantData.id, // Assuming 'no' is the id of the merchant
       dbaName: merchantData.dba_trading_name,

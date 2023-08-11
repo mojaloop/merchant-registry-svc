@@ -14,7 +14,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 
 import { MerchantRegistrationStatus } from 'shared-lib'
-import type { PendingMerchantInfo, PendingMerchantRecord } from '@/types/pendingMerchants'
+import type { MerchantInfo, MerchantRecord } from '@/types/merchants'
 import {
   type PendingMerchants,
   pendingMerchantsSchema,
@@ -47,10 +47,10 @@ const PendingMerchantRecords = () => {
   const { isOpen, onOpen, onClose } = useDisclosure()
 
   const [selectedMerchantId, setSelectedMerchantId] = useState<number | null>(null)
-  const [data, setData] = useState<PendingMerchantInfo[]>([])
+  const [data, setData] = useState<MerchantInfo[]>([])
 
   const columns = useMemo(() => {
-    const columnHelper = createColumnHelper<PendingMerchantInfo>()
+    const columnHelper = createColumnHelper<MerchantInfo>()
 
     return [
       columnHelper.display({
@@ -144,7 +144,7 @@ const PendingMerchantRecords = () => {
     ]
   }, [onOpen])
 
-  const transformData = (merchantData: PendingMerchantRecord) => {
+  const transformData = (merchantData: MerchantRecord) => {
     return {
       no: merchantData.id, // Assuming 'no' is the id of the merchant
       dbaName: merchantData.dba_trading_name,

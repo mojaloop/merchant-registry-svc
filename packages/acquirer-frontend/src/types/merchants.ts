@@ -2,7 +2,7 @@ import type { MerchantRegistrationStatus, MerchantType } from 'shared-lib'
 
 import type { DraftData } from './form'
 
-export interface PendingMerchantInfo {
+export interface MerchantInfo {
   no: number
   dbaName: string
   registeredName: string
@@ -15,6 +15,6 @@ export interface PendingMerchantInfo {
   registrationStatus: MerchantRegistrationStatus
 }
 
-export interface PendingMerchantRecord extends Required<DraftData> {
+export interface MerchantRecord extends Required<DraftData> {
   id: number
 }
