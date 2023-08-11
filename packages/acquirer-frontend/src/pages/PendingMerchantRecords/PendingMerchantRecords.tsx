@@ -19,7 +19,7 @@ import {
   type PendingMerchants,
   pendingMerchantsSchema,
 } from '@/lib/validations/pendingMerchants'
-import { approveMerchants, getPendingMerchants, rejectMerchants } from '@/api'
+import { approveMerchants, getMerchants, rejectMerchants } from '@/api'
 import { convertKebabCaseToReadable } from '@/utils'
 import { CustomButton, MerchantInformationModal } from '@/components/ui'
 import { FormInput } from '@/components/form'
@@ -169,7 +169,7 @@ const PendingMerchantRecords = () => {
     const params = values
       ? { ...values, registrationStatus: MerchantRegistrationStatus.REVIEW }
       : { registrationStatus: MerchantRegistrationStatus.REVIEW }
-    const pendingMerchants = await getPendingMerchants(params)
+    const pendingMerchants = await getMerchants(params)
 
     if (pendingMerchants) {
       const transformedData = pendingMerchants.map(transformData)

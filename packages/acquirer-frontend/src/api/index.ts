@@ -26,8 +26,7 @@ export const getDraftData = async (merchantId: string) => {
   }
 }
 
-export const getPendingMerchants = async (params: PendingMerchants) => {
-  console.log(params)
+export const getMerchants = async (params: PendingMerchants) => {
   try {
     const response = await instance.get<{ data: PendingMerchantRecord[] }>('/merchants', {
       params,
