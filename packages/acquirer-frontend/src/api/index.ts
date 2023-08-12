@@ -2,8 +2,9 @@ import { isAxiosError } from 'axios'
 import { MerchantRegistrationStatus } from 'shared-lib'
 
 import type { DraftData } from '@/types/form'
-import type { PendingMerchantRecord } from '@/types/pendingMerchants'
+import type { MerchantRecord } from '@/types/merchants'
 import instance from '@/lib/axiosInstance'
+import type { AllMerchants } from '@/lib/validations/allMerchants'
 import type { PendingMerchants } from '@/lib/validations/pendingMerchants'
 
 export const getDraftData = async (merchantId: string) => {
@@ -26,9 +27,9 @@ export const getDraftData = async (merchantId: string) => {
   }
 }
 
-export const getMerchants = async (params: PendingMerchants) => {
+export const getMerchants = async (params: AllMerchants | PendingMerchants) => {
   try {
-    const response = await instance.get<{ data: PendingMerchantRecord[] }>('/merchants', {
+    const response = await instance.get<{ data: MerchantRecord[] }>('/merchants', {
       params,
     })
 
