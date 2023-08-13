@@ -22,7 +22,7 @@ const Registry = () => {
     const merchantId = sessionStorage.getItem('merchantId')
     if (!merchantId) return
 
-    getDraftData(merchantId).then(res => setDraftData(res?.data?.data ?? null))
+    getDraftData(merchantId).then(res => setDraftData(res ?? null))
   }, [navigate, setDraftData])
 
   return (

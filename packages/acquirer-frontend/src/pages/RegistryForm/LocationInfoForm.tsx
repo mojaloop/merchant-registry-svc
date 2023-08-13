@@ -49,8 +49,7 @@ const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
     const merchantId = sessionStorage.getItem('merchantId')
     if (!merchantId) return
 
-    const res = await getDraftData(merchantId)
-    const draftData = res?.data?.data
+    const draftData = await getDraftData(merchantId)
 
     if (!draftData) return
 
