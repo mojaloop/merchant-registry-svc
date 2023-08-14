@@ -153,30 +153,29 @@ export async function postMerchantLocation (req: Request, res: Response) {
 
   const savedLocation = await locationRepository.save(newLocation)
 
-  const checkoutDescription: string = req.body.checkout_description
-  if (checkoutDescription !== null && checkoutDescription !== '') {
-    if (merchant.checkout_counters.length > 0) {
+  if (merchant.checkout_counters.length > 0) {
+    if (req.body.checkout_description !== undefined) {
       merchant.checkout_counters[0].description = req.body.checkout_description
-      if (savedLocation instanceof MerchantLocationEntity) {
-        logger.info('Saved Location for checkoutcoutner: %o', savedLocation)
-        merchant.checkout_counters[0].checkout_location = savedLocation as MerchantLocationEntity
-      }
-
-      try {
-        await AppDataSource.getRepository(CheckoutCounterEntity).update(
-          merchant.checkout_counters[0].id,
-          merchant.checkout_counters[0]
-        )
-      } catch (err) {
-        if (err instanceof QueryFailedError) {
-          logger.error('Query Failed: %o', err.message)
-          return res.status(500).send({ message: err.message })
-        }
-      }
-    } else {
-      logger.error('Merchant Checkout Counter not found')
-      return res.status(404).json({ message: 'Merchant Checkout Counter not found' })
     }
+    if (savedLocation instanceof MerchantLocationEntity) {
+      logger.debug('Saved Location for checkoutcoutner: %o', savedLocation)
+      merchant.checkout_counters[0].checkout_location = savedLocation as MerchantLocationEntity
+    }
+
+    try {
+      await AppDataSource.getRepository(CheckoutCounterEntity).update(
+        merchant.checkout_counters[0].id,
+        merchant.checkout_counters[0]
+      )
+    } catch (err) {
+      if (err instanceof QueryFailedError) {
+        logger.error('Query Failed: %o', err.message)
+        return res.status(500).send({ message: err.message })
+      }
+    }
+  } else {
+    logger.error('Merchant Checkout Counter not found')
+    return res.status(404).json({ message: 'Merchant Checkout Counter not found' })
   }
 
   return res.status(201).send({ message: 'Merchant Location Saved', data: savedLocation })
