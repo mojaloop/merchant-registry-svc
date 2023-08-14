@@ -91,7 +91,6 @@ const ReviewModal = ({ isOpen, onClose, draftData }: ReviewModalProps) => {
       navigate('/registry')
     } catch (error) {
       if (isAxiosError(error)) {
-        console.log(error)
         alert(
           error.response?.data?.error || 'Something went wrong! Please try again later.'
         )

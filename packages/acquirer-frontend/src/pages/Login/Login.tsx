@@ -46,7 +46,6 @@ const Login = () => {
       }
     } catch (error) {
       if (isAxiosError(error)) {
-        console.log(error)
         alert(
           error.response?.data?.error ||
             'Something went wrong! Please check your credentials and try again.'
