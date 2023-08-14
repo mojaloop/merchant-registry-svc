@@ -46,8 +46,7 @@ const ContactPersonForm = ({ setActiveStep }: ContactPersonProps) => {
     const merchantId = sessionStorage.getItem('merchantId')
     if (!merchantId) return
 
-    const res = await getDraftData(merchantId)
-    const draftData = res?.data?.data
+    const draftData = await getDraftData(merchantId)
 
     if (!draftData) return
 
@@ -82,13 +81,13 @@ const ContactPersonForm = ({ setActiveStep }: ContactPersonProps) => {
 
   const onSubmit = async (values: ContactPerson) => {
     const merchantId = sessionStorage.getItem('merchantId')
-    if (merchantId == null) {
+    if (merchantId === null) {
       alert('Merchant ID not found. Go back to the previous page and try again')
       return
     }
 
     const token = sessionStorage.getItem('token')
-    if (token == null) {
+    if (token === null) {
       alert('Token not found. Try logging in again.')
       navigate('/login')
       return
@@ -108,10 +107,14 @@ const ContactPersonForm = ({ setActiveStep }: ContactPersonProps) => {
         }
       )
 
-      if (response.data.data?.id) {
-        alert(response.data.message)
-        onOpen()
+      const draftData = await getDraftData(merchantId)
+
+      if (draftData) {
+        setFormData(draftData)
       }
+
+      alert(response.data.message)
+      onOpen()
     } catch (error) {
       if (isAxiosError(error)) {
         console.log(error)

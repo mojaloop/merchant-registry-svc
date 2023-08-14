@@ -15,11 +15,13 @@ export const getDraftData = async (merchantId: string) => {
   }
 
   try {
-    return await instance.get<{ data: DraftData }>(`/merchants/${merchantId}`, {
+    const response = await instance.get<{ data: DraftData }>(`/merchants/${merchantId}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     })
+
+    return response.data.data
   } catch (error) {
     if (isAxiosError(error)) {
       alert(error.response?.data?.message)
