@@ -52,6 +52,7 @@ describe('Merchant Routes Tests', () => {
     //
     beforeAll(async () => {
       const userRepository = AppDataSource.getRepository(PortalUserEntity)
+      await AppDataSource.manager.delete(MerchantEntity, {})
       makerUser = await userRepository.findOne({
         where: { email: process.env.TEST1_EMAIL ?? '' }
       })
