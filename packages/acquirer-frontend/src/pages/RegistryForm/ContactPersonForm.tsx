@@ -1,14 +1,12 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Box, Checkbox, Heading, Stack, useDisclosure } from '@chakra-ui/react'
-import { isAxiosError } from 'axios'
 import { Controller, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 
-import type { DraftData, FormReponse } from '@/types/form'
-import instance from '@/lib/axiosInstance'
+import type { DraftData } from '@/types/form'
 import { type ContactPerson, contactPersonSchema } from '@/lib/validations/registry'
-import { getDraftData } from '@/api'
+import { createContactPersonInfo, getDraftData } from '@/api'
 import { CustomButton } from '@/components/ui'
 import { FormInput } from '@/components/form'
 import ReviewModal from './ReviewModal'
@@ -96,34 +94,16 @@ const ContactPersonForm = ({ setActiveStep }: ContactPersonProps) => {
     // Server expects null instead of empty string or any other falsy value
     values.email = values.email || null
 
-    try {
-      const response = await instance.post<FormReponse>(
-        `/merchants/${merchantId}/contact-persons`,
-        values,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      )
+    const response = await createContactPersonInfo(values, merchantId)
+    if (!response) return
 
-      const draftData = await getDraftData(merchantId)
-
-      if (draftData) {
-        setFormData(draftData)
-      }
-
-      alert(response.data.message)
-      onOpen()
-    } catch (error) {
-      if (isAxiosError(error)) {
-        console.log(error)
-        alert(
-          error.response?.data?.error ||
-            'Something went wrong! Please check your data and try again.'
-        )
-      }
+    const draftData = await getDraftData(merchantId)
+    if (draftData) {
+      setFormData(draftData)
     }
+
+    alert(response.message)
+    onOpen()
   }
 
   // focus on first input that has error after validation

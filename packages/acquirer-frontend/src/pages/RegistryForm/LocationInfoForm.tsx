@@ -1,15 +1,11 @@
 import { useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { Box, Heading, Stack } from '@chakra-ui/react'
-import { isAxiosError } from 'axios'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { MerchantLocationType, Countries } from 'shared-lib'
 
-import type { FormReponse } from '@/types/form'
-import instance from '@/lib/axiosInstance'
 import { type LocationInfo, locationInfoSchema } from '@/lib/validations/registry'
-import { getDraftData } from '@/api'
+import { createLocationInfo, getDraftData } from '@/api'
 import { scrollToTop } from '@/utils'
 import { CustomButton } from '@/components/ui'
 import { FormInput, FormSelect } from '@/components/form'
@@ -30,8 +26,6 @@ interface LocationInfoFormProps {
 }
 
 const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
-  const navigate = useNavigate()
-
   const {
     register,
     formState: { errors },
@@ -113,38 +107,12 @@ const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
     // Server expects null instead of empty string or any other falsy value
     values.country = values.country || null
 
-    const token = sessionStorage.getItem('token')
-    if (token == null) {
-      alert('Authentication Token not found. Try Login again')
-      navigate('/login')
-      return
-    }
+    const response = await createLocationInfo(values, merchantId)
+    if (!response) return
 
-    try {
-      const response = await instance.post<FormReponse>(
-        `/merchants/${merchantId}/locations`,
-        values,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      )
-
-      if (response.data.data?.id) {
-        alert(response.data.message)
-        setActiveStep(activeStep => activeStep + 1)
-        scrollToTop()
-      }
-    } catch (error) {
-      if (isAxiosError(error)) {
-        console.log(error)
-        alert(
-          error.response?.data?.error ||
-            'Something went wrong! Please check your data and try again.'
-        )
-      }
-    }
+    alert(response.message)
+    setActiveStep(activeStep => activeStep + 1)
+    scrollToTop()
   }
 
   // focus on first input that has error after validation

@@ -1,11 +1,17 @@
 import { isAxiosError } from 'axios'
 import { MerchantRegistrationStatus } from 'shared-lib'
 
-import type { DraftData } from '@/types/form'
+import type { DraftData, FormReponse } from '@/types/form'
 import type { MerchantRecord } from '@/types/merchants'
 import instance from '@/lib/axiosInstance'
-import type { AllMerchants } from '@/lib/validations/allMerchants'
+import type {
+  BusinessInfo,
+  ContactPerson,
+  LocationInfo,
+  OwnerInfo,
+} from '@/lib/validations/registry'
 import type { PendingMerchants } from '@/lib/validations/pendingMerchants'
+import type { AllMerchants } from '@/lib/validations/allMerchants'
 
 export const getDraftData = async (merchantId: string) => {
   const token = sessionStorage.getItem('token')
@@ -25,6 +31,86 @@ export const getDraftData = async (merchantId: string) => {
   } catch (error) {
     if (isAxiosError(error)) {
       alert(error.response?.data?.message)
+    }
+  }
+}
+
+export const createBusinessInfo = async (values: BusinessInfo) => {
+  const formData = new FormData()
+
+  // Loop over the form values and append each one to the form data.
+  Object.entries(values).forEach(([key, value]) => {
+    if (value instanceof File || typeof value === 'string') {
+      formData.append(key, value)
+    }
+  })
+
+  try {
+    const response = await instance.post<FormReponse>('/merchants/draft', formData)
+    return response.data
+  } catch (error) {
+    if (isAxiosError(error)) {
+      alert(
+        error.response?.data?.error ||
+          'Something went wrong! Please check your data and try again.'
+      )
+    }
+  }
+}
+
+export const createLocationInfo = async (values: LocationInfo, merchantId: string) => {
+  try {
+    const response = await instance.post<FormReponse>(
+      `/merchants/${merchantId}/locations`,
+      values
+    )
+
+    return response.data
+  } catch (error) {
+    if (isAxiosError(error)) {
+      alert(
+        error.response?.data?.error ||
+          'Something went wrong! Please check your data and try again.'
+      )
+    }
+  }
+}
+
+export const createOwnerInfo = async (values: OwnerInfo, merchantId: string) => {
+  try {
+    const response = await instance.post<FormReponse>(
+      `/merchants/${merchantId}/business-owners`,
+      values
+    )
+
+    return response.data
+  } catch (error) {
+    if (isAxiosError(error)) {
+      alert(
+        error.response?.data?.error ||
+          'Something went wrong! Please check your data and try again.'
+      )
+    }
+  }
+}
+
+export const createContactPersonInfo = async (
+  values: ContactPerson,
+  merchantId: string
+) => {
+  try {
+    const response = await instance.post<FormReponse>(
+      `/merchants/${merchantId}/contact-persons`,
+      values
+    )
+
+    return response.data
+  } catch (error) {
+    if (isAxiosError(error)) {
+      alert(
+        error.response?.data?.error ||
+          'Something went wrong! Please check your data and try again.'
+      )
     }
   }
 }

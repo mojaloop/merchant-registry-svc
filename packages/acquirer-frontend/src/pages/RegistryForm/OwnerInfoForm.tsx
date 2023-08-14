@@ -1,15 +1,11 @@
 import { useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { Box, Heading, Stack } from '@chakra-ui/react'
-import { isAxiosError } from 'axios'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Countries, BusinessOwnerIDType } from 'shared-lib'
 
-import type { FormReponse } from '@/types/form'
-import instance from '@/lib/axiosInstance'
 import { type OwnerInfo, ownerInfoSchema } from '@/lib/validations/registry'
-import { getDraftData } from '@/api'
+import { createOwnerInfo, getDraftData } from '@/api'
 import { scrollToTop } from '@/utils'
 import { CustomButton } from '@/components/ui'
 import { FormInput, FormSelect } from '@/components/form'
@@ -30,8 +26,6 @@ interface OwnerInfoFormProps {
 }
 
 const OwnerInfoForm = ({ setActiveStep }: OwnerInfoFormProps) => {
-  const navigate = useNavigate()
-
   const {
     register,
     formState: { errors },
@@ -113,41 +107,15 @@ const OwnerInfoForm = ({ setActiveStep }: OwnerInfoFormProps) => {
       return
     }
 
-    const token = sessionStorage.getItem('token')
-    if (token === null) {
-      alert('Token not found. Please login again.')
-      navigate('/login')
-      return
-    }
-
     // Server expects null instead of empty string or any other falsy value
     values.email = values.email || null
 
-    try {
-      const response = await instance.post<FormReponse>(
-        `/merchants/${merchantId}/business-owners`,
-        values,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      )
+    const response = await createOwnerInfo(values, merchantId)
+    if (!response) return
 
-      if (response.data.data?.id) {
-        alert(response.data.message)
-        setActiveStep(activeStep => activeStep + 1)
-        scrollToTop()
-      }
-    } catch (error) {
-      if (isAxiosError(error)) {
-        console.log(error)
-        alert(
-          error.response?.data?.error ||
-            'Something went wrong! Please check your data and try again.'
-        )
-      }
-    }
+    alert(response.message)
+    setActiveStep(activeStep => activeStep + 1)
+    scrollToTop()
   }
 
   // focus on first input that has error after validation
