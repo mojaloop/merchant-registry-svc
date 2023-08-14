@@ -8,26 +8,22 @@ import * as z from 'zod'
 export const BusinessLicenseSubmitDataSchema = z.object({
   license_number: z.string(),
   license_document_link: z.string().url().nullable()
-}).strict()
+})
 
 export const MerchantSubmitDataSchema = z.object({
-  dba_trading_name: z.string(),
+  dba_trading_name: z.string().optional(),
   registered_name: z.string().optional().nullable().default(null),
-  employees_num: z.nativeEnum(NumberOfEmployees),
+  employees_num: z.nativeEnum(NumberOfEmployees).optional(),
   monthly_turnover: z.string().nullable().default(null),
-  currency_code: z.nativeEnum(CurrencyCodes),
-  category_code: z.string(),
-  merchant_type: z.nativeEnum(MerchantType),
-  // registration_status: z.nativeEnum(SubmitRegistratonStatus),
-  // registration_status_reason: z.string(),
-  payinto_alias: z.string().nonempty(),
-  license_number: z.string().optional(),
-  file: z.custom<File>(val => val instanceof File).or(z.null())
-
-}).strict()
+  currency_code: z.nativeEnum(CurrencyCodes).optional(),
+  category_code: z.string().optional(),
+  merchant_type: z.nativeEnum(MerchantType).optional(),
+  payinto_alias: z.string().nonempty().optional(),
+  license_number: z.string().optional().optional()
+})
 
 export const MerchantLocationSubmitDataSchema = z.object({
-  location_type: z.nativeEnum(MerchantLocationType),
+  location_type: z.nativeEnum(MerchantLocationType).optional(),
   country: z.nativeEnum(Countries).or(z.null()),
   web_url: z.string().optional(),
   address_type: z.string().optional(),
@@ -47,22 +43,22 @@ export const MerchantLocationSubmitDataSchema = z.object({
   latitude: z.string().optional(),
   longitude: z.string().optional(),
   checkout_description: z.string().optional()
-}).strict()
+})
 
 export const ContactPersonSubmitDataSchema = z.object({
   name: z.string(),
   phone_number: z.string(),
   email: z.string().email().or(z.literal(null)),
   is_same_as_business_owner: z.boolean().default(false)
-}).strict()
+})
 
 export const BusinessOwnerSubmitDataSchema = z.object({
   id: z.number().optional(), // only needed for updating
-  name: z.string(),
+  name: z.string().optional(),
   email: z.string().email().or(z.null()).optional(),
-  phone_number: z.string(),
-  identificaton_type: z.nativeEnum(BusinessOwnerIDType),
-  identification_number: z.string(),
+  phone_number: z.string().optional(),
+  identificaton_type: z.nativeEnum(BusinessOwnerIDType).optional(),
+  identification_number: z.string().optional(),
   address_type: z.string().optional(),
   department: z.string().optional(),
   sub_department: z.string().optional(),
@@ -80,4 +76,4 @@ export const BusinessOwnerSubmitDataSchema = z.object({
   address_line: z.string().optional(),
   latitude: z.string().optional(),
   longitude: z.string().optional()
-}).strict()
+})

@@ -26,7 +26,7 @@ export class MerchantEntity {
   @PrimaryGeneratedColumn()
     id!: number
 
-  @Column({ nullable: false, length: 255 })
+  @Column({ nullable: true, length: 255 })
     dba_trading_name!: string
 
   @Column({ nullable: true, length: 255 })
@@ -35,7 +35,7 @@ export class MerchantEntity {
   @Column({
     type: 'enum',
     enum: NumberOfEmployees,
-    nullable: false,
+    nullable: true,
     default: NumberOfEmployees.ONE_TO_FIVE
   })
     employees_num!: NumberOfEmployees
@@ -48,7 +48,7 @@ export class MerchantEntity {
   @Column({
     type: 'enum',
     enum: MerchantType,
-    nullable: false,
+    nullable: true,
     default: MerchantType.INDIVIDUAL
   })
     merchant_type!: MerchantType
@@ -56,7 +56,7 @@ export class MerchantEntity {
   @Column({
     type: 'enum',
     enum: MerchantAllowBlockStatus,
-    nullable: false,
+    nullable: true,
     default: MerchantAllowBlockStatus.PENDING
   })
     allow_block_status!: MerchantAllowBlockStatus
@@ -64,7 +64,7 @@ export class MerchantEntity {
   @Column({
     type: 'enum',
     enum: MerchantRegistrationStatus,
-    nullable: false,
+    nullable: true,
     default: MerchantRegistrationStatus.DRAFT
   })
     registration_status!: MerchantRegistrationStatus

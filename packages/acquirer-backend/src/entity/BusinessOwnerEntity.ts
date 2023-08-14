@@ -10,12 +10,12 @@ export class BusinessOwnerEntity extends PersonEntity {
   @Column({
     type: 'enum',
     enum: BusinessOwnerIDType,
-    nullable: false,
+    nullable: true,
     default: BusinessOwnerIDType.NATIONAL_ID
   })
     identificaton_type!: BusinessOwnerIDType
 
-  @Column({ nullable: false, length: 255 })
+  @Column({ nullable: true, length: 255 })
     identification_number!: string
 
   @ManyToMany(() => MerchantEntity, merchant => merchant.business_owners)
