@@ -1,15 +1,11 @@
-import { useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useEffect, useState } from 'react'
 import { Box, Heading, Stack } from '@chakra-ui/react'
-import { isAxiosError } from 'axios'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { MerchantLocationType, Countries } from 'shared-lib'
 
-import type { FormReponse } from '@/types/form'
-import instance from '@/lib/axiosInstance'
 import { type LocationInfo, locationInfoSchema } from '@/lib/validations/registry'
-import { getDraftData } from '@/api'
+import { createLocationInfo, getDraftData, updateLocationInfo } from '@/api'
 import { scrollToTop } from '@/utils'
 import { CustomButton } from '@/components/ui'
 import { FormInput, FormSelect } from '@/components/form'
@@ -30,7 +26,8 @@ interface LocationInfoFormProps {
 }
 
 const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
-  const navigate = useNavigate()
+  const [isDraft, setIsDraft] = useState(false)
+  const [locationId, setLocationId] = useState<number | null>(null)
 
   const {
     register,
@@ -55,7 +52,10 @@ const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
 
     if (!draftData.locations?.[0]) return
 
+    setIsDraft(!!draftData.locations[0])
+
     const {
+      id,
       location_type,
       web_url,
       department,
@@ -77,6 +77,7 @@ const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
 
     const checkoutCounter = draftData.checkout_counters?.[0]
 
+    id && setLocationId(id)
     location_type && setValue('location_type', location_type)
     web_url && setValue('web_url', web_url)
     department && setValue('department', department)
@@ -113,38 +114,19 @@ const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
     // Server expects null instead of empty string or any other falsy value
     values.country = values.country || null
 
-    const token = sessionStorage.getItem('token')
-    if (token == null) {
-      alert('Authentication Token not found. Try Login again')
-      navigate('/login')
-      return
-    }
-
-    try {
-      const response = await instance.post<FormReponse>(
-        `/merchants/${merchantId}/locations`,
-        values,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      )
-
-      if (response.data.data?.id) {
-        alert(response.data.message)
-        setActiveStep(activeStep => activeStep + 1)
-        scrollToTop()
-      }
-    } catch (error) {
-      if (isAxiosError(error)) {
-        console.log(error)
-        alert(
-          error.response?.data?.error ||
-            'Something went wrong! Please check your data and try again.'
-        )
+    let response
+    if (!isDraft) {
+      response = await createLocationInfo(values, merchantId)
+    } else {
+      if (locationId) {
+        response = await updateLocationInfo(values, merchantId, locationId)
       }
     }
+    if (!response) return
+
+    alert(response.message)
+    setActiveStep(activeStep => activeStep + 1)
+    scrollToTop()
   }
 
   // focus on first input that has error after validation

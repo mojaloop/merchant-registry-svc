@@ -14,7 +14,6 @@ import {
   Text,
   VisuallyHiddenInput,
 } from '@chakra-ui/react'
-import { isAxiosError } from 'axios'
 import { Controller, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { MdFileUpload } from 'react-icons/md'
@@ -25,10 +24,8 @@ import {
   MerchantType,
 } from 'shared-lib'
 
-import type { FormReponse } from '@/types/form'
-import instance from '@/lib/axiosInstance'
 import { type BusinessInfo, businessInfoSchema } from '@/lib/validations/registry'
-import { getDraftData } from '@/api'
+import { createBusinessInfo, getDraftData, updateBusinessInfo } from '@/api'
 import { scrollToTop } from '@/utils'
 import { CustomButton } from '@/components/ui'
 import { FormInput, FormSelect } from '@/components/form'
@@ -62,6 +59,7 @@ interface BusinessInfoFormProps {
 
 const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
   const navigate = useNavigate()
+  const [isDraft, setIsDraft] = useState(false)
   const [licenseDocument, setLicenseDocument] = useState('')
 
   const licenseDocumentRef = useRef<HTMLInputElement>(null)
@@ -89,6 +87,8 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
     const draftData = await getDraftData(merchantId)
 
     if (!draftData) return
+
+    setIsDraft(draftData.registration_status === 'Draft')
 
     const {
       dba_trading_name,
@@ -138,45 +138,23 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
   const haveLicense = watchedHaveLicense === 'yes'
 
   const onSubmit = async (values: BusinessInfo) => {
-    const formData = new FormData()
-
-    // Loop over the form values and append each one to the form data.
-    Object.entries(values).forEach(([key, value]) => {
-      if (value instanceof File || typeof value === 'string') {
-        formData.append(key, value)
+    let response
+    if (!isDraft) {
+      response = await createBusinessInfo(values)
+    } else {
+      const merchantId = sessionStorage.getItem('merchantId')
+      if (merchantId == null) {
+        alert('Merchant ID not found. Go back to the previous page and try again')
+        return
       }
-    })
-
-    const token = sessionStorage.getItem('token')
-    if (token === null) {
-      alert('Token not found. Please login again.')
-      navigate('/login')
-      return
+      response = await updateBusinessInfo(values, merchantId)
     }
+    if (!response) return
 
-    try {
-      const response = await instance.post<FormReponse>('/merchants/draft', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-          Authorization: `Bearer ${token}`,
-        },
-      })
-
-      if (response.data.data?.id) {
-        sessionStorage.setItem('merchantId', response.data.data.id.toString())
-        alert(response.data.message)
-        setActiveStep(activeStep => activeStep + 1)
-        scrollToTop()
-      }
-    } catch (error) {
-      if (isAxiosError(error)) {
-        console.log(error)
-        alert(
-          error.response?.data?.error ||
-            'Something went wrong! Please check your data and try again.'
-        )
-      }
-    }
+    sessionStorage.setItem('merchantId', response.data.id.toString())
+    alert(response.message)
+    setActiveStep(activeStep => activeStep + 1)
+    scrollToTop()
   }
 
   // focus on first input that has error after validation
