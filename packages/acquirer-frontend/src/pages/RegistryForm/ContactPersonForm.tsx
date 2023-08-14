@@ -1,12 +1,11 @@
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { Box, Checkbox, Heading, Stack, useDisclosure } from '@chakra-ui/react'
 import { Controller, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 
 import type { DraftData } from '@/types/form'
 import { type ContactPerson, contactPersonSchema } from '@/lib/validations/registry'
-import { createContactPersonInfo, getDraftData } from '@/api'
+import { createContactPersonInfo, getDraftData, updateContactPersonInfo } from '@/api'
 import { CustomButton } from '@/components/ui'
 import { FormInput } from '@/components/form'
 import ReviewModal from './ReviewModal'
@@ -17,10 +16,11 @@ interface ContactPersonProps {
 }
 
 const ContactPersonForm = ({ setActiveStep }: ContactPersonProps) => {
-  const navigate = useNavigate()
   const { isOpen, onOpen, onClose } = useDisclosure()
 
   const [formData, setFormData] = useState<DraftData | null>(null)
+  const [isDraft, setIsDraft] = useState(false)
+  const [contactPersonId, setContactPersonId] = useState<number | null>(null)
 
   const {
     register,
@@ -53,8 +53,10 @@ const ContactPersonForm = ({ setActiveStep }: ContactPersonProps) => {
     const contact_person = draftData.contact_persons?.[0]
     if (!contact_person) return
 
-    const { name, phone_number, email } = contact_person
+    setIsDraft(!!contact_person)
+    const { id, name, phone_number, email } = contact_person
 
+    id && setContactPersonId(id)
     name && setValue('name', name)
     phone_number && setValue('phone_number', phone_number)
     email && setValue('email', email)
@@ -84,17 +86,17 @@ const ContactPersonForm = ({ setActiveStep }: ContactPersonProps) => {
       return
     }
 
-    const token = sessionStorage.getItem('token')
-    if (token === null) {
-      alert('Token not found. Try logging in again.')
-      navigate('/login')
-      return
-    }
-
     // Server expects null instead of empty string or any other falsy value
     values.email = values.email || null
 
-    const response = await createContactPersonInfo(values, merchantId)
+    let response
+    if (!isDraft) {
+      response = await createContactPersonInfo(values, merchantId)
+    } else {
+      if (contactPersonId) {
+        response = await updateContactPersonInfo(values, merchantId, contactPersonId)
+      }
+    }
     if (!response) return
 
     const draftData = await getDraftData(merchantId)

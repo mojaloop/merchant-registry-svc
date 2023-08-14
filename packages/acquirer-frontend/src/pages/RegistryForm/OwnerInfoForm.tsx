@@ -1,11 +1,11 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { Box, Heading, Stack } from '@chakra-ui/react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Countries, BusinessOwnerIDType } from 'shared-lib'
 
 import { type OwnerInfo, ownerInfoSchema } from '@/lib/validations/registry'
-import { createOwnerInfo, getDraftData } from '@/api'
+import { createOwnerInfo, getDraftData, updateOwnerInfo } from '@/api'
 import { scrollToTop } from '@/utils'
 import { CustomButton } from '@/components/ui'
 import { FormInput, FormSelect } from '@/components/form'
@@ -26,6 +26,9 @@ interface OwnerInfoFormProps {
 }
 
 const OwnerInfoForm = ({ setActiveStep }: OwnerInfoFormProps) => {
+  const [isDraft, setIsDraft] = useState(false)
+  const [ownerId, setOwnerId] = useState<number | null>(null)
+
   const {
     register,
     formState: { errors },
@@ -48,9 +51,12 @@ const OwnerInfoForm = ({ setActiveStep }: OwnerInfoFormProps) => {
     if (!draftData) return
 
     if (draftData.business_owners?.[0]) {
-      const { name, identificaton_type, identification_number, phone_number, email } =
+      setIsDraft(!!draftData.business_owners[0])
+
+      const { id, name, identificaton_type, identification_number, phone_number, email } =
         draftData.business_owners[0]
 
+      id && setOwnerId(id)
       name && setValue('name', name)
       identificaton_type && setValue('identificaton_type', identificaton_type)
       identification_number && setValue('identification_number', identification_number)
@@ -110,7 +116,14 @@ const OwnerInfoForm = ({ setActiveStep }: OwnerInfoFormProps) => {
     // Server expects null instead of empty string or any other falsy value
     values.email = values.email || null
 
-    const response = await createOwnerInfo(values, merchantId)
+    let response
+    if (!isDraft) {
+      response = await createOwnerInfo(values, merchantId)
+    } else {
+      if (ownerId) {
+        response = await updateOwnerInfo(values, merchantId, ownerId)
+      }
+    }
     if (!response) return
 
     alert(response.message)

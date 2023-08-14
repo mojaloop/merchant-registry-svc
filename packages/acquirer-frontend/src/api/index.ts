@@ -58,10 +58,58 @@ export const createBusinessInfo = async (values: BusinessInfo) => {
   }
 }
 
+export const updateBusinessInfo = async (values: BusinessInfo, merchantId: string) => {
+  const formData = new FormData()
+
+  // Loop over the form values and append each one to the form data.
+  Object.entries(values).forEach(([key, value]) => {
+    if (value instanceof File || typeof value === 'string') {
+      formData.append(key, value)
+    }
+  })
+
+  try {
+    const response = await instance.put<FormReponse>(
+      `/merchants/${merchantId}/draft`,
+      formData
+    )
+    return response.data
+  } catch (error) {
+    if (isAxiosError(error)) {
+      alert(
+        error.response?.data?.error ||
+          'Something went wrong! Please check your data and try again.'
+      )
+    }
+  }
+}
+
 export const createLocationInfo = async (values: LocationInfo, merchantId: string) => {
   try {
     const response = await instance.post<FormReponse>(
       `/merchants/${merchantId}/locations`,
+      values
+    )
+
+    return response.data
+  } catch (error) {
+    if (isAxiosError(error)) {
+      alert(
+        error.response?.data?.error ||
+          'Something went wrong! Please check your data and try again.'
+      )
+    }
+  }
+}
+
+export const updateLocationInfo = async (
+  values: LocationInfo,
+  merchantId: string,
+  locationId: number
+) => {
+  try {
+    const response = await instance.put<FormReponse>(
+      `/merchants/${merchantId}/locations/${locationId}`,
       values
     )
 
@@ -94,6 +142,28 @@ export const createOwnerInfo = async (values: OwnerInfo, merchantId: string) => 
   }
 }
 
+export const updateOwnerInfo = async (
+  values: OwnerInfo,
+  merchantId: string,
+  ownerId: number
+) => {
+  try {
+    const response = await instance.put<FormReponse>(
+      `/merchants/${merchantId}/business-owners/${ownerId}`,
+      values
+    )
+
+    return response.data
+  } catch (error) {
+    if (isAxiosError(error)) {
+      alert(
+        error.response?.data?.error ||
+          'Something went wrong! Please check your data and try again.'
+      )
+    }
+  }
+}
+
 export const createContactPersonInfo = async (
   values: ContactPerson,
   merchantId: string
@@ -101,6 +171,28 @@ export const createContactPersonInfo = async (
   try {
     const response = await instance.post<FormReponse>(
       `/merchants/${merchantId}/contact-persons`,
+      values
+    )
+
+    return response.data
+  } catch (error) {
+    if (isAxiosError(error)) {
+      alert(
+        error.response?.data?.error ||
+          'Something went wrong! Please check your data and try again.'
+      )
+    }
+  }
+}
+
+export const updateContactPersonInfo = async (
+  values: ContactPerson,
+  merchantId: string,
+  contactPersonId: number
+) => {
+  try {
+    const response = await instance.put<FormReponse>(
+      `/merchants/${merchantId}/contact-persons/${contactPersonId}`,
       values
     )
 

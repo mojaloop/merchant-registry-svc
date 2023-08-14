@@ -25,7 +25,7 @@ import {
 } from 'shared-lib'
 
 import { type BusinessInfo, businessInfoSchema } from '@/lib/validations/registry'
-import { createBusinessInfo, getDraftData } from '@/api'
+import { createBusinessInfo, getDraftData, updateBusinessInfo } from '@/api'
 import { scrollToTop } from '@/utils'
 import { CustomButton } from '@/components/ui'
 import { FormInput, FormSelect } from '@/components/form'
@@ -59,6 +59,7 @@ interface BusinessInfoFormProps {
 
 const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
   const navigate = useNavigate()
+  const [isDraft, setIsDraft] = useState(false)
   const [licenseDocument, setLicenseDocument] = useState('')
 
   const licenseDocumentRef = useRef<HTMLInputElement>(null)
@@ -86,6 +87,8 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
     const draftData = await getDraftData(merchantId)
 
     if (!draftData) return
+
+    setIsDraft(draftData.registration_status === 'Draft')
 
     const {
       dba_trading_name,
@@ -135,7 +138,17 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
   const haveLicense = watchedHaveLicense === 'yes'
 
   const onSubmit = async (values: BusinessInfo) => {
-    const response = await createBusinessInfo(values)
+    let response
+    if (!isDraft) {
+      response = await createBusinessInfo(values)
+    } else {
+      const merchantId = sessionStorage.getItem('merchantId')
+      if (merchantId == null) {
+        alert('Merchant ID not found. Go back to the previous page and try again')
+        return
+      }
+      response = await updateBusinessInfo(values, merchantId)
+    }
     if (!response) return
 
     sessionStorage.setItem('merchantId', response.data.id.toString())

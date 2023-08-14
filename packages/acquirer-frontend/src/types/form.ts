@@ -40,6 +40,7 @@ export interface DraftData {
     },
   ]
   locations?: {
+    id?: number
     location_type?: MerchantLocationType
     web_url?: string
     department?: string
@@ -59,6 +60,7 @@ export interface DraftData {
     longitude?: string
   }[]
   business_owners?: {
+    id?: number
     name?: string
     identificaton_type?: BusinessOwnerIDType
     identification_number?: string
@@ -83,6 +85,7 @@ export interface DraftData {
     email?: string | null
   }[]
   contact_persons?: {
+    id?: number
     name?: string
     phone_number?: string
     email?: string | null
