@@ -108,13 +108,14 @@ const OwnerInfoForm = ({ setActiveStep }: OwnerInfoFormProps) => {
 
   const onSubmit = async (values: OwnerInfo) => {
     const merchantId = sessionStorage.getItem('merchantId')
-    if (merchantId == null) {
+    if (merchantId === null) {
       alert('Merchant ID not found. Go back to the previous page and try again')
       return
     }
 
     // Server expects null instead of empty string or any other falsy value
     values.email = values.email || null
+    values.country = values.country || null
 
     let response
     if (!isDraft) {
@@ -169,6 +170,24 @@ const OwnerInfoForm = ({ setActiveStep }: OwnerInfoFormProps) => {
           errors={errors}
           label='Identification Number'
           placeholder='Identification Number'
+        />
+
+        <FormInput
+          isRequired
+          name='phone_number'
+          register={register}
+          errors={errors}
+          label='Phone Number'
+          placeholder='Phone Number'
+          inputProps={{ type: 'number' }}
+        />
+
+        <FormInput
+          name='email'
+          register={register}
+          errors={errors}
+          label='Email'
+          placeholder='Email'
         />
       </GridShell>
 
@@ -252,7 +271,6 @@ const OwnerInfoForm = ({ setActiveStep }: OwnerInfoFormProps) => {
         />
 
         <FormSelect
-          isRequired
           name='country'
           register={register}
           errors={errors}
@@ -301,26 +319,6 @@ const OwnerInfoForm = ({ setActiveStep }: OwnerInfoFormProps) => {
           label='Latitude'
           placeholder='Latitude'
           inputProps={{ type: 'number' }}
-        />
-      </GridShell>
-
-      <GridShell justifyItems='center' pb={{ base: '8', sm: '12' }}>
-        <FormInput
-          isRequired
-          name='phone_number'
-          register={register}
-          errors={errors}
-          label='Phone Number'
-          placeholder='Phone Number'
-          inputProps={{ type: 'number' }}
-        />
-
-        <FormInput
-          name='email'
-          register={register}
-          errors={errors}
-          label='Email'
-          placeholder='Email'
         />
       </GridShell>
 
