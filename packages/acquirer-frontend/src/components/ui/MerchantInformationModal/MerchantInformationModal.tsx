@@ -18,7 +18,7 @@ import {
 import type { MerchantDetails } from '@/types/merchantDetails'
 import { getMerchant } from '@/api'
 import { CustomButton } from '@/components/ui'
-import DetailsItem from './DetailsItem'
+import { DetailsItem } from '.'
 
 interface MerchantInformationModalProps {
   selectedMerchantId: number
@@ -26,7 +26,7 @@ interface MerchantInformationModalProps {
   onClose: () => void
 }
 
-const SubHeading = ({ children, ...props }: HeadingProps) => {
+export const SubHeading = ({ children, ...props }: HeadingProps) => {
   return (
     <Heading as='h4' size='sm' mb='4' fontWeight='semibold' {...props}>
       {children}
@@ -34,7 +34,7 @@ const SubHeading = ({ children, ...props }: HeadingProps) => {
   )
 }
 
-const GridItemShell = ({ children, ...props }: GridItemProps) => {
+export const GridItemShell = ({ children, ...props }: GridItemProps) => {
   return (
     <GridItem bg='primaryBackground' rounded='md' px='4' py='3' {...props}>
       {children}
@@ -101,7 +101,11 @@ const MerchantInformationModal = ({
 
                 <DetailsItem
                   label='Monthly Turnover'
-                  value={merchantDetails?.monthly_turnover || 'N/A'}
+                  value={
+                    merchantDetails?.monthly_turnover
+                      ? `${merchantDetails?.monthly_turnover}%`
+                      : 'N/A'
+                  }
                 />
 
                 <DetailsItem

@@ -143,7 +143,7 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
       response = await createBusinessInfo(values)
     } else {
       const merchantId = sessionStorage.getItem('merchantId')
-      if (merchantId == null) {
+      if (merchantId === null) {
         alert('Merchant ID not found. Go back to the previous page and try again')
         return
       }

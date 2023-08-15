@@ -106,7 +106,7 @@ const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
 
   const onSubmit = async (values: LocationInfo) => {
     const merchantId = sessionStorage.getItem('merchantId')
-    if (merchantId == null) {
+    if (merchantId === null) {
       alert('Merchant ID not found. Go back to the previous page and try again')
       return
     }

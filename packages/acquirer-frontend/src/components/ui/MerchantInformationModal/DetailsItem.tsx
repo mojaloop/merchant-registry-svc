@@ -5,7 +5,7 @@ interface DetailsItemProps {
   value: string | React.ReactNode
 }
 
-const DetailsItem = ({ label, value }: DetailsItemProps) => {
+export const DetailsItem = ({ label, value }: DetailsItemProps) => {
   return (
     <Grid templateColumns='170px 1fr' gap={{ base: '1', sm: '2' }} fontSize='sm'>
       <GridItem as='p'>{label}:</GridItem>
@@ -19,5 +19,3 @@ const DetailsItem = ({ label, value }: DetailsItemProps) => {
     </Grid>
   )
 }
-
-export default DetailsItem
