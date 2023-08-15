@@ -19,6 +19,8 @@ import { getAuthenticatedPortalUser } from '../../middleware/authenticate'
  *   post:
  *     tags:
  *       - Merchants
+ *       - Locations
+ *       - Merchant Locations
  *     security:
  *       - Authorization: []
  *     summary: Create a new location for a Merchant

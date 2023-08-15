@@ -97,6 +97,7 @@ paths:
     get:
       tags:
         - Merchants
+        - Checkout Counters
       security:
         - Authorization: []
       parameters:
@@ -151,6 +152,8 @@ paths:
     get:
       tags:
         - Merchants
+        - Locations
+        - Merchant Locations
       security:
         - Authorization: []
       parameters:
@@ -181,6 +184,8 @@ paths:
     post:
       tags:
         - Merchants
+        - Locations
+        - Merchant Locations
       security:
         - Authorization: []
       summary: Create a new location for a Merchant
@@ -344,6 +349,7 @@ paths:
     post:
       tags:
         - Merchants
+        - Contact Persons
       security:
         - Authorization: []
       summary: Create a new contact person for a Merchant
@@ -458,6 +464,7 @@ paths:
     post:
       tags:
         - Merchants
+        - Business Owners
       security:
         - Authorization: []
       summary: Create a new business owner for a Merchant
@@ -521,6 +528,7 @@ paths:
     put:
       tags:
         - Merchants
+        - Contact Persons
       security:
         - Authorization: []
       summary: Update contact person of Merchant
@@ -648,6 +656,8 @@ paths:
     put:
       tags:
         - Merchants
+        - Locations
+        - Merchant Locations
       security:
         - Authorization: []
       summary: Update old location for a Merchant
@@ -744,6 +754,7 @@ paths:
     put:
       tags:
         - Merchants
+        - Business Owners
       security:
         - Authorization: []
       summary: Update a business owner of Merchant

@@ -17,6 +17,7 @@ import {
  *   put:
  *     tags:
  *       - Merchants
+ *       - Contact Persons
  *     security:
  *       - Authorization: []
  *     summary: Update contact person of Merchant

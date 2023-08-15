@@ -18,6 +18,7 @@ import { getAuthenticatedPortalUser } from '../../middleware/authenticate'
  *   put:
  *     tags:
  *       - Merchants
+ *       - Business Owners
  *     security:
  *       - Authorization: []
  *     summary: Update a business owner of Merchant

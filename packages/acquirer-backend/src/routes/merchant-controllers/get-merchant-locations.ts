@@ -11,6 +11,8 @@ import { getAuthenticatedPortalUser } from '../../middleware/authenticate'
  *   get:
  *     tags:
  *       - Merchants
+ *       - Locations
+ *       - Merchant Locations
  *     security:
  *       - Authorization: []
  *     parameters:

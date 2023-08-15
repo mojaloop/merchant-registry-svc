@@ -18,6 +18,7 @@ import { getAuthenticatedPortalUser } from '../../middleware/authenticate'
  *   post:
  *     tags:
  *       - Merchants
+ *       - Business Owners
  *     security:
  *       - Authorization: []
  *     summary: Create a new business owner for a Merchant

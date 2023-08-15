@@ -18,6 +18,7 @@ import { getAuthenticatedPortalUser } from '../../middleware/authenticate'
  *   post:
  *     tags:
  *       - Merchants
+ *       - Contact Persons
  *     security:
  *       - Authorization: []
  *     summary: Create a new contact person for a Merchant
