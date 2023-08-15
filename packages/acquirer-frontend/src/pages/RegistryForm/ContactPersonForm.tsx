@@ -3,7 +3,7 @@ import { Box, Checkbox, Heading, Stack, useDisclosure } from '@chakra-ui/react'
 import { Controller, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 
-import type { DraftData } from '@/types/form'
+import type { MerchantDetails } from '@/types/merchantDetails'
 import { type ContactPerson, contactPersonSchema } from '@/lib/validations/registry'
 import { createContactPersonInfo, getDraftData, updateContactPersonInfo } from '@/api'
 import { CustomButton } from '@/components/ui'
@@ -18,7 +18,7 @@ interface ContactPersonProps {
 const ContactPersonForm = ({ setActiveStep }: ContactPersonProps) => {
   const { isOpen, onOpen, onClose } = useDisclosure()
 
-  const [formData, setFormData] = useState<DraftData | null>(null)
+  const [formData, setFormData] = useState<MerchantDetails | null>(null)
   const [isDraft, setIsDraft] = useState(false)
   const [contactPersonId, setContactPersonId] = useState<number | null>(null)
 

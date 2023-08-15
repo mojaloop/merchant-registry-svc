@@ -1,19 +1,19 @@
-import { MerchantInfo, MerchantRecord } from '@/types/merchants'
-import capitalize from 'lodash.capitalize'
-
-export const convertKebabCaseToReadable = (snakeCaseString: string) => {
-  return snakeCaseString
-    .replace(/-/g, ' ')
-    .split(' ')
-    .map(word => capitalize(word))
-    .join(' ')
-}
+import type { MerchantInfo } from '@/types/merchants'
+import type { MerchantDetails } from '@/types/merchantDetails'
 
 export const scrollToTop = () => {
   document.getElementById('main')?.scrollTo({ top: 0, behavior: 'smooth' })
 }
 
-export const transformIntoTableData = (merchantData: MerchantRecord): MerchantInfo => {
+export const formatLatitudeLongitude = (latitude?: string, longitude?: string) => {
+  if (!latitude && !longitude) return 'N/A'
+
+  if (!latitude || !longitude) return latitude || longitude
+
+  return `${latitude}, ${longitude}`
+}
+
+export const transformIntoTableData = (merchantData: MerchantDetails): MerchantInfo => {
   return {
     no: merchantData.id, // Assuming 'no' is the id of the merchant
     dbaName: merchantData.dba_trading_name,

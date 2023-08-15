@@ -1,7 +1,5 @@
 import type { MerchantRegistrationStatus, MerchantType } from 'shared-lib'
 
-import type { DraftData } from './form'
-
 export interface MerchantInfo {
   no: number
   dbaName: string
@@ -13,8 +11,4 @@ export interface MerchantInfo {
   counterDescription: string
   registeredDfspName: string
   registrationStatus: MerchantRegistrationStatus
-}
-
-export interface MerchantRecord extends Required<DraftData> {
-  id: number
 }

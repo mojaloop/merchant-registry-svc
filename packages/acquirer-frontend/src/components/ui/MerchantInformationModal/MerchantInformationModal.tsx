@@ -13,10 +13,12 @@ import {
   Stack,
   Heading,
   type GridItemProps,
+  Link,
 } from '@chakra-ui/react'
 
 import type { MerchantDetails } from '@/types/merchantDetails'
 import { getMerchant } from '@/api'
+import { formatLatitudeLongitude } from '@/utils'
 import { CustomButton } from '@/components/ui'
 import { DetailsItem } from '.'
 
@@ -61,6 +63,29 @@ const MerchantInformationModal = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  if (!merchantDetails) return
+
+  const {
+    dba_trading_name,
+    registered_name,
+    employees_num,
+    monthly_turnover,
+    category_code,
+    merchant_type,
+    currency_code,
+    business_licenses,
+    checkout_counters,
+    locations,
+    business_owners,
+    contact_persons,
+  } = merchantDetails
+
+  const businessLicense = business_licenses?.[0]
+  const checkoutCounter = checkout_counters?.[0]
+  const location = locations?.[0]
+  const businessOwner = business_owners?.[0]
+  const contactPerson = contact_persons?.[0]
+
   return (
     <Modal isOpen={isOpen} onClose={onClose} scrollBehavior='inside'>
       <ModalOverlay bg='hsl(0, 0%, 100%, 0.6)' backdropFilter='blur(4px)' />
@@ -86,34 +111,55 @@ const MerchantInformationModal = ({
               <Stack spacing='3'>
                 <DetailsItem
                   label='Doing Business As Name'
-                  value={merchantDetails?.dba_trading_name || 'N/A'}
+                  value={dba_trading_name || 'N/A'}
                 />
 
-                <DetailsItem
-                  label='Registered Name'
-                  value={merchantDetails?.registered_name || 'N/A'}
-                />
+                <DetailsItem label='Registered Name' value={registered_name || 'N/A'} />
 
                 <DetailsItem
-                  label='Number of Employee'
-                  value={merchantDetails?.employees_num || 'N/A'}
+                  label='Payinto Account'
+                  value={checkoutCounter?.alias_value || 'N/A'}
                 />
+
+                <DetailsItem label='Number of Employee' value={employees_num || 'N/A'} />
 
                 <DetailsItem
                   label='Monthly Turnover'
-                  value={
-                    merchantDetails?.monthly_turnover
-                      ? `${merchantDetails?.monthly_turnover}%`
-                      : 'N/A'
-                  }
+                  value={monthly_turnover ? `${monthly_turnover}%` : 'N/A'}
                 />
 
                 <DetailsItem
                   label='Merchant Category'
-                  value={merchantDetails?.category_code.description || 'N/A'}
+                  value={category_code?.description || 'N/A'}
                 />
 
+                <DetailsItem label='Merchant Type' value={merchant_type || 'N/A'} />
+
                 <DetailsItem label='DFSP Name' value='N/A' />
+
+                <DetailsItem label='Currency' value={currency_code?.iso_code || 'N/A'} />
+
+                <DetailsItem
+                  label='Licence Number'
+                  value={businessLicense?.license_number || 'N/A'}
+                />
+
+                <DetailsItem
+                  label='Licence Document'
+                  value={
+                    businessLicense?.license_document_link ? (
+                      <Link
+                        href={businessLicense.license_document_link}
+                        download
+                        color='blue.500'
+                      >
+                        License Document
+                      </Link>
+                    ) : (
+                      'N/A'
+                    )
+                  }
+                />
               </Stack>
             </GridItemShell>
 
@@ -123,41 +169,55 @@ const MerchantInformationModal = ({
               <Stack spacing='3'>
                 <DetailsItem
                   label='Location Type'
-                  value={merchantDetails?.locations[0]?.location_type || 'N/A'}
+                  value={location?.location_type || 'N/A'}
+                />
+
+                <DetailsItem label='Country' value={location?.country || 'N/A'} />
+
+                <DetailsItem
+                  label='Latitude Longitude'
+                  value={formatLatitudeLongitude(location.latitude, location.longitude)}
+                />
+
+                <DetailsItem label='Website URL' value={location?.web_url || 'N/A'} />
+
+                <DetailsItem label='Department' value={location?.department || 'N/A'} />
+
+                <DetailsItem
+                  label='Sub Department'
+                  value={location?.sub_department || 'N/A'}
+                />
+
+                <DetailsItem label='Street Name' value={location?.street_name || 'N/A'} />
+
+                <DetailsItem
+                  label='Building Number'
+                  value={location?.building_number || 'N/A'}
                 />
 
                 <DetailsItem
-                  label='Country'
-                  value={merchantDetails?.locations[0]?.country || 'N/A'}
+                  label='Building Name'
+                  value={location?.building_name || 'N/A'}
                 />
 
                 <DetailsItem
-                  label='State'
-                  value={merchantDetails?.locations[0]?.country_subdivision || 'N/A'}
+                  label='Floor Number'
+                  value={location?.floor_number || 'N/A'}
                 />
 
-                <DetailsItem
-                  label='City'
-                  value={merchantDetails?.locations[0]?.town_name || 'N/A'}
-                />
+                <DetailsItem label='Room Number' value={location?.room_number || 'N/A'} />
+
+                <DetailsItem label='Post Box' value={location?.post_box || 'N/A'} />
+
+                <DetailsItem label='Postal Code' value={location?.postal_code || 'N/A'} />
+
+                <DetailsItem label='Township' value={location?.town_name || 'N/A'} />
+
+                <DetailsItem label='District' value={location?.district_name || 'N/A'} />
 
                 <DetailsItem
-                  label='Longitude Latitude'
-                  value={
-                    (merchantDetails?.locations[0]?.longitude || 'N/A') +
-                    ' ' +
-                    (merchantDetails?.locations[0]?.latitude || 'N/A')
-                  }
-                />
-
-                <DetailsItem
-                  label='Website URL'
-                  value={merchantDetails?.locations[0]?.web_url || 'N/A'}
-                />
-
-                <DetailsItem
-                  label='Full Address'
-                  value={merchantDetails?.locations[0]?.address_line || 'N/A'}
+                  label='Country Subdivision'
+                  value={location?.country_subdivision || 'N/A'}
                 />
               </Stack>
             </GridItemShell>
@@ -166,38 +226,98 @@ const MerchantInformationModal = ({
               <SubHeading>Business Owner Information</SubHeading>
 
               <Stack spacing='3'>
+                <DetailsItem label='Name' value={businessOwner?.name || 'N/A'} />
+
                 <DetailsItem
-                  label='Name'
-                  value={merchantDetails?.business_owners[0]?.name || 'N/A'}
+                  label='National ID'
+                  value={businessOwner?.identificaton_type || 'N/A'}
                 />
 
                 <DetailsItem
-                  label='ID Type'
-                  value={merchantDetails?.business_owners[0]?.identificaton_type || 'N/A'}
-                />
-                <DetailsItem
-                  label='ID'
-                  value={
-                    merchantDetails?.business_owners[0]?.identification_number || 'N/A'
-                  }
-                />
-
-                <DetailsItem
-                  label='Address'
-                  value={
-                    merchantDetails?.business_owners[0]?.businessPersonLocation
-                      ?.address_line || 'N/A'
-                  }
+                  label='Nationality'
+                  value={businessOwner?.identification_number || 'N/A'}
                 />
 
                 <DetailsItem
                   label='Phone Number'
-                  value={merchantDetails?.business_owners[0]?.phone_number || 'N/A'}
+                  value={businessOwner?.phone_number || 'N/A'}
+                />
+
+                <DetailsItem label='Email' value={businessOwner?.email || 'N/A'} />
+
+                <DetailsItem
+                  label='Country'
+                  value={businessOwner?.businessPersonLocation?.country || 'N/A'}
                 />
 
                 <DetailsItem
-                  label='Email'
-                  value={merchantDetails?.business_owners[0]?.email || 'N/A'}
+                  label='Latitude Longitude'
+                  value={formatLatitudeLongitude(
+                    businessOwner.businessPersonLocation?.latitude,
+                    businessOwner.businessPersonLocation?.longitude
+                  )}
+                />
+
+                <DetailsItem
+                  label='Department'
+                  value={businessOwner?.businessPersonLocation?.department || 'N/A'}
+                />
+
+                <DetailsItem
+                  label='Sub Department'
+                  value={businessOwner?.businessPersonLocation?.sub_department || 'N/A'}
+                />
+
+                <DetailsItem
+                  label='Street Name'
+                  value={businessOwner?.businessPersonLocation?.street_name || 'N/A'}
+                />
+
+                <DetailsItem
+                  label='Building Number'
+                  value={businessOwner?.businessPersonLocation?.building_number || 'N/A'}
+                />
+
+                <DetailsItem
+                  label='Building Name'
+                  value={businessOwner?.businessPersonLocation?.building_name || 'N/A'}
+                />
+
+                <DetailsItem
+                  label='Floor Number'
+                  value={businessOwner?.businessPersonLocation?.floor_number || 'N/A'}
+                />
+
+                <DetailsItem
+                  label='Room Number'
+                  value={businessOwner?.businessPersonLocation?.room_number || 'N/A'}
+                />
+
+                <DetailsItem
+                  label='Post Box'
+                  value={businessOwner?.businessPersonLocation?.post_box || 'N/A'}
+                />
+
+                <DetailsItem
+                  label='Postal Code'
+                  value={businessOwner?.businessPersonLocation?.postal_code || 'N/A'}
+                />
+
+                <DetailsItem
+                  label='Township'
+                  value={businessOwner?.businessPersonLocation?.town_name || 'N/A'}
+                />
+
+                <DetailsItem
+                  label='District'
+                  value={businessOwner?.businessPersonLocation?.district_name || 'N/A'}
+                />
+
+                <DetailsItem
+                  label='Country Subdivision'
+                  value={
+                    businessOwner?.businessPersonLocation?.country_subdivision || 'N/A'
+                  }
                 />
               </Stack>
             </GridItemShell>
@@ -206,39 +326,26 @@ const MerchantInformationModal = ({
               <SubHeading>Contact Person Information</SubHeading>
 
               <Stack spacing='3'>
-                <DetailsItem
-                  label='Name'
-                  value={merchantDetails?.contact_persons[0]?.name || 'N/A'}
-                />
+                <DetailsItem label='Name' value={contactPerson?.name || 'N/A'} />
 
                 <DetailsItem
                   label='Phone Number'
-                  value={merchantDetails?.contact_persons[0]?.phone_number || 'N/A'}
+                  value={contactPerson?.phone_number || 'N/A'}
                 />
 
-                <DetailsItem
-                  label='Email'
-                  value={merchantDetails?.contact_persons[0]?.email || 'N/A'}
-                />
+                <DetailsItem label='Email' value={contactPerson?.email || 'N/A'} />
               </Stack>
             </GridItemShell>
 
             <GridItemShell>
               <SubHeading>Checkout Information</SubHeading>
 
-              {merchantDetails?.checkout_counters.map((counter, index) => (
-                <Stack key={index} spacing='3'>
-                  <DetailsItem
-                    label='Counter Alias PayInto'
-                    value={counter.alias_value || 'N/A'}
-                  />
-
-                  <DetailsItem
-                    label='Counter Description'
-                    value={counter.description || 'N/A'}
-                  />
-                </Stack>
-              ))}
+              <Stack spacing='3'>
+                <DetailsItem
+                  label='Counter Description'
+                  value={checkoutCounter?.description || 'N/A'}
+                />
+              </Stack>
             </GridItemShell>
           </Grid>
         </ModalBody>

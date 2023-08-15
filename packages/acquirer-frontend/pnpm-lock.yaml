@@ -32,9 +32,6 @@ dependencies:
   framer-motion:
     specifier: ^10.13.0
     version: 10.13.0(react-dom@18.2.0)(react@18.2.0)
-  lodash.capitalize:
-    specifier: ^4.2.1
-    version: 4.2.1
   react:
     specifier: ^18.2.0
     version: 18.2.0
@@ -64,9 +61,6 @@ devDependencies:
   '@commitlint/config-conventional':
     specifier: ^17.6.6
     version: 17.6.6
-  '@types/lodash.capitalize':
-    specifier: ^4.2.7
-    version: 4.2.7
   '@types/react':
     specifier: ^18.2.14
     version: 18.2.14
@@ -2851,15 +2845,6 @@ packages:
       }
     dev: true
 
-  /@types/lodash.capitalize@4.2.7:
-    resolution:
-      {
-        integrity: sha512-NKtwU9vJFCx7Q6RYMAKQS0Vo2QUF81tyjvfYnhMxw8+ZMj8R4iv2zmLq5ARy28dGXuK0MqqWg45zGRuTnsnFag==,
-      }
-    dependencies:
-      '@types/lodash': 4.14.195
-    dev: true
-
   /@types/lodash.mergewith@4.6.7:
     resolution:
       {
@@ -2874,6 +2859,7 @@ packages:
       {
         integrity: sha512-Hwx9EUgdwf2GLarOjQp5ZH8ZmblzcbTBC2wtQWNKARBSxM9ezRIAUpeDTgoQRAFB0+8CNWXVA9+MaSOzOF3nPg==,
       }
+    dev: false
 
   /@types/minimist@1.2.2:
     resolution:
@@ -5004,13 +4990,6 @@ packages:
         integrity: sha512-TwuEnCnxbc3rAvhf/LbG7tJUDzhqXyFnv3dtzLOPgCG/hODL7WFnsbwktkD7yUV0RrreP/l1PALq/YSg6VvjlA==,
       }
     dev: true
-
-  /lodash.capitalize@4.2.1:
-    resolution:
-      {
-        integrity: sha512-kZzYOKspf8XVX5AvmQF94gQW0lejFVgb80G85bU4ZWzoJ6C03PQg3coYAUpSTpQWelrZELd3XWgHzw4Ck5kaIw==,
-      }
-    dev: false
 
   /lodash.isfunction@3.0.9:
     resolution:
