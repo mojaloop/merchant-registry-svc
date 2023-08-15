@@ -606,6 +606,15 @@ describe('Merchant Routes Tests', () => {
   })
 
   describe('POST /api/v1/merchants/:id/contact-persons', () => {
+    let makerUser: PortalUserEntity | null
+
+    beforeAll(async () => {
+      const userRepository = AppDataSource.getRepository(PortalUserEntity)
+      makerUser = await userRepository.findOne({
+        where: { email: process.env.TEST1_EMAIL ?? '' }
+      })
+    })
+
     it('should respond with 201 status when create contact person valid data', async () => {
       // Arrange
       const merchant = await AppDataSource.manager.save(
@@ -617,7 +626,8 @@ describe('Merchant Routes Tests', () => {
           monthly_turnover: '0.5',
           currency_code: CurrencyCodes.PHP,
           category_code: '10410',
-          payinto_alias: 'merchant1'
+          payinto_alias: 'merchant1',
+          created_by: makerUser ?? {}
         }
       )
 
@@ -683,7 +693,8 @@ describe('Merchant Routes Tests', () => {
           currency_code: CurrencyCodes.PHP,
           category_code: '10410',
           payinto_alias: 'merchant1',
-          business_owners: [businessOwner]
+          business_owners: [businessOwner],
+          created_by: makerUser ?? {}
         }
       )
 
