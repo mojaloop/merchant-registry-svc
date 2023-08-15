@@ -171,7 +171,7 @@ export async function postMerchantContactPerson (req: Request, res: Response) {
     newContactPerson.merchant = merchant
   }
 
-  let savedContactPerson
+  let savedContactPerson: ContactPersonEntity | null = null
   try {
     savedContactPerson = await contactPersonRepository.save(newContactPerson)
   } catch (err) {
@@ -183,7 +183,7 @@ export async function postMerchantContactPerson (req: Request, res: Response) {
         'postMerchantContactPerson',
         'Contact Person Server Query error',
         'Merchant',
-        {}, newContactPerson, portalUser
+        {}, { ...newContactPerson, merchant: undefined }, portalUser
       )
       return res.status(422).send({ message: err.message })
     }
@@ -195,7 +195,7 @@ export async function postMerchantContactPerson (req: Request, res: Response) {
     'postMerchantContactPerson',
     'Contact Person Saved',
     'Merchant',
-    {}, savedContactPerson ?? {}, portalUser
+    {}, { ...savedContactPerson, merchant: undefined } ?? {}, portalUser
   )
 
   return res.status(201).send({

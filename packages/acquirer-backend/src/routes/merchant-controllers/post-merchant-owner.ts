@@ -118,7 +118,7 @@ export async function postMerchantOwner (req: Request, res: Response) {
         'BusinessOwner',
         {}, businessOwnerData, portalUser
       )
-      return res.status(422).send({ message: err.issues.map(issue => issue.message) })
+      return res.status(422).send({ message: err })
     }
   }
 

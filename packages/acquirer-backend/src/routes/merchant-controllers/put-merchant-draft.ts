@@ -144,6 +144,8 @@ export async function putMerchantDraft (req: Request, res: Response) {
 
   logger.debug('Updating Merchant: %o', merchant.id)
   const oldMerchant = { ...merchant } // Clone the merchant object for audit logging
+  oldMerchant.checkout_counters = []
+  oldMerchant.business_licenses = []
 
   // Checkout Counter Update
   const alias: string = req.body.payinto_alias
@@ -252,7 +254,7 @@ export async function putMerchantDraft (req: Request, res: Response) {
     'putMerchantDraft',
     'Updating Merchant Draft Successful',
     'Merchant',
-    oldMerchant, merchant, portalUser
+    oldMerchant, { ...merchantData, business_licenses: [] }, portalUser
   )
   return res.status(201).send({ message: 'Updating Merchant Draft Successful', data: merchantData })
 }
