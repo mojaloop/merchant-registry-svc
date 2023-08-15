@@ -9,6 +9,8 @@ import {
   , AuditActionType, AuditTrasactionStatus
 } from 'shared-lib'
 import { getAuthenticatedPortalUser } from '../../middleware/authenticate'
+import { MerchantSchema } from '../final-review-validation-schema'
+import * as z from 'zod'
 import { audit } from '../../utils/audit'
 
 /**
@@ -69,11 +71,33 @@ export async function putMerchantStatusReadyToReview (req: Request, res: Respons
     const merchant = await merchantRepository.findOne({
       where: { id: Number(req.params.id) },
       relations: [
-        'created_by'
+        'locations',
+        'category_code',
+        'currency_code',
+        'checkout_counters',
+        'checkout_counters.checkout_location',
+        'business_licenses',
+        'contact_persons',
+        'contact_persons.businessPersonLocation',
+        'business_owners',
+        'business_owners.businessPersonLocation',
+        'created_by',
+        'checked_by'
       ]
     })
     if (merchant == null) {
       return res.status(404).send({ message: 'Merchant not found' })
+    }
+
+    try {
+      const output = MerchantSchema.parse(merchant)
+      logger.debug('Merchant schema output data: %o', output)
+    } catch (err) {
+      if (err instanceof z.ZodError) {
+        const errors = err.issues.map(issue => `${issue.path.toString()}: ${issue.message}`)
+        logger.error('Validation error: %o', errors)
+        return res.status(422).send({ message: errors })
+      }
     }
 
     if (portalUser == null || merchant.created_by.id !== portalUser.id) {
