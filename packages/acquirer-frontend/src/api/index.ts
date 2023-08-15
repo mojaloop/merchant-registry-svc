@@ -12,6 +12,7 @@ import type {
 } from '@/lib/validations/registry'
 import type { PendingMerchants } from '@/lib/validations/pendingMerchants'
 import type { AllMerchants } from '@/lib/validations/allMerchants'
+import type { DraftApplications } from '@/lib/validations/draftApplications'
 
 export const getDraftData = async (merchantId: string) => {
   const token = sessionStorage.getItem('token')
@@ -207,7 +208,9 @@ export const updateContactPersonInfo = async (
   }
 }
 
-export const getMerchants = async (params: AllMerchants | PendingMerchants) => {
+export const getMerchants = async (
+  params: AllMerchants | PendingMerchants | DraftApplications
+) => {
   try {
     const response = await instance.get<{ data: MerchantRecord[] }>('/merchants', {
       params,

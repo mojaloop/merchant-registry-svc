@@ -9,7 +9,7 @@ export interface MerchantInfo {
   payintoAccount: string
   merchantType: MerchantType
   state: string
-  city: string
+  countrySubdivision: string
   counterDescription: string
   registeredDfspName: string
   registrationStatus: MerchantRegistrationStatus
