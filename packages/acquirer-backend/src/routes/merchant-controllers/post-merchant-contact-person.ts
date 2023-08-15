@@ -11,6 +11,7 @@ import {
   ContactPersonSubmitDataSchema
 } from '../schemas'
 
+import { getAuthenticatedPortalUser } from '../../middleware/authenticate'
 /**
  * @openapi
  * /merchants/{id}/contact-persons:
@@ -60,8 +61,13 @@ import {
  *                   type: object
  */
 export async function postMerchantContactPerson (req: Request, res: Response) {
+  const portalUser = await getAuthenticatedPortalUser(req.headers.authorization)
+  if (portalUser == null) {
+    return res.status(401).send({ message: 'Unauthorized' })
+  }
+
   const id = Number(req.params.id)
-  if (isNaN(id)) {
+  if (isNaN(id) || id < 1) {
     logger.error('Invalid ID')
     res.status(422).send({ message: 'Invalid ID' })
     return
@@ -73,13 +79,27 @@ export async function postMerchantContactPerson (req: Request, res: Response) {
   const merchant = await merchantRepository.findOne(
     {
       where: { id },
-      relations: ['business_owners'] // for is_same_as_business_owner option
+      relations: [
+        'business_owners', // for is_same_as_business_owner option
+        'created_by'
+      ]
     }
   )
 
   if (merchant == null) {
     logger.error('Merchant not found')
     return res.status(404).json({ message: 'Merchant not found' })
+  }
+
+  if (merchant.created_by.id !== portalUser.id) {
+    merchant.created_by = portalUser
+    try {
+      await merchantRepository.save(merchant)
+    } catch (e) {
+      const msg = 'Failed to update created_by user when adding new contact person'
+      logger.error(msg)
+      return res.status(400).json({ message: msg })
+    }
   }
 
   const newContactPerson = contactPersonRepository.create({})
