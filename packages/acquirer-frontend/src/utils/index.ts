@@ -20,16 +20,16 @@ export const transformIntoTableData = (merchantData: MerchantRecord): MerchantIn
     registeredName: merchantData.registered_name,
 
     // Assuming the first checkout counter's alias value is the payintoAccount
-    payintoAccount: merchantData.checkout_counters[0]?.alias_value || 'N/A',
+    payintoAccount: merchantData.checkout_counters[0]?.alias_value || '',
     merchantType: merchantData.merchant_type,
 
     // Assuming the first location's country subdivision is the state
-    state: merchantData.locations[0]?.country_subdivision || 'N/A',
-    countrySubdivision: merchantData.locations[0]?.town_name || 'N/A',
+    state: merchantData.locations[0]?.country_subdivision || '',
+    countrySubdivision: merchantData.locations[0]?.town_name || '',
 
     // Assuming the first checkout counter's description is the counterDescription
     counterDescription: merchantData.checkout_counters[0]?.description || '',
-    registeredDfspName: 'N/A', // Not provided yet by API Backend Server
+    registeredDfspName: '', // Not provided yet by API Backend Server
     registrationStatus: merchantData.registration_status,
   }
 }
