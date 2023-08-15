@@ -209,6 +209,18 @@ export const updateContactPersonInfo = async (
   }
 }
 
+export const changeStatusToReview = async (merchantId: string) => {
+  try {
+    return await instance.put(`/merchants/${merchantId}/ready-to-review`)
+  } catch (error) {
+    if (isAxiosError(error)) {
+      alert(
+        error.response?.data?.error || 'Something went wrong! Please try again later.'
+      )
+    }
+  }
+}
+
 export const getMerchants = async (
   params: AllMerchants | PendingMerchants | DraftApplications
 ) => {

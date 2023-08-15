@@ -1,7 +1,6 @@
+import { useNavigate } from 'react-router-dom'
 import {
   Grid,
-  GridItem,
-  type HeadingProps,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -10,38 +9,22 @@ import {
   ModalHeader,
   ModalOverlay,
   Stack,
-  Heading,
-  type GridItemProps,
   Link,
 } from '@chakra-ui/react'
-import { isAxiosError } from 'axios'
 
 import type { DraftData } from '@/types/form'
-import instance from '@/lib/axiosInstance'
+import { changeStatusToReview } from '@/api'
 import { CustomButton } from '@/components/ui'
-import DetailsItem from '@/components/ui/MerchantInformationModal/DetailsItem'
-import { useNavigate } from 'react-router-dom'
+import {
+  DetailsItem,
+  GridItemShell,
+  SubHeading,
+} from '@/components/ui/MerchantInformationModal'
 
 interface ReviewModalProps {
   isOpen: boolean
   onClose: () => void
   draftData: DraftData
-}
-
-const SubHeading = ({ children, ...props }: HeadingProps) => {
-  return (
-    <Heading as='h4' size='sm' mb='4' fontWeight='semibold' {...props}>
-      {children}
-    </Heading>
-  )
-}
-
-const GridItemShell = ({ children, ...props }: GridItemProps) => {
-  return (
-    <GridItem bg='primaryBackground' rounded='md' px='4' py='3' {...props}>
-      {children}
-    </GridItem>
-  )
 }
 
 const ReviewModal = ({ isOpen, onClose, draftData }: ReviewModalProps) => {
@@ -71,31 +54,12 @@ const ReviewModal = ({ isOpen, onClose, draftData }: ReviewModalProps) => {
 
   const handleSubmit = async () => {
     const merchantId = sessionStorage.getItem('merchantId')
+    if (!merchantId) return
 
-    const token = sessionStorage.getItem('token')
-    if (token == null) {
-      alert('You are not logged in!')
-      navigate('/login')
-      return
-    }
-
-    try {
-      await instance.put(`/merchants/${merchantId}/ready-to-review`, null, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-
-      sessionStorage.removeItem('merchantId')
-      onClose()
-      navigate('/registry')
-    } catch (error) {
-      if (isAxiosError(error)) {
-        alert(
-          error.response?.data?.error || 'Something went wrong! Please try again later.'
-        )
-      }
-    }
+    await changeStatusToReview(merchantId)
+    sessionStorage.removeItem('merchantId')
+    onClose()
+    navigate('/registry')
   }
 
   return (
@@ -123,37 +87,37 @@ const ReviewModal = ({ isOpen, onClose, draftData }: ReviewModalProps) => {
               <Stack spacing='3'>
                 <DetailsItem
                   label='Doing Business As Name'
-                  value={dba_trading_name ?? ''}
+                  value={dba_trading_name || 'N/A'}
                 />
 
-                <DetailsItem label='Registered Name' value={registered_name ?? ''} />
+                <DetailsItem label='Registered Name' value={registered_name || 'N/A'} />
 
                 <DetailsItem
                   label='Payinto Account'
-                  value={checkoutCounter?.alias_value ?? ''}
+                  value={checkoutCounter?.alias_value || 'N/A'}
                 />
 
-                <DetailsItem label='Number of Employee' value={employees_num ?? ''} />
+                <DetailsItem label='Number of Employee' value={employees_num || 'N/A'} />
 
                 <DetailsItem
                   label='Monthly Turnover'
-                  value={monthly_turnover ? `${monthly_turnover}%` : ''}
+                  value={monthly_turnover ? `${monthly_turnover}%` : 'N/A'}
                 />
 
                 <DetailsItem
                   label='Merchant Category'
-                  value={category_code?.description ?? ''}
+                  value={category_code?.description || 'N/A'}
                 />
 
-                <DetailsItem label='Merchant Type' value={merchant_type ?? ''} />
+                <DetailsItem label='Merchant Type' value={merchant_type || 'N/A'} />
 
-                <DetailsItem label='DFSP Name' value={dfsp_name ?? ''} />
+                <DetailsItem label='DFSP Name' value={dfsp_name || 'N/A'} />
 
-                <DetailsItem label='Currency' value={currency_code?.iso_code ?? ''} />
+                <DetailsItem label='Currency' value={currency_code?.iso_code || 'N/A'} />
 
                 <DetailsItem
                   label='Licence Number'
-                  value={businessLicense?.license_number ?? ''}
+                  value={businessLicense?.license_number || 'N/A'}
                 />
 
                 <DetailsItem
@@ -168,7 +132,7 @@ const ReviewModal = ({ isOpen, onClose, draftData }: ReviewModalProps) => {
                         License Document
                       </Link>
                     ) : (
-                      ''
+                      'N/A'
                     )
                   }
                 />
@@ -181,54 +145,57 @@ const ReviewModal = ({ isOpen, onClose, draftData }: ReviewModalProps) => {
               <Stack spacing='3'>
                 <DetailsItem
                   label='Location Type'
-                  value={location?.location_type ?? ''}
+                  value={location?.location_type || 'N/A'}
                 />
 
-                <DetailsItem label='Country' value={location?.country ?? ''} />
+                <DetailsItem label='Country' value={location?.country || 'N/A'} />
 
                 <DetailsItem
                   label='Latitude Longitude'
-                  value={`${location?.latitude ?? ''}${
-                    location?.latitude && location?.longitude ? ',' : ''
-                  } ${location?.longitude ?? ''}`}
+                  value={`${location?.latitude || 'N/A'}${
+                    location?.latitude && location?.longitude ? ',' : 'N/A'
+                  } ${location?.longitude || 'N/A'}`}
                 />
 
-                <DetailsItem label='Website URL' value={location?.web_url ?? ''} />
+                <DetailsItem label='Website URL' value={location?.web_url || 'N/A'} />
 
-                <DetailsItem label='Department' value={location?.department ?? ''} />
+                <DetailsItem label='Department' value={location?.department || 'N/A'} />
 
                 <DetailsItem
                   label='Sub Department'
-                  value={location?.sub_department ?? ''}
+                  value={location?.sub_department || 'N/A'}
                 />
 
-                <DetailsItem label='Street Name' value={location?.street_name ?? ''} />
+                <DetailsItem label='Street Name' value={location?.street_name || 'N/A'} />
 
                 <DetailsItem
                   label='Building Number'
-                  value={location?.building_number ?? ''}
+                  value={location?.building_number || 'N/A'}
                 />
 
                 <DetailsItem
                   label='Building Name'
-                  value={location?.building_name ?? ''}
+                  value={location?.building_name || 'N/A'}
                 />
 
-                <DetailsItem label='Floor Number' value={location?.floor_number ?? ''} />
+                <DetailsItem
+                  label='Floor Number'
+                  value={location?.floor_number || 'N/A'}
+                />
 
-                <DetailsItem label='Room Number' value={location?.room_number ?? ''} />
+                <DetailsItem label='Room Number' value={location?.room_number || 'N/A'} />
 
-                <DetailsItem label='Post Box' value={location?.post_box ?? ''} />
+                <DetailsItem label='Post Box' value={location?.post_box || 'N/A'} />
 
-                <DetailsItem label='Postal Code' value={location?.postal_code ?? ''} />
+                <DetailsItem label='Postal Code' value={location?.postal_code || 'N/A'} />
 
-                <DetailsItem label='Township' value={location?.town_name ?? ''} />
+                <DetailsItem label='Township' value={location?.town_name || 'N/A'} />
 
-                <DetailsItem label='District' value={location?.district_name ?? ''} />
+                <DetailsItem label='District' value={location?.district_name || 'N/A'} />
 
                 <DetailsItem
                   label='Country Subdivision'
-                  value={location?.country_subdivision ?? ''}
+                  value={location?.country_subdivision || 'N/A'}
                 />
               </Stack>
             </GridItemShell>
@@ -237,98 +204,100 @@ const ReviewModal = ({ isOpen, onClose, draftData }: ReviewModalProps) => {
               <SubHeading>Business Owner Information</SubHeading>
 
               <Stack spacing='3'>
-                <DetailsItem label='Name' value={businessOwner?.name ?? ''} />
+                <DetailsItem label='Name' value={businessOwner?.name || 'N/A'} />
 
                 <DetailsItem
                   label='National ID'
-                  value={businessOwner?.identificaton_type ?? ''}
+                  value={businessOwner?.identificaton_type || 'N/A'}
                 />
 
                 <DetailsItem
                   label='Nationality'
-                  value={businessOwner?.identification_number ?? ''}
+                  value={businessOwner?.identification_number || 'N/A'}
                 />
 
                 <DetailsItem
                   label='Phone Number'
-                  value={businessOwner?.phone_number ?? ''}
+                  value={businessOwner?.phone_number || 'N/A'}
                 />
 
-                <DetailsItem label='Email' value={businessOwner?.email ?? ''} />
+                <DetailsItem label='Email' value={businessOwner?.email || 'N/A'} />
 
                 <DetailsItem
                   label='Country'
-                  value={businessOwner?.businessPersonLocation?.country ?? ''}
+                  value={businessOwner?.businessPersonLocation?.country || 'N/A'}
                 />
 
                 <DetailsItem
                   label='Latitude Longitude'
-                  value={`${businessOwner?.businessPersonLocation?.latitude ?? ''}${
+                  value={`${businessOwner?.businessPersonLocation?.latitude || 'N/A'}${
                     businessOwner?.businessPersonLocation?.latitude &&
                     businessOwner?.businessPersonLocation?.longitude
                       ? ','
-                      : ''
-                  } ${businessOwner?.businessPersonLocation?.longitude ?? ''}`}
+                      : 'N/A'
+                  } ${businessOwner?.businessPersonLocation?.longitude || 'N/A'}`}
                 />
 
                 <DetailsItem
                   label='Department'
-                  value={businessOwner?.businessPersonLocation?.department ?? ''}
+                  value={businessOwner?.businessPersonLocation?.department || 'N/A'}
                 />
 
                 <DetailsItem
                   label='Sub Department'
-                  value={businessOwner?.businessPersonLocation?.sub_department ?? ''}
+                  value={businessOwner?.businessPersonLocation?.sub_department || 'N/A'}
                 />
 
                 <DetailsItem
                   label='Street Name'
-                  value={businessOwner?.businessPersonLocation?.street_name ?? ''}
+                  value={businessOwner?.businessPersonLocation?.street_name || 'N/A'}
                 />
 
                 <DetailsItem
                   label='Building Number'
-                  value={businessOwner?.businessPersonLocation?.building_number ?? ''}
+                  value={businessOwner?.businessPersonLocation?.building_number || 'N/A'}
                 />
 
                 <DetailsItem
                   label='Building Name'
-                  value={businessOwner?.businessPersonLocation?.building_name ?? ''}
+                  value={businessOwner?.businessPersonLocation?.building_name || 'N/A'}
                 />
 
                 <DetailsItem
                   label='Floor Number'
-                  value={businessOwner?.businessPersonLocation?.floor_number ?? ''}
+                  value={businessOwner?.businessPersonLocation?.floor_number || 'N/A'}
                 />
 
                 <DetailsItem
                   label='Room Number'
-                  value={businessOwner?.businessPersonLocation?.room_number ?? ''}
+                  value={businessOwner?.businessPersonLocation?.room_number || 'N/A'}
                 />
 
                 <DetailsItem
                   label='Post Box'
-                  value={businessOwner?.businessPersonLocation?.post_box ?? ''}
+                  value={businessOwner?.businessPersonLocation?.post_box || 'N/A'}
                 />
 
                 <DetailsItem
                   label='Postal Code'
-                  value={businessOwner?.businessPersonLocation?.postal_code ?? ''}
+                  value={businessOwner?.businessPersonLocation?.postal_code || 'N/A'}
                 />
 
                 <DetailsItem
                   label='Township'
-                  value={businessOwner?.businessPersonLocation?.town_name ?? ''}
+                  value={businessOwner?.businessPersonLocation?.town_name || 'N/A'}
                 />
 
                 <DetailsItem
                   label='District'
-                  value={businessOwner?.businessPersonLocation?.district_name ?? ''}
+                  value={businessOwner?.businessPersonLocation?.district_name || 'N/A'}
                 />
 
                 <DetailsItem
                   label='Country Subdivision'
-                  value={businessOwner?.businessPersonLocation?.country_subdivision ?? ''}
+                  value={
+                    businessOwner?.businessPersonLocation?.country_subdivision || 'N/A'
+                  }
                 />
               </Stack>
             </GridItemShell>
@@ -337,14 +306,14 @@ const ReviewModal = ({ isOpen, onClose, draftData }: ReviewModalProps) => {
               <SubHeading>Contact Person Information</SubHeading>
 
               <Stack spacing='3'>
-                <DetailsItem label='Name' value={contactPerson?.name ?? ''} />
+                <DetailsItem label='Name' value={contactPerson?.name || 'N/A'} />
 
                 <DetailsItem
                   label='Phone Number'
-                  value={contactPerson?.phone_number ?? ''}
+                  value={contactPerson?.phone_number || 'N/A'}
                 />
 
-                <DetailsItem label='Email' value={contactPerson?.email ?? ''} />
+                <DetailsItem label='Email' value={contactPerson?.email || 'N/A'} />
               </Stack>
             </GridItemShell>
 
@@ -354,7 +323,7 @@ const ReviewModal = ({ isOpen, onClose, draftData }: ReviewModalProps) => {
               <Stack spacing='3'>
                 <DetailsItem
                   label='Counter Description'
-                  value={checkoutCounter?.description ?? ''}
+                  value={checkoutCounter?.description || 'N/A'}
                 />
               </Stack>
             </GridItemShell>
