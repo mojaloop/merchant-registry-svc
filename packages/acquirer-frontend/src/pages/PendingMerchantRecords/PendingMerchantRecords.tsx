@@ -12,42 +12,28 @@ import {
 } from '@chakra-ui/react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-
 import { MerchantRegistrationStatus } from 'shared-lib'
-import type { MerchantInfo, MerchantRecord } from '@/types/merchants'
+
+import type { MerchantInfo } from '@/types/merchants'
 import {
   type PendingMerchants,
   pendingMerchantsSchema,
 } from '@/lib/validations/pendingMerchants'
 import { approveMerchants, getMerchants, rejectMerchants } from '@/api'
-import { convertKebabCaseToReadable } from '@/utils'
+import {
+  REGISTRATION_STATUS_COLORS,
+  type RegistrationStatus,
+} from '@/constants/registrationStatus'
+import { transformIntoTableData } from '@/utils'
 import { CustomButton, MerchantInformationModal } from '@/components/ui'
 import { FormInput } from '@/components/form'
 import PendingMerchantsDataTable from './PendingMerchantsDataTable'
 
-const REGISTRATION_STATUS_COLORS = {
-  Draft: 'gray',
-  Review: 'warning',
-  Approved: 'success',
-  Rejected: 'danger',
-}
-
-type StatusKey = keyof typeof REGISTRATION_STATUS_COLORS
-
 const PendingMerchantRecords = () => {
-  const {
-    register,
-    formState: { errors },
-    handleSubmit,
-    reset,
-  } = useForm<PendingMerchants>({
-    resolver: zodResolver(pendingMerchantsSchema),
-  })
+  const [data, setData] = useState<MerchantInfo[]>([])
+  const [selectedMerchantId, setSelectedMerchantId] = useState<number | null>(null)
 
   const { isOpen, onOpen, onClose } = useDisclosure()
-
-  const [selectedMerchantId, setSelectedMerchantId] = useState<number | null>(null)
-  const [data, setData] = useState<MerchantInfo[]>([])
 
   const columns = useMemo(() => {
     const columnHelper = createColumnHelper<MerchantInfo>()
@@ -90,16 +76,16 @@ const PendingMerchantRecords = () => {
         header: 'Payinto Account',
       }),
       columnHelper.accessor('merchantType', {
-        cell: info => convertKebabCaseToReadable(info.getValue()),
+        cell: info => info.getValue(),
         header: 'Merchant Type',
       }),
       columnHelper.accessor('state', {
         cell: info => info.getValue(),
         header: 'State',
       }),
-      columnHelper.accessor('city', {
+      columnHelper.accessor('countrySubdivision', {
         cell: info => info.getValue(),
-        header: 'City',
+        header: 'Country Subdivision',
       }),
       columnHelper.accessor('counterDescription', {
         cell: info => info.getValue(),
@@ -117,10 +103,10 @@ const PendingMerchantRecords = () => {
               w='2'
               h='2'
               borderRadius='full'
-              bg={REGISTRATION_STATUS_COLORS[info.getValue() as StatusKey]}
+              bg={REGISTRATION_STATUS_COLORS[info.getValue() as RegistrationStatus]}
             />
 
-            <Text>{convertKebabCaseToReadable(info.getValue())}</Text>
+            <Text>{info.getValue()}</Text>
           </HStack>
         ),
         header: 'Registration Status',
@@ -144,26 +130,14 @@ const PendingMerchantRecords = () => {
     ]
   }, [onOpen])
 
-  const transformData = (merchantData: MerchantRecord) => {
-    return {
-      no: merchantData.id, // Assuming 'no' is the id of the merchant
-      dbaName: merchantData.dba_trading_name,
-      registeredName: merchantData.registered_name,
-
-      // Assuming the first checkout counter's alias value is the payintoAccount
-      payintoAccount: merchantData.checkout_counters[0]?.alias_value || 'N/A',
-      merchantType: merchantData.merchant_type,
-
-      // Assuming the first location's country subdivision is the state
-      state: merchantData.locations[0]?.country_subdivision || 'N/A',
-      city: merchantData.locations[0]?.town_name || 'N/A',
-
-      // Assuming the first checkout counter's description is the counterDescription
-      counterDescription: merchantData.checkout_counters[0]?.description || '',
-      registeredDfspName: 'N/A', // Not provided yet by API Backend Server
-      registrationStatus: merchantData.registration_status,
-    }
-  }
+  const {
+    register,
+    formState: { errors },
+    handleSubmit,
+    reset,
+  } = useForm<PendingMerchants>({
+    resolver: zodResolver(pendingMerchantsSchema),
+  })
 
   const getPendingMerchantRecords = async (values?: PendingMerchants) => {
     const params = values
@@ -172,7 +146,7 @@ const PendingMerchantRecords = () => {
     const pendingMerchants = await getMerchants(params)
 
     if (pendingMerchants) {
-      const transformedData = pendingMerchants.map(transformData)
+      const transformedData = pendingMerchants.map(transformIntoTableData)
       setData(transformedData)
     }
   }
@@ -183,13 +157,12 @@ const PendingMerchantRecords = () => {
 
   useEffect(() => {
     getPendingMerchantRecords()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   return (
     <Stack h='full'>
       <Heading size='md' mb='10'>
-        View Registered Merchants
+        Pending Registered Merchants
       </Heading>
 
       <Stack as='form' spacing='8' onSubmit={handleSubmit(onSubmit)}>
