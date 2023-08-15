@@ -241,11 +241,13 @@ const DraftApplications = () => {
         </Box>
       </Stack>
 
-      <MerchantInformationModal
-        isOpen={isOpen}
-        onClose={onClose}
-        selectedMerchantId={selectedMerchantId}
-      />
+      {selectedMerchantId && (
+        <MerchantInformationModal
+          isOpen={isOpen}
+          onClose={onClose}
+          selectedMerchantId={selectedMerchantId}
+        />
+      )}
 
       <Box
         bg='primaryBackground'

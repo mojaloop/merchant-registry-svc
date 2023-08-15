@@ -13,6 +13,7 @@ import type {
 import type { PendingMerchants } from '@/lib/validations/pendingMerchants'
 import type { AllMerchants } from '@/lib/validations/allMerchants'
 import type { DraftApplications } from '@/lib/validations/draftApplications'
+import type { MerchantDetails } from '@/types/merchantDetails'
 
 export const getDraftData = async (merchantId: string) => {
   const token = sessionStorage.getItem('token')
@@ -215,6 +216,20 @@ export const getMerchants = async (
     const response = await instance.get<{ data: MerchantRecord[] }>('/merchants', {
       params,
     })
+
+    return response.data.data
+  } catch (error) {
+    if (isAxiosError(error)) {
+      alert(error.response?.data?.message)
+    }
+  }
+}
+
+export const getMerchant = async (merchantId: number) => {
+  try {
+    const response = await instance.get<{ data: MerchantDetails }>(
+      `/merchants/${merchantId}`
+    )
 
     return response.data.data
   } catch (error) {

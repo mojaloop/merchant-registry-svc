@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import {
   Grid,
   GridItem,
@@ -17,19 +16,14 @@ import {
 } from '@chakra-ui/react'
 
 import type { MerchantDetails } from '@/types/merchantDetails'
-import instance from '@/lib/axiosInstance'
+import { getMerchant } from '@/api'
 import { CustomButton } from '@/components/ui'
 import DetailsItem from './DetailsItem'
 
 interface MerchantInformationModalProps {
-  selectedMerchantId: number | null
+  selectedMerchantId: number
   isOpen: boolean
   onClose: () => void
-}
-
-interface MerchantDetailsAxiosData {
-  data: MerchantDetails
-  message: string
 }
 
 const SubHeading = ({ children, ...props }: HeadingProps) => {
@@ -53,38 +47,19 @@ const MerchantInformationModal = ({
   onClose,
   selectedMerchantId,
 }: MerchantInformationModalProps) => {
-  const navigate = useNavigate()
-
   const [merchantDetails, setMerchantDetails] = useState<MerchantDetails | null>(null)
 
-  useEffect(() => {
-    if (!selectedMerchantId) return
-
-    const fetchMerchantDetails = async () => {
-      const token = sessionStorage.getItem('token')
-      if (token === null) {
-        alert('Token not found. Please login again.')
-        navigate('/login')
-        return
-      }
-
-      try {
-        const response = await instance.get<MerchantDetailsAxiosData>(
-          `/merchants/${selectedMerchantId}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        )
-        setMerchantDetails(response.data.data)
-      } catch (error) {
-        console.error('Error fetching merchant details:', error)
-      }
+  const getMerchantDetails = async () => {
+    const merchantDetails = await getMerchant(selectedMerchantId)
+    if (merchantDetails) {
+      setMerchantDetails(merchantDetails)
     }
+  }
 
-    fetchMerchantDetails()
-  }, [navigate, selectedMerchantId])
+  useEffect(() => {
+    getMerchantDetails()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} scrollBehavior='inside'>
