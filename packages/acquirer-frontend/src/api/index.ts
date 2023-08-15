@@ -53,7 +53,7 @@ export const createBusinessInfo = async (values: BusinessInfo) => {
   } catch (error) {
     if (isAxiosError(error)) {
       alert(
-        error.response?.data?.error ||
+        error.response?.data?.message ||
           'Something went wrong! Please check your data and try again.'
       )
     }
@@ -79,7 +79,7 @@ export const updateBusinessInfo = async (values: BusinessInfo, merchantId: strin
   } catch (error) {
     if (isAxiosError(error)) {
       alert(
-        error.response?.data?.error ||
+        error.response?.data?.message ||
           'Something went wrong! Please check your data and try again.'
       )
     }
@@ -97,7 +97,7 @@ export const createLocationInfo = async (values: LocationInfo, merchantId: strin
   } catch (error) {
     if (isAxiosError(error)) {
       alert(
-        error.response?.data?.error ||
+        error.response?.data?.message ||
           'Something went wrong! Please check your data and try again.'
       )
     }
@@ -119,7 +119,7 @@ export const updateLocationInfo = async (
   } catch (error) {
     if (isAxiosError(error)) {
       alert(
-        error.response?.data?.error ||
+        error.response?.data?.message ||
           'Something went wrong! Please check your data and try again.'
       )
     }
@@ -137,7 +137,7 @@ export const createOwnerInfo = async (values: OwnerInfo, merchantId: string) => 
   } catch (error) {
     if (isAxiosError(error)) {
       alert(
-        error.response?.data?.error ||
+        error.response?.data?.message ||
           'Something went wrong! Please check your data and try again.'
       )
     }
@@ -159,7 +159,7 @@ export const updateOwnerInfo = async (
   } catch (error) {
     if (isAxiosError(error)) {
       alert(
-        error.response?.data?.error ||
+        error.response?.data?.message ||
           'Something went wrong! Please check your data and try again.'
       )
     }
@@ -180,7 +180,7 @@ export const createContactPersonInfo = async (
   } catch (error) {
     if (isAxiosError(error)) {
       alert(
-        error.response?.data?.error ||
+        error.response?.data?.message ||
           'Something went wrong! Please check your data and try again.'
       )
     }
@@ -202,7 +202,7 @@ export const updateContactPersonInfo = async (
   } catch (error) {
     if (isAxiosError(error)) {
       alert(
-        error.response?.data?.error ||
+        error.response?.data?.message ||
           'Something went wrong! Please check your data and try again.'
       )
     }
@@ -215,7 +215,7 @@ export const changeStatusToReview = async (merchantId: string) => {
   } catch (error) {
     if (isAxiosError(error)) {
       alert(
-        error.response?.data?.error || 'Something went wrong! Please try again later.'
+        error.response?.data?.message || 'Something went wrong! Please try again later.'
       )
     }
   }
