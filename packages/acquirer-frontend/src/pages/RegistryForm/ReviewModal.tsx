@@ -14,6 +14,7 @@ import {
 
 import type { MerchantDetails } from '@/types/merchantDetails'
 import { changeStatusToReview } from '@/api'
+import { formatLatitudeLongitude } from '@/utils'
 import { CustomButton } from '@/components/ui'
 import {
   DetailsItem,
@@ -151,9 +152,7 @@ const ReviewModal = ({ isOpen, onClose, draftData }: ReviewModalProps) => {
 
                 <DetailsItem
                   label='Latitude Longitude'
-                  value={`${location?.latitude || 'N/A'}${
-                    location?.latitude && location?.longitude ? ',' : 'N/A'
-                  } ${location?.longitude || 'N/A'}`}
+                  value={formatLatitudeLongitude(location.latitude, location.longitude)}
                 />
 
                 <DetailsItem label='Website URL' value={location?.web_url || 'N/A'} />
@@ -229,12 +228,10 @@ const ReviewModal = ({ isOpen, onClose, draftData }: ReviewModalProps) => {
 
                 <DetailsItem
                   label='Latitude Longitude'
-                  value={`${businessOwner?.businessPersonLocation?.latitude || 'N/A'}${
-                    businessOwner?.businessPersonLocation?.latitude &&
-                    businessOwner?.businessPersonLocation?.longitude
-                      ? ','
-                      : 'N/A'
-                  } ${businessOwner?.businessPersonLocation?.longitude || 'N/A'}`}
+                  value={formatLatitudeLongitude(
+                    businessOwner.businessPersonLocation?.latitude,
+                    businessOwner.businessPersonLocation?.longitude
+                  )}
                 />
 
                 <DetailsItem

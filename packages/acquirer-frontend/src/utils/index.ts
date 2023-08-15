@@ -5,6 +5,14 @@ export const scrollToTop = () => {
   document.getElementById('main')?.scrollTo({ top: 0, behavior: 'smooth' })
 }
 
+export const formatLatitudeLongitude = (latitude?: string, longitude?: string) => {
+  if (!latitude && !longitude) return 'N/A'
+
+  if (!latitude || !longitude) return latitude || longitude
+
+  return `${latitude}, ${longitude}`
+}
+
 export const transformIntoTableData = (merchantData: MerchantDetails): MerchantInfo => {
   return {
     no: merchantData.id, // Assuming 'no' is the id of the merchant
