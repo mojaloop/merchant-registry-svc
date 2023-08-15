@@ -10,6 +10,7 @@ import { BusinessLicenseEntity } from '../../entity/BusinessLicenseEntity'
 import {
   MerchantAllowBlockStatus,
   MerchantRegistrationStatus
+  , AuditActionType, AuditTrasactionStatus
 } from 'shared-lib'
 
 import {
@@ -18,6 +19,7 @@ import {
 import { uploadMerchantDocument } from '../../middleware/minioClient'
 import { getAuthenticatedPortalUser } from '../../middleware/authenticate'
 
+import { audit } from '../../utils/audit'
 /**
  * @openapi
  * /merchants/{id}/draft:
@@ -109,6 +111,7 @@ export async function putMerchantDraft (req: Request, res: Response) {
   }
 
   try {
+    logger.debug('Validating request body: %o', req.body)
     MerchantSubmitDataSchema.parse(req.body)
   } catch (err) {
     if (err instanceof z.ZodError) {
@@ -140,6 +143,7 @@ export async function putMerchantDraft (req: Request, res: Response) {
   }
 
   logger.debug('Updating Merchant: %o', merchant.id)
+  const oldMerchant = { ...merchant } // Clone the merchant object for audit logging
 
   // Checkout Counter Update
   const alias: string = req.body.payinto_alias
@@ -241,5 +245,14 @@ export async function putMerchantDraft (req: Request, res: Response) {
       return licenseData
     })
   }
+
+  await audit(
+    AuditActionType.UPDATE,
+    AuditTrasactionStatus.SUCCESS,
+    'putMerchantDraft',
+    'Updating Merchant Draft Successful',
+    'Merchant',
+    oldMerchant, merchant, portalUser
+  )
   return res.status(201).send({ message: 'Updating Merchant Draft Successful', data: merchantData })
 }

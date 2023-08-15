@@ -11,6 +11,9 @@ import {
   ContactPersonSubmitDataSchema
 } from '../schemas'
 
+import { audit } from '../../utils/audit'
+import { AuditActionType, AuditTrasactionStatus } from 'shared-lib'
+import { getAuthenticatedPortalUser } from '../../middleware/authenticate'
 /**
  * @openapi
  * /merchants/{merchantId}/contact-persons/{contactPersonId}:
@@ -67,15 +70,20 @@ import {
  *                   type: object
  */
 export async function putMerchantContactPerson (req: Request, res: Response) {
+  const portalUser = await getAuthenticatedPortalUser(req.headers.authorization)
+  if (portalUser == null) {
+    return res.status(401).send({ message: 'Unauthorized' })
+  }
+
   const merchantId = Number(req.params.merchantId)
-  if (isNaN(merchantId) || merchantId <= 0) {
+  if (isNaN(merchantId) || merchantId < 1) {
     logger.error('Invalid Merchant ID')
     res.status(422).send({ message: 'Invalid Merchant ID' })
     return
   }
 
   const contactPersonId = Number(req.params.contactPersonId)
-  if (isNaN(contactPersonId) || contactPersonId <= 0) {
+  if (isNaN(contactPersonId) || contactPersonId < 1) {
     logger.error('Invalid Contact Person ID')
     res.status(422).send({ message: 'Invalid Contact Person ID' })
     return
@@ -89,7 +97,8 @@ export async function putMerchantContactPerson (req: Request, res: Response) {
       where: { id: merchantId },
       relations: [
         'business_owners', // for is_same_as_business_owner
-        'contact_persons'
+        'contact_persons',
+        'created_by'
       ]
     }
   )
@@ -107,6 +116,8 @@ export async function putMerchantContactPerson (req: Request, res: Response) {
     logger.error('Contact Person not found')
     return res.status(404).json({ message: 'Contact Person not found' })
   }
+
+  const oldContactPerson = { ...contactPerson }// Deep clone for audit log
 
   if (req.body.is_same_as_business_owner === true) {
     const businessOwners = merchant.business_owners
@@ -149,6 +160,28 @@ export async function putMerchantContactPerson (req: Request, res: Response) {
       return res.status(422).send({ message: err.message })
     }
   }
+
+  // Update the created_by field if portalUser is not the same as the current created_by
+  if (merchant.created_by.id !== portalUser.id) {
+    merchant.created_by = portalUser
+    try {
+      await merchantRepository.save(merchant)
+    } catch (err) {
+      if (err instanceof QueryFailedError) {
+        logger.error('Merchant Validation error: %o', err.message)
+        return res.status(422).send({ message: err.message })
+      }
+    }
+  }
+
+  await audit(
+    AuditActionType.UPDATE,
+    AuditTrasactionStatus.SUCCESS,
+    'putMerchantContactPerson',
+    'Contact Person Updated',
+    'ContactPerson',
+    oldContactPerson, contactPerson, portalUser
+  )
 
   return res.status(201).send({
     message: 'Contact Person Updated'

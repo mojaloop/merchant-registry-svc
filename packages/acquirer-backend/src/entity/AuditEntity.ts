@@ -1,12 +1,11 @@
 import {
   Entity,
   Column, PrimaryGeneratedColumn,
-  OneToMany,
-  CreateDateColumn, UpdateDateColumn
+  CreateDateColumn, ManyToOne
 } from 'typeorm'
 import { PortalUserEntity } from './PortalUserEntity'
 
-import { AuditActionType } from 'shared-lib'
+import { AuditActionType, AuditTrasactionStatus } from 'shared-lib'
 
 @Entity('audits')
 export class AuditEntity {
@@ -25,18 +24,18 @@ export class AuditEntity {
   @Column({ nullable: true, length: 255 })
     entity_name!: string
 
-  @Column({ nullable: true, length: 255 })
+  @Column({ nullable: true })
+    transaction_status!: AuditTrasactionStatus
+
+  @Column({ nullable: true, length: 4096 })
     old_value!: string
 
-  @Column({ nullable: true, length: 255 })
+  @Column({ nullable: true, length: 4096 })
     new_value!: string
 
-  @OneToMany(() => PortalUserEntity, portalUser => portalUser.audits)
+  @ManyToOne(() => PortalUserEntity, portalUser => portalUser.audits)
     portal_user!: PortalUserEntity
 
   @CreateDateColumn()
     created_at!: Date
-
-  @UpdateDateColumn()
-    updated_at!: Date
 }

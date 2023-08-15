@@ -12,6 +12,8 @@ import {
   MerchantLocationSubmitDataSchema
 } from '../schemas'
 import { getAuthenticatedPortalUser } from '../../middleware/authenticate'
+import { audit } from '../../utils/audit'
+import { AuditActionType, AuditTrasactionStatus } from 'shared-lib'
 
 /**
  * @openapi
@@ -204,5 +206,13 @@ export async function putMerchantLocation (req: Request, res: Response) {
     }
   }
 
+  await audit(
+    AuditActionType.UPDATE,
+    AuditTrasactionStatus.SUCCESS,
+    'putMerchantLocation',
+    'Merchant Location Updated',
+    'MerchantLocationEntity',
+    {}, {}, portalUser
+  )
   return res.status(200).send({ message: 'Merchant Location Updated' })
 }

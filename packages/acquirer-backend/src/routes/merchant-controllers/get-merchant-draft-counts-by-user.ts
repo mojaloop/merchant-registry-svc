@@ -3,9 +3,9 @@ import { type Request, type Response } from 'express'
 import { AppDataSource } from '../../database/data-source'
 import { MerchantEntity } from '../../entity/MerchantEntity'
 import logger from '../../logger'
-import { MerchantRegistrationStatus } from 'shared-lib'
+import { MerchantRegistrationStatus, AuditActionType, AuditTrasactionStatus } from 'shared-lib'
 import { getAuthenticatedPortalUser } from '../../middleware/authenticate'
-
+import { audit } from '../../utils/audit'
 /**
  * @openapi
  * /merchants/draft-counts:
@@ -53,8 +53,24 @@ export async function getMerchantDraftCountsByUser (req: Request, res: Response)
       .where(whereClause)
       .getCount()
 
-    res.send({ message: 'OK', data: merchantDraftCountsByUser })
-  } catch (e) {
+    await audit(
+      AuditActionType.ACCESS,
+      AuditTrasactionStatus.SUCCESS,
+      'getMerchantDraftCountsByUser',
+      `User ${portalUser.email} successfully retrieved merchant draft counts`,
+      'Merchants',
+      {}, {}, portalUser
+    )
+    return res.send({ message: 'OK', data: merchantDraftCountsByUser })
+  } catch (e: any) {
+    await audit(
+      AuditActionType.ACCESS,
+      AuditTrasactionStatus.FAILURE,
+      'getMerchantDraftCountsByUser',
+      `Error: ${JSON.stringify(e)}`,
+      'Merchants',
+      { }, { e }, portalUser
+    )
     logger.error(e)
     res.status(500).send({ message: e })
   }

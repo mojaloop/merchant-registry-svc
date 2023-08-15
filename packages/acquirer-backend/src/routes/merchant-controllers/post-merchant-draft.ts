@@ -9,6 +9,7 @@ import { CheckoutCounterEntity } from '../../entity/CheckoutCounterEntity'
 import { BusinessLicenseEntity } from '../../entity/BusinessLicenseEntity'
 import {
   MerchantAllowBlockStatus
+  , AuditActionType, AuditTrasactionStatus
 } from 'shared-lib'
 
 import {
@@ -16,6 +17,7 @@ import {
 } from '../schemas'
 import { uploadMerchantDocument } from '../../middleware/minioClient'
 import { getAuthenticatedPortalUser } from '../../middleware/authenticate'
+import { audit } from '../../utils/audit'
 
 /**
  * @openapi
@@ -104,8 +106,18 @@ export async function postMerchantDraft (req: Request, res: Response) {
     MerchantSubmitDataSchema.parse(req.body)
   } catch (err) {
     if (err instanceof z.ZodError) {
-      logger.error('Validation error: %o', err.issues.map((issue) => issue.message))
-      return res.status(422).send({ message: err })
+      const errors = err.issues.map(issue => `${issue.path.toString()}: ${issue.message}`)
+      logger.error('Validation error: %o', errors)
+      await audit(
+        AuditActionType.ADD,
+        AuditTrasactionStatus.FAILURE,
+        'postMerchantDraft',
+        'Validation error',
+        'Merchant',
+        {}, req.body, portalUser
+      )
+
+      return res.status(422).send({ message: errors })
     }
   }
 
@@ -121,7 +133,16 @@ export async function postMerchantDraft (req: Request, res: Response) {
     await AppDataSource.manager.save(checkoutCounter)
   } catch (err) {
     if (err instanceof QueryFailedError) {
-      logger.error('Query failed: %o', err.message)
+      logger.error('DB Query failed: %o', err.message)
+      await audit(
+        AuditActionType.ADD,
+        AuditTrasactionStatus.FAILURE,
+        'postMerchantDraft',
+        'DB Query failed',
+        'Merchant',
+        {}, req.body, portalUser
+      )
+
       return res.status(500).send({ message: err.message })
     }
   }

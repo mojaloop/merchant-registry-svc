@@ -1,8 +1,14 @@
 export enum AuditActionType {
+  UNAUTHORIZED_ACCESS = 'UnauthorizedAccess',
   ACCESS = 'Access',
   ADD = 'Add',
   UPDATE = 'Update',
   DELETE = 'Delete'
+}
+
+export enum AuditTrasactionStatus {
+  SUCCESS = 'Success',
+  FAILURE = 'Failure',
 }
 
 export enum MerchantType {
@@ -18,6 +24,7 @@ export enum MerchantAllowBlockStatus {
 }
 
 export enum MerchantRegistrationStatus {
+  WAITINGALIASGENERATION = 'WaitingAliasGeneration',
   DRAFT = 'Draft',
   REVIEW = 'Review',
   APPROVED = 'Approved',

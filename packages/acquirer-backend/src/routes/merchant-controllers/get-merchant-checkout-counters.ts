@@ -4,6 +4,8 @@ import { AppDataSource } from '../../database/data-source'
 import logger from '../../logger'
 import { MerchantEntity } from '../../entity/MerchantEntity'
 import { getAuthenticatedPortalUser } from '../../middleware/authenticate'
+import { audit } from '../../utils/audit'
+import { AuditActionType, AuditTrasactionStatus } from 'shared-lib'
 
 /**
  * @openapi
@@ -48,16 +50,27 @@ export async function getMerchantCheckoutCounters (req: Request, res: Response) 
   }
 
   if (req.params.id === undefined || req.params.id === null) {
+    await audit(
+      AuditActionType.ACCESS,
+      AuditTrasactionStatus.FAILURE,
+      'getMerchantCheckoutCounters',
+      'Missing merchant id',
+      'Merchants',
+      {}, {}, portalUser
+    )
     res.status(400).send({ message: 'Missing merchant id' })
     return
   }
 
-  if (isNaN(Number(req.params.id))) {
-    res.status(400).send({ message: 'Invalid merchant id' })
-    return
-  }
-
-  if (Number(req.params.id) < 1) {
+  if (isNaN(Number(req.params.id)) || Number(req.params.id) < 1) {
+    await audit(
+      AuditActionType.ACCESS,
+      AuditTrasactionStatus.FAILURE,
+      'getMerchantCheckoutCounters',
+      `Invalid merchant id: ${req.params.id}`,
+      'Merchants',
+      {}, {}, portalUser
+    )
     res.status(400).send({ message: 'Invalid merchant id' })
     return
   }
@@ -73,13 +86,39 @@ export async function getMerchantCheckoutCounters (req: Request, res: Response) 
     })
 
     if (merchant == null) {
+      await audit(
+        AuditActionType.ACCESS,
+        AuditTrasactionStatus.FAILURE,
+        'getMerchantCheckoutCounters',
+        `Merchant not found: ${req.params.id}`,
+        'Merchants',
+        {}, {}, portalUser
+      )
       res.status(404).send({ message: 'Merchant not found' })
       return
     }
 
     const checkoutCounters = merchant.checkout_counters
+    await audit(
+      AuditActionType.ACCESS,
+      AuditTrasactionStatus.SUCCESS,
+      'getMerchantCheckoutCounters',
+      `User ${portalUser.id} with email ${portalUser.email} \
+successfully fetched checkout counters for merchant ${merchant.id}`,
+      'Merchants',
+      {}, {}, portalUser
+    )
     res.send({ message: 'OK', data: checkoutCounters })
   } catch (e) {
+    await audit(
+      AuditActionType.ACCESS,
+      AuditTrasactionStatus.FAILURE,
+      'getMerchantCheckoutCounters',
+      `User ${portalUser.id} with email ${portalUser.email} \
+failed to fetch checkout counters for merchant ${req.params.id}`,
+      'Merchants',
+      {}, {}, portalUser
+    )
     logger.error(e)
     res.status(500).send({ message: e })
   }

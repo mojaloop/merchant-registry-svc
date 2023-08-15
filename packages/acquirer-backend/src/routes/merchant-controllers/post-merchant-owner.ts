@@ -11,6 +11,8 @@ import {
   BusinessOwnerSubmitDataSchema
 } from '../schemas'
 import { getAuthenticatedPortalUser } from '../../middleware/authenticate'
+import { audit } from '../../utils/audit'
+import { AuditActionType, AuditTrasactionStatus } from 'shared-lib'
 
 /**
  * @openapi
@@ -88,6 +90,14 @@ export async function postMerchantOwner (req: Request, res: Response) {
   const id = Number(req.params.id)
   if (isNaN(id) || id <= 0) {
     logger.error('Invalid ID')
+    await audit(
+      AuditActionType.ADD,
+      AuditTrasactionStatus.FAILURE,
+      'postMerchantOwner',
+      `Invalid ID: ${req.params.id}`,
+      'Merchant',
+      {}, {}, portalUser
+    )
     res.status(422).send({ message: 'Invalid ID' })
     return
   }
@@ -100,6 +110,14 @@ export async function postMerchantOwner (req: Request, res: Response) {
   } catch (err) {
     if (err instanceof z.ZodError) {
       logger.error('Business Owner Validation error: %o', err.issues.map(issue => issue.message))
+      await audit(
+        AuditActionType.ADD,
+        AuditTrasactionStatus.FAILURE,
+        'postMerchantOwner',
+        'Business Owner Validation error',
+        'BusinessOwner',
+        {}, businessOwnerData, portalUser
+      )
       return res.status(422).send({ message: err.issues.map(issue => issue.message) })
     }
   }
@@ -117,6 +135,14 @@ export async function postMerchantOwner (req: Request, res: Response) {
 
   if (merchant == null) {
     logger.error('Merchant not found')
+    await audit(
+      AuditActionType.ADD,
+      AuditTrasactionStatus.FAILURE,
+      'postMerchantOwner',
+      `Merchant not found: ${req.params.id}`,
+      'Merchant',
+      {}, {}, portalUser
+    )
     return res.status(404).json({ message: 'Merchant not found' })
   }
 
@@ -152,6 +178,14 @@ export async function postMerchantOwner (req: Request, res: Response) {
     await businessOwnerRepository.save(businessOwner)
   } catch (err) {
     logger.error('error creating business owner: %o', err)
+    await audit(
+      AuditActionType.ADD,
+      AuditTrasactionStatus.FAILURE,
+      'postMerchantOwner',
+      'Error creating business owner',
+      'BusinessOwner',
+      {}, businessOwnerData, portalUser
+    )
     return res.status(500).send({ message: 'error creating business owner' })
   }
 
@@ -160,7 +194,29 @@ export async function postMerchantOwner (req: Request, res: Response) {
   } else {
     merchant.business_owners.push(businessOwner)
   }
-  await merchantRepository.save(merchant)
+  try {
+    await merchantRepository.save(merchant)
+  } catch (err) {
+    logger.error('error updating merchant with business owner: %o', err)
+    await audit(
+      AuditActionType.ADD,
+      AuditTrasactionStatus.FAILURE,
+      'postMerchantOwner',
+      'Error updating merchant with business owner',
+      'Merchant',
+      {}, businessOwnerData, portalUser
+    )
+    return res.status(500).send({ message: 'error updating merchant with business owner' })
+  }
+
+  await audit(
+    AuditActionType.ADD,
+    AuditTrasactionStatus.SUCCESS,
+    'postMerchantOwner',
+    'Business Owner Saved',
+    'BusinessOwner',
+    {}, businessOwnerData, portalUser
+  )
 
   return res.status(201).send({
     message: 'Business Owner Saved',

@@ -4,7 +4,8 @@ import { AppDataSource } from '../../database/data-source'
 import logger from '../../logger'
 import { MerchantEntity } from '../../entity/MerchantEntity'
 import { getAuthenticatedPortalUser } from '../../middleware/authenticate'
-
+import { audit } from '../../utils/audit'
+import { AuditActionType, AuditTrasactionStatus } from 'shared-lib'
 /**
  * @openapi
  * /merchants/{id}/locations:
@@ -49,16 +50,28 @@ export async function getMerchantLocations (req: Request, res: Response) {
   }
 
   if (req.params.id == null || req.params.id === undefined) {
+    await audit(
+      AuditActionType.ACCESS,
+      AuditTrasactionStatus.FAILURE,
+      'getMerchantLocations',
+      'Missing merchant id',
+      'Merchant',
+      {}, {}, portalUser
+    )
+
     res.status(400).send({ message: 'Missing merchant id' })
     return
   }
 
-  if (isNaN(Number(req.params.id))) {
-    res.status(400).send({ message: 'Invalid merchant id' })
-    return
-  }
-
-  if (Number(req.params.id) < 1) {
+  if (isNaN(Number(req.params.id)) || Number(req.params.id) < 1) {
+    await audit(
+      AuditActionType.ACCESS,
+      AuditTrasactionStatus.FAILURE,
+      'getMerchantLocations',
+      `Invalid merchant id: ${req.params.id} `,
+      'Merchant',
+      {}, {}, portalUser
+    )
     res.status(400).send({ message: 'Invalid merchant id' })
     return
   }
@@ -74,13 +87,38 @@ export async function getMerchantLocations (req: Request, res: Response) {
     })
 
     if (merchant == null) {
+      await audit(
+        AuditActionType.ACCESS,
+        AuditTrasactionStatus.FAILURE,
+        'getMerchantLocations',
+        `Merchant Not Found: ${req.params.id}`,
+        'Merchant',
+        {}, {}, portalUser
+      )
       res.status(404).send({ message: 'Merchant not found' })
       return
     }
 
+    await audit(
+      AuditActionType.ACCESS,
+      AuditTrasactionStatus.SUCCESS,
+      'getMerchantLocations',
+      `User ${portalUser.id} with email ${portalUser.email} \
+retrieved locations for merchant ${merchant.id}`,
+      'Merchant',
+      {}, {}, portalUser
+    )
     const locations = merchant.locations
     res.send({ message: 'OK', data: locations })
   } catch (e) {
+    await audit(
+      AuditActionType.ACCESS,
+      AuditTrasactionStatus.FAILURE,
+      'getMerchantLocations',
+      `Error: ${JSON.stringify(e)}`,
+      'Merchant',
+      {}, { e }, portalUser
+    )
     logger.error(e)
     res.status(500).send({ message: e })
   }

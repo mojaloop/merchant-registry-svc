@@ -5,6 +5,8 @@ import { AppDataSource } from '../../database/data-source'
 import { MerchantEntity } from '../../entity/MerchantEntity'
 import logger from '../../logger'
 import { getAuthenticatedPortalUser } from '../../middleware/authenticate'
+import { audit } from '../../utils/audit'
+import { AuditActionType, AuditTrasactionStatus } from 'shared-lib'
 
 /**
  * @openapi
@@ -36,7 +38,7 @@ import { getAuthenticatedPortalUser } from '../../middleware/authenticate'
  *                   type: object
  */
 // TODO: Protect the route
-export async function getMerhcantById (req: Request, res: Response) {
+export async function getMerchantById (req: Request, res: Response) {
   const portalUser = await getAuthenticatedPortalUser(req.headers.authorization)
   if (portalUser == null) {
     return res.status(401).send({ message: 'Unauthorized' })
@@ -46,6 +48,14 @@ export async function getMerhcantById (req: Request, res: Response) {
     const id = Number(req.params.id)
     if (isNaN(id)) {
       logger.error('Invalid ID')
+      await audit(
+        AuditActionType.ACCESS,
+        AuditTrasactionStatus.FAILURE,
+        'getMerchantById',
+        `Invalid ID: ${req.params.id}`,
+        'Merchants',
+        {}, {}, portalUser
+      )
       res.status(422).send({ message: 'Invalid ID' })
       return
     }
@@ -69,11 +79,29 @@ export async function getMerhcantById (req: Request, res: Response) {
       })
     } catch (e) {
       logger.error('Error fetching merchant: %o', e)
+      await audit(
+        AuditActionType.ACCESS,
+        AuditTrasactionStatus.FAILURE,
+        'getMerchantById',
+        `User ${portalUser.id} (${portalUser.email}) failed to fetch merchant ${req.params.id}`,
+        'MerchantEntity',
+        {}, {}, portalUser
+      )
       res.status(500).send({ message: e })
       return
     }
 
     if (merchant == null) {
+      logger.error('Merchant not found')
+      await audit(
+        AuditActionType.ACCESS,
+        AuditTrasactionStatus.FAILURE,
+        'getMerchantById',
+        `User ${portalUser.id} (${portalUser.email}) failed to fetch merchant ${req.params.id}`,
+        'MerchantEntity',
+        {}, {}, portalUser
+      )
+
       return res.status(404).send({ message: 'Merchant not found' })
     }
 
@@ -111,9 +139,25 @@ export async function getMerhcantById (req: Request, res: Response) {
       checked_by: checkedBy
     }
 
-    res.send({ message: 'OK', data: merchantData })
+    await audit(
+      AuditActionType.ACCESS,
+      AuditTrasactionStatus.SUCCESS,
+      'getMerchantById',
+      `User ${portalUser.id} (${portalUser.email}) fetched merchant ${merchant.id}`,
+      'MerchantEntity',
+      {}, {}, portalUser
+    )
+    return res.send({ message: 'OK', data: merchantData })
   } catch (e) {
     logger.error(e)
-    res.status(500).send({ message: e })
+    await audit(
+      AuditActionType.ACCESS,
+      AuditTrasactionStatus.FAILURE,
+      'getMerchantById',
+      `User ${portalUser.id} (${portalUser.email}) failed to fetch merchant ${req.params.id}`,
+      'MerchantEntity',
+      {}, {}, portalUser
+    )
+    return res.status(500).send({ message: e })
   }
 }

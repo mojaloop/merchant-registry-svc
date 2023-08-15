@@ -11,6 +11,8 @@ import {
   BusinessOwnerSubmitDataSchema
 } from '../schemas'
 import { getAuthenticatedPortalUser } from '../../middleware/authenticate'
+import { AuditActionType, AuditTrasactionStatus } from 'shared-lib'
+import { audit } from '../../utils/audit'
 
 /**
  * @openapi
@@ -142,6 +144,15 @@ export async function putMerchantOwner (req: Request, res: Response) {
     return res.status(404).json({ message: 'Business Owner with provided Merchant not found' })
   }
 
+  // clone for audit log
+  const oldBusinessOwner = {
+    name: businessOwner.name,
+    email: businessOwner.email,
+    phone_number: businessOwner.phone_number,
+    identificaton_type: businessOwner.identificaton_type,
+    identification_number: businessOwner.identification_number
+  }
+
   try {
     const locationObj = businessOwner.businessPersonLocation
     const newLocationData = {
@@ -162,9 +173,10 @@ export async function putMerchantOwner (req: Request, res: Response) {
     return res.status(500).send({ message: 'Error updating business owner location' })
   }
 
+  let newBusinessOwnerData = {}
   try {
     // Remove the fields that are not part of the Business Owner Entity
-    const newBusinessOwnerData = {
+    newBusinessOwnerData = {
       name: businessOwnerData.name,
       email: businessOwnerData.email,
       phone_number: businessOwnerData.phone_number,
@@ -178,6 +190,14 @@ export async function putMerchantOwner (req: Request, res: Response) {
     return res.status(500).send({ message: 'Error Updating Business Owner' })
   }
 
+  await audit(
+    AuditActionType.UPDATE,
+    AuditTrasactionStatus.SUCCESS,
+    'putMerchantContactPerson',
+    'Contact Person Updated',
+    'ContactPerson',
+    oldBusinessOwner, newBusinessOwnerData, portalUser
+  )
   return res.status(201).send({
     message: 'Business Owner Updated',
     data: businessOwner

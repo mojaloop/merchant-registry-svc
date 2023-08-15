@@ -12,6 +12,60 @@ components:
       bearerFormat: JWT
       value: Bearer <JWT token here>
 paths:
+  /audits:
+    get:
+      tags:
+        - Audits
+      security:
+        - Authorization: []
+      summary: GET Audit Logs
+      parameters:
+        - in: query
+          name: actionType
+          schema:
+            type: string
+            enum:
+              - UnauthorizedAccess
+              - Access
+              - Add
+              - Update
+              - Delete
+          description: The action type
+        - in: query
+          name: transactionStatus
+          schema:
+            type: string
+            enum:
+              - Success
+              - Failure
+          description: The transaction status Success or Failure
+        - in: query
+          name: applicationModule
+          schema:
+            type: string
+          description: The application module
+        - in: query
+          name: entityName
+          schema:
+            type: string
+          description: The entity name
+      responses:
+        '200':
+          description: GET Audit Logs
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: The response message
+                    example: OK
+                  data:
+                    type: array
+                    description: The list of audit logs
+                    items:
+                      type: object
   /config/trace-level:
     put:
       tags:

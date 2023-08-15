@@ -11,6 +11,8 @@ import {
   ContactPersonSubmitDataSchema
 } from '../schemas'
 
+import { audit } from '../../utils/audit'
+import { AuditActionType, AuditTrasactionStatus } from 'shared-lib'
 import { getAuthenticatedPortalUser } from '../../middleware/authenticate'
 /**
  * @openapi
@@ -70,6 +72,14 @@ export async function postMerchantContactPerson (req: Request, res: Response) {
   const id = Number(req.params.id)
   if (isNaN(id) || id < 1) {
     logger.error('Invalid ID')
+    await audit(
+      AuditActionType.ADD,
+      AuditTrasactionStatus.FAILURE,
+      'postMerchantContactPerson',
+      `Invalid ID: ${req.params.id}`,
+      'Merchant',
+      {}, {}, null
+    )
     res.status(422).send({ message: 'Invalid ID' })
     return
   }
@@ -89,6 +99,15 @@ export async function postMerchantContactPerson (req: Request, res: Response) {
 
   if (merchant == null) {
     logger.error('Merchant not found')
+    await audit(
+      AuditActionType.ADD,
+      AuditTrasactionStatus.FAILURE,
+      'postMerchantContactPerson',
+      `Merchant not found: ${req.params.id}`,
+      'Merchant',
+      {}, {}, portalUser
+    )
+
     return res.status(404).json({ message: 'Merchant not found' })
   }
 
@@ -108,6 +127,15 @@ export async function postMerchantContactPerson (req: Request, res: Response) {
     const businessOwners = merchant.business_owners
     if (businessOwners == null || businessOwners.length === 0) {
       logger.error('Business Owner not found')
+      await audit(
+        AuditActionType.ADD,
+        AuditTrasactionStatus.FAILURE,
+        'postMerchantContactPerson',
+        `Business Owner not found: ${req.params.id}`,
+        'Merchant',
+        {}, {}, portalUser
+      )
+
       return res.status(404).json({ message: 'Business Owner not found' })
     }
 
@@ -125,6 +153,14 @@ export async function postMerchantContactPerson (req: Request, res: Response) {
     } catch (err) {
       if (err instanceof z.ZodError) {
         logger.error('Contact Person Validation error: %o', err.issues.map(issue => issue.message))
+        await audit(
+          AuditActionType.ADD,
+          AuditTrasactionStatus.FAILURE,
+          'postMerchantContactPerson',
+          'Contact Person Validation error',
+          'Merchant',
+          {}, contactPersonData, portalUser
+        )
         return res.status(422).send({ message: err.issues.map(issue => issue.message) })
       }
     }
@@ -135,17 +171,35 @@ export async function postMerchantContactPerson (req: Request, res: Response) {
     newContactPerson.merchant = merchant
   }
 
+  let savedContactPerson
   try {
-    await contactPersonRepository.save(newContactPerson)
+    savedContactPerson = await contactPersonRepository.save(newContactPerson)
   } catch (err) {
     if (err instanceof QueryFailedError) {
-      logger.error('Contact Person Validation error: %o', err.message)
+      logger.error('Contact Person Server Query error: %o', err.message)
+      await audit(
+        AuditActionType.ADD,
+        AuditTrasactionStatus.FAILURE,
+        'postMerchantContactPerson',
+        'Contact Person Server Query error',
+        'Merchant',
+        {}, newContactPerson, portalUser
+      )
       return res.status(422).send({ message: err.message })
     }
   }
 
+  await audit(
+    AuditActionType.ADD,
+    AuditTrasactionStatus.SUCCESS,
+    'postMerchantContactPerson',
+    'Contact Person Saved',
+    'Merchant',
+    {}, savedContactPerson ?? {}, portalUser
+  )
+
   return res.status(201).send({
     message: 'Contact Person Saved',
-    data: newContactPerson
+    data: savedContactPerson
   })
 }

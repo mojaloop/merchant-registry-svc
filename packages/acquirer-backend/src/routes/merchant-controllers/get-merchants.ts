@@ -9,6 +9,8 @@ import { type MerchantRegistrationStatus } from 'shared-lib'
 
 import { isValidDate } from '../../utils/utils'
 import { getAuthenticatedPortalUser } from '../../middleware/authenticate'
+import { audit } from '../../utils/audit'
+import { AuditActionType, AuditTrasactionStatus } from 'shared-lib'
 
 /**
  * @openapi
@@ -197,9 +199,28 @@ export async function getMerchants (req: Request, res: Response) {
       delete merchant.checked_by?.created_at
       delete merchant.checked_by?.updated_at
     })
+
+    await audit(
+      AuditActionType.ACCESS,
+      AuditTrasactionStatus.SUCCESS,
+      'getMerchants',
+      `User ${portalUser.id} with email ${portalUser.email} retrieved merchants`,
+      'Merchants',
+      {}, { queryParams: req.query }, portalUser
+    )
+
     res.send({ message: 'OK', data: merchants })
   } catch (e) {
     logger.error(e)
+
+    await audit(
+      AuditActionType.ACCESS,
+      AuditTrasactionStatus.FAILURE,
+      'getMerchants',
+      `Error: ${JSON.stringify(e)}`,
+      'Merchants',
+      {}, { e }, portalUser
+    )
     res.status(500).send({ message: e })
   }
 }

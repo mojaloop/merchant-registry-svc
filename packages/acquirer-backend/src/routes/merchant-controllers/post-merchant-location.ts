@@ -12,6 +12,8 @@ import {
   MerchantLocationSubmitDataSchema
 } from '../schemas'
 import { getAuthenticatedPortalUser } from '../../middleware/authenticate'
+import { audit } from '../../utils/audit'
+import { AuditActionType, AuditTrasactionStatus } from 'shared-lib'
 
 /**
  * @openapi
@@ -115,8 +117,16 @@ export async function postMerchantLocation (req: Request, res: Response) {
   }
 
   const id = Number(req.params.id)
-  if (isNaN(id)) {
+  if (isNaN(id) || id < 1) {
     logger.error('Invalid ID')
+    await audit(
+      AuditActionType.ADD,
+      AuditTrasactionStatus.FAILURE,
+      'postMerchantLocation',
+      `Invalid ID: ${req.params.id}`,
+      'Merchant',
+      {}, {}, portalUser
+    )
     res.status(422).send({ message: 'Invalid ID' })
     return
   }
@@ -129,6 +139,14 @@ export async function postMerchantLocation (req: Request, res: Response) {
   } catch (err) {
     if (err instanceof z.ZodError) {
       logger.error('Merchant Location Validation error: %o', err.issues.map(issue => issue.message))
+      await audit(
+        AuditActionType.ADD,
+        AuditTrasactionStatus.FAILURE,
+        'postMerchantLocation',
+        'Merchant Location Validation error',
+        'Merchant',
+        {}, locationData, portalUser
+      )
       return res.status(422).send({ message: err.issues.map(issue => issue.message) })
     }
   }
@@ -145,6 +163,14 @@ export async function postMerchantLocation (req: Request, res: Response) {
 
   if (merchant == null) {
     logger.error('Merchant not found')
+    await audit(
+      AuditActionType.ADD,
+      AuditTrasactionStatus.FAILURE,
+      'postMerchantLocation',
+      `Merchant not found: ${req.params.id}`,
+      'Merchant',
+      {}, locationData, portalUser
+    )
     return res.status(404).json({ message: 'Merchant not found' })
   }
 
@@ -153,7 +179,23 @@ export async function postMerchantLocation (req: Request, res: Response) {
     merchant
   })
 
-  const savedLocation = await locationRepository.save(newLocation)
+  let savedLocation
+  try {
+    savedLocation = await locationRepository.save(newLocation)
+  } catch (err) {
+    if (err instanceof QueryFailedError) {
+      logger.error('Query Failed: %o', err.message)
+      await audit(
+        AuditActionType.ADD,
+        AuditTrasactionStatus.FAILURE,
+        'postMerchantLocation',
+        'Query Failed',
+        'Merchant',
+        {}, newLocation, portalUser
+      )
+      return res.status(500).send({ message: err.message })
+    }
+  }
 
   if (merchant.checkout_counters.length > 0) {
     if (req.body.checkout_description !== undefined) {
@@ -161,7 +203,7 @@ export async function postMerchantLocation (req: Request, res: Response) {
     }
     if (savedLocation instanceof MerchantLocationEntity) {
       logger.debug('Saved Location for checkoutcoutner: %o', savedLocation)
-      merchant.checkout_counters[0].checkout_location = savedLocation as MerchantLocationEntity
+      merchant.checkout_counters[0].checkout_location = savedLocation
     }
 
     try {
@@ -172,6 +214,14 @@ export async function postMerchantLocation (req: Request, res: Response) {
     } catch (err) {
       if (err instanceof QueryFailedError) {
         logger.error('Query Failed: %o', err.message)
+        await audit(
+          AuditActionType.ADD,
+          AuditTrasactionStatus.FAILURE,
+          'postMerchantLocation',
+          'Query Failed',
+          'Merchant',
+          {}, locationData, portalUser
+        )
         return res.status(500).send({ message: err.message })
       }
     }
@@ -180,5 +230,13 @@ export async function postMerchantLocation (req: Request, res: Response) {
     return res.status(404).json({ message: 'Merchant Checkout Counter not found' })
   }
 
+  await audit(
+    AuditActionType.ADD,
+    AuditTrasactionStatus.SUCCESS,
+    'postMerchantLocation',
+    'Merchant Location Saved',
+    'Merchant',
+    {}, savedLocation ?? {}, portalUser
+  )
   return res.status(201).send({ message: 'Merchant Location Saved', data: savedLocation })
 }

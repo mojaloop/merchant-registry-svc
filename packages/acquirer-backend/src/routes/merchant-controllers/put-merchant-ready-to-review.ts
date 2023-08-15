@@ -6,8 +6,10 @@ import { MerchantEntity } from '../../entity/MerchantEntity'
 import logger from '../../logger'
 import {
   MerchantRegistrationStatus
+  , AuditActionType, AuditTrasactionStatus
 } from 'shared-lib'
 import { getAuthenticatedPortalUser } from '../../middleware/authenticate'
+import { audit } from '../../utils/audit'
 
 /**
  * @openapi
@@ -105,6 +107,17 @@ export async function putMerchantStatusReadyToReview (req: Request, res: Respons
       ...merchant,
       created_by: undefined
     }
+
+    await audit(
+      AuditActionType.UPDATE,
+      AuditTrasactionStatus.SUCCESS,
+      'putMerchantStatusReadyToReview',
+      'Updating Merchant Status to \'Review\' Successful',
+      'Merchant',
+      { registration_status: MerchantRegistrationStatus.DRAFT },
+      { registration_status: MerchantRegistrationStatus.REVIEW },
+      portalUser
+    )
     res.status(200).send({ message: 'Status Updated to Review', data: merchantData })
   } catch (e) {
     logger.error(e)
