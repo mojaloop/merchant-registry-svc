@@ -3,7 +3,7 @@ import express from 'express'
 
 import { pdfUpload } from '../middleware/minioClient'
 import { getMerchants } from './merchant-controllers/get-merchants'
-import { getMerhcantById } from './merchant-controllers/get-merchant-by-id'
+import { getMerchantById } from './merchant-controllers/get-merchant-by-id'
 import { postMerchantDraft } from './merchant-controllers/post-merchant-draft'
 import { putMerchantRegistrationStatus } from './merchant-controllers/put-merchant-reg-status'
 import {
@@ -28,7 +28,7 @@ router.get('/merchants', getMerchants)
 
 router.get('/merchants/draft-counts', getMerchantDraftCountsByUser)
 
-router.get('/merchants/:id', getMerhcantById)
+router.get('/merchants/:id', getMerchantById)
 
 router.post('/merchants/draft', pdfUpload.single('license_document'), postMerchantDraft)
 
