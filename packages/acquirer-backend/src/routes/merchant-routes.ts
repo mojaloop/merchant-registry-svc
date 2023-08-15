@@ -21,6 +21,7 @@ import { getMerchantDraftCountsByUser } from
   './merchant-controllers/get-merchant-draft-counts-by-user'
 import { putMerchantOwner } from './merchant-controllers/put-merchant-owner'
 import { putMerchantContactPerson } from './merchant-controllers/put-merchant-contact-person'
+import { putWaitingAliasGeneration } from './merchant-controllers/put-merchant-approve'
 
 const router = express.Router()
 
@@ -35,6 +36,8 @@ router.post('/merchants/draft', pdfUpload.single('license_document'), postMercha
 router.put('/merchants/:id/draft', pdfUpload.single('license_document'), putMerchantDraft)
 
 router.put('/merchants/:id/registration-status', putMerchantRegistrationStatus)
+
+router.put('/merchants/:id/approve', putWaitingAliasGeneration)
 
 router.put('/merchants/registration-status', putBulkMerchantRegistrationStatus)
 

@@ -578,6 +578,43 @@ paths:
                     type: string
                   data:
                     type: object
+  /merchants/{id}/approve:
+    put:
+      tags:
+        - Merchants
+      summary: Updates the status of a Merchant to 'WaitingAliasGeneration'
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: The ID of the merchant to update
+      security:
+        - Authorization: []
+      responses:
+        '200':
+          description: Merchant status successfully updated to Review
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: The response message
+                    example: Status Updated to Review
+                  data:
+                    type: object
+                    description: The updated merchant data
+        '401':
+          description: Unauthorized request
+        '404':
+          description: Merchant not found
+        '422':
+          description: Invalid merchant ID
+        '500':
+          description: Server error
   /merchants/{merchantId}/contact-persons/{contactPersonId}:
     put:
       tags:
