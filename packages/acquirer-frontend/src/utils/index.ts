@@ -1,4 +1,5 @@
-import { MerchantInfo, MerchantRecord } from '@/types/merchants'
+import type { MerchantInfo } from '@/types/merchants'
+import type { MerchantDetails } from '@/types/merchantDetails'
 import capitalize from 'lodash.capitalize'
 
 export const convertKebabCaseToReadable = (snakeCaseString: string) => {
@@ -13,7 +14,7 @@ export const scrollToTop = () => {
   document.getElementById('main')?.scrollTo({ top: 0, behavior: 'smooth' })
 }
 
-export const transformIntoTableData = (merchantData: MerchantRecord): MerchantInfo => {
+export const transformIntoTableData = (merchantData: MerchantDetails): MerchantInfo => {
   return {
     no: merchantData.id, // Assuming 'no' is the id of the merchant
     dbaName: merchantData.dba_trading_name,

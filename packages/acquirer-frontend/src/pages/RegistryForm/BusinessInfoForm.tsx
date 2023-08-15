@@ -98,7 +98,6 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
       monthly_turnover,
       category_code,
       merchant_type,
-      dfsp_name,
       currency_code,
       business_licenses,
     } = draftData
@@ -114,7 +113,7 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
     monthly_turnover && setValue('monthly_turnover', monthly_turnover)
     merchant_category && setValue('category_code', merchant_category)
     merchant_type && setValue('merchant_type', merchant_type)
-    dfsp_name && setValue('dfsp_name', dfsp_name)
+    setValue('dfsp_name', '')
     currency_code?.iso_code && setValue('currency_code', currency_code.iso_code)
     setValue(
       'have_business_license',

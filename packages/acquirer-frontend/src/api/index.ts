@@ -1,8 +1,8 @@
 import { isAxiosError } from 'axios'
 import { MerchantRegistrationStatus } from 'shared-lib'
 
-import type { DraftData, FormReponse } from '@/types/form'
-import type { MerchantRecord } from '@/types/merchants'
+import type { FormReponse } from '@/types/form'
+import type { MerchantDetails } from '@/types/merchantDetails'
 import instance from '@/lib/axiosInstance'
 import type {
   BusinessInfo,
@@ -13,7 +13,6 @@ import type {
 import type { PendingMerchants } from '@/lib/validations/pendingMerchants'
 import type { AllMerchants } from '@/lib/validations/allMerchants'
 import type { DraftApplications } from '@/lib/validations/draftApplications'
-import type { MerchantDetails } from '@/types/merchantDetails'
 
 export const getDraftData = async (merchantId: string) => {
   const token = sessionStorage.getItem('token')
@@ -23,11 +22,14 @@ export const getDraftData = async (merchantId: string) => {
   }
 
   try {
-    const response = await instance.get<{ data: DraftData }>(`/merchants/${merchantId}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
+    const response = await instance.get<{ data: MerchantDetails }>(
+      `/merchants/${merchantId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    )
 
     return response.data.data
   } catch (error) {
@@ -225,7 +227,7 @@ export const getMerchants = async (
   params: AllMerchants | PendingMerchants | DraftApplications
 ) => {
   try {
-    const response = await instance.get<{ data: MerchantRecord[] }>('/merchants', {
+    const response = await instance.get<{ data: MerchantDetails[] }>('/merchants', {
       params,
     })
 

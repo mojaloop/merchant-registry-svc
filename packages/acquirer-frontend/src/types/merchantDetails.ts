@@ -1,4 +1,12 @@
-import type { Countries, BusinessOwnerIDType } from 'shared-lib'
+import type {
+  BusinessOwnerIDType,
+  Countries,
+  CurrencyCodes,
+  MerchantLocationType,
+  MerchantRegistrationStatus,
+  MerchantType,
+  NumberOfEmployees,
+} from 'shared-lib'
 
 interface CheckoutCounter {
   id: number
@@ -34,7 +42,7 @@ type ContactPerson = {
 
 type Location = {
   id: number
-  location_type: string
+  location_type: MerchantLocationType
   web_url: string
   address_type: string
   department: string
@@ -78,7 +86,7 @@ interface CategoryCode {
 }
 
 interface CurrencyCode {
-  iso_code: string
+  iso_code: CurrencyCodes
   description: string
 }
 
@@ -86,13 +94,13 @@ export interface MerchantDetails {
   id: number
   dba_trading_name: string
   registered_name: string
-  employees_num: string
+  employees_num: NumberOfEmployees
   monthly_turnover: string
-  merchant_type: string
+  merchant_type: MerchantType
   category_code: CategoryCode
   currency_code: CurrencyCode
   allow_block_status: string
-  registration_status: string
+  registration_status: MerchantRegistrationStatus
   registration_status_reason: string | null
   created_at: string
   updated_at: string
