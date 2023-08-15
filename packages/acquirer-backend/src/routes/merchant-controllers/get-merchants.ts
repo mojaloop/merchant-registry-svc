@@ -34,6 +34,7 @@ import { getAuthenticatedPortalUser } from '../../middleware/authenticate'
  *         name: registrationStatus
  *         schema:
  *           type: string
+ *           enum: [WaitingAliasGeneration, Draft, Review, Approved, Rejected]
  *         description: The registration status of the merchant
  *       - in: query
  *         name: payintoId
