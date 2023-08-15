@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState } from 'react'
 import { createColumnHelper } from '@tanstack/react-table'
 import {
   Box,
-  Checkbox,
   HStack,
   Heading,
   SimpleGrid,
@@ -15,23 +14,20 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { MerchantRegistrationStatus } from 'shared-lib'
 
 import type { MerchantInfo } from '@/types/merchants'
-import { type AllMerchants, allMerchantsSchema } from '@/lib/validations/allMerchants'
+import {
+  type DraftApplications,
+  draftApplicationsSchema,
+} from '@/lib/validations/draftApplications'
 import { getMerchants } from '@/api'
 import {
   REGISTRATION_STATUS_COLORS,
   type RegistrationStatus,
 } from '@/constants/registrationStatus'
 import { transformIntoTableData } from '@/utils'
-import { CustomButton, MerchantInformationModal } from '@/components/ui'
-import { FormInput, FormSelect } from '@/components/form'
-import AllMerchantsDataTable from './AllMerchantsDataTable'
+import { CustomButton, DataTable, MerchantInformationModal } from '@/components/ui'
+import { FormInput } from '@/components/form'
 
-const REGISTRATION_STATUSES = Object.values(MerchantRegistrationStatus).map(value => ({
-  value,
-  label: value,
-}))
-
-const AllMerchantRecords = () => {
+const DraftApplications = () => {
   const [data, setData] = useState<MerchantInfo[]>([])
   const [selectedMerchantId, setSelectedMerchantId] = useState<number | null>(null)
 
@@ -41,26 +37,6 @@ const AllMerchantRecords = () => {
     const columnHelper = createColumnHelper<MerchantInfo>()
 
     return [
-      columnHelper.display({
-        id: 'select',
-        header: ({ table }) => (
-          <Checkbox
-            isChecked={table.getIsAllPageRowsSelected()}
-            onChange={e => table.toggleAllPageRowsSelected(!!e.target.checked)}
-            aria-label='Select all'
-            borderColor='blackAlpha.400'
-          />
-        ),
-        cell: ({ row }) => (
-          <Checkbox
-            isChecked={row.getIsSelected()}
-            onChange={e => row.toggleSelected(!!e.target.checked)}
-            aria-label='Select row'
-            borderColor='blackAlpha.400'
-          />
-        ),
-        enableSorting: false,
-      }),
       columnHelper.accessor('no', {
         cell: info => info.getValue(),
         header: 'No',
@@ -129,6 +105,15 @@ const AllMerchantRecords = () => {
         ),
         enableSorting: false,
       }),
+      columnHelper.display({
+        id: 'proceed',
+        cell: () => (
+          <CustomButton mt={{ base: '2', xl: '0' }} mr={{ base: '-2', xl: '3' }}>
+            Proceed
+          </CustomButton>
+        ),
+        enableSorting: false,
+      }),
     ]
   }, [onOpen])
 
@@ -137,35 +122,34 @@ const AllMerchantRecords = () => {
     formState: { errors },
     handleSubmit,
     reset,
-  } = useForm<AllMerchants>({
-    resolver: zodResolver(allMerchantsSchema),
-    defaultValues: {
-      registrationStatus: null,
-    },
+  } = useForm<DraftApplications>({
+    resolver: zodResolver(draftApplicationsSchema),
   })
 
-  const getAllMerchantRecords = async (values?: AllMerchants) => {
-    const params = values ?? {}
-    const allMerchants = await getMerchants(params)
+  const getDrafts = async (values?: DraftApplications) => {
+    const params = values
+      ? { ...values, registrationStatus: MerchantRegistrationStatus.DRAFT }
+      : { registrationStatus: MerchantRegistrationStatus.DRAFT }
+    const drafts = await getMerchants(params)
 
-    if (allMerchants) {
-      const transformedData = allMerchants.map(transformIntoTableData)
+    if (drafts) {
+      const transformedData = drafts.map(transformIntoTableData)
       setData(transformedData)
     }
   }
 
-  const onSubmit = (values: AllMerchants) => {
-    getAllMerchantRecords(values)
-  }
-
   useEffect(() => {
-    getAllMerchantRecords()
+    getDrafts()
   }, [])
+
+  const onSubmit = (values: DraftApplications) => {
+    getDrafts(values)
+  }
 
   return (
     <Stack h='full'>
       <Heading size='md' mb='10'>
-        View Registered Merchants
+        Merchant Acquiring System &gt; Draft Applications
       </Heading>
 
       <Stack as='form' spacing='8' onSubmit={handleSubmit(onSubmit)}>
@@ -237,15 +221,6 @@ const AllMerchantRecords = () => {
             label='Payinto ID'
             placeholder='Enter Payinto ID'
           />
-
-          <FormSelect
-            name='registrationStatus'
-            register={register}
-            errors={errors}
-            label='Registration Status'
-            placeholder='Choose registration status'
-            options={REGISTRATION_STATUSES}
-          />
         </SimpleGrid>
 
         <Box alignSelf='end'>
@@ -253,8 +228,8 @@ const AllMerchantRecords = () => {
             colorVariant='accent-outline'
             mr='4'
             onClick={() => {
-              getAllMerchantRecords()
               reset()
+              getDrafts()
             }}
           >
             Clear Filter
@@ -284,16 +259,15 @@ const AllMerchantRecords = () => {
         flexGrow='1'
         mb='-14'
       >
-        <AllMerchantsDataTable
-          columns={columns}
+        <DataTable
           data={data}
+          columns={columns}
           breakpoint='xl'
-          alwaysVisibleColumns={[1]}
-          onExport={() => console.log('exported')}
+          alwaysVisibleColumns={[0]}
         />
       </Box>
     </Stack>
   )
 }
 
-export default AllMerchantRecords
+export default DraftApplications
