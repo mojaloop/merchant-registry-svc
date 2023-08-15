@@ -18,7 +18,7 @@ export const MerchantSubmitDataSchema = z.object({
   currency_code: z.nativeEnum(CurrencyCodes).optional(),
   category_code: z.string().optional(),
   merchant_type: z.nativeEnum(MerchantType).optional(),
-  payinto_alias: z.string().nonempty().optional(),
+  payinto_alias: z.string().optional(),
   license_number: z.string().optional().optional()
 })
 
@@ -71,7 +71,7 @@ export const BusinessOwnerSubmitDataSchema = z.object({
   postal_code: z.string().optional(),
   town_name: z.string().optional(),
   district_name: z.string().optional(),
-  country: z.nativeEnum(Countries).optional(),
+  country: z.nativeEnum(Countries).or(z.null()).or(z.literal('')),
   country_subdivision: z.string().optional(),
   address_line: z.string().optional(),
   latitude: z.string().optional(),
