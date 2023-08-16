@@ -14,6 +14,7 @@ import { audit } from '../../utils/audit'
  *   put:
  *     tags:
  *       - Merchants
+ *       - Merchant Status
  *     security:
  *       - Authorization: []
  *     summary: Bulk Approve the registration status of multiple Merchant Records

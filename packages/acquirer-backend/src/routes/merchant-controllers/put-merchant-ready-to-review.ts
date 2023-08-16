@@ -17,6 +17,7 @@ import { audit } from '../../utils/audit'
  *   put:
  *     tags:
  *       - Merchants
+ *       - Merchant Status
  *     summary: Updates the status of a Merchant to 'Review'
  *     parameters:
  *       - in: path

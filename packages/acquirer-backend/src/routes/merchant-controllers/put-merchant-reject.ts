@@ -10,12 +10,12 @@ import { audit } from '../../utils/audit'
 
 /**
  * @openapi
- * /merchants/{id}/approve:
+ * /merchants/{id}/reject:
  *   put:
  *     tags:
  *       - Merchants
  *       - Merchant Status
- *     summary: Updates the status of a Merchant to 'WaitingAliasGeneration'
+ *     summary: Updates the status of a Merchant to 'Reject'
  *     parameters:
  *       - in: path
  *         name: id
@@ -25,6 +25,17 @@ import { audit } from '../../utils/audit'
  *         description: The ID of the merchant to update
  *     security:
  *       - Authorization: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               reason:
+ *                 type: string
+ *                 description: Reason for rejecting the merchant
+ *                 example: "Information provided is not sufficient"
  *     responses:
  *       200:
  *         description: Merchant status successfully updated to Review
@@ -49,16 +60,36 @@ import { audit } from '../../utils/audit'
  *       500:
  *         description: Server error
  */
-export async function putWaitingAliasGeneration (req: Request, res: Response) {
+export async function putMerchantReject (req: Request, res: Response) {
   const portalUser = await getAuthenticatedPortalUser(req.headers.authorization)
   if (portalUser == null) {
     return res.status(401).send({ message: 'Unauthorized' })
+  }
+
+  if (req.body.reason === undefined || req.body.reason == null || req.body.reason === '') {
+    await audit(
+      AuditActionType.UPDATE,
+      AuditTrasactionStatus.FAILURE,
+      'putBulkReject',
+      'Reason is required',
+      'Merchant',
+      {}, {}, portalUser
+    )
+    return res.status(422).send({ message: 'Reason is required' })
   }
 
   try {
     const id = Number(req.params.id)
     if (isNaN(id)) {
       logger.error('Invalid Merchant ID')
+      await audit(
+        AuditActionType.UPDATE,
+        AuditTrasactionStatus.FAILURE,
+        'putMerchantReject',
+        'Invalid Merchant ID',
+        'Merchant',
+        {}, {}, portalUser
+      )
       res.status(422).send({ message: 'Invalid Merchant ID' })
       return
     }
@@ -67,31 +98,59 @@ export async function putWaitingAliasGeneration (req: Request, res: Response) {
     const merchant = await merchantRepository.findOne({
       where: { id },
       relations: [
-        'created_by',
-        'checked_by'
+        'created_by'
       ]
     })
 
     if (merchant == null) {
+      await audit(
+        AuditActionType.UPDATE,
+        AuditTrasactionStatus.FAILURE,
+        'putMerchantReject',
+        'Merchant not found',
+        'Merchant',
+        {}, {}, portalUser
+      )
       return res.status(404).send({ message: 'Merchant not found' })
     }
 
     if (portalUser.id === merchant.created_by.id) {
-      logger.error('User is not allowed to change status')
+      const msg = 'User is not allowed to change status'
+
+      await audit(
+        AuditActionType.UPDATE,
+        AuditTrasactionStatus.FAILURE,
+        'putMerchantReject',
+        msg,
+        'Merchant',
+        {}, {}, portalUser
+      )
+      logger.error(msg)
       return res.status(400).send({
-        error: 'User is not allowed to change status'
+        message: msg
       })
     }
 
     if (merchant.registration_status !== MerchantRegistrationStatus.REVIEW) {
-      logger.error('Only Review Merchant can be approved with WaitingAliasGeneration')
+      const msg = 'Only Review Merchant can be approved with Rejected'
+      await audit(
+        AuditActionType.UPDATE,
+        AuditTrasactionStatus.FAILURE,
+        'putMerchantReject',
+        msg,
+        'Merchant',
+        {}, {}, portalUser
+      )
+
+      logger.error(msg)
       return res.status(401).send({
-        error: 'Only Review Merchant can be approved with WaitingAliasGeneration'
+        message: msg
       })
     }
 
-    merchant.registration_status = MerchantRegistrationStatus.WAITINGALIASGENERATION
-    merchant.registration_status_reason = 'Status Updated to WaitingAliasGeneration'
+    merchant.registration_status = MerchantRegistrationStatus.REJECTED
+    merchant.registration_status_reason = req.body.reason
+    merchant.checked_by = portalUser
 
     try {
       await merchantRepository.save(merchant)
@@ -112,15 +171,15 @@ export async function putWaitingAliasGeneration (req: Request, res: Response) {
       AuditActionType.UPDATE,
       AuditTrasactionStatus.SUCCESS,
       'putWaitingAliasGeneration',
-      'Updating Merchant Status to WaitingAliasGeneration Successful',
+      'Updating Merchant Status to Rejected Successful',
       'Merchant',
       { registration_status: MerchantRegistrationStatus.REVIEW },
-      { registration_status: MerchantRegistrationStatus.WAITINGALIASGENERATION },
+      { registration_status: MerchantRegistrationStatus.REJECTED },
       portalUser
     )
 
     return res.status(200).send(
-      { message: 'Status Updated to WaitingAliasGeneration', data: merchantData }
+      { message: 'Status Updated to Rejected', data: merchantData }
     )
   } catch (e) {
     logger.error(e)

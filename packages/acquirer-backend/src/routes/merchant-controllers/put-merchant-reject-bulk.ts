@@ -14,6 +14,7 @@ import { audit } from '../../utils/audit'
  *   put:
  *     tags:
  *       - Merchants
+ *       - Merchant Status
  *     security:
  *       - Authorization: []
  *     summary: Bulk Rejected the registration status of multiple Merchant Records
@@ -52,6 +53,18 @@ export async function putBulkReject (req: Request, res: Response) {
     return res.status(401).send({ message: 'Unauthorized' })
   }
 
+  if (req.body.reason === undefined || req.body.reason == null || req.body.reason === '') {
+    await audit(
+      AuditActionType.UPDATE,
+      AuditTrasactionStatus.FAILURE,
+      'putBulkReject',
+      'Reason is required',
+      'Merchant',
+      {}, {}, portalUser
+    )
+    return res.status(422).send({ message: 'Reason is required' })
+  }
+
   const ids: number[] = req.body.ids
   const merchantRepository = AppDataSource.getRepository(MerchantEntity)
 
@@ -76,6 +89,7 @@ export async function putBulkReject (req: Request, res: Response) {
     where: {
       id: In(ids),
       registration_status: MerchantRegistrationStatus.REVIEW,
+      registration_status_reason: req.body.reason,
       created_by: Not(portalUser.id)
     }
   })
