@@ -130,7 +130,8 @@ export async function putMerchantDraft (req: Request, res: Response) {
   if (merchant === null) {
     return res.status(422).send({ message: 'Merchant ID does not exist' })
   }
-  if (merchant.registration_status !== MerchantRegistrationStatus.DRAFT) {
+  if (merchant.registration_status !== MerchantRegistrationStatus.DRAFT &&
+    merchant.registration_status !== MerchantRegistrationStatus.REVERTED) {
     return res.status(422).send({
       error: `Merchant is not in Draft Status. Current Status: ${merchant.registration_status}`
     })

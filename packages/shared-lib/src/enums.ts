@@ -28,7 +28,8 @@ export enum MerchantRegistrationStatus {
   DRAFT = 'Draft',
   REVIEW = 'Review',
   APPROVED = 'Approved',
-  REJECTED = 'Rejected'
+  REJECTED = 'Rejected',
+  REVERTED = 'Reverted',
 }
 
 export enum MerchantLocationType {

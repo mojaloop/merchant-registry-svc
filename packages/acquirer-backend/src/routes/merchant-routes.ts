@@ -20,6 +20,7 @@ import { putMerchantContactPerson } from './merchant-controllers/put-merchant-co
 import { putWaitingAliasGeneration } from './merchant-controllers/put-merchant-approve'
 import { putBulkWaitingAliasGeneration } from './merchant-controllers/put-merchant-approve-bulk'
 import { putBulkReject } from './merchant-controllers/put-merchant-reject-bulk'
+import { putBulkRevert } from './merchant-controllers/put-merchant-revert'
 
 const router = express.Router()
 
@@ -38,6 +39,8 @@ router.put('/merchants/:id/approve', putWaitingAliasGeneration)
 router.put('/merchants/bulk-approve', putBulkWaitingAliasGeneration)
 
 router.put('/merchants/bulk-reject', putBulkReject)
+
+router.put('/merchants/bulk-revert', putBulkRevert)
 
 router.put('/merchants/:id/ready-to-review', putMerchantStatusReadyToReview)
 

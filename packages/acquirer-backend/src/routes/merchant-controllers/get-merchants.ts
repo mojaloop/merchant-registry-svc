@@ -36,7 +36,7 @@ import { AuditActionType, AuditTrasactionStatus } from 'shared-lib'
  *         name: registrationStatus
  *         schema:
  *           type: string
- *           enum: [Waiting For Alias Generation, Draft, Review, Approved, Rejected]
+ *           enum: [Draft, Review, Waiting For Alias Generation, Approved, Rejected, Reverted]
  *         description: The registration status of the merchant
  *       - in: query
  *         name: payintoId
