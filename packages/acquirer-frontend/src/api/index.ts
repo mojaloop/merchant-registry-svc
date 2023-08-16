@@ -14,21 +14,22 @@ import type { PendingMerchants } from '@/lib/validations/pendingMerchants'
 import type { AllMerchants } from '@/lib/validations/allMerchants'
 import type { DraftApplications } from '@/lib/validations/draftApplications'
 
-export const getDraftData = async (merchantId: string) => {
-  const token = sessionStorage.getItem('token')
-  if (!token) {
-    alert('You are not logged in!')
-    return
-  }
+export const getDraftCount = async () => {
+  try {
+    const response = await instance.get<{ data: number }>('/merchants/draft-counts')
 
+    return response.data.data
+  } catch (error) {
+    if (isAxiosError(error)) {
+      alert(error.response?.data?.message)
+    }
+  }
+}
+
+export const getDraftData = async (merchantId: string) => {
   try {
     const response = await instance.get<{ data: MerchantDetails }>(
-      `/merchants/${merchantId}`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
+      `/merchants/${merchantId}`
     )
 
     return response.data.data

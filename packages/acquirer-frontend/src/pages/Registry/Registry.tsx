@@ -2,28 +2,24 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Box, Heading, Link, Text } from '@chakra-ui/react'
 
-import type { MerchantDetails } from '@/types/merchantDetails'
-import { getDraftData } from '@/api'
+import { getDraftCount } from '@/api'
 import { CustomButton } from '@/components/ui'
 
 const Registry = () => {
   const navigate = useNavigate()
 
-  const [draftData, setDraftData] = useState<MerchantDetails | null>()
+  const [draftCount, setDraftCount] = useState<number>(0)
 
   useEffect(() => {
-    const token = sessionStorage.getItem('token')
-    if (token === null) {
-      alert('Token not found. Please login again.')
-      navigate('/login')
-      return
-    }
-
     const merchantId = sessionStorage.getItem('merchantId')
     if (!merchantId) return
 
-    getDraftData(merchantId).then(res => setDraftData(res ?? null))
-  }, [navigate, setDraftData])
+    getDraftCount().then(data => {
+      if (data) {
+        setDraftCount(data)
+      }
+    })
+  }, [])
 
   return (
     <Box>
@@ -38,12 +34,37 @@ const Registry = () => {
       <CustomButton mr='4' onClick={() => navigate('/registry/registry-form')}>
         Add new record
       </CustomButton>
-      <CustomButton
-        isDisabled={!draftData}
-        onClick={() => navigate('/registry/registry-form?draft=true')}
-      >
-        Continue with saved draft
-      </CustomButton>
+
+      <Box position='relative' display='inline-block'>
+        <CustomButton
+          isDisabled={draftCount === 0}
+          onClick={() => navigate('/registry/draft-applications')}
+        >
+          Continue with saved draft
+        </CustomButton>
+
+        <Box
+          as='span'
+          w='6'
+          h='6'
+          position='absolute'
+          top='-3'
+          right='-2.5'
+          display='flex'
+          justifyContent='center'
+          alignItems='center'
+          bg='accent'
+          color='white'
+          fontSize='0.65rem'
+          fontWeight='bold'
+          rounded='full'
+          borderWidth='0.8px'
+          borderColor='secondary'
+          shadow='md'
+        >
+          {draftCount}
+        </Box>
+      </Box>
 
       <Heading as='h3' size='sm' fontWeight='medium' mt='10' mb='5'>
         Import bulk record file
