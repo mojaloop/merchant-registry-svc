@@ -175,7 +175,6 @@ export async function putMerchantDraft (req: Request, res: Response) {
   merchant.category_code = req.body.category_code
   merchant.merchant_type = req.body.merchant_type
   merchant.registration_status = MerchantRegistrationStatus.DRAFT
-  merchant.registration_status_reason = `Draft Merchant by ${portalUser?.email}`
   merchant.allow_block_status = MerchantAllowBlockStatus.PENDING
 
   if (portalUser !== null) { // Should never be null.. but just in case
