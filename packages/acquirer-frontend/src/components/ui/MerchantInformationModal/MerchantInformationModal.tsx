@@ -63,7 +63,7 @@ const MerchantInformationModal = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  if (!merchantDetails) return
+  if (!merchantDetails) return null
 
   const {
     dba_trading_name,
