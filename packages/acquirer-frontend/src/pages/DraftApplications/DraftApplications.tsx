@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { createColumnHelper } from '@tanstack/react-table'
 import {
   Box,
@@ -28,6 +29,8 @@ import { CustomButton, DataTable, MerchantInformationModal } from '@/components/
 import { FormInput } from '@/components/form'
 
 const DraftApplications = () => {
+  const navigate = useNavigate()
+
   const [data, setData] = useState<MerchantInfo[]>([])
   const [selectedMerchantId, setSelectedMerchantId] = useState<number | null>(null)
 
@@ -107,15 +110,22 @@ const DraftApplications = () => {
       }),
       columnHelper.display({
         id: 'proceed',
-        cell: () => (
-          <CustomButton mt={{ base: '2', xl: '0' }} mr={{ base: '-2', xl: '3' }}>
+        cell: ({ row }) => (
+          <CustomButton
+            mt={{ base: '2', xl: '0' }}
+            mr={{ base: '-2', xl: '3' }}
+            onClick={() => {
+              sessionStorage.setItem('merchantId', row.original.no.toString())
+              navigate('/registry/registry-form')
+            }}
+          >
             Proceed
           </CustomButton>
         ),
         enableSorting: false,
       }),
     ]
-  }, [onOpen])
+  }, [navigate, onOpen])
 
   const {
     register,
