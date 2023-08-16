@@ -43,27 +43,29 @@ const Registry = () => {
           Continue with saved draft
         </CustomButton>
 
-        <Box
-          as='span'
-          w='6'
-          h='6'
-          position='absolute'
-          top='-3'
-          right='-2.5'
-          display='flex'
-          justifyContent='center'
-          alignItems='center'
-          bg='accent'
-          color='white'
-          fontSize='0.65rem'
-          fontWeight='bold'
-          rounded='full'
-          borderWidth='0.8px'
-          borderColor='secondary'
-          shadow='md'
-        >
-          {draftCount}
-        </Box>
+        {draftCount > 0 && (
+          <Box
+            as='span'
+            w='6'
+            h='6'
+            position='absolute'
+            top='-3'
+            right='-2.5'
+            display='flex'
+            justifyContent='center'
+            alignItems='center'
+            bg='accent'
+            color='white'
+            fontSize='0.65rem'
+            fontWeight='bold'
+            rounded='full'
+            borderWidth='0.8px'
+            borderColor='secondary'
+            shadow='md'
+          >
+            {draftCount}
+          </Box>
+        )}
       </Box>
 
       <Heading as='h3' size='sm' fontWeight='medium' mt='10' mb='5'>
