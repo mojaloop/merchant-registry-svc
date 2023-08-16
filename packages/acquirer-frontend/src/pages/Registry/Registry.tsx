@@ -11,9 +11,6 @@ const Registry = () => {
   const [draftCount, setDraftCount] = useState<number>(0)
 
   useEffect(() => {
-    const merchantId = sessionStorage.getItem('merchantId')
-    if (!merchantId) return
-
     getDraftCount().then(data => {
       if (data) {
         setDraftCount(data)
@@ -31,7 +28,13 @@ const Registry = () => {
         Fill in the merchant registry form
       </Heading>
 
-      <CustomButton mr='4' onClick={() => navigate('/registry/registry-form')}>
+      <CustomButton
+        mr='4'
+        onClick={() => {
+          sessionStorage.removeItem('merchantId')
+          navigate('/registry/registry-form')
+        }}
+      >
         Add new record
       </CustomButton>
 
