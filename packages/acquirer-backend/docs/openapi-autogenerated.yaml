@@ -578,6 +578,39 @@ paths:
                     type: string
                   data:
                     type: object
+  /merchants/bulk-approve:
+    put:
+      tags:
+        - Merchants
+      security:
+        - Authorization: []
+      summary: Bulk Approve the registration status of multiple Merchant Records
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                ids:
+                  type: array
+                  items:
+                    type: number
+                  description: List of Merchant Record IDs to be updated
+                  example:
+                    - 1
+                    - 2
+                    - 3
+      responses:
+        '200':
+          description: Status Updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
   /merchants/{id}/approve:
     put:
       tags:
@@ -985,6 +1018,43 @@ paths:
                     type: string
                   data:
                     type: object
+  /merchants/bulk-reject:
+    put:
+      tags:
+        - Merchants
+      security:
+        - Authorization: []
+      summary: Bulk Rejected the registration status of multiple Merchant Records
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                ids:
+                  type: array
+                  items:
+                    type: number
+                  description: List of Merchant Record IDs to be updated
+                  example:
+                    - 1
+                    - 2
+                    - 3
+                reason:
+                  type: string
+                  description: Reason for rejecting the merchant
+                  example: Information provided is not sufficient
+      responses:
+        '200':
+          description: Status Updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
   /merchants/registration-status:
     put:
       tags:

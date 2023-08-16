@@ -22,6 +22,8 @@ import { getMerchantDraftCountsByUser } from
 import { putMerchantOwner } from './merchant-controllers/put-merchant-owner'
 import { putMerchantContactPerson } from './merchant-controllers/put-merchant-contact-person'
 import { putWaitingAliasGeneration } from './merchant-controllers/put-merchant-approve'
+import { putBulkWaitingAliasGeneration } from './merchant-controllers/put-merchant-approve-bulk'
+import { putBulkReject } from './merchant-controllers/put-merchant-reject-bulk'
 
 const router = express.Router()
 
@@ -38,6 +40,10 @@ router.put('/merchants/:id/draft', pdfUpload.single('license_document'), putMerc
 router.put('/merchants/:id/registration-status', putMerchantRegistrationStatus)
 
 router.put('/merchants/:id/approve', putWaitingAliasGeneration)
+
+router.put('/merchants/bulk-approve', putBulkWaitingAliasGeneration)
+
+router.put('/merchants/bulk-reject', putBulkReject)
 
 router.put('/merchants/registration-status', putBulkMerchantRegistrationStatus)
 

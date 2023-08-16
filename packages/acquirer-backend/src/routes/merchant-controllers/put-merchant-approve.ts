@@ -90,7 +90,7 @@ export async function putWaitingAliasGeneration (req: Request, res: Response) {
     }
 
     merchant.registration_status = MerchantRegistrationStatus.WAITINGALIASGENERATION
-    merchant.registration_status_reason = 'Waiting for Alias Generation'
+    merchant.registration_status_reason = 'Status Updated to WaitingAliasGeneration'
 
     try {
       await merchantRepository.save(merchant)
