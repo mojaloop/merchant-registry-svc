@@ -487,12 +487,6 @@ paths:
                   type: string
                   example: merchant1
                   required: false
-                registration_status:
-                  type: string
-                  example: Draft
-                registration_status_reason:
-                  type: string
-                  example: Drafted by Maker
                 license_number:
                   type: string
                   example: '123456789'
@@ -751,12 +745,6 @@ paths:
                   type: string
                   example: merchant1
                   required: false
-                registration_status:
-                  type: string
-                  example: Draft
-                registration_status_reason:
-                  type: string
-                  example: Drafted by Maker
                 license_number:
                   type: string
                   example: '123456789'
