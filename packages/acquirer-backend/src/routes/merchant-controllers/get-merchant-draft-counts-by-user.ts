@@ -44,7 +44,7 @@ export async function getMerchantDraftCountsByUser (req: Request, res: Response)
     const merchantRepository = AppDataSource.getRepository(MerchantEntity)
 
     const whereClause: Partial<MerchantEntity> = {}
-    whereClause.created_by = portalUser
+    // TODO: Add where clause for DFSP specific
     whereClause.registration_status = MerchantRegistrationStatus.DRAFT
 
     // Need to use query builder to do a LIKE query
