@@ -117,7 +117,7 @@ export async function putMerchantContactPerson (req: Request, res: Response) {
     return res.status(404).json({ message: 'Contact Person not found' })
   }
 
-  const oldContactPerson = { ...contactPerson }// Deep clone for audit log
+  const oldContactPerson = { ...contactPerson, merchant: null }// Deep clone for audit log
 
   if (req.body.is_same_as_business_owner === true) {
     const businessOwners = merchant.business_owners
@@ -180,7 +180,7 @@ export async function putMerchantContactPerson (req: Request, res: Response) {
     'putMerchantContactPerson',
     'Contact Person Updated',
     'ContactPerson',
-    oldContactPerson, contactPerson, portalUser
+    oldContactPerson, { ...contactPerson, merchant: null }, portalUser
   )
 
   return res.status(201).send({
