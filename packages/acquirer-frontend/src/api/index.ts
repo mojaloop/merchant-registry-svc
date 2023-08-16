@@ -265,10 +265,11 @@ export const approveMerchants = async (selectedMerchantIds: number[]) => {
   }
 }
 
-export const rejectMerchants = async (selectedMerchantIds: number[]) => {
+export const rejectMerchants = async (selectedMerchantIds: number[], reason: string) => {
   try {
     await instance.put('/merchants/bulk-reject', {
       ids: selectedMerchantIds,
+      reason,
     })
   } catch (error) {
     if (isAxiosError(error)) {

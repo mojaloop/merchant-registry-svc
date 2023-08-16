@@ -25,7 +25,7 @@ const theme = extendTheme({
   },
   styles: {
     global: {
-      'input, select': {
+      'input, textarea, select': {
         fontSize: '0.9375rem !important',
       },
     },

@@ -28,12 +28,24 @@ import { transformIntoTableData } from '@/utils'
 import { CustomButton, MerchantInformationModal } from '@/components/ui'
 import { FormInput } from '@/components/form'
 import PendingMerchantsDataTable from './PendingMerchantsDataTable'
+import ReasonModal from './ReasonModal'
 
 const PendingMerchantRecords = () => {
   const [data, setData] = useState<MerchantInfo[]>([])
   const [selectedMerchantId, setSelectedMerchantId] = useState<number | null>(null)
+  const [selectedMerchantIds, setSelectedMerchantIds] = useState<number[]>([])
 
-  const { isOpen, onOpen, onClose } = useDisclosure()
+  const {
+    isOpen: isInfoModalOpen,
+    onOpen: onInfoModalOpen,
+    onClose: onInfoModalClose,
+  } = useDisclosure()
+
+  const {
+    isOpen: isReasonModalOpen,
+    onOpen: onReasonModalOpen,
+    onClose: onReasonModalClose,
+  } = useDisclosure()
 
   const columns = useMemo(() => {
     const columnHelper = createColumnHelper<MerchantInfo>()
@@ -119,7 +131,7 @@ const PendingMerchantRecords = () => {
             mr={{ base: '-2', xl: '3' }}
             onClick={() => {
               setSelectedMerchantId(row.original.no)
-              onOpen()
+              onInfoModalOpen()
             }}
           >
             View Details
@@ -128,7 +140,7 @@ const PendingMerchantRecords = () => {
         enableSorting: false,
       }),
     ]
-  }, [onOpen])
+  }, [onInfoModalOpen])
 
   const {
     register,
@@ -256,11 +268,22 @@ const PendingMerchantRecords = () => {
 
       {selectedMerchantId && (
         <MerchantInformationModal
-          isOpen={isOpen}
-          onClose={onClose}
+          isOpen={isInfoModalOpen}
+          onClose={onInfoModalClose}
           selectedMerchantId={selectedMerchantId}
         />
       )}
+
+      <ReasonModal
+        isOpen={isReasonModalOpen}
+        onClose={onReasonModalClose}
+        title='Rejecting Merchant Records'
+        inputLabel='Enter the rejecting reason'
+        actionFunc={async reason => {
+          await rejectMerchants(selectedMerchantIds, reason)
+          getPendingMerchantRecords()
+        }}
+      />
 
       <Box
         bg='primaryBackground'
@@ -278,9 +301,9 @@ const PendingMerchantRecords = () => {
           breakpoint='xl'
           alwaysVisibleColumns={[1]}
           onExport={() => console.log('exported')}
-          onReject={async (selectedMerchantIds: number[]) => {
-            await rejectMerchants(selectedMerchantIds)
-            getPendingMerchantRecords()
+          onReject={(selectedMerchantIds: number[]) => {
+            onReasonModalOpen()
+            setSelectedMerchantIds(selectedMerchantIds)
           }}
           onApprove={async (selectedMerchantIds: number[]) => {
             await approveMerchants(selectedMerchantIds)
