@@ -4,7 +4,7 @@ import { Controller, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 
 import type { MerchantDetails } from '@/types/merchantDetails'
-import { type ContactPerson, contactPersonSchema } from '@/lib/validations/registry'
+import { type ContactPersonForm, contactPersonSchema } from '@/lib/validations/registry'
 import { createContactPersonInfo, getDraftData, updateContactPersonInfo } from '@/api'
 import { CustomButton } from '@/components/ui'
 import { FormInput } from '@/components/form'
@@ -30,7 +30,7 @@ const ContactPersonForm = ({ setActiveStep }: ContactPersonProps) => {
     setValue,
     setFocus,
     handleSubmit,
-  } = useForm<ContactPerson>({
+  } = useForm<ContactPersonForm>({
     resolver: zodResolver(contactPersonSchema),
     defaultValues: {
       is_same_as_business_owner: false,
@@ -45,7 +45,6 @@ const ContactPersonForm = ({ setActiveStep }: ContactPersonProps) => {
     if (!merchantId) return
 
     const draftData = await getDraftData(merchantId)
-
     if (!draftData) return
 
     setFormData(draftData)
@@ -74,12 +73,13 @@ const ContactPersonForm = ({ setActiveStep }: ContactPersonProps) => {
     if (!business_owner) return
 
     const { name, phone_number, email } = business_owner
+
     name && setValue('name', name)
     phone_number && setValue('phone_number', phone_number)
     email && setValue('email', email)
   }, [watchedIsSameAsBusinessOwner, formData, setValue])
 
-  const onSubmit = async (values: ContactPerson) => {
+  const onSubmit = async (values: ContactPersonForm) => {
     const merchantId = sessionStorage.getItem('merchantId')
     if (merchantId === null) {
       alert('Merchant ID not found. Go back to the previous page and try again')
@@ -110,7 +110,7 @@ const ContactPersonForm = ({ setActiveStep }: ContactPersonProps) => {
 
   // focus on first input that has error after validation
   useEffect(() => {
-    const firstError = Object.keys(errors)[0] as keyof ContactPerson
+    const firstError = Object.keys(errors)[0] as keyof ContactPersonForm
 
     if (firstError) {
       setFocus(firstError)

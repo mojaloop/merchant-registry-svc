@@ -9,10 +9,10 @@ import {
   BusinessOwnerIDType,
 } from 'shared-lib'
 
-export type BusinessInfo = z.infer<typeof businessInfoSchema>
-export type LocationInfo = z.infer<typeof locationInfoSchema>
-export type OwnerInfo = z.infer<typeof ownerInfoSchema>
-export type ContactPerson = z.infer<typeof contactPersonSchema>
+export type BusinessInfoForm = z.infer<typeof businessInfoSchema>
+export type LocationInfoForm = z.infer<typeof locationInfoSchema>
+export type OwnerInfoForm = z.infer<typeof ownerInfoSchema>
+export type ContactPersonForm = z.infer<typeof contactPersonSchema>
 
 export const businessInfoSchema = z.object({
   dba_trading_name: z.string().nonempty({ message: 'Business name is required' }),

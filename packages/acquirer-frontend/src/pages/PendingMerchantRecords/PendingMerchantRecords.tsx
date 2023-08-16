@@ -16,7 +16,7 @@ import { MerchantRegistrationStatus } from 'shared-lib'
 
 import type { MerchantInfo } from '@/types/merchants'
 import {
-  type PendingMerchants,
+  type PendingMerchantsForm,
   pendingMerchantsSchema,
 } from '@/lib/validations/pendingMerchants'
 import { approveMerchants, getMerchants, rejectMerchants } from '@/api'
@@ -147,11 +147,11 @@ const PendingMerchantRecords = () => {
     formState: { errors },
     handleSubmit,
     reset,
-  } = useForm<PendingMerchants>({
+  } = useForm<PendingMerchantsForm>({
     resolver: zodResolver(pendingMerchantsSchema),
   })
 
-  const getPendingMerchantRecords = async (values?: PendingMerchants) => {
+  const getPendingMerchantRecords = async (values?: PendingMerchantsForm) => {
     const params = values
       ? { ...values, registrationStatus: MerchantRegistrationStatus.REVIEW }
       : { registrationStatus: MerchantRegistrationStatus.REVIEW }
@@ -163,7 +163,7 @@ const PendingMerchantRecords = () => {
     }
   }
 
-  const onSubmit = (values: PendingMerchants) => {
+  const onSubmit = (values: PendingMerchantsForm) => {
     getPendingMerchantRecords(values)
   }
 

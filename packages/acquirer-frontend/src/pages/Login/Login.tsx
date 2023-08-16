@@ -17,7 +17,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 
 import mojaloopLogo from '@/assets/mojaloop-logo.png'
 import instance from '@/lib/axiosInstance'
-import { type Login, loginSchema } from '@/lib/validations/login'
+import { type LoginForm, loginSchema } from '@/lib/validations/login'
 import { CustomButton } from '@/components/ui'
 import { FormInput } from '@/components/form'
 
@@ -28,11 +28,11 @@ const Login = () => {
     register,
     formState: { errors },
     handleSubmit,
-  } = useForm<Login>({
+  } = useForm<LoginForm>({
     resolver: zodResolver(loginSchema),
   })
 
-  const onSubmit = async (values: Login) => {
+  const onSubmit = async (values: LoginForm) => {
     try {
       const response = await instance.post('/users/login', {
         email: values.email,

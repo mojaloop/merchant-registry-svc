@@ -16,7 +16,7 @@ import { MerchantRegistrationStatus } from 'shared-lib'
 
 import type { MerchantInfo } from '@/types/merchants'
 import {
-  type DraftApplications,
+  type DraftApplicationsForm,
   draftApplicationsSchema,
 } from '@/lib/validations/draftApplications'
 import { getMerchants } from '@/api'
@@ -132,11 +132,11 @@ const DraftApplications = () => {
     formState: { errors },
     handleSubmit,
     reset,
-  } = useForm<DraftApplications>({
+  } = useForm<DraftApplicationsForm>({
     resolver: zodResolver(draftApplicationsSchema),
   })
 
-  const getDrafts = async (values?: DraftApplications) => {
+  const getDrafts = async (values?: DraftApplicationsForm) => {
     const params = values
       ? { ...values, registrationStatus: MerchantRegistrationStatus.DRAFT }
       : { registrationStatus: MerchantRegistrationStatus.DRAFT }
@@ -152,7 +152,7 @@ const DraftApplications = () => {
     getDrafts()
   }, [])
 
-  const onSubmit = (values: DraftApplications) => {
+  const onSubmit = (values: DraftApplicationsForm) => {
     getDrafts(values)
   }
 

@@ -4,14 +4,14 @@ import type { FormReponse } from '@/types/form'
 import type { MerchantDetails } from '@/types/merchantDetails'
 import instance from '@/lib/axiosInstance'
 import type {
-  BusinessInfo,
-  ContactPerson,
-  LocationInfo,
-  OwnerInfo,
+  BusinessInfoForm,
+  ContactPersonForm,
+  LocationInfoForm,
+  OwnerInfoForm,
 } from '@/lib/validations/registry'
-import type { PendingMerchants } from '@/lib/validations/pendingMerchants'
-import type { AllMerchants } from '@/lib/validations/allMerchants'
-import type { DraftApplications } from '@/lib/validations/draftApplications'
+import type { PendingMerchantsForm } from '@/lib/validations/pendingMerchants'
+import type { AllMerchantsForm } from '@/lib/validations/allMerchants'
+import type { DraftApplicationsForm } from '@/lib/validations/draftApplications'
 
 export const getDraftCount = async () => {
   try {
@@ -39,7 +39,7 @@ export const getDraftData = async (merchantId: string) => {
   }
 }
 
-export const createBusinessInfo = async (values: BusinessInfo) => {
+export const createBusinessInfo = async (values: BusinessInfoForm) => {
   const formData = new FormData()
 
   // Loop over the form values and append each one to the form data.
@@ -62,7 +62,10 @@ export const createBusinessInfo = async (values: BusinessInfo) => {
   }
 }
 
-export const updateBusinessInfo = async (values: BusinessInfo, merchantId: string) => {
+export const updateBusinessInfo = async (
+  values: BusinessInfoForm,
+  merchantId: string
+) => {
   const formData = new FormData()
 
   // Loop over the form values and append each one to the form data.
@@ -88,7 +91,10 @@ export const updateBusinessInfo = async (values: BusinessInfo, merchantId: strin
   }
 }
 
-export const createLocationInfo = async (values: LocationInfo, merchantId: string) => {
+export const createLocationInfo = async (
+  values: LocationInfoForm,
+  merchantId: string
+) => {
   try {
     const response = await instance.post<FormReponse>(
       `/merchants/${merchantId}/locations`,
@@ -107,7 +113,7 @@ export const createLocationInfo = async (values: LocationInfo, merchantId: strin
 }
 
 export const updateLocationInfo = async (
-  values: LocationInfo,
+  values: LocationInfoForm,
   merchantId: string,
   locationId: number
 ) => {
@@ -128,7 +134,7 @@ export const updateLocationInfo = async (
   }
 }
 
-export const createOwnerInfo = async (values: OwnerInfo, merchantId: string) => {
+export const createOwnerInfo = async (values: OwnerInfoForm, merchantId: string) => {
   try {
     const response = await instance.post<FormReponse>(
       `/merchants/${merchantId}/business-owners`,
@@ -147,7 +153,7 @@ export const createOwnerInfo = async (values: OwnerInfo, merchantId: string) => 
 }
 
 export const updateOwnerInfo = async (
-  values: OwnerInfo,
+  values: OwnerInfoForm,
   merchantId: string,
   ownerId: number
 ) => {
@@ -169,7 +175,7 @@ export const updateOwnerInfo = async (
 }
 
 export const createContactPersonInfo = async (
-  values: ContactPerson,
+  values: ContactPersonForm,
   merchantId: string
 ) => {
   try {
@@ -190,7 +196,7 @@ export const createContactPersonInfo = async (
 }
 
 export const updateContactPersonInfo = async (
-  values: ContactPerson,
+  values: ContactPersonForm,
   merchantId: string,
   contactPersonId: number
 ) => {
@@ -224,7 +230,7 @@ export const changeStatusToReview = async (merchantId: string) => {
 }
 
 export const getMerchants = async (
-  params: AllMerchants | PendingMerchants | DraftApplications
+  params: AllMerchantsForm | PendingMerchantsForm | DraftApplicationsForm
 ) => {
   try {
     const response = await instance.get<{ data: MerchantDetails[] }>('/merchants', {
