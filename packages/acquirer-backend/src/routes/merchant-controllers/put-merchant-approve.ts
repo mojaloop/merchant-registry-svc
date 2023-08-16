@@ -15,7 +15,7 @@ import { audit } from '../../utils/audit'
  *     tags:
  *       - Merchants
  *       - Merchant Status
- *     summary: Updates the status of a Merchant to 'WaitingAliasGeneration'
+ *     summary: Updates the status of a Merchant to 'Waiting For Alias Generation'
  *     parameters:
  *       - in: path
  *         name: id
@@ -84,14 +84,14 @@ export async function putWaitingAliasGeneration (req: Request, res: Response) {
     }
 
     if (merchant.registration_status !== MerchantRegistrationStatus.REVIEW) {
-      logger.error('Only Review Merchant can be approved with WaitingAliasGeneration')
+      logger.error('Only Review Merchant can be approved with "Waiting For Alias Generation"')
       return res.status(401).send({
-        error: 'Only Review Merchant can be approved with WaitingAliasGeneration'
+        error: 'Only Review Merchant can be approved with "Waiting For Alias Generation"'
       })
     }
 
     merchant.registration_status = MerchantRegistrationStatus.WAITINGALIASGENERATION
-    merchant.registration_status_reason = 'Status Updated to WaitingAliasGeneration'
+    merchant.registration_status_reason = 'Status Updated to "Waiting For Alias Generation"'
 
     try {
       await merchantRepository.save(merchant)
@@ -112,7 +112,7 @@ export async function putWaitingAliasGeneration (req: Request, res: Response) {
       AuditActionType.UPDATE,
       AuditTrasactionStatus.SUCCESS,
       'putWaitingAliasGeneration',
-      'Updating Merchant Status to WaitingAliasGeneration Successful',
+      'Updating Merchant Status to "Waiting For Alias Generation" Successful',
       'Merchant',
       { registration_status: MerchantRegistrationStatus.REVIEW },
       { registration_status: MerchantRegistrationStatus.WAITINGALIASGENERATION },
@@ -120,7 +120,7 @@ export async function putWaitingAliasGeneration (req: Request, res: Response) {
     )
 
     return res.status(200).send(
-      { message: 'Status Updated to WaitingAliasGeneration', data: merchantData }
+      { message: 'Status Updated to "Waiting For Alias Generation"', data: merchantData }
     )
   } catch (e) {
     logger.error(e)

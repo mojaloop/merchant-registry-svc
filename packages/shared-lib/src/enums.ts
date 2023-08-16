@@ -24,7 +24,7 @@ export enum MerchantAllowBlockStatus {
 }
 
 export enum MerchantRegistrationStatus {
-  WAITINGALIASGENERATION = 'WaitingAliasGeneration',
+  WAITINGALIASGENERATION = 'Waiting For Alias Generation',
   DRAFT = 'Draft',
   REVIEW = 'Review',
   APPROVED = 'Approved',

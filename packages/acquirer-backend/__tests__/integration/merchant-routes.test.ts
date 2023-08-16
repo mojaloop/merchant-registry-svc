@@ -408,7 +408,7 @@ describe('Merchant Routes Tests', () => {
       merchant = null
     })
 
-    it('should responsd 200 status with WaitingAliasGeneration', async () => {
+    it('should responsd 200 status with "Waiting For Alias Generation"', async () => {
       // Arrange
 
       // Act
@@ -423,7 +423,7 @@ describe('Merchant Routes Tests', () => {
       expect(res.body).toHaveProperty('message')
 
       // eslint-disable-next-line
-      expect(res.body.message).toEqual('WAITINGALIASGENERATION Status Updated for multiple merchants')
+      expect(res.body.message).toEqual('"Waiting For Alias Generation" Status Updated for multiple merchants')
 
       const updatedMerchant = await AppDataSource.manager.findOne(
         MerchantEntity,

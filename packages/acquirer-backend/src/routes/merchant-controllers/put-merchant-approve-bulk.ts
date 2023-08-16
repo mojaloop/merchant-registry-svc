@@ -97,7 +97,7 @@ export async function putBulkWaitingAliasGeneration (req: Request, res: Response
       .update(MerchantEntity)
       .set({
         registration_status: MerchantRegistrationStatus.WAITINGALIASGENERATION,
-        registration_status_reason: 'Bulk Updated to Waiting Alias Generation',
+        registration_status_reason: 'Bulk Updated to "Waiting For Alias Generation"',
         checked_by: portalUser
       })
       .whereInIds(ids)
@@ -107,12 +107,12 @@ export async function putBulkWaitingAliasGeneration (req: Request, res: Response
       AuditActionType.UPDATE,
       AuditTrasactionStatus.SUCCESS,
       'putBulkApprove',
-      'Status Updated to Waiting Alias Generation',
+      'Status Updated to "Waiting For Alias Generation"',
       'Merchant',
       {}, {}, portalUser
     )
     res.status(200).send({
-      message: 'WAITINGALIASGENERATION Status Updated for multiple merchants'
+      message: '"Waiting For Alias Generation" Status Updated for multiple merchants'
     })
   } catch (e) {
     logger.error(e)

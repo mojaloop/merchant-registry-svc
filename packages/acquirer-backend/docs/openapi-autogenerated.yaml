@@ -352,7 +352,7 @@ paths:
           schema:
             type: string
             enum:
-              - WaitingAliasGeneration
+              - Waiting For Alias Generation
               - Draft
               - Review
               - Approved
@@ -614,7 +614,7 @@ paths:
       tags:
         - Merchants
         - Merchant Status
-      summary: Updates the status of a Merchant to 'WaitingAliasGeneration'
+      summary: Updates the status of a Merchant to 'Waiting For Alias Generation'
       parameters:
         - in: path
           name: id
