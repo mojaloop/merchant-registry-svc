@@ -97,26 +97,44 @@ export async function putBulkRevert (req: Request, res: Response) {
     return res.status(422).send({ message: 'Reason is required' })
   }
 
-  const count = await merchantRepository.count({
+  const merchants = await merchantRepository.find({
     where: {
-      id: In(ids),
-      registration_status: MerchantRegistrationStatus.REVIEW,
-      created_by: Not(portalUser.id)
-    }
+      id: In(ids)
+      // registration_status: MerchantRegistrationStatus.REVIEW,
+      // created_by: Not(portalUser.id)
+    },
+    relations: ['created_by']
   })
 
-  if (count !== ids.length) {
-    await audit(
-      AuditActionType.UPDATE,
-      AuditTrasactionStatus.FAILURE,
-      'putBulkReject',
-      'IDs must be valid and have a status of "Review". and not created by you',
-      'Merchant',
-      {}, { ids: req.body.ids }, portalUser
-    )
-    return res.status(422).send({
-      message: 'All IDs must be valid and have a status of "Review". and not created by you'
-    })
+  for (const merchant of merchants) {
+    if (merchant.registration_status !== MerchantRegistrationStatus.REVIEW) {
+      await audit(
+        AuditActionType.UPDATE,
+        AuditTrasactionStatus.FAILURE,
+        'putBulkRevert',
+        'Merchant is not in Review Status',
+        'Merchant',
+        {}, {}, portalUser
+      )
+      return res.status(422).send({
+        // eslint-disable-next-line max-len
+        error: `Merchant ${merchant.id} is not in Review Status. Current Status: ${merchant.registration_status}`
+      })
+    }
+
+    if (merchant.created_by?.id === portalUser.id) {
+      await audit(
+        AuditActionType.UPDATE,
+        AuditTrasactionStatus.FAILURE,
+        'putBulkRevert',
+        'Merchant cannot be reverted by the same user who created it',
+        'Merchant',
+        {}, {}, portalUser
+      )
+      return res.status(422).send({
+        error: `Merchant ${merchant.id} cannot be reverted by the same user who created it.`
+      })
+    }
   }
 
   try {
