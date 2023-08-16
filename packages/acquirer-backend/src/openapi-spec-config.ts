@@ -12,7 +12,9 @@ const options = {
     openapi: '3.0.0',
     info: {
       title: 'Merchant Acquirer API',
-      version: '0.1.0'
+      version: '0.1.0',
+      // eslint-disable-next-line max-len
+      description: 'TEST1 User Bearer Authorization Token: test_1_dummy_auth_token <br/>TEST2 User Bearer Authorization Token: test_2_dummy_auth_token  '
     },
     servers: [
       {

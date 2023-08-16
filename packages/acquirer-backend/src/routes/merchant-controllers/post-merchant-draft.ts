@@ -9,7 +9,7 @@ import { CheckoutCounterEntity } from '../../entity/CheckoutCounterEntity'
 import { BusinessLicenseEntity } from '../../entity/BusinessLicenseEntity'
 import {
   MerchantAllowBlockStatus
-  , AuditActionType, AuditTrasactionStatus
+  , AuditActionType, AuditTrasactionStatus, MerchantRegistrationStatus
 } from 'shared-lib'
 
 import {
@@ -60,12 +60,6 @@ import { audit } from '../../utils/audit'
  *                 type: string
  *                 example: "merchant1"
  *                 required: false
- *               registration_status:
- *                 type: string
- *                 example: "Draft"
- *               registration_status_reason:
- *                 type: string
- *                 example: "Drafted by Maker"
  *               license_number:
  *                 type: string
  *                 example: "123456789"
@@ -154,8 +148,8 @@ export async function postMerchantDraft (req: Request, res: Response) {
   merchant.currency_code = req.body.currency_code
   merchant.category_code = req.body.category_code
   merchant.merchant_type = req.body.merchant_type
-  merchant.registration_status = req.body.registration_status
-  merchant.registration_status_reason = req.body.registration_status_reason
+  merchant.registration_status = MerchantRegistrationStatus.DRAFT
+  merchant.registration_status_reason = `Draft Merchant by ${portalUser?.email}`
   merchant.allow_block_status = MerchantAllowBlockStatus.PENDING
 
   if (portalUser !== null) { // Should never be null.. but just in case

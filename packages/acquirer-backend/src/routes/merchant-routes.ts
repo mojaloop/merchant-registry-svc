@@ -5,10 +5,6 @@ import { pdfUpload } from '../middleware/minioClient'
 import { getMerchants } from './merchant-controllers/get-merchants'
 import { getMerchantById } from './merchant-controllers/get-merchant-by-id'
 import { postMerchantDraft } from './merchant-controllers/post-merchant-draft'
-import { putMerchantRegistrationStatus } from './merchant-controllers/put-merchant-reg-status'
-import {
-  putBulkMerchantRegistrationStatus
-} from './merchant-controllers/put-merchants-bulk-reg-status'
 import { putMerchantStatusReadyToReview } from './merchant-controllers/put-merchant-ready-to-review'
 import { postMerchantLocation } from './merchant-controllers/post-merchant-location'
 import { postMerchantContactPerson } from './merchant-controllers/post-merchant-contact-person'
@@ -22,6 +18,8 @@ import { getMerchantDraftCountsByUser } from
 import { putMerchantOwner } from './merchant-controllers/put-merchant-owner'
 import { putMerchantContactPerson } from './merchant-controllers/put-merchant-contact-person'
 import { putWaitingAliasGeneration } from './merchant-controllers/put-merchant-approve'
+import { putBulkWaitingAliasGeneration } from './merchant-controllers/put-merchant-approve-bulk'
+import { putBulkReject } from './merchant-controllers/put-merchant-reject-bulk'
 
 const router = express.Router()
 
@@ -35,11 +33,11 @@ router.post('/merchants/draft', pdfUpload.single('license_document'), postMercha
 
 router.put('/merchants/:id/draft', pdfUpload.single('license_document'), putMerchantDraft)
 
-router.put('/merchants/:id/registration-status', putMerchantRegistrationStatus)
-
 router.put('/merchants/:id/approve', putWaitingAliasGeneration)
 
-router.put('/merchants/registration-status', putBulkMerchantRegistrationStatus)
+router.put('/merchants/bulk-approve', putBulkWaitingAliasGeneration)
+
+router.put('/merchants/bulk-reject', putBulkReject)
 
 router.put('/merchants/:id/ready-to-review', putMerchantStatusReadyToReview)
 
