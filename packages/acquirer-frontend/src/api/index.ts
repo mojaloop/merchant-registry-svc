@@ -1,5 +1,4 @@
 import { isAxiosError } from 'axios'
-import { MerchantRegistrationStatus } from 'shared-lib'
 
 import type { FormReponse } from '@/types/form'
 import type { MerchantDetails } from '@/types/merchantDetails'
@@ -256,9 +255,8 @@ export const getMerchant = async (merchantId: number) => {
 
 export const approveMerchants = async (selectedMerchantIds: number[]) => {
   try {
-    await instance.put('/merchants/registration-status', {
+    await instance.put('/merchants/bulk-approve', {
       ids: selectedMerchantIds,
-      registration_status: MerchantRegistrationStatus.APPROVED,
     })
   } catch (error) {
     if (isAxiosError(error)) {
@@ -269,9 +267,8 @@ export const approveMerchants = async (selectedMerchantIds: number[]) => {
 
 export const rejectMerchants = async (selectedMerchantIds: number[]) => {
   try {
-    await instance.put('/merchants/registration-status', {
+    await instance.put('/merchants/bulk-reject', {
       ids: selectedMerchantIds,
-      registration_status: MerchantRegistrationStatus.REJECTED,
     })
   } catch (error) {
     if (isAxiosError(error)) {
