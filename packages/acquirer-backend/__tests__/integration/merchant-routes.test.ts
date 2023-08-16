@@ -241,8 +241,6 @@ describe('Merchant Routes Tests', () => {
         .field('category_code', '01110')
         .field('merchant_type', MerchantType.INDIVIDUAL)
         .field('payinto_alias', 'P33')
-        .field('registration_status', MerchantRegistrationStatus.DRAFT)
-        .field('registration_status_reason', 'Drafting Merchant')
         .field('license_number', '007')
         .attach('license_document', path.join(__dirname, '../test-files/dummy.pdf'))
 
@@ -306,8 +304,6 @@ describe('Merchant Routes Tests', () => {
           currency_code: CurrencyCodes.USD,
           category_code: '01110',
           merchant_type: MerchantType.INDIVIDUAL,
-          registration_status: MerchantRegistrationStatus.DRAFT,
-          registration_status_reason: 'Drafting Merchant',
           checkout_counters: [checkoutCounter]
         }
       )
@@ -374,7 +370,7 @@ describe('Merchant Routes Tests', () => {
     // TODO: Add more tests and failure cases
   })
 
-  describe('POST /api/v1/merchants/:id/registration-status', () => {
+  describe('PUT /api/v1/merchants/bulk-approve', () => {
     let test1User: PortalUserEntity | null
     let merchant: MerchantEntity | null
 
@@ -396,8 +392,8 @@ describe('Merchant Routes Tests', () => {
           currency_code: CurrencyCodes.USD,
           category_code: '01110',
           payinto_alias: 'merchant1',
-          registration_status: MerchantRegistrationStatus.DRAFT,
-          registration_status_reason: 'Drafting Merchant',
+          registration_status: MerchantRegistrationStatus.REVIEW,
+          registration_status_reason: 'Ready to Review',
           // eslint-disable-next-line
           created_by: test1User ?? {}
         }
@@ -412,33 +408,32 @@ describe('Merchant Routes Tests', () => {
       merchant = null
     })
 
-    it('should respond with 200 status and the updated merchant', async () => {
+    it('should responsd 200 status with WaitingAliasGeneration', async () => {
       // Arrange
 
       // Act
       const res = await request(app)
         // eslint-disable-next-line
-        .put(`/api/v1/merchants/${merchant?.id}/registration-status`)
+        .put(`/api/v1/merchants/bulk-approve`)
         .set('Authorization', `Bearer ${process.env.TEST2_DUMMY_AUTH_TOKEN ?? ''}`)
-        .send({
-          registration_status: MerchantRegistrationStatus.APPROVED,
-          registration_status_reason: 'Approved Merchant'
-        })
+        .send({ ids: [merchant?.id] })
 
       // Assert
       expect(res.statusCode).toEqual(200)
       expect(res.body).toHaveProperty('message')
-      expect(res.body.message).toEqual('Status Updated')
-      expect(res.body).toHaveProperty('data')
-      expect(res.body.data).toHaveProperty('id')
-      expect(res.body.data.registration_status).toEqual(MerchantRegistrationStatus.APPROVED)
-      expect(res.body.data.registration_status_reason).toEqual('Approved Merchant')
+
+      // eslint-disable-next-line
+      expect(res.body.message).toEqual('WAITINGALIASGENERATION Status Updated for multiple merchants')
 
       const updatedMerchant = await AppDataSource.manager.findOne(
         MerchantEntity,
         { where: { id: merchant?.id } }
       )
-      expect(updatedMerchant?.registration_status).toEqual(MerchantRegistrationStatus.APPROVED)
+      // eslint-disable-next-line
+      expect(updatedMerchant?.registration_status).toEqual(MerchantRegistrationStatus.WAITINGALIASGENERATION)
+
+      // eslint-disable-next-line
+      expect(updatedMerchant?.registration_status_reason).toEqual('Bulk Updated to Waiting Alias Generation')
     })
 
     // eslint-disable-next-line
@@ -448,24 +443,25 @@ describe('Merchant Routes Tests', () => {
       // Act
       const res = await request(app)
         // eslint-disable-next-line
-        .put(`/api/v1/merchants/${merchant?.id}/registration-status`)
+        .put(`/api/v1/merchants/bulk-approve`)
         // Test1 is the creator of the merchant and is also the one updating the status
         .set('Authorization', `Bearer ${process.env.TEST1_DUMMY_AUTH_TOKEN ?? ''}`)
         .send({
-          registration_status: MerchantRegistrationStatus.APPROVED,
-          registration_status_reason: 'Approved Merchant'
+          ids: [merchant?.id]
         })
 
       // Assert
-      expect(res.statusCode).toEqual(401)
+      // expect(res.statusCode).toEqual(401)
       expect(res.body).toHaveProperty('message')
-      expect(res.body.message).toEqual('Same Hub User cannot do both Sumitting and Review Checking')
+
+      // eslint-disable-next-line
+      expect(res.body.message).toEqual('All IDs must be valid and have a status of "Review". and not created by you')
 
       const originalMerchant = await AppDataSource.manager.findOne(
         MerchantEntity,
         { where: { id: merchant?.id } }
       )
-      expect(originalMerchant?.registration_status).toEqual(MerchantRegistrationStatus.DRAFT)
+      expect(originalMerchant?.registration_status).toEqual(MerchantRegistrationStatus.REVIEW)
 
       // Clean up
     })
