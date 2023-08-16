@@ -15,7 +15,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { MerchantRegistrationStatus } from 'shared-lib'
 
 import type { MerchantInfo } from '@/types/merchants'
-import { type AllMerchants, allMerchantsSchema } from '@/lib/validations/allMerchants'
+import { type AllMerchantsForm, allMerchantsSchema } from '@/lib/validations/allMerchants'
 import { getMerchants } from '@/api'
 import {
   REGISTRATION_STATUS_COLORS,
@@ -137,14 +137,14 @@ const AllMerchantRecords = () => {
     formState: { errors },
     handleSubmit,
     reset,
-  } = useForm<AllMerchants>({
+  } = useForm<AllMerchantsForm>({
     resolver: zodResolver(allMerchantsSchema),
     defaultValues: {
       registrationStatus: null,
     },
   })
 
-  const getAllMerchantRecords = async (values?: AllMerchants) => {
+  const getAllMerchantRecords = async (values?: AllMerchantsForm) => {
     const params = values ?? {}
     const allMerchants = await getMerchants(params)
 
@@ -154,7 +154,7 @@ const AllMerchantRecords = () => {
     }
   }
 
-  const onSubmit = (values: AllMerchants) => {
+  const onSubmit = (values: AllMerchantsForm) => {
     getAllMerchantRecords(values)
   }
 

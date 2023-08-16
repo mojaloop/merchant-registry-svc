@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { MerchantLocationType, Countries } from 'shared-lib'
 
-import { type LocationInfo, locationInfoSchema } from '@/lib/validations/registry'
+import { type LocationInfoForm, locationInfoSchema } from '@/lib/validations/registry'
 import { createLocationInfo, getDraftData, updateLocationInfo } from '@/api'
 import { scrollToTop } from '@/utils'
 import { CustomButton } from '@/components/ui'
@@ -35,7 +35,7 @@ const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
     setValue,
     setFocus,
     handleSubmit,
-  } = useForm<LocationInfo>({
+  } = useForm<LocationInfoForm>({
     resolver: zodResolver(locationInfoSchema),
     defaultValues: {
       country: null,
@@ -104,7 +104,7 @@ const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  const onSubmit = async (values: LocationInfo) => {
+  const onSubmit = async (values: LocationInfoForm) => {
     const merchantId = sessionStorage.getItem('merchantId')
     if (merchantId === null) {
       alert('Merchant ID not found. Go back to the previous page and try again')
@@ -131,7 +131,7 @@ const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
 
   // focus on first input that has error after validation
   useEffect(() => {
-    const firstError = Object.keys(errors)[0] as keyof LocationInfo
+    const firstError = Object.keys(errors)[0] as keyof LocationInfoForm
 
     if (firstError) {
       setFocus(firstError)

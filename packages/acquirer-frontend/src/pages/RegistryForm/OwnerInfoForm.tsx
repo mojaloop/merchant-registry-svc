@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Countries, BusinessOwnerIDType } from 'shared-lib'
 
-import { type OwnerInfo, ownerInfoSchema } from '@/lib/validations/registry'
+import { type OwnerInfoForm, ownerInfoSchema } from '@/lib/validations/registry'
 import { createOwnerInfo, getDraftData, updateOwnerInfo } from '@/api'
 import { scrollToTop } from '@/utils'
 import { CustomButton } from '@/components/ui'
@@ -35,7 +35,7 @@ const OwnerInfoForm = ({ setActiveStep }: OwnerInfoFormProps) => {
     setValue,
     setFocus,
     handleSubmit,
-  } = useForm<OwnerInfo>({
+  } = useForm<OwnerInfoForm>({
     resolver: zodResolver(ownerInfoSchema),
     defaultValues: {
       email: null,
@@ -106,7 +106,7 @@ const OwnerInfoForm = ({ setActiveStep }: OwnerInfoFormProps) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  const onSubmit = async (values: OwnerInfo) => {
+  const onSubmit = async (values: OwnerInfoForm) => {
     const merchantId = sessionStorage.getItem('merchantId')
     if (merchantId === null) {
       alert('Merchant ID not found. Go back to the previous page and try again')
@@ -134,7 +134,7 @@ const OwnerInfoForm = ({ setActiveStep }: OwnerInfoFormProps) => {
 
   // focus on first input that has error after validation
   useEffect(() => {
-    const firstError = Object.keys(errors)[0] as keyof OwnerInfo
+    const firstError = Object.keys(errors)[0] as keyof OwnerInfoForm
 
     if (firstError) {
       setFocus(firstError)

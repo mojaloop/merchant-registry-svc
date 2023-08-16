@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-export type DraftApplications = z.infer<typeof draftApplicationsSchema>
+export type DraftApplicationsForm = z.infer<typeof draftApplicationsSchema>
 
 export const draftApplicationsSchema = z.object({
   addedBy: z.string().optional(),

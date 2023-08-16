@@ -24,7 +24,7 @@ import {
   MerchantType,
 } from 'shared-lib'
 
-import { type BusinessInfo, businessInfoSchema } from '@/lib/validations/registry'
+import { type BusinessInfoForm, businessInfoSchema } from '@/lib/validations/registry'
 import { createBusinessInfo, getDraftData, updateBusinessInfo } from '@/api'
 import { scrollToTop } from '@/utils'
 import { CustomButton } from '@/components/ui'
@@ -73,7 +73,7 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
     setValue,
     setFocus,
     handleSubmit,
-  } = useForm<BusinessInfo>({
+  } = useForm<BusinessInfoForm>({
     resolver: zodResolver(businessInfoSchema),
     defaultValues: {
       license_document: null,
@@ -136,7 +136,7 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
   const watchedHaveLicense = watch('have_business_license')
   const haveLicense = watchedHaveLicense === 'yes'
 
-  const onSubmit = async (values: BusinessInfo) => {
+  const onSubmit = async (values: BusinessInfoForm) => {
     let response
     if (!isDraft) {
       response = await createBusinessInfo(values)
@@ -158,7 +158,7 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
 
   // focus on first input that has error after validation
   useEffect(() => {
-    const firstError = Object.keys(errors)[0] as keyof BusinessInfo
+    const firstError = Object.keys(errors)[0] as keyof BusinessInfoForm
 
     if (firstError) {
       setFocus(firstError)
@@ -167,6 +167,7 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
 
   useEffect(() => {
     if (watchedHaveLicense === 'no') {
+      setValue('license_number', '')
       setValue('license_document', null)
     }
   }, [watchedHaveLicense, setValue])

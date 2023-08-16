@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-export type PendingMerchants = z.infer<typeof pendingMerchantsSchema>
+export type PendingMerchantsForm = z.infer<typeof pendingMerchantsSchema>
 
 export const pendingMerchantsSchema = z.object({
   addedBy: z.string().optional(),
