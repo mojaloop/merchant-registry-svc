@@ -18,6 +18,7 @@ import { getMerchantDraftCountsByUser } from
 import { putMerchantOwner } from './merchant-controllers/put-merchant-owner'
 import { putMerchantContactPerson } from './merchant-controllers/put-merchant-contact-person'
 import { putWaitingAliasGeneration } from './merchant-controllers/put-merchant-approve'
+import { exportMerchantXlsx } from './merchant-controllers/get-merchant-export-xlsx'
 import { putBulkWaitingAliasGeneration } from './merchant-controllers/put-merchant-approve-bulk'
 import { putBulkReject } from './merchant-controllers/put-merchant-reject-bulk'
 import { putBulkRevert } from './merchant-controllers/put-merchant-revert'
@@ -28,9 +29,11 @@ router.get('/merchants', getMerchants)
 
 router.get('/merchants/draft-counts', getMerchantDraftCountsByUser)
 
-router.get('/merchants/:id', getMerchantById)
+router.get('/merchants/export', exportMerchantXlsx)
 
 router.post('/merchants/draft', pdfUpload.single('license_document'), postMerchantDraft)
+
+router.get('/merchants/:id', getMerchantById)
 
 router.put('/merchants/:id/draft', pdfUpload.single('license_document'), putMerchantDraft)
 
