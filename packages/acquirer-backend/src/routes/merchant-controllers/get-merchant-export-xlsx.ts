@@ -142,7 +142,9 @@ export async function exportMerchantXlsx (req: Request, res: Response) {
     { header: 'category', key: 'category', width: 32 },
     { header: 'currency', key: 'currency', width: 32 },
     { header: 'license_number', key: 'license_number', width: 32 },
-    { header: 'license_document_link', key: 'license_document_link', width: 32 }
+    { header: 'license_document_link', key: 'license_document_link', width: 32 },
+    { header: 'created_by', key: 'created_by', width: 32 },
+    { header: 'checked_by', key: 'checked_by', width: 32 }
   ]
 
   const locationColumns = [
@@ -177,7 +179,6 @@ export async function exportMerchantXlsx (req: Request, res: Response) {
     { header: 'Checkout Counter ID', key: 'id', width: 20 },
     { header: 'Merchant ID', key: 'merchant_id', width: 15 },
     { header: 'description', key: 'description', width: 32 },
-    { header: 'notification_number', key: 'notification_number', width: 32 },
     { header: 'alias_type', key: 'alias_type', width: 32 },
     { header: 'alias_value', key: 'alias_value', width: 32 },
     { header: 'Location ID', key: 'checkout_location', width: 10 }
@@ -191,7 +192,7 @@ export async function exportMerchantXlsx (req: Request, res: Response) {
     { header: 'name', key: 'name', width: 32 },
     { header: 'email', key: 'email', width: 32 },
     { header: 'phone_number', key: 'phone_number', width: 32 },
-    { header: 'Location ID', key: 'businessPersonLocation', width: 32 }
+    { header: 'Location ID', key: 'businessPersonLocation', width: 10 }
   ]
 
   contactPersonsWorkbook.columns = [
@@ -219,7 +220,9 @@ export async function exportMerchantXlsx (req: Request, res: Response) {
       currency: `${currency.iso_code} - ${currency.description}`,
       license_number: merchant.business_licenses[0]?.license_number,
       // eslint-disable-next-line
-      license_document_link: await getMerchantDocumentURL(merchant.business_licenses[0]?.license_document_link)
+      license_document_link: await getMerchantDocumentURL(merchant.business_licenses[0]?.license_document_link),
+      created_by: merchant?.created_by?.email ?? undefined,
+      checked_by: merchant?.checked_by?.email ?? undefined
     })
 
     for (const location of merchant.locations) {
