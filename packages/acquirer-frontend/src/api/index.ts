@@ -11,7 +11,6 @@ import type {
 } from '@/lib/validations/registry'
 import type { MerchantsFilterForm } from '@/lib/validations/merchantsFilter'
 import type { AllMerchantsFilterForm } from '@/lib/validations/allMerchantsFilter'
-import type { DraftsFilterForm } from '@/lib/validations/draftsFilter'
 
 export const login = async (email: string, password: string) => {
   try {
@@ -251,7 +250,7 @@ export const changeStatusToReview = async (merchantId: string) => {
 }
 
 export const getMerchants = async (
-  params: AllMerchantsFilterForm | MerchantsFilterForm | DraftsFilterForm
+  params: AllMerchantsFilterForm | MerchantsFilterForm
 ) => {
   try {
     const response = await instance.get<{ data: MerchantDetails[] }>('/merchants', {
