@@ -21,12 +21,13 @@ import {
   HStack,
 } from '@chakra-ui/react'
 
+import type { MerchantInfo } from '@/types/merchants'
 import { CustomButton } from '@/components/ui'
 import MobileTable from '@/components/ui/DataTable/MobileTable'
 import PaginationControl from '@/components/ui/DataTable/PaginationControl'
 
 interface PendingMerchantsDataTableProps<T> extends TableContainerProps {
-  data: any[]
+  data: T[]
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   columns: ColumnDef<T, any>[]
   alwaysVisibleColumns: number[]
@@ -70,17 +71,14 @@ const PendingMerchantsDataTable = <T,>({
     getSortedRowModel: getSortedRowModel(),
   })
 
-  const { getHeaderGroups, getRowModel } = table
+  const { getHeaderGroups, getRowModel, getSelectedRowModel } = table
 
   const getSelectedMerchantIds = (): number[] => {
-    // Extracting the selected row keys (IDs) from the rowSelection state.
-    const selectedRowKeys = Object.keys(rowSelection).filter(key => rowSelection[key])
+    const selectedRows = getSelectedRowModel().rows.map(
+      row => row.original
+    ) as MerchantInfo[]
 
-    // Map over the selected row keys and extract the actual merchant ID from the data.
-    return selectedRowKeys.map(key => {
-      const rowIndex = Number(key)
-      return data[rowIndex].no // 'no' is the actual merchant ID in the data
-    })
+    return selectedRows.map(selectedRow => selectedRow.no)
   }
 
   const handleApprove = () => {
