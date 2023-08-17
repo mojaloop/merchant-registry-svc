@@ -10,6 +10,6 @@ export const allMerchantsFilterSchema = z.object({
   updatedTime: z.string().optional(),
   dbaName: z.string().optional(),
   merchantId: z.string().optional(),
-  payintoId: z.string().optional(),
+  payintoAccountId: z.string().optional(),
   registrationStatus: z.nativeEnum(MerchantRegistrationStatus).or(z.null()),
 })

@@ -15,7 +15,10 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { MerchantRegistrationStatus } from 'shared-lib'
 
 import type { MerchantInfo } from '@/types/merchants'
-import { type DraftsFilterForm, draftsFilterSchema } from '@/lib/validations/draftsFilter'
+import {
+  type MerchantsFilterForm,
+  merchantsFilterSchema,
+} from '@/lib/validations/merchantsFilter'
 import { getMerchants } from '@/api'
 import {
   REGISTRATION_STATUS_COLORS,
@@ -129,11 +132,11 @@ const DraftApplications = () => {
     formState: { errors },
     handleSubmit,
     reset,
-  } = useForm<DraftsFilterForm>({
-    resolver: zodResolver(draftsFilterSchema),
+  } = useForm<MerchantsFilterForm>({
+    resolver: zodResolver(merchantsFilterSchema),
   })
 
-  const getDrafts = async (values?: DraftsFilterForm) => {
+  const getDrafts = async (values?: MerchantsFilterForm) => {
     const params = values
       ? { ...values, registrationStatus: MerchantRegistrationStatus.DRAFT }
       : { registrationStatus: MerchantRegistrationStatus.DRAFT }
@@ -149,7 +152,7 @@ const DraftApplications = () => {
     getDrafts()
   }, [])
 
-  const onSubmit = (values: DraftsFilterForm) => {
+  const onSubmit = (values: MerchantsFilterForm) => {
     getDrafts(values)
   }
 
@@ -222,11 +225,11 @@ const DraftApplications = () => {
           />
 
           <FormInput
-            name='payintoId'
+            name='payintoAccountId'
             register={register}
             errors={errors}
-            label='Payinto ID'
-            placeholder='Enter Payinto ID'
+            label='Payinto Account ID'
+            placeholder='Enter Payinto Account ID'
           />
         </SimpleGrid>
 
