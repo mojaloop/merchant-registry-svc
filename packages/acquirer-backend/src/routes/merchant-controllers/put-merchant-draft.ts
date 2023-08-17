@@ -133,7 +133,7 @@ export async function putMerchantDraft (req: Request, res: Response) {
   if (merchant.registration_status !== MerchantRegistrationStatus.DRAFT &&
     merchant.registration_status !== MerchantRegistrationStatus.REVERTED) {
     return res.status(422).send({
-      error: `Merchant is not in Draft Status. Current Status: ${merchant.registration_status}`
+      message: `Merchant is not in Draft Status. Current Status: ${merchant.registration_status}`
     })
   }
 

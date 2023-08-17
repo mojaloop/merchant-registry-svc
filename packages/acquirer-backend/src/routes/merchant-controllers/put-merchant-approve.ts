@@ -79,14 +79,14 @@ export async function putWaitingAliasGeneration (req: Request, res: Response) {
     if (portalUser.id === merchant.created_by.id) {
       logger.error('User is not allowed to change status')
       return res.status(400).send({
-        error: 'User is not allowed to change status'
+        message: 'User is not allowed to change status'
       })
     }
 
     if (merchant.registration_status !== MerchantRegistrationStatus.REVIEW) {
       logger.error('Only Review Merchant can be approved with "Waiting For Alias Generation"')
       return res.status(401).send({
-        error: 'Only Review Merchant can be approved with "Waiting For Alias Generation"'
+        message: 'Only Review Merchant can be approved with "Waiting For Alias Generation"'
       })
     }
 

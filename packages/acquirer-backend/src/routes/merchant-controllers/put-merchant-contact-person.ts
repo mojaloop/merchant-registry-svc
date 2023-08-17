@@ -124,7 +124,7 @@ export async function putMerchantContactPerson (req: Request, res: Response) {
     if (businessOwners == null || businessOwners.length === 0) {
       logger.error('Business Owner not found to be able to copy to Contact Person')
       return res.status(404).json({
-        error: 'Business Owner not found to be able to copy to Contact Person'
+        message: 'Business Owner not found to be able to copy to Contact Person'
       })
     }
 

@@ -88,7 +88,7 @@ export async function putBulkWaitingAliasGeneration (req: Request, res: Response
       )
       return res.status(422).send({
         // eslint-disable-next-line max-len
-        error: `Merchant ${merchant.id} is not in Review Status. Current Status: ${merchant.registration_status}`
+        message: `Merchant ${merchant.id} is not in Review Status. Current Status: ${merchant.registration_status}`
       })
     }
 
@@ -102,7 +102,7 @@ export async function putBulkWaitingAliasGeneration (req: Request, res: Response
         {}, {}, portalUser
       )
       return res.status(422).send({
-        error: `Merchant ${merchant.id} cannot be approved by the same user who created it.`
+        message: `Merchant ${merchant.id} cannot be approved by the same user who created it.`
       })
     }
   }
