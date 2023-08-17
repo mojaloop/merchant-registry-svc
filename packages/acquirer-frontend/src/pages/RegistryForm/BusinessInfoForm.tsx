@@ -93,7 +93,7 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
     const {
       dba_trading_name,
       registered_name,
-      checkout_counters,
+      // checkout_counters,
       employees_num,
       monthly_turnover,
       category_code,
@@ -102,13 +102,13 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
       business_licenses,
     } = draftData
 
-    const payinto_alias = checkout_counters?.[0]?.alias_value
+    // const payinto_alias = checkout_counters?.[0]?.alias_value
     const merchant_category = category_code?.category_code
     const business_license = business_licenses?.[0]
 
     dba_trading_name && setValue('dba_trading_name', dba_trading_name)
     registered_name && setValue('registered_name', registered_name)
-    payinto_alias && setValue('payinto_alias', payinto_alias)
+    // payinto_alias && setValue('payinto_alias', payinto_alias)
     employees_num && setValue('employees_num', employees_num)
     monthly_turnover && setValue('monthly_turnover', monthly_turnover)
     merchant_category && setValue('category_code', merchant_category)
@@ -192,14 +192,14 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
           placeholder='Registered Name'
         />
 
-        <FormInput
+        {/* <FormInput
           isRequired
           name='payinto_alias'
           register={register}
           errors={errors}
-          label='Payinto Account'
-          placeholder='Payinto Account'
-        />
+          label='Payinto Account ID'
+          placeholder='Payinto Account ID'
+        /> */}
 
         <FormSelect
           isRequired
@@ -217,6 +217,7 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
           errors={errors}
           label='Monthly Turn Over'
           placeholder='Monthly Turn Over'
+          inputProps={{ type: 'number' }}
         />
 
         <FormSelect

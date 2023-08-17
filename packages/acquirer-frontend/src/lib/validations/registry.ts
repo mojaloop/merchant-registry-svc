@@ -17,7 +17,7 @@ export type ContactPersonForm = z.infer<typeof contactPersonSchema>
 export const businessInfoSchema = z.object({
   dba_trading_name: z.string().nonempty({ message: 'Business name is required' }),
   registered_name: z.string().optional(),
-  payinto_alias: z.string().nonempty({ message: 'Payinto account is required' }),
+  // payinto_alias: z.string().nonempty({ message: 'Payinto account is required' }),
   employees_num: z.nativeEnum(NumberOfEmployees, {
     errorMap: () => ({ message: 'Please select an option' }),
   }),
