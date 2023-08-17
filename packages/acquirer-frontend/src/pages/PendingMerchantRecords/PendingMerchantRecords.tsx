@@ -16,10 +16,10 @@ import { MerchantRegistrationStatus } from 'shared-lib'
 
 import type { MerchantInfo } from '@/types/merchants'
 import {
-  type PendingMerchantsForm,
-  pendingMerchantsSchema,
-} from '@/lib/validations/pendingMerchants'
-import { approveMerchants, getMerchants, rejectMerchants } from '@/api'
+  type MerchantsFilterForm,
+  merchantsFilterSchema,
+} from '@/lib/validations/merchantsFilter'
+import { approveMerchants, getMerchants, rejectMerchants, revertMerchants } from '@/api'
 import {
   REGISTRATION_STATUS_COLORS,
   type RegistrationStatus,
@@ -42,9 +42,15 @@ const PendingMerchantRecords = () => {
   } = useDisclosure()
 
   const {
-    isOpen: isReasonModalOpen,
-    onOpen: onReasonModalOpen,
-    onClose: onReasonModalClose,
+    isOpen: isRejectReasonModalOpen,
+    onOpen: onRejectReasonModalOpen,
+    onClose: onRejectReasonModalClose,
+  } = useDisclosure()
+
+  const {
+    isOpen: isRevertReasonModalOpen,
+    onOpen: onRevertReasonModalOpen,
+    onClose: onRevertReasonModalClose,
   } = useDisclosure()
 
   const columns = useMemo(() => {
@@ -147,11 +153,11 @@ const PendingMerchantRecords = () => {
     formState: { errors },
     handleSubmit,
     reset,
-  } = useForm<PendingMerchantsForm>({
-    resolver: zodResolver(pendingMerchantsSchema),
+  } = useForm<MerchantsFilterForm>({
+    resolver: zodResolver(merchantsFilterSchema),
   })
 
-  const getPendingMerchantRecords = async (values?: PendingMerchantsForm) => {
+  const getPendingMerchantRecords = async (values?: MerchantsFilterForm) => {
     const params = values
       ? { ...values, registrationStatus: MerchantRegistrationStatus.REVIEW }
       : { registrationStatus: MerchantRegistrationStatus.REVIEW }
@@ -163,7 +169,7 @@ const PendingMerchantRecords = () => {
     }
   }
 
-  const onSubmit = (values: PendingMerchantsForm) => {
+  const onSubmit = (values: MerchantsFilterForm) => {
     getPendingMerchantRecords(values)
   }
 
@@ -275,12 +281,23 @@ const PendingMerchantRecords = () => {
       )}
 
       <ReasonModal
-        isOpen={isReasonModalOpen}
-        onClose={onReasonModalClose}
+        isOpen={isRejectReasonModalOpen}
+        onClose={onRejectReasonModalClose}
         title='Rejecting Merchant Records'
         inputLabel='Enter the rejecting reason'
         actionFunc={async reason => {
           await rejectMerchants(selectedMerchantIds, reason)
+          getPendingMerchantRecords()
+        }}
+      />
+
+      <ReasonModal
+        isOpen={isRevertReasonModalOpen}
+        onClose={onRevertReasonModalClose}
+        title='Reverting Merchant Records'
+        inputLabel='Enter the reverting reason'
+        actionFunc={async reason => {
+          await revertMerchants(selectedMerchantIds, reason)
           getPendingMerchantRecords()
         }}
       />
@@ -299,17 +316,20 @@ const PendingMerchantRecords = () => {
           columns={columns}
           data={data}
           breakpoint='xl'
-          alwaysVisibleColumns={[1]}
+          alwaysVisibleColumns={[0, 1]}
           onExport={() => console.log('exported')}
           onReject={(selectedMerchantIds: number[]) => {
-            onReasonModalOpen()
+            onRejectReasonModalOpen()
             setSelectedMerchantIds(selectedMerchantIds)
           }}
           onApprove={async (selectedMerchantIds: number[]) => {
             await approveMerchants(selectedMerchantIds)
             getPendingMerchantRecords()
           }}
-          onRevert={() => console.log('reverted')}
+          onRevert={(selectedMerchantIds: number[]) => {
+            onRevertReasonModalOpen()
+            setSelectedMerchantIds(selectedMerchantIds)
+          }}
         />
       </Box>
     </Stack>

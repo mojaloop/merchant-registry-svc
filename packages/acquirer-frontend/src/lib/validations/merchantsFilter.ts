@@ -1,9 +1,8 @@
 import { z } from 'zod'
-import { MerchantRegistrationStatus } from 'shared-lib'
 
-export type AllMerchantsForm = z.infer<typeof allMerchantsSchema>
+export type MerchantsFilterForm = z.infer<typeof merchantsFilterSchema>
 
-export const allMerchantsSchema = z.object({
+export const merchantsFilterSchema = z.object({
   addedBy: z.string().optional(),
   approvedBy: z.string().optional(),
   addedTime: z.string().optional(),
@@ -11,5 +10,4 @@ export const allMerchantsSchema = z.object({
   dbaName: z.string().optional(),
   merchantId: z.string().optional(),
   payintoId: z.string().optional(),
-  registrationStatus: z.nativeEnum(MerchantRegistrationStatus).or(z.null()),
 })

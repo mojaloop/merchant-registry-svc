@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { createColumnHelper } from '@tanstack/react-table'
 import {
   Box,
+  Checkbox,
   HStack,
   Heading,
   SimpleGrid,
@@ -15,7 +15,10 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { MerchantRegistrationStatus } from 'shared-lib'
 
 import type { MerchantInfo } from '@/types/merchants'
-import { type DraftsFilterForm, draftsFilterSchema } from '@/lib/validations/draftsFilter'
+import {
+  type MerchantsFilterForm,
+  merchantsFilterSchema,
+} from '@/lib/validations/merchantsFilter'
 import { getMerchants } from '@/api'
 import {
   REGISTRATION_STATUS_COLORS,
@@ -25,18 +28,40 @@ import { transformIntoTableData } from '@/utils'
 import { CustomButton, DataTable, MerchantInformationModal } from '@/components/ui'
 import { FormInput } from '@/components/form'
 
-const DraftApplications = () => {
-  const navigate = useNavigate()
-
+const RevertedMerchantRecords = () => {
   const [data, setData] = useState<MerchantInfo[]>([])
   const [selectedMerchantId, setSelectedMerchantId] = useState<number | null>(null)
 
-  const { isOpen, onOpen, onClose } = useDisclosure()
+  const {
+    isOpen: isInfoModalOpen,
+    onOpen: onInfoModalOpen,
+    onClose: onInfoModalClose,
+  } = useDisclosure()
 
   const columns = useMemo(() => {
     const columnHelper = createColumnHelper<MerchantInfo>()
 
     return [
+      columnHelper.display({
+        id: 'select',
+        header: ({ table }) => (
+          <Checkbox
+            isChecked={table.getIsAllPageRowsSelected()}
+            onChange={e => table.toggleAllPageRowsSelected(!!e.target.checked)}
+            aria-label='Select all'
+            borderColor='blackAlpha.400'
+          />
+        ),
+        cell: ({ row }) => (
+          <Checkbox
+            isChecked={row.getIsSelected()}
+            onChange={e => row.toggleSelected(!!e.target.checked)}
+            aria-label='Select row'
+            borderColor='blackAlpha.400'
+          />
+        ),
+        enableSorting: false,
+      }),
       columnHelper.accessor('no', {
         cell: info => info.getValue(),
         header: 'No',
@@ -97,7 +122,7 @@ const DraftApplications = () => {
             mr={{ base: '-2', xl: '3' }}
             onClick={() => {
               setSelectedMerchantId(row.original.no)
-              onOpen()
+              onInfoModalOpen()
             }}
           >
             View Details
@@ -105,58 +130,42 @@ const DraftApplications = () => {
         ),
         enableSorting: false,
       }),
-      columnHelper.display({
-        id: 'proceed',
-        cell: ({ row }) => (
-          <CustomButton
-            mt={{ base: '2', xl: '0' }}
-            mr={{ base: '-2', xl: '3' }}
-            onClick={() => {
-              sessionStorage.setItem('merchantId', row.original.no.toString())
-              navigate('/registry/registry-form')
-            }}
-          >
-            Proceed
-          </CustomButton>
-        ),
-        enableSorting: false,
-      }),
     ]
-  }, [navigate, onOpen])
+  }, [onInfoModalOpen])
 
   const {
     register,
     formState: { errors },
     handleSubmit,
     reset,
-  } = useForm<DraftsFilterForm>({
-    resolver: zodResolver(draftsFilterSchema),
+  } = useForm<MerchantsFilterForm>({
+    resolver: zodResolver(merchantsFilterSchema),
   })
 
-  const getDrafts = async (values?: DraftsFilterForm) => {
+  const getRevertedMerchantRecords = async (values?: MerchantsFilterForm) => {
     const params = values
-      ? { ...values, registrationStatus: MerchantRegistrationStatus.DRAFT }
-      : { registrationStatus: MerchantRegistrationStatus.DRAFT }
-    const drafts = await getMerchants(params)
+      ? { ...values, registrationStatus: MerchantRegistrationStatus.REVERTED }
+      : { registrationStatus: MerchantRegistrationStatus.REVERTED }
+    const revertedMerchants = await getMerchants(params)
 
-    if (drafts) {
-      const transformedData = drafts.map(transformIntoTableData)
+    if (revertedMerchants) {
+      const transformedData = revertedMerchants.map(transformIntoTableData)
       setData(transformedData)
     }
   }
 
-  useEffect(() => {
-    getDrafts()
-  }, [])
-
-  const onSubmit = (values: DraftsFilterForm) => {
-    getDrafts(values)
+  const onSubmit = (values: MerchantsFilterForm) => {
+    getRevertedMerchantRecords(values)
   }
+
+  useEffect(() => {
+    getRevertedMerchantRecords()
+  }, [])
 
   return (
     <Stack h='full'>
       <Heading size='md' mb='10'>
-        Merchant Acquiring System &gt; Draft Applications
+        To be Reverted Report
       </Heading>
 
       <Stack as='form' spacing='8' onSubmit={handleSubmit(onSubmit)}>
@@ -235,8 +244,8 @@ const DraftApplications = () => {
             colorVariant='accent-outline'
             mr='4'
             onClick={() => {
+              getRevertedMerchantRecords()
               reset()
-              getDrafts()
             }}
           >
             Clear Filter
@@ -250,8 +259,8 @@ const DraftApplications = () => {
 
       {selectedMerchantId && (
         <MerchantInformationModal
-          isOpen={isOpen}
-          onClose={onClose}
+          isOpen={isInfoModalOpen}
+          onClose={onInfoModalClose}
           selectedMerchantId={selectedMerchantId}
         />
       )}
@@ -267,14 +276,14 @@ const DraftApplications = () => {
         mb='-14'
       >
         <DataTable
-          data={data}
           columns={columns}
+          data={data}
           breakpoint='xl'
-          alwaysVisibleColumns={[0]}
+          alwaysVisibleColumns={[0, 1]}
         />
       </Box>
     </Stack>
   )
 }
 
-export default DraftApplications
+export default RevertedMerchantRecords

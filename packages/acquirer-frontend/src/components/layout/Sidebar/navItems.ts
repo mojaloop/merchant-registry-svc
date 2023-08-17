@@ -44,6 +44,11 @@ export const navItems = [
         shortName: 'Pending',
         to: '/merchant-records/pending-merchant-records',
       },
+      {
+        name: 'Reverted Merchant Records',
+        shortName: 'Reverted',
+        to: '/merchant-records/reverted-merchant-records',
+      },
     ],
   },
   {

@@ -9,9 +9,9 @@ import type {
   LocationInfoForm,
   OwnerInfoForm,
 } from '@/lib/validations/registry'
-import type { PendingMerchantsForm } from '@/lib/validations/pendingMerchants'
-import type { AllMerchantsForm } from '@/lib/validations/allMerchants'
-import type { DraftApplicationsForm } from '@/lib/validations/draftApplications'
+import type { MerchantsFilterForm } from '@/lib/validations/merchantsFilter'
+import type { AllMerchantsFilterForm } from '@/lib/validations/allMerchantsFilter'
+import type { DraftsFilterForm } from '@/lib/validations/draftsFilter'
 
 export const getDraftCount = async () => {
   try {
@@ -230,7 +230,7 @@ export const changeStatusToReview = async (merchantId: string) => {
 }
 
 export const getMerchants = async (
-  params: AllMerchantsForm | PendingMerchantsForm | DraftApplicationsForm
+  params: AllMerchantsFilterForm | MerchantsFilterForm | DraftsFilterForm
 ) => {
   try {
     const response = await instance.get<{ data: MerchantDetails[] }>('/merchants', {
@@ -274,6 +274,19 @@ export const approveMerchants = async (selectedMerchantIds: number[]) => {
 export const rejectMerchants = async (selectedMerchantIds: number[], reason: string) => {
   try {
     await instance.put('/merchants/bulk-reject', {
+      ids: selectedMerchantIds,
+      reason,
+    })
+  } catch (error) {
+    if (isAxiosError(error)) {
+      alert(error.response?.data?.message)
+    }
+  }
+}
+
+export const revertMerchants = async (selectedMerchantIds: number[], reason: string) => {
+  try {
+    await instance.put('/merchants/bulk-revert', {
       ids: selectedMerchantIds,
       reason,
     })

@@ -39,6 +39,7 @@ const ReasonModal = ({
 
   const onSubmit = (values: ReasonForm) => {
     actionFunc(values.reason || '')
+    onClose()
   }
 
   return (

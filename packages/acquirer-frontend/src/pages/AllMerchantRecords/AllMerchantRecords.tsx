@@ -15,7 +15,10 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { MerchantRegistrationStatus } from 'shared-lib'
 
 import type { MerchantInfo } from '@/types/merchants'
-import { type AllMerchantsForm, allMerchantsSchema } from '@/lib/validations/allMerchants'
+import {
+  type AllMerchantsFilterForm,
+  allMerchantsFilterSchema,
+} from '@/lib/validations/allMerchantsFilter'
 import { getMerchants } from '@/api'
 import {
   REGISTRATION_STATUS_COLORS,
@@ -137,14 +140,14 @@ const AllMerchantRecords = () => {
     formState: { errors },
     handleSubmit,
     reset,
-  } = useForm<AllMerchantsForm>({
-    resolver: zodResolver(allMerchantsSchema),
+  } = useForm<AllMerchantsFilterForm>({
+    resolver: zodResolver(allMerchantsFilterSchema),
     defaultValues: {
       registrationStatus: null,
     },
   })
 
-  const getAllMerchantRecords = async (values?: AllMerchantsForm) => {
+  const getAllMerchantRecords = async (values?: AllMerchantsFilterForm) => {
     const params = values ?? {}
     const allMerchants = await getMerchants(params)
 
@@ -154,7 +157,7 @@ const AllMerchantRecords = () => {
     }
   }
 
-  const onSubmit = (values: AllMerchantsForm) => {
+  const onSubmit = (values: AllMerchantsFilterForm) => {
     getAllMerchantRecords(values)
   }
 
@@ -288,7 +291,7 @@ const AllMerchantRecords = () => {
           columns={columns}
           data={data}
           breakpoint='xl'
-          alwaysVisibleColumns={[1]}
+          alwaysVisibleColumns={[0, 1]}
           onExport={() => console.log('exported')}
         />
       </Box>
