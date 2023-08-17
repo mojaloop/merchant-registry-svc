@@ -100,6 +100,7 @@ export async function exportMerchantXlsx (req: Request, res: Response) {
         'category_code',
         'currency_code',
         'checkout_counters',
+        'checkout_counters.checkout_location',
         'business_licenses',
         'contact_persons',
         'created_by',
@@ -145,7 +146,6 @@ export async function exportMerchantXlsx (req: Request, res: Response) {
   ]
 
   const locationColumns = [
-    { header: 'ID', key: 'id', width: 10 },
     { header: 'address_type', key: 'address_type', width: 32 },
     { header: 'department', key: 'department', width: 32 },
     { header: 'sub_department', key: 'sub_department', width: 32 },
@@ -180,7 +180,6 @@ export async function exportMerchantXlsx (req: Request, res: Response) {
     { header: 'notification_number', key: 'notification_number', width: 32 },
     { header: 'alias_type', key: 'alias_type', width: 32 },
     { header: 'alias_value', key: 'alias_value', width: 32 },
-    { header: 'Merchant Registry ID', key: 'merchant_registry_id', width: 10 },
     { header: 'Location ID', key: 'checkout_location', width: 10 }
   ]
 
