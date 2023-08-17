@@ -13,6 +13,27 @@ import type { MerchantsFilterForm } from '@/lib/validations/merchantsFilter'
 import type { AllMerchantsFilterForm } from '@/lib/validations/allMerchantsFilter'
 import type { DraftsFilterForm } from '@/lib/validations/draftsFilter'
 
+export const login = async (email: string, password: string) => {
+  try {
+    const response = await instance.post<{ token: string }>('/users/login', {
+      email,
+      password,
+    })
+
+    if (response.data.token) {
+      alert('Login Successful')
+      return response.data.token
+    }
+  } catch (error) {
+    if (isAxiosError(error)) {
+      alert(
+        error.response?.data?.message ||
+          'Something went wrong! Please check your credentials and try again.'
+      )
+    }
+  }
+}
+
 export const getDraftCount = async () => {
   try {
     const response = await instance.get<{ data: number }>('/merchants/draft-counts')

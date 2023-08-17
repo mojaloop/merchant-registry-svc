@@ -11,13 +11,12 @@ import {
   Text,
   VStack,
 } from '@chakra-ui/react'
-import { isAxiosError } from 'axios'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 
 import mojaloopLogo from '@/assets/mojaloop-logo.png'
-import instance from '@/lib/axiosInstance'
 import { type LoginForm, loginSchema } from '@/lib/validations/login'
+import { login } from '@/api'
 import { CustomButton } from '@/components/ui'
 import { FormInput } from '@/components/form'
 
@@ -33,24 +32,10 @@ const Login = () => {
   })
 
   const onSubmit = async (values: LoginForm) => {
-    try {
-      const response = await instance.post('/users/login', {
-        email: values.email,
-        password: values.password,
-      })
-
-      if (response.data.token) {
-        alert('Login Successful')
-        sessionStorage.setItem('token', response.data.token)
-        navigate('/')
-      }
-    } catch (error) {
-      if (isAxiosError(error)) {
-        alert(
-          error.response?.data?.error ||
-            'Something went wrong! Please check your credentials and try again.'
-        )
-      }
+    const token = await login(values.email, values.password)
+    if (token) {
+      sessionStorage.setItem('token', token)
+      navigate('/')
     }
   }
 
