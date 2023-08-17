@@ -205,6 +205,40 @@ paths:
                     type: string
                     description: merchant drafts counts
                     example: 4
+  /merchants/export:
+    get:
+      tags:
+        - Merchants
+      security:
+        - Authorization: []
+      summary: Export Merchants as XLSX
+      parameters:
+        - in: query
+          name: ids
+          required: true
+          schema:
+            type: array
+            items:
+              type: number
+          description: >-
+            Merchant Record IDs are either as a comma-separated string or an
+            array of numbers.
+          example:
+            - 1
+            - 2
+            - 3
+      responses:
+        '200':
+          description: Merchants Exported
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  data:
+                    type: object
   /merchants/{id}/locations:
     get:
       tags:

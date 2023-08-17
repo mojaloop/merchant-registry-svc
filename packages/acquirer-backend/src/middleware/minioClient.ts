@@ -107,7 +107,15 @@ export async function uploadMerchantDocument (
 
 export async function getMerchantDocumentURL (documentPath: string): Promise<string> {
   // documentPath example.. merchant-1/merchant-1-license-document-1690705979705.pdf
-  const url = await minioClient.presignedGetObject(merchantDocumentBucketName, documentPath)
-  logger.info('Storage Server document URL: %s', url)
-  return url
+  if (documentPath == null || documentPath.length === 0) {
+    return ''
+  }
+  try {
+    const url = await minioClient.presignedGetObject(merchantDocumentBucketName, documentPath)
+    logger.info('Storage Server document URL: %s', url)
+    return url
+  } catch (e) {
+    logger.error('Storage Server document URL error: %s', e)
+    return ''
+  }
 }
