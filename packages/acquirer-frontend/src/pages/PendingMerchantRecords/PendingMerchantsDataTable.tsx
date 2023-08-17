@@ -34,7 +34,7 @@ interface PendingMerchantsDataTableProps<T> extends TableContainerProps {
   onExport: () => void
   onReject: (ids: number[]) => void
   onApprove: (ids: number[]) => void
-  onRevert: () => void
+  onRevert: (ids: number[]) => void
   hidePerPage?: boolean
   rowStyle?: TableRowProps
 }
@@ -93,6 +93,11 @@ const PendingMerchantsDataTable = <T,>({
     setRowSelection({}) // Clear the row selection state to fix undefined error
   }
 
+  const handleRevert = () => {
+    onRevert(getSelectedMerchantIds())
+    setRowSelection({}) // Clear the row selection state to fix undefined error
+  }
+
   return (
     <>
       <HStack spacing='3'>
@@ -127,7 +132,7 @@ const PendingMerchantsDataTable = <T,>({
           px='6'
           mb='4'
           isDisabled={!table.getIsSomeRowsSelected() && !table.getIsAllRowsSelected()}
-          onClick={onRevert}
+          onClick={handleRevert}
         >
           Revert
         </CustomButton>
