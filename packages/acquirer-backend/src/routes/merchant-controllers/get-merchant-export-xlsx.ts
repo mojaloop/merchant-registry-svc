@@ -130,7 +130,7 @@ export async function exportMerchantXlsx (req: Request, res: Response) {
   const contactPersonsWorkbook = workbook.addWorksheet('Contact Persons')
 
   merchantsWorkbook.columns = [
-    { header: 'ID', key: 'id', width: 10 },
+    { header: 'Merchant ID', key: 'id', width: 15 },
     { header: 'dba_trading_name', key: 'dba_trading_name', width: 32 },
     { header: 'registered_name', key: 'registered_name', width: 32 },
     { header: 'employees_num', key: 'employees_num', width: 32 },
@@ -166,16 +166,16 @@ export async function exportMerchantXlsx (req: Request, res: Response) {
   ]
 
   businessLocationsWorkbook.columns = [
-    { header: 'ID', key: 'id', width: 10 },
-    { header: 'Merchant ID', key: 'merchant_id', width: 32 },
+    { header: 'Business Location ID', key: 'id', width: 20 },
+    { header: 'Merchant ID', key: 'merchant_id', width: 15 },
     { header: 'location_type', key: 'location_type', width: 32 },
     { header: 'web_url', key: 'web_url', width: 32 },
     ...locationColumns
   ]
 
   checkoutCountersWorkbook.columns = [
-    { header: 'ID', key: 'id', width: 10 },
-    { header: 'Merchant ID', key: 'merchant_id', width: 10 },
+    { header: 'Checkout Counter ID', key: 'id', width: 20 },
+    { header: 'Merchant ID', key: 'merchant_id', width: 15 },
     { header: 'description', key: 'description', width: 32 },
     { header: 'notification_number', key: 'notification_number', width: 32 },
     { header: 'alias_type', key: 'alias_type', width: 32 },
@@ -184,8 +184,8 @@ export async function exportMerchantXlsx (req: Request, res: Response) {
   ]
 
   businessOwnersWorkbook.columns = [
-    { header: 'ID', key: 'id', width: 10 },
-    { header: 'Merchant ID', key: 'merchant_id', width: 10 },
+    { header: 'Business Owner ID', key: 'id', width: 18 },
+    { header: 'Merchant ID', key: 'merchant_id', width: 15 },
     { header: 'identificaton_type', key: 'identificaton_type', width: 32 },
     { header: 'identification_number', key: 'identification_number', width: 32 },
     { header: 'name', key: 'name', width: 32 },
@@ -195,8 +195,8 @@ export async function exportMerchantXlsx (req: Request, res: Response) {
   ]
 
   contactPersonsWorkbook.columns = [
-    { header: 'ID', key: 'id', width: 10 },
-    { header: 'Merchant ID', key: 'merchant_id', width: 10 },
+    { header: 'Contact Person ID', key: 'id', width: 18 },
+    { header: 'Merchant ID', key: 'merchant_id', width: 15 },
     { header: 'name', key: 'name', width: 32 },
     { header: 'email', key: 'email', width: 32 },
     { header: 'phone_number', key: 'phone_number', width: 32 }
