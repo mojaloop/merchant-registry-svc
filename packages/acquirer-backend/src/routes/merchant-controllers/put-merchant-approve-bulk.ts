@@ -97,12 +97,12 @@ export async function putBulkWaitingAliasGeneration (req: Request, res: Response
         AuditActionType.UPDATE,
         AuditTrasactionStatus.FAILURE,
         'putBulkApprove',
-        'Merchant cannot be approve by the same user who created it',
+        'Merchant cannot be approve by the same user who submitted it',
         'Merchant',
         {}, {}, portalUser
       )
       return res.status(422).send({
-        message: `Merchant ${merchant.id} cannot be approved by the same user who created it.`
+        message: `Merchant ${merchant.id} cannot be approved by the same user who submitted it.`
       })
     }
   }

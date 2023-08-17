@@ -127,12 +127,12 @@ export async function putBulkRevert (req: Request, res: Response) {
         AuditActionType.UPDATE,
         AuditTrasactionStatus.FAILURE,
         'putBulkRevert',
-        'Merchant cannot be reverted by the same user who created it',
+        'Merchant cannot be reverted by the same user who submitted it',
         'Merchant',
         {}, {}, portalUser
       )
       return res.status(422).send({
-        message: `Merchant ${merchant.id} cannot be reverted by the same user who created it.`
+        message: `Merchant ${merchant.id} cannot be reverted by the same user who submitted it.`
       })
     }
   }

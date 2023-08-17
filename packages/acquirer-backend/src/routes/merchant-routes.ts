@@ -21,7 +21,7 @@ import { putWaitingAliasGeneration } from './merchant-controllers/put-merchant-a
 import { exportMerchantXlsx } from './merchant-controllers/get-merchant-export-xlsx'
 import { putBulkWaitingAliasGeneration } from './merchant-controllers/put-merchant-approve-bulk'
 import { putBulkReject } from './merchant-controllers/put-merchant-reject-bulk'
-import { putBulkRevert } from './merchant-controllers/put-merchant-revert'
+import { putBulkRevert } from './merchant-controllers/put-merchant-revert-bulk'
 
 const router = express.Router()
 
