@@ -8,6 +8,7 @@ import {
   PendingMerchantRecords,
   Registry,
   RegistryForm,
+  RevertedMerchantRecords,
   RoleManagement,
   UserManagement,
 } from '@/pages'
@@ -45,6 +46,11 @@ const Routes = () => {
         {
           path: 'merchant-records/pending-merchant-records',
           element: <PendingMerchantRecords />,
+          caseSensitive: true,
+        },
+        {
+          path: 'merchant-records/reverted-merchant-records',
+          element: <RevertedMerchantRecords />,
           caseSensitive: true,
         },
         {
