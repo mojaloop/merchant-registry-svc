@@ -25,6 +25,7 @@ interface ICurrency {
  *   get:
  *     tags:
  *       - Merchants
+ *       - Exports / Imports
  *     security:
  *       - Authorization: []
  *     summary: Export Merchants as XLSX
