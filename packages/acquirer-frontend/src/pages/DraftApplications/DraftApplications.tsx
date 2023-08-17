@@ -15,10 +15,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { MerchantRegistrationStatus } from 'shared-lib'
 
 import type { MerchantInfo } from '@/types/merchants'
-import {
-  type DraftApplicationsForm,
-  draftApplicationsSchema,
-} from '@/lib/validations/draftApplications'
+import { type DraftsFilterForm, draftsFilterSchema } from '@/lib/validations/draftsFilter'
 import { getMerchants } from '@/api'
 import {
   REGISTRATION_STATUS_COLORS,
@@ -132,11 +129,11 @@ const DraftApplications = () => {
     formState: { errors },
     handleSubmit,
     reset,
-  } = useForm<DraftApplicationsForm>({
-    resolver: zodResolver(draftApplicationsSchema),
+  } = useForm<DraftsFilterForm>({
+    resolver: zodResolver(draftsFilterSchema),
   })
 
-  const getDrafts = async (values?: DraftApplicationsForm) => {
+  const getDrafts = async (values?: DraftsFilterForm) => {
     const params = values
       ? { ...values, registrationStatus: MerchantRegistrationStatus.DRAFT }
       : { registrationStatus: MerchantRegistrationStatus.DRAFT }
@@ -152,7 +149,7 @@ const DraftApplications = () => {
     getDrafts()
   }, [])
 
-  const onSubmit = (values: DraftApplicationsForm) => {
+  const onSubmit = (values: DraftsFilterForm) => {
     getDrafts(values)
   }
 

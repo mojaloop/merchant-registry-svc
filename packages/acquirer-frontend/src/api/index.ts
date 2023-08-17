@@ -10,8 +10,8 @@ import type {
   OwnerInfoForm,
 } from '@/lib/validations/registry'
 import type { MerchantsFilterForm } from '@/lib/validations/merchantsFilter'
-import type { AllMerchantsForm } from '@/lib/validations/allMerchants'
-import type { DraftApplicationsForm } from '@/lib/validations/draftApplications'
+import type { AllMerchantsFilterForm } from '@/lib/validations/allMerchantsFilter'
+import type { DraftsFilterForm } from '@/lib/validations/draftsFilter'
 
 export const getDraftCount = async () => {
   try {
@@ -230,7 +230,7 @@ export const changeStatusToReview = async (merchantId: string) => {
 }
 
 export const getMerchants = async (
-  params: AllMerchantsForm | MerchantsFilterForm | DraftApplicationsForm
+  params: AllMerchantsFilterForm | MerchantsFilterForm | DraftsFilterForm
 ) => {
   try {
     const response = await instance.get<{ data: MerchantDetails[] }>('/merchants', {

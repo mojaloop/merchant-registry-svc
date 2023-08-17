@@ -1,9 +1,9 @@
 import { z } from 'zod'
 import { MerchantRegistrationStatus } from 'shared-lib'
 
-export type AllMerchantsForm = z.infer<typeof allMerchantsSchema>
+export type AllMerchantsFilterForm = z.infer<typeof allMerchantsFilterSchema>
 
-export const allMerchantsSchema = z.object({
+export const allMerchantsFilterSchema = z.object({
   addedBy: z.string().optional(),
   approvedBy: z.string().optional(),
   addedTime: z.string().optional(),
