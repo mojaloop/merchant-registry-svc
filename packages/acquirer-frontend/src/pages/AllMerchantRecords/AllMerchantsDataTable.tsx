@@ -17,7 +17,7 @@ import {
   Th,
   Thead,
   Tr,
-  TableRowProps,
+  type TableRowProps,
 } from '@chakra-ui/react'
 
 import type { MerchantInfo } from '@/types/merchants'

@@ -19,14 +19,15 @@ import {
   type MerchantsFilterForm,
   merchantsFilterSchema,
 } from '@/lib/validations/merchantsFilter'
-import { getMerchants } from '@/api'
+import { exportMerchants, getMerchants } from '@/api'
 import {
   REGISTRATION_STATUS_COLORS,
   type RegistrationStatus,
 } from '@/constants/registrationStatus'
-import { transformIntoTableData } from '@/utils'
-import { CustomButton, DataTable, MerchantInformationModal } from '@/components/ui'
+import { downloadMerchantsBlobAsXlsx, transformIntoTableData } from '@/utils'
+import { CustomButton, MerchantInformationModal } from '@/components/ui'
 import { FormInput } from '@/components/form'
+import RevertedMerchantsDataTable from './RevertedMerchantsDataTable'
 
 const RevertedMerchantRecords = () => {
   const [data, setData] = useState<MerchantInfo[]>([])
@@ -275,11 +276,17 @@ const RevertedMerchantRecords = () => {
         flexGrow='1'
         mb='-14'
       >
-        <DataTable
+        <RevertedMerchantsDataTable
           columns={columns}
           data={data}
           breakpoint='xl'
           alwaysVisibleColumns={[0, 1]}
+          onExport={async selectedMerchantIds => {
+            const blobData = await exportMerchants(selectedMerchantIds)
+            if (blobData) {
+              downloadMerchantsBlobAsXlsx(blobData)
+            }
+          }}
         />
       </Box>
     </Stack>

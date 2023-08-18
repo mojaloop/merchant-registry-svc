@@ -24,7 +24,7 @@ import {
   REGISTRATION_STATUS_COLORS,
   type RegistrationStatus,
 } from '@/constants/registrationStatus'
-import { downloadMerchantsBlobData, transformIntoTableData } from '@/utils'
+import { downloadMerchantsBlobAsXlsx, transformIntoTableData } from '@/utils'
 import { CustomButton, MerchantInformationModal } from '@/components/ui'
 import { FormInput, FormSelect } from '@/components/form'
 import AllMerchantsDataTable from './AllMerchantsDataTable'
@@ -295,7 +295,7 @@ const AllMerchantRecords = () => {
           onExport={async selectedMerchantIds => {
             const blobData = await exportMerchants(selectedMerchantIds)
             if (blobData) {
-              downloadMerchantsBlobData(blobData)
+              downloadMerchantsBlobAsXlsx(blobData)
             }
           }}
         />

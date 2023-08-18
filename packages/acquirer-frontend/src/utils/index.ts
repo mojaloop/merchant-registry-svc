@@ -34,7 +34,7 @@ export const transformIntoTableData = (merchantData: MerchantDetails): MerchantI
   }
 }
 
-export const downloadMerchantsBlobData = (blobData: Blob) => {
+export const downloadMerchantsBlobAsXlsx = (blobData: Blob) => {
   const url = URL.createObjectURL(blobData)
   const link = document.createElement('a')
   link.href = url
