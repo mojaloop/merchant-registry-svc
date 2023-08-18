@@ -17,7 +17,7 @@ import {
   Th,
   Thead,
   Tr,
-  TableRowProps,
+  type TableRowProps,
   HStack,
 } from '@chakra-ui/react'
 
@@ -32,7 +32,7 @@ interface PendingMerchantsDataTableProps<T> extends TableContainerProps {
   columns: ColumnDef<T, any>[]
   alwaysVisibleColumns: number[]
   breakpoint: 'sm' | 'md' | 'lg' | 'xl' | '2xl'
-  onExport: () => void
+  onExport: (ids: number[]) => void
   onReject: (ids: number[]) => void
   onApprove: (ids: number[]) => void
   onRevert: (ids: number[]) => void
@@ -81,6 +81,11 @@ const PendingMerchantsDataTable = <T,>({
     return selectedRows.map(selectedRow => selectedRow.no)
   }
 
+  const handleExport = () => {
+    onExport(getSelectedMerchantIds())
+    setRowSelection({}) // Clear the row selection state to fix undefined error
+  }
+
   const handleApprove = () => {
     onApprove(getSelectedMerchantIds())
     setRowSelection({}) // Clear the row selection state to fix undefined error
@@ -103,7 +108,7 @@ const PendingMerchantsDataTable = <T,>({
           px='6'
           mb='4'
           isDisabled={!table.getIsSomeRowsSelected() && !table.getIsAllRowsSelected()}
-          onClick={onExport}
+          onClick={handleExport}
         >
           Export
         </CustomButton>

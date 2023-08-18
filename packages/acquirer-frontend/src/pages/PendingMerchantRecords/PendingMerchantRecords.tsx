@@ -19,12 +19,18 @@ import {
   type MerchantsFilterForm,
   merchantsFilterSchema,
 } from '@/lib/validations/merchantsFilter'
-import { approveMerchants, getMerchants, rejectMerchants, revertMerchants } from '@/api'
+import {
+  approveMerchants,
+  exportMerchants,
+  getMerchants,
+  rejectMerchants,
+  revertMerchants,
+} from '@/api'
 import {
   REGISTRATION_STATUS_COLORS,
   type RegistrationStatus,
 } from '@/constants/registrationStatus'
-import { transformIntoTableData } from '@/utils'
+import { downloadMerchantsBlobAsXlsx, transformIntoTableData } from '@/utils'
 import { CustomButton, MerchantInformationModal } from '@/components/ui'
 import { FormInput } from '@/components/form'
 import PendingMerchantsDataTable from './PendingMerchantsDataTable'
@@ -317,7 +323,12 @@ const PendingMerchantRecords = () => {
           data={data}
           breakpoint='xl'
           alwaysVisibleColumns={[0, 1]}
-          onExport={() => console.log('exported')}
+          onExport={async selectedMerchantIds => {
+            const blobData = await exportMerchants(selectedMerchantIds)
+            if (blobData) {
+              downloadMerchantsBlobAsXlsx(blobData)
+            }
+          }}
           onReject={selectedMerchantIds => {
             onRejectReasonModalOpen()
             setSelectedMerchantIds(selectedMerchantIds)
