@@ -318,15 +318,15 @@ const PendingMerchantRecords = () => {
           breakpoint='xl'
           alwaysVisibleColumns={[0, 1]}
           onExport={() => console.log('exported')}
-          onReject={(selectedMerchantIds: number[]) => {
+          onReject={selectedMerchantIds => {
             onRejectReasonModalOpen()
             setSelectedMerchantIds(selectedMerchantIds)
           }}
-          onApprove={async (selectedMerchantIds: number[]) => {
+          onApprove={async selectedMerchantIds => {
             await approveMerchants(selectedMerchantIds)
             getPendingMerchantRecords()
           }}
-          onRevert={(selectedMerchantIds: number[]) => {
+          onRevert={selectedMerchantIds => {
             onRevertReasonModalOpen()
             setSelectedMerchantIds(selectedMerchantIds)
           }}

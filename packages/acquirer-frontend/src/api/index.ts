@@ -316,3 +316,20 @@ export const revertMerchants = async (selectedMerchantIds: number[], reason: str
     }
   }
 }
+
+export const exportMerchants = async (selectedMerchantIds: number[]) => {
+  const queryString = selectedMerchantIds
+    .map(merchantId => merchantId.toString())
+    .reduce((accumulator: string, merchantId) => `${accumulator},${merchantId}`)
+
+  try {
+    const response = await instance.get<Blob>(`/merchants/export?ids=${queryString}`, {
+      responseType: 'blob',
+    })
+    return response.data
+  } catch (error) {
+    if (isAxiosError(error)) {
+      alert(error.response?.data?.message)
+    }
+  }
+}
