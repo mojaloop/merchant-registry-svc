@@ -17,9 +17,10 @@ import {
   Th,
   Thead,
   Tr,
-  TableRowProps,
+  type TableRowProps,
 } from '@chakra-ui/react'
 
+import type { MerchantInfo } from '@/types/merchants'
 import { CustomButton } from '@/components/ui'
 import MobileTable from '@/components/ui/DataTable/MobileTable'
 import PaginationControl from '@/components/ui/DataTable/PaginationControl'
@@ -30,7 +31,7 @@ interface AllMerchantsDataTableProps<T> extends TableContainerProps {
   columns: ColumnDef<T, any>[]
   alwaysVisibleColumns: number[]
   breakpoint: 'sm' | 'md' | 'lg' | 'xl' | '2xl'
-  onExport: () => void
+  onExport: (ids: number[]) => void
   hidePerPage?: boolean
   rowStyle?: TableRowProps
 }
@@ -63,7 +64,20 @@ const AllMerchantsDataTable = <T,>({
     getSortedRowModel: getSortedRowModel(),
   })
 
-  const { getHeaderGroups, getRowModel } = table
+  const { getHeaderGroups, getRowModel, getSelectedRowModel } = table
+
+  const getSelectedMerchantIds = (): number[] => {
+    const selectedRows = getSelectedRowModel().rows.map(
+      row => row.original
+    ) as MerchantInfo[]
+
+    return selectedRows.map(selectedRow => selectedRow.no)
+  }
+
+  const handleExport = () => {
+    onExport(getSelectedMerchantIds())
+    setRowSelection({}) // Clear the row selection state to fix undefined error
+  }
 
   return (
     <>
@@ -71,7 +85,7 @@ const AllMerchantsDataTable = <T,>({
         px='6'
         mb='4'
         isDisabled={!table.getIsSomeRowsSelected() && !table.getIsAllRowsSelected()}
-        onClick={onExport}
+        onClick={handleExport}
       >
         Export
       </CustomButton>

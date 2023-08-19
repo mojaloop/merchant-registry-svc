@@ -33,3 +33,13 @@ export const transformIntoTableData = (merchantData: MerchantDetails): MerchantI
     registrationStatus: merchantData.registration_status,
   }
 }
+
+export const downloadMerchantsBlobAsXlsx = (blobData: Blob) => {
+  const url = URL.createObjectURL(blobData)
+  const link = document.createElement('a')
+  link.href = url
+  link.setAttribute('download', 'merchants.xlsx')
+  document.body.appendChild(link)
+  link.click()
+  document.body.removeChild(link)
+}

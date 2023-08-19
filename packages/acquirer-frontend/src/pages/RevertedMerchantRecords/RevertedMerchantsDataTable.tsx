@@ -20,28 +20,32 @@ import {
   type TableRowProps,
 } from '@chakra-ui/react'
 
-import MobileTable from './MobileTable'
-import PaginationControl from './PaginationControl'
+import type { MerchantInfo } from '@/types/merchants'
+import { CustomButton } from '@/components/ui'
+import MobileTable from '@/components/ui/DataTable/MobileTable'
+import PaginationControl from '@/components/ui/DataTable/PaginationControl'
 
-interface DataTableProps<T> extends TableContainerProps {
+interface RevertedMerchantsDataTableProps<T> extends TableContainerProps {
   data: T[]
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   columns: ColumnDef<T, any>[]
   alwaysVisibleColumns: number[]
   breakpoint: 'sm' | 'md' | 'lg' | 'xl' | '2xl'
+  onExport: (ids: number[]) => void
   hidePerPage?: boolean
   rowStyle?: TableRowProps
 }
 
-const DataTable = <T,>({
+const RevertedMerchantsDataTable = <T,>({
   data,
   columns,
   alwaysVisibleColumns,
   breakpoint,
+  onExport,
   hidePerPage,
   rowStyle,
   ...props
-}: DataTableProps<T>) => {
+}: RevertedMerchantsDataTableProps<T>) => {
   const [sorting, setSorting] = useState<SortingState>([])
   const [rowSelection, setRowSelection] = useState({})
 
@@ -60,10 +64,32 @@ const DataTable = <T,>({
     getSortedRowModel: getSortedRowModel(),
   })
 
-  const { getHeaderGroups, getRowModel } = table
+  const { getHeaderGroups, getRowModel, getSelectedRowModel } = table
+
+  const getSelectedMerchantIds = (): number[] => {
+    const selectedRows = getSelectedRowModel().rows.map(
+      row => row.original
+    ) as MerchantInfo[]
+
+    return selectedRows.map(selectedRow => selectedRow.no)
+  }
+
+  const handleExport = () => {
+    onExport(getSelectedMerchantIds())
+    setRowSelection({}) // Clear the row selection state to fix undefined error
+  }
 
   return (
     <>
+      <CustomButton
+        px='6'
+        mb='4'
+        isDisabled={!table.getIsSomeRowsSelected() && !table.getIsAllRowsSelected()}
+        onClick={handleExport}
+      >
+        Export
+      </CustomButton>
+
       <MobileTable
         table={table}
         alwaysVisibleColumns={alwaysVisibleColumns}
@@ -90,6 +116,7 @@ const DataTable = <T,>({
                           colSpan={header.colSpan}
                           textAlign='center'
                           whiteSpace='pre-line'
+                          px='3'
                         >
                           {flexRender(
                             header.column.columnDef.header,
@@ -135,4 +162,4 @@ const DataTable = <T,>({
   )
 }
 
-export default DataTable
+export default RevertedMerchantsDataTable

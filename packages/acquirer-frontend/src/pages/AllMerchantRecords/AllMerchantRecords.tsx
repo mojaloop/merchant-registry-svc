@@ -19,12 +19,12 @@ import {
   type AllMerchantsFilterForm,
   allMerchantsFilterSchema,
 } from '@/lib/validations/allMerchantsFilter'
-import { getMerchants } from '@/api'
+import { exportMerchants, getMerchants } from '@/api'
 import {
   REGISTRATION_STATUS_COLORS,
   type RegistrationStatus,
 } from '@/constants/registrationStatus'
-import { transformIntoTableData } from '@/utils'
+import { downloadMerchantsBlobAsXlsx, transformIntoTableData } from '@/utils'
 import { CustomButton, MerchantInformationModal } from '@/components/ui'
 import { FormInput, FormSelect } from '@/components/form'
 import AllMerchantsDataTable from './AllMerchantsDataTable'
@@ -292,7 +292,12 @@ const AllMerchantRecords = () => {
           data={data}
           breakpoint='xl'
           alwaysVisibleColumns={[0, 1]}
-          onExport={() => console.log('exported')}
+          onExport={async selectedMerchantIds => {
+            const blobData = await exportMerchants(selectedMerchantIds)
+            if (blobData) {
+              downloadMerchantsBlobAsXlsx(blobData)
+            }
+          }}
         />
       </Box>
     </Stack>
