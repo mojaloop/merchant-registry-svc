@@ -83,7 +83,7 @@ const PendingMerchantsDataTable = <T,>({
 
   const handleExport = () => {
     onExport(getSelectedMerchantIds())
-    setRowSelection({}) // Clear the row selection state to fix undefined error
+    setRowSelection({})
   }
 
   const handleApprove = () => {
