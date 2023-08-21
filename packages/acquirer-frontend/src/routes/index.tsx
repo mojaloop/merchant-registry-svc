@@ -3,11 +3,13 @@ import { Navigate, useRoutes } from 'react-router-dom'
 import { Layout } from '@/components/layout'
 import {
   AllMerchantRecords,
+  ApprovedMerchantRecords,
   DraftApplications,
   Login,
   PendingMerchantRecords,
   Registry,
   RegistryForm,
+  RejectedMerchantRecords,
   RevertedMerchantRecords,
   RoleManagement,
   UserManagement,
@@ -51,6 +53,16 @@ const Routes = () => {
         {
           path: 'merchant-records/reverted-merchant-records',
           element: <RevertedMerchantRecords />,
+          caseSensitive: true,
+        },
+        {
+          path: 'merchant-records/rejected-merchant-records',
+          element: <RejectedMerchantRecords />,
+          caseSensitive: true,
+        },
+        {
+          path: 'merchant-records/approved-merchant-records',
+          element: <ApprovedMerchantRecords />,
           caseSensitive: true,
         },
         {

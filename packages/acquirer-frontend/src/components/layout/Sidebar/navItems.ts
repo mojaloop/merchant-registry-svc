@@ -49,6 +49,16 @@ export const navItems = [
         shortName: 'Reverted',
         to: '/merchant-records/reverted-merchant-records',
       },
+      {
+        name: 'Rejected Merchant Records',
+        shortName: 'Rejected',
+        to: '/merchant-records/rejected-merchant-records',
+      },
+      {
+        name: 'Approved Merchant Records',
+        shortName: 'Approved',
+        to: '/merchant-records/approved-merchant-records',
+      },
     ],
   },
   {
