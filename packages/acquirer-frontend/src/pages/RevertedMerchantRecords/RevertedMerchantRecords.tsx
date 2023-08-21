@@ -25,7 +25,7 @@ import {
   type RegistrationStatus,
 } from '@/constants/registrationStatus'
 import { downloadMerchantsBlobAsXlsx, transformIntoTableData } from '@/utils'
-import { CustomButton, MerchantInformationModal } from '@/components/ui'
+import { CustomButton, CustomLink, MerchantInformationModal } from '@/components/ui'
 import { FormInput } from '@/components/form'
 import RevertedMerchantsDataTable from './RevertedMerchantsDataTable'
 
@@ -129,6 +129,22 @@ const RevertedMerchantRecords = () => {
           >
             View Details
           </CustomButton>
+        ),
+        enableSorting: false,
+      }),
+      columnHelper.display({
+        id: 'proceed',
+        cell: ({ row }) => (
+          <CustomLink
+            href='/registry/registry-form'
+            mt={{ base: '2', xl: '0' }}
+            mr={{ base: '-2', xl: '3' }}
+            onClick={() => {
+              sessionStorage.setItem('merchantId', row.original.no.toString())
+            }}
+          >
+            Proceed
+          </CustomLink>
         ),
         enableSorting: false,
       }),

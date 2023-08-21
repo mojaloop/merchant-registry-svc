@@ -20,7 +20,7 @@ interface ReasonModalProps {
   onClose: () => void
   title: string
   inputLabel: string
-  actionFunc: (reason: string) => void
+  onConfirm: (reason: string) => void
 }
 
 const ReasonModal = ({
@@ -28,7 +28,7 @@ const ReasonModal = ({
   onClose,
   title,
   inputLabel,
-  actionFunc,
+  onConfirm,
 }: ReasonModalProps) => {
   const {
     register,
@@ -39,7 +39,7 @@ const ReasonModal = ({
   })
 
   const onSubmit = (values: ReasonForm) => {
-    actionFunc(values.reason || '')
+    onConfirm(values.reason || '')
     onClose()
   }
 

@@ -53,14 +53,26 @@ const CURRENCIES = Object.entries(CurrencyDescriptions).map(([value, label]) => 
   label: `${value} (${label})`,
 }))
 
+const extractFileNameFromUrl = (url: string) => {
+  const urlSegments = url.split('?')[0].split('/')
+  const fileNameSegment = urlSegments[urlSegments.length - 1]
+  const fileName = fileNameSegment.split('-')[0].replace('pdf', '')
+  return `${fileName}.pdf`
+}
+
 interface BusinessInfoFormProps {
   setActiveStep: React.Dispatch<React.SetStateAction<number>>
+}
+
+interface LicenseDocument {
+  name: string
+  link: string
 }
 
 const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
   const navigate = useNavigate()
   const [isDraft, setIsDraft] = useState(false)
-  const [licenseDocument, setLicenseDocument] = useState('')
+  const [licenseDocument, setLicenseDocument] = useState<LicenseDocument | null>(null)
 
   const licenseDocumentRef = useRef<HTMLInputElement>(null)
   const uploadFileButtonRef = useRef<HTMLButtonElement>(null)
@@ -124,7 +136,10 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
     business_license?.license_number &&
       setValue('license_number', business_license.license_number)
     business_license?.license_document_link &&
-      setLicenseDocument(business_license.license_document_link)
+      setLicenseDocument({
+        link: business_license.license_document_link,
+        name: extractFileNameFromUrl(business_license.license_document_link),
+      })
   }
 
   useEffect(() => {
@@ -173,7 +188,7 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
   }, [watchedHaveLicense, setValue])
 
   return (
-    <Stack as='form' onSubmit={handleSubmit(onSubmit)} pt='20' noValidate>
+    <Stack as='form' onSubmit={handleSubmit(onSubmit)} noValidate>
       <GridShell justifyItems='center'>
         <FormInput
           isRequired
@@ -338,7 +353,7 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
               <Text color='gray.500'>
                 {watchedLicenseDocument
                   ? watchedLicenseDocument?.name
-                  : 'Upload your file'}
+                  : licenseDocument?.name || 'Upload your file'}
               </Text>
               <IconButton
                 ref={uploadFileButtonRef}
