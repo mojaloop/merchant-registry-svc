@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { Box, Heading, Link, Text } from '@chakra-ui/react'
 
 import { getDraftCount } from '@/api'
-import { CustomButton } from '@/components/ui'
+import { CustomButton, CustomLink } from '@/components/ui'
 
 const Registry = () => {
   const navigate = useNavigate()
@@ -28,23 +28,23 @@ const Registry = () => {
         Fill in the merchant registry form
       </Heading>
 
-      <CustomButton
+      <CustomLink
+        href='/registry/registry-form'
         mr='4'
         onClick={() => {
           sessionStorage.removeItem('merchantId')
-          navigate('/registry/registry-form')
         }}
       >
         Add new record
-      </CustomButton>
+      </CustomLink>
 
       <Box position='relative' display='inline-block'>
-        <CustomButton
+        <CustomLink
           isDisabled={draftCount === 0}
           onClick={() => navigate('/registry/draft-applications')}
         >
           Continue with saved draft
-        </CustomButton>
+        </CustomLink>
 
         {draftCount > 0 && (
           <Box
