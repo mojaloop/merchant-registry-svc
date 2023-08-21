@@ -165,7 +165,7 @@ const MerchantInformationModal = ({
                   value={
                     businessLicense?.license_document_link ? (
                       <Link
-                        href={businessLicense.license_document_link}
+                        href={businessLicense?.license_document_link}
                         download
                         color='blue.500'
                       >
@@ -192,7 +192,7 @@ const MerchantInformationModal = ({
 
                 <DetailsItem
                   label='Latitude Longitude'
-                  value={formatLatitudeLongitude(location.latitude, location.longitude)}
+                  value={formatLatitudeLongitude(location?.latitude, location?.longitude)}
                 />
 
                 <DetailsItem label='Website URL' value={location?.web_url || 'N/A'} />
@@ -269,8 +269,8 @@ const MerchantInformationModal = ({
                 <DetailsItem
                   label='Latitude Longitude'
                   value={formatLatitudeLongitude(
-                    businessOwner.businessPersonLocation?.latitude,
-                    businessOwner.businessPersonLocation?.longitude
+                    businessOwner?.businessPersonLocation?.latitude,
+                    businessOwner?.businessPersonLocation?.longitude
                   )}
                 />
 
