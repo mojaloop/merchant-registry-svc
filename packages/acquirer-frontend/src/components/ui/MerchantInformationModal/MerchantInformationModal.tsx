@@ -14,6 +14,8 @@ import {
   Heading,
   type GridItemProps,
   Link,
+  Box,
+  Text,
 } from '@chakra-ui/react'
 
 import type { MerchantDetails } from '@/types/merchantDetails'
@@ -78,6 +80,8 @@ const MerchantInformationModal = ({
     locations,
     business_owners,
     contact_persons,
+    registration_status,
+    registration_status_reason,
   } = merchantDetails
 
   const businessLicense = business_licenses?.[0]
@@ -92,11 +96,23 @@ const MerchantInformationModal = ({
 
       <ModalContent w='90vw' maxW='1000px' mt='14' mb={{ base: '14', lg: '0' }}>
         <ModalHeader py='3' borderBottom='1px' borderColor='gray.100'>
-          Merchant Information
+          <Heading as='h3' size='md'>
+            Merchant Information
+          </Heading>
         </ModalHeader>
         <ModalCloseButton top='2.5' right='4' />
 
         <ModalBody py='5' px={{ base: '4', md: '6' }}>
+          {(registration_status === 'Reverted' || registration_status === 'Rejected') && (
+            <Box bg='primaryBackground' mb='4' px='4' py='3' color='danger' rounded='md'>
+              <Heading as='h4' size='sm' mb='3'>
+                {registration_status} Reason
+              </Heading>
+
+              <Text fontSize='sm'>{registration_status_reason}</Text>
+            </Box>
+          )}
+
           <Grid
             templateRows={{ base: '1fr', lg: 'repeat(4, 1fr)' }}
             templateColumns={{

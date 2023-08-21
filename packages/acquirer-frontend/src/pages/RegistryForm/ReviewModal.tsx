@@ -10,6 +10,7 @@ import {
   ModalOverlay,
   Stack,
   Link,
+  Heading,
 } from '@chakra-ui/react'
 
 import type { MerchantDetails } from '@/types/merchantDetails'
@@ -68,7 +69,9 @@ const ReviewModal = ({ isOpen, onClose, draftData }: ReviewModalProps) => {
 
       <ModalContent w='90vw' maxW='1000px' mt='14' mb={{ base: '14', lg: '0' }}>
         <ModalHeader py='3' borderBottom='1px' borderColor='gray.100'>
-          Merchant Information
+          <Heading as='h3' size='md'>
+            Merchant Information
+          </Heading>
         </ModalHeader>
         <ModalCloseButton top='2.5' right='4' />
 
