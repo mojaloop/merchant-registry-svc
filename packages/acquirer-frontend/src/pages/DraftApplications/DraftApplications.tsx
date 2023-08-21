@@ -81,6 +81,7 @@ const DraftApplications = () => {
           <HStack justify='center' spacing='1.5'>
             <Box
               as='span'
+              minW='2'
               w='2'
               h='2'
               borderRadius='full'

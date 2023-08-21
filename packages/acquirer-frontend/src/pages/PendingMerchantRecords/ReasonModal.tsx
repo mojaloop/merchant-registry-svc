@@ -1,5 +1,6 @@
 import {
   Box,
+  Heading,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -48,7 +49,9 @@ const ReasonModal = ({
 
       <ModalContent w='90vw' maxW='500px' mt='20vh'>
         <ModalHeader py='3' borderBottom='1px' borderColor='gray.100'>
-          {title}
+          <Heading as='h3' size='md'>
+            {title}
+          </Heading>
         </ModalHeader>
         <ModalCloseButton top='2.5' right='4' />
 
