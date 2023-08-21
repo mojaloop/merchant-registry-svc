@@ -1,9 +1,12 @@
-import { Outlet } from 'react-router-dom'
+import { Navigate, Outlet } from 'react-router-dom'
 import { Box, Flex, Stack } from '@chakra-ui/react'
 
 import { Header, Sidebar } from '@/components/layout'
 
 const Layout = () => {
+  const token = sessionStorage.getItem('token')
+  if (!token) return <Navigate to='/login' replace />
+
   return (
     <Stack spacing='0'>
       <Header />
