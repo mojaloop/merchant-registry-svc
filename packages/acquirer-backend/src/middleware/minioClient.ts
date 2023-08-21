@@ -81,8 +81,9 @@ export async function uploadMerchantDocument (
   }
 
   const name = convertURLFriendly(merchant.dba_trading_name)
+  file.originalname = convertURLFriendly(file.originalname)
   const postfix = convertURLFriendly(licenseNumber)
-  const objectName = `${name}/${name}-license-document-${postfix}.pdf`
+  const objectName = `${name}/${file.originalname}-${postfix}.pdf`
   let uploadedPDFInfo: UploadedObjectInfo | null = null
   try {
     uploadedPDFInfo = await minioClient.putObject(
