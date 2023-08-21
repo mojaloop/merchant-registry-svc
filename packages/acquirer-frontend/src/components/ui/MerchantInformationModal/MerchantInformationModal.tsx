@@ -53,7 +53,7 @@ const MerchantInformationModal = ({
 }: MerchantInformationModalProps) => {
   const [merchantDetails, setMerchantDetails] = useState<MerchantDetails | null>(null)
 
-  const getMerchantDetails = async () => {
+  const getMerchantDetails = async (selectedMerchantId: number) => {
     const merchantDetails = await getMerchant(selectedMerchantId)
     if (merchantDetails) {
       setMerchantDetails(merchantDetails)
@@ -61,9 +61,8 @@ const MerchantInformationModal = ({
   }
 
   useEffect(() => {
-    getMerchantDetails()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+    getMerchantDetails(selectedMerchantId)
+  }, [selectedMerchantId])
 
   if (!merchantDetails) return null
 
