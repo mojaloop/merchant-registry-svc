@@ -31,7 +31,7 @@ import {
   type RegistrationStatus,
 } from '@/constants/registrationStatus'
 import { downloadMerchantsBlobAsXlsx, transformIntoTableData } from '@/utils'
-import { CustomButton, MerchantInformationModal } from '@/components/ui'
+import { AlertDialog, CustomButton, MerchantInformationModal } from '@/components/ui'
 import { FormInput } from '@/components/form'
 import PendingMerchantsDataTable from './PendingMerchantsDataTable'
 import ReasonModal from './ReasonModal'
@@ -57,6 +57,24 @@ const PendingMerchantRecords = () => {
     isOpen: isRevertReasonModalOpen,
     onOpen: onRevertReasonModalOpen,
     onClose: onRevertReasonModalClose,
+  } = useDisclosure()
+
+  const {
+    isOpen: isRejectAlertOpen,
+    onOpen: onRejectAlertOpen,
+    onClose: onRejectAlertClose,
+  } = useDisclosure()
+
+  const {
+    isOpen: isApproveAlertOpen,
+    onOpen: onApproveAlertOpen,
+    onClose: onApproveAlertClose,
+  } = useDisclosure()
+
+  const {
+    isOpen: isRevertAlertOpen,
+    onOpen: onRevertAlertOpen,
+    onClose: onRevertAlertClose,
   } = useDisclosure()
 
   const columns = useMemo(() => {
@@ -287,6 +305,37 @@ const PendingMerchantRecords = () => {
         />
       )}
 
+      <AlertDialog
+        isOpen={isRejectAlertOpen}
+        onClose={onRejectAlertClose}
+        onConfirm={() => {
+          onRejectAlertClose()
+          onRejectReasonModalOpen()
+        }}
+        alertText='Are you sure you want to reject these merchant records?'
+      />
+
+      <AlertDialog
+        isOpen={isApproveAlertOpen}
+        onClose={onApproveAlertClose}
+        onConfirm={async () => {
+          onApproveAlertClose()
+          await approveMerchants(selectedMerchantIds)
+          getPendingMerchantRecords()
+        }}
+        alertText='Are you sure you want to approve these merchant records?'
+      />
+
+      <AlertDialog
+        isOpen={isRevertAlertOpen}
+        onClose={onRevertAlertClose}
+        onConfirm={async () => {
+          onRevertAlertClose()
+          onRevertReasonModalOpen()
+        }}
+        alertText='Are you sure you want to revert these merchant records?'
+      />
+
       <ReasonModal
         isOpen={isRejectReasonModalOpen}
         onClose={onRejectReasonModalClose}
@@ -331,16 +380,16 @@ const PendingMerchantRecords = () => {
             }
           }}
           onReject={selectedMerchantIds => {
-            onRejectReasonModalOpen()
             setSelectedMerchantIds(selectedMerchantIds)
+            onRejectAlertOpen()
           }}
           onApprove={async selectedMerchantIds => {
-            await approveMerchants(selectedMerchantIds)
-            getPendingMerchantRecords()
+            setSelectedMerchantIds(selectedMerchantIds)
+            onApproveAlertOpen()
           }}
           onRevert={selectedMerchantIds => {
-            onRevertReasonModalOpen()
             setSelectedMerchantIds(selectedMerchantIds)
+            onRevertAlertOpen()
           }}
         />
       </Box>
