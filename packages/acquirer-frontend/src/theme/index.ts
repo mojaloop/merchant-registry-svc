@@ -13,6 +13,9 @@ const theme = extendTheme({
     heading: `'Inter', sans-serif`,
     body: `'Inter', sans-serif`,
   },
+  breakpoints: {
+    lg: '65em',
+  },
   colors: {
     primary: '#005585',
     secondary: '#CCEDFF',

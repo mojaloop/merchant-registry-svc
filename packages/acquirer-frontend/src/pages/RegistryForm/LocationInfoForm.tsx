@@ -139,7 +139,7 @@ const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
   }, [errors, setFocus])
 
   return (
-    <Stack as='form' onSubmit={handleSubmit(onSubmit)} pt='20' noValidate>
+    <Stack as='form' onSubmit={handleSubmit(onSubmit)} noValidate>
       <GridShell justifyItems='center'>
         <FormSelect
           isRequired

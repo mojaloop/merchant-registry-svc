@@ -173,7 +173,7 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
   }, [watchedHaveLicense, setValue])
 
   return (
-    <Stack as='form' onSubmit={handleSubmit(onSubmit)} pt='20' noValidate>
+    <Stack as='form' onSubmit={handleSubmit(onSubmit)} noValidate>
       <GridShell justifyItems='center'>
         <FormInput
           isRequired

@@ -32,7 +32,7 @@ const RegistryForm = () => {
 
   return (
     <Box>
-      <Heading size='md' mb='10' textAlign='center'>
+      <Heading size='md' mt='5' mb='10' textAlign='center'>
         Merchant Acquiring System &gt; Merchant Registry Form
       </Heading>
 
@@ -41,7 +41,7 @@ const RegistryForm = () => {
         maxW={{ sm: '600px', md: '700px', lg: '800px', xl: '900px' }}
         mx='auto'
       >
-        <Stepper index={activeStep} size='sm'>
+        <Stepper index={activeStep} size='sm' mb={{ base: '10', lg: '20' }}>
           {STEPS.map(step => (
             <Step key={step}>
               <StepIndicator>
@@ -52,7 +52,14 @@ const RegistryForm = () => {
                 />
               </StepIndicator>
 
-              <Box position='absolute' top='8' left='-14' minW='36' textAlign='center'>
+              <Box
+                position='absolute'
+                top='8'
+                left='-14'
+                display={{ base: 'none', lg: 'block' }}
+                minW='36'
+                textAlign='center'
+              >
                 <StepTitle>{step}</StepTitle>
               </Box>
 

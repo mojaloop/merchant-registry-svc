@@ -121,7 +121,7 @@ const ContactPersonForm = ({ setActiveStep }: ContactPersonProps) => {
     <>
       {formData && <ReviewModal draftData={formData} isOpen={isOpen} onClose={onClose} />}
 
-      <Stack as='form' onSubmit={handleSubmit(onSubmit)} pt='20' noValidate>
+      <Stack as='form' onSubmit={handleSubmit(onSubmit)} noValidate>
         <GridShell>
           <Box w='20rem' justifySelf={{ md: 'center' }}>
             <Heading size='sm' as='h3'>
