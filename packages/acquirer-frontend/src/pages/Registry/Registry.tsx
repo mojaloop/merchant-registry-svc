@@ -1,13 +1,10 @@
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { Box, Heading, Link, Text } from '@chakra-ui/react'
 
 import { getDraftCount } from '@/api'
 import { CustomButton, CustomLink } from '@/components/ui'
 
 const Registry = () => {
-  const navigate = useNavigate()
-
   const [draftCount, setDraftCount] = useState<number>(0)
 
   useEffect(() => {
@@ -39,10 +36,7 @@ const Registry = () => {
       </CustomLink>
 
       <Box position='relative' display='inline-block'>
-        <CustomLink
-          isDisabled={draftCount === 0}
-          onClick={() => navigate('/registry/draft-applications')}
-        >
+        <CustomLink href='/registry/draft-applications' isDisabled={draftCount === 0}>
           Continue with saved draft
         </CustomLink>
 
