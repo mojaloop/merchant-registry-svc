@@ -341,7 +341,7 @@ const PendingMerchantRecords = () => {
         onClose={onRejectReasonModalClose}
         title='Rejecting Merchant Records'
         inputLabel='Enter the rejecting reason'
-        actionFunc={async reason => {
+        onConfirm={async reason => {
           await rejectMerchants(selectedMerchantIds, reason)
           getPendingMerchantRecords()
         }}
@@ -352,7 +352,7 @@ const PendingMerchantRecords = () => {
         onClose={onRevertReasonModalClose}
         title='Reverting Merchant Records'
         inputLabel='Enter the reverting reason'
-        actionFunc={async reason => {
+        onConfirm={async reason => {
           await revertMerchants(selectedMerchantIds, reason)
           getPendingMerchantRecords()
         }}
