@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { createColumnHelper } from '@tanstack/react-table'
 import {
   Box,
@@ -26,13 +25,11 @@ import {
   type RegistrationStatus,
 } from '@/constants/registrationStatus'
 import { downloadMerchantsBlobAsXlsx, transformIntoTableData } from '@/utils'
-import { CustomButton, MerchantInformationModal } from '@/components/ui'
+import { CustomButton, CustomLink, MerchantInformationModal } from '@/components/ui'
 import { FormInput } from '@/components/form'
 import RevertedMerchantsDataTable from './RevertedMerchantsDataTable'
 
 const RevertedMerchantRecords = () => {
-  const navigate = useNavigate()
-
   const [data, setData] = useState<MerchantInfo[]>([])
   const [selectedMerchantId, setSelectedMerchantId] = useState<number | null>(null)
 
@@ -138,21 +135,21 @@ const RevertedMerchantRecords = () => {
       columnHelper.display({
         id: 'proceed',
         cell: ({ row }) => (
-          <CustomButton
+          <CustomLink
+            href='/registry/registry-form'
             mt={{ base: '2', xl: '0' }}
             mr={{ base: '-2', xl: '3' }}
             onClick={() => {
               sessionStorage.setItem('merchantId', row.original.no.toString())
-              navigate('/registry/registry-form')
             }}
           >
             Proceed
-          </CustomButton>
+          </CustomLink>
         ),
         enableSorting: false,
       }),
     ]
-  }, [navigate, onInfoModalOpen])
+  }, [onInfoModalOpen])
 
   const {
     register,
