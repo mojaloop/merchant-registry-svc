@@ -100,7 +100,10 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
 
     if (!draftData) return
 
-    setIsDraft(draftData.registration_status === 'Draft')
+    setIsDraft(
+      draftData.registration_status === 'Draft' ||
+        draftData.registration_status === 'Reverted'
+    )
 
     const {
       dba_trading_name,

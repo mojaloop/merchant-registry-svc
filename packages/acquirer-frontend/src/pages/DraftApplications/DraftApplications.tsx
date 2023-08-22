@@ -115,7 +115,7 @@ const DraftApplications = () => {
         id: 'proceed',
         cell: ({ row }) => (
           <CustomLink
-            href='/registry/registry-form'
+            to='/registry/registry-form'
             mt={{ base: '2', xl: '0' }}
             mr={{ base: '-2', xl: '3' }}
             onClick={() => {
