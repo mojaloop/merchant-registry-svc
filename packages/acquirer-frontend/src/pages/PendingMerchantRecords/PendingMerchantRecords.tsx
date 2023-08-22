@@ -176,6 +176,7 @@ const PendingMerchantRecords = () => {
   const {
     register,
     formState: { errors },
+    getValues,
     handleSubmit,
     reset,
   } = useForm<MerchantsFilterForm>({
@@ -373,8 +374,11 @@ const PendingMerchantRecords = () => {
           data={data}
           breakpoint='xl'
           alwaysVisibleColumns={[0, 1]}
-          onExport={async selectedMerchantIds => {
-            const blobData = await exportMerchants(selectedMerchantIds)
+          onExport={async () => {
+            const blobData = await exportMerchants({
+              ...getValues(),
+              registrationStatus: MerchantRegistrationStatus.REVIEW,
+            })
             if (blobData) {
               downloadMerchantsBlobAsXlsx(blobData)
             }

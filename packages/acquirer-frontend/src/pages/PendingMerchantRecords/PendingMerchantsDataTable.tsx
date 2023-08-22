@@ -32,7 +32,7 @@ interface PendingMerchantsDataTableProps<T> extends TableContainerProps {
   columns: ColumnDef<T, any>[]
   alwaysVisibleColumns: number[]
   breakpoint: 'sm' | 'md' | 'lg' | 'xl' | '2xl'
-  onExport: (ids: number[]) => void
+  onExport: () => void
   onReject: (ids: number[]) => void
   onApprove: (ids: number[]) => void
   onRevert: (ids: number[]) => void
@@ -81,11 +81,6 @@ const PendingMerchantsDataTable = <T,>({
     return selectedRows.map(selectedRow => selectedRow.no)
   }
 
-  const handleExport = () => {
-    onExport(getSelectedMerchantIds())
-    setRowSelection({})
-  }
-
   const handleApprove = () => {
     onApprove(getSelectedMerchantIds())
     setRowSelection({}) // Clear the row selection state to fix undefined error
@@ -104,12 +99,7 @@ const PendingMerchantsDataTable = <T,>({
   return (
     <>
       <HStack spacing='3'>
-        <CustomButton
-          px='6'
-          mb='4'
-          isDisabled={!table.getIsSomeRowsSelected() && !table.getIsAllRowsSelected()}
-          onClick={handleExport}
-        >
+        <CustomButton px='6' mb='4' onClick={onExport}>
           Export
         </CustomButton>
 
