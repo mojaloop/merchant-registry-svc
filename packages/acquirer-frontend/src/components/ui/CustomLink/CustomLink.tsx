@@ -1,14 +1,15 @@
 import { forwardRef } from 'react'
-import { Link as ReactRouterLink } from 'react-router-dom'
+import { type NavLinkProps, Link as ReactRouterLink } from 'react-router-dom'
 import { Link as ChakraLink, type LinkProps } from '@chakra-ui/react'
 
-interface CustomLinkProps extends LinkProps {
-  colorVariant?: 'accent' | 'accent-outline' | 'success' | 'danger' | 'info'
-  isDisabled?: boolean
-}
+type CustomLinkProps = LinkProps &
+  NavLinkProps & {
+    colorVariant?: 'accent' | 'accent-outline' | 'success' | 'danger' | 'info'
+    isDisabled?: boolean
+  }
 
 const CustomLink = forwardRef<HTMLAnchorElement, CustomLinkProps>(
-  ({ children, href, colorVariant = 'accent', isDisabled, ...props }, ref) => {
+  ({ children, colorVariant = 'accent', isDisabled, ...props }, ref) => {
     const variants: Record<typeof colorVariant, LinkProps> = {
       accent: {
         color: 'white',
@@ -54,7 +55,6 @@ const CustomLink = forwardRef<HTMLAnchorElement, CustomLinkProps>(
       <ChakraLink
         as={ReactRouterLink}
         ref={ref}
-        to={href}
         position='relative'
         display='inline-flex'
         justifyContent='center'

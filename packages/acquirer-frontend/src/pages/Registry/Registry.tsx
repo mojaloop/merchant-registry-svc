@@ -26,7 +26,7 @@ const Registry = () => {
       </Heading>
 
       <CustomLink
-        href='/registry/registry-form'
+        to='/registry/registry-form'
         mr='4'
         onClick={() => {
           sessionStorage.removeItem('merchantId')
@@ -36,7 +36,7 @@ const Registry = () => {
       </CustomLink>
 
       <Box position='relative' display='inline-block'>
-        <CustomLink href='/registry/draft-applications' isDisabled={draftCount === 0}>
+        <CustomLink to='/registry/draft-applications' isDisabled={draftCount === 0}>
           Continue with saved draft
         </CustomLink>
 
