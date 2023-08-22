@@ -37,7 +37,8 @@ app.use('/api/v1', user_routes)
 app.use('/api/v1', config_routes)
 app.use('/api/v1', audit_routes)
 
-app.listen(PORT, HOSTNAME, () => {
+// eslint-disable-next-line
+app.listen(PORT, HOSTNAME, async () => {
   logger.info(`Merchant Acquirer API is running on http://${HOSTNAME}:${PORT}/api/v1`)
   logger.info(`Swagger API Documentation UI is running on http://${HOSTNAME}:${PORT}/docs`)
 
@@ -59,12 +60,18 @@ app.listen(PORT, HOSTNAME, () => {
     process.exit(1)
   })
 
-  initializeDatabase()
-    .then(async () => {
-    })
-    .catch(error => {
-      logger.error('MySQL Database Initializing error: %s', error.message)
-      logger.error('Exiting...')
-      process.exit(1)
-    })
+  await tryInitializeDatabase()
 })
+
+async function tryInitializeDatabase (): Promise<void> {
+  try {
+    await initializeDatabase()
+  } catch (error: any) {
+    logger.error('MySQL Database Initializing error: %s', error.message)
+    logger.info('Retrying in 3 seconds...')
+
+    // Retry after 5 seconds
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
+    setTimeout(tryInitializeDatabase, 3000)
+  }
+}
