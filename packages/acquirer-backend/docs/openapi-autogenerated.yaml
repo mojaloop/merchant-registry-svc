@@ -205,7 +205,77 @@ paths:
                     type: string
                     description: merchant drafts counts
                     example: 4
-  /merchants/export:
+  /merchants/export-with-filter:
+    get:
+      tags:
+        - Merchants
+        - Exports / Imports
+      security:
+        - Authorization: []
+      summary: Export Merchants as XLSX
+      parameters:
+        - in: query
+          name: merchantId
+          schema:
+            type: integer
+          description: The ID of the merchant
+        - in: query
+          name: dbaName
+          schema:
+            type: string
+          description: The trading name of the merchant
+        - in: query
+          name: registrationStatus
+          schema:
+            type: string
+            enum:
+              - Draft
+              - Review
+              - Waiting For Alias Generation
+              - Approved
+              - Rejected
+              - Reverted
+          description: The registration status of the merchant
+        - in: query
+          name: payintoId
+          schema:
+            type: string
+          description: The ID of the payment recipient for the merchant
+        - in: query
+          name: addedBy
+          schema:
+            type: integer
+          description: The ID of the user who added the merchant
+        - in: query
+          name: approvedBy
+          schema:
+            type: integer
+          description: The ID of the user who approved the merchant
+        - in: query
+          name: addedTime
+          schema:
+            type: string
+            format: date-time
+          description: The time the merchant was added
+        - in: query
+          name: updatedTime
+          schema:
+            type: string
+            format: date-time
+          description: The last time the merchant was updated
+      responses:
+        '200':
+          description: Merchants Exported
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  data:
+                    type: object
+  /merchants/export-with-ids:
     get:
       tags:
         - Merchants
@@ -244,7 +314,6 @@ paths:
     get:
       tags:
         - Merchants
-        - Locations
         - Merchant Locations
       security:
         - Authorization: []
@@ -809,7 +878,6 @@ paths:
     put:
       tags:
         - Merchants
-        - Locations
         - Merchant Locations
       security:
         - Authorization: []

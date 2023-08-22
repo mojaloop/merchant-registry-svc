@@ -21,7 +21,6 @@ import { AuditActionType, AuditTrasactionStatus } from 'shared-lib'
  *   put:
  *     tags:
  *       - Merchants
- *       - Locations
  *       - Merchant Locations
  *     security:
  *       - Authorization: []

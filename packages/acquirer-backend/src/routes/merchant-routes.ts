@@ -18,10 +18,11 @@ import { getMerchantDraftCountsByUser } from
 import { putMerchantOwner } from './merchant-controllers/put-merchant-owner'
 import { putMerchantContactPerson } from './merchant-controllers/put-merchant-contact-person'
 import { putWaitingAliasGeneration } from './merchant-controllers/put-merchant-approve'
-import { exportMerchantXlsx } from './merchant-controllers/get-merchant-export-xlsx'
+import { exportMerchantIdsXlsx } from './merchant-controllers/get-merchant-export-ids-xlsx'
 import { putBulkWaitingAliasGeneration } from './merchant-controllers/put-merchant-approve-bulk'
 import { putBulkReject } from './merchant-controllers/put-merchant-reject-bulk'
 import { putBulkRevert } from './merchant-controllers/put-merchant-revert-bulk'
+import { exportMerchantFilterXlsx } from './merchant-controllers/get-merchant-export-filter-xlsx'
 
 const router = express.Router()
 
@@ -29,7 +30,9 @@ router.get('/merchants', getMerchants)
 
 router.get('/merchants/draft-counts', getMerchantDraftCountsByUser)
 
-router.get('/merchants/export', exportMerchantXlsx)
+router.get('/merchants/export-with-ids', exportMerchantIdsXlsx)
+
+router.get('/merchants/export-with-filter', exportMerchantFilterXlsx)
 
 router.post('/merchants/draft', pdfUpload.single('license_document'), postMerchantDraft)
 
