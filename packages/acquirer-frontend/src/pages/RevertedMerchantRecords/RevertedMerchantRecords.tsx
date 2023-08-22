@@ -154,6 +154,7 @@ const RevertedMerchantRecords = () => {
   const {
     register,
     formState: { errors },
+    getValues,
     handleSubmit,
     reset,
   } = useForm<MerchantsFilterForm>({
@@ -298,8 +299,11 @@ const RevertedMerchantRecords = () => {
           data={data}
           breakpoint='xl'
           alwaysVisibleColumns={[0, 1]}
-          onExport={async selectedMerchantIds => {
-            const blobData = await exportMerchants(selectedMerchantIds)
+          onExport={async () => {
+            const blobData = await exportMerchants({
+              ...getValues(),
+              registrationStatus: MerchantRegistrationStatus.REVERTED,
+            })
             if (blobData) {
               downloadMerchantsBlobAsXlsx(blobData)
             }
