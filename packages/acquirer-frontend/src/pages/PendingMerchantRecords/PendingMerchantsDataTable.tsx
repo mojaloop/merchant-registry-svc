@@ -23,8 +23,7 @@ import {
 
 import type { MerchantInfo } from '@/types/merchants'
 import { CustomButton } from '@/components/ui'
-import MobileTable from '@/components/ui/DataTable/MobileTable'
-import PaginationControl from '@/components/ui/DataTable/PaginationControl'
+import { MobileTable, PaginationControl } from '@/components/ui/DataTable'
 
 interface PendingMerchantsDataTableProps<T> extends TableContainerProps {
   data: T[]
