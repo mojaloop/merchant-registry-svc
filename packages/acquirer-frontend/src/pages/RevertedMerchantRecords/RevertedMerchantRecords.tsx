@@ -25,9 +25,13 @@ import {
   type RegistrationStatus,
 } from '@/constants/registrationStatus'
 import { downloadMerchantsBlobAsXlsx, transformIntoTableData } from '@/utils'
-import { CustomButton, CustomLink, MerchantInformationModal } from '@/components/ui'
+import {
+  CustomButton,
+  CustomLink,
+  DataTable,
+  MerchantInformationModal,
+} from '@/components/ui'
 import { FormInput } from '@/components/form'
-import RevertedMerchantsDataTable from './RevertedMerchantsDataTable'
 
 const RevertedMerchantRecords = () => {
   const [data, setData] = useState<MerchantInfo[]>([])
@@ -181,6 +185,16 @@ const RevertedMerchantRecords = () => {
     getRevertedMerchantRecords()
   }, [])
 
+  const handleExport = async () => {
+    const blobData = await exportMerchants({
+      ...getValues(),
+      registrationStatus: MerchantRegistrationStatus.REVERTED,
+    })
+    if (blobData) {
+      downloadMerchantsBlobAsXlsx(blobData)
+    }
+  }
+
   return (
     <Stack h='full'>
       <Heading size='md' mb='10'>
@@ -294,20 +308,15 @@ const RevertedMerchantRecords = () => {
         flexGrow='1'
         mb='-14'
       >
-        <RevertedMerchantsDataTable
+        <CustomButton px='6' mb='4' onClick={handleExport}>
+          Export
+        </CustomButton>
+
+        <DataTable
           columns={columns}
           data={data}
           breakpoint='xl'
           alwaysVisibleColumns={[0, 1]}
-          onExport={async () => {
-            const blobData = await exportMerchants({
-              ...getValues(),
-              registrationStatus: MerchantRegistrationStatus.REVERTED,
-            })
-            if (blobData) {
-              downloadMerchantsBlobAsXlsx(blobData)
-            }
-          }}
         />
       </Box>
     </Stack>

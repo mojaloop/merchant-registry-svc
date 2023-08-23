@@ -25,9 +25,8 @@ import {
   type RegistrationStatus,
 } from '@/constants/registrationStatus'
 import { downloadMerchantsBlobAsXlsx, transformIntoTableData } from '@/utils'
-import { CustomButton, MerchantInformationModal } from '@/components/ui'
+import { CustomButton, DataTable, MerchantInformationModal } from '@/components/ui'
 import { FormInput } from '@/components/form'
-import RejectedMerchantsDataTable from './RejectedMerchantsDataTable'
 
 const RejectedMerchantRecords = () => {
   const [data, setData] = useState<MerchantInfo[]>([])
@@ -165,6 +164,16 @@ const RejectedMerchantRecords = () => {
     getRejectedMerchantRecords()
   }, [])
 
+  const handleExport = async () => {
+    const blobData = await exportMerchants({
+      ...getValues(),
+      registrationStatus: MerchantRegistrationStatus.REJECTED,
+    })
+    if (blobData) {
+      downloadMerchantsBlobAsXlsx(blobData)
+    }
+  }
+
   return (
     <Stack h='full'>
       <Heading size='md' mb='10'>
@@ -278,20 +287,15 @@ const RejectedMerchantRecords = () => {
         flexGrow='1'
         mb='-14'
       >
-        <RejectedMerchantsDataTable
+        <CustomButton px='6' mb='4' onClick={handleExport}>
+          Export
+        </CustomButton>
+
+        <DataTable
           columns={columns}
           data={data}
           breakpoint='xl'
           alwaysVisibleColumns={[0, 1]}
-          onExport={async () => {
-            const blobData = await exportMerchants({
-              ...getValues(),
-              registrationStatus: MerchantRegistrationStatus.REJECTED,
-            })
-            if (blobData) {
-              downloadMerchantsBlobAsXlsx(blobData)
-            }
-          }}
         />
       </Box>
     </Stack>

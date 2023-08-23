@@ -25,9 +25,8 @@ import {
   type RegistrationStatus,
 } from '@/constants/registrationStatus'
 import { downloadMerchantsBlobAsXlsx, transformIntoTableData } from '@/utils'
-import { CustomButton, MerchantInformationModal } from '@/components/ui'
+import { CustomButton, DataTable, MerchantInformationModal } from '@/components/ui'
 import { FormInput, FormSelect } from '@/components/form'
-import AllMerchantsDataTable from './AllMerchantsDataTable'
 
 const REGISTRATION_STATUSES = Object.values(MerchantRegistrationStatus).map(value => ({
   value,
@@ -167,6 +166,13 @@ const AllMerchantRecords = () => {
     getAllMerchantRecords()
   }, [])
 
+  const handleExport = async () => {
+    const blobData = await exportMerchants(getValues())
+    if (blobData) {
+      downloadMerchantsBlobAsXlsx(blobData)
+    }
+  }
+
   return (
     <Stack h='full'>
       <Heading size='md' mb='10'>
@@ -289,17 +295,15 @@ const AllMerchantRecords = () => {
         flexGrow='1'
         mb='-14'
       >
-        <AllMerchantsDataTable
+        <CustomButton px='6' mb='4' onClick={handleExport}>
+          Export
+        </CustomButton>
+
+        <DataTable
           columns={columns}
           data={data}
           breakpoint='xl'
           alwaysVisibleColumns={[0, 1]}
-          onExport={async () => {
-            const blobData = await exportMerchants(getValues())
-            if (blobData) {
-              downloadMerchantsBlobAsXlsx(blobData)
-            }
-          }}
         />
       </Box>
     </Stack>
