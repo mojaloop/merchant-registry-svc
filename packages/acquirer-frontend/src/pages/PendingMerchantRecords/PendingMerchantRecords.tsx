@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { createColumnHelper } from '@tanstack/react-table'
 import {
   Box,
@@ -43,6 +43,8 @@ import PendingMerchantsDataTable from './PendingMerchantsDataTable'
 import ReasonModal from './ReasonModal'
 
 const PendingMerchantRecords = () => {
+  const queryClient = useQueryClient()
+
   const [selectedMerchantId, setSelectedMerchantId] = useState<number | null>(null)
   const [selectedMerchantIds, setSelectedMerchantIds] = useState<number[]>([])
 
@@ -324,6 +326,8 @@ const PendingMerchantRecords = () => {
           onApproveAlertClose()
           await approveMerchants(selectedMerchantIds)
           refetch()
+          queryClient.invalidateQueries(['approved-merchants'])
+          queryClient.invalidateQueries(['all-merchants'])
         }}
         alertText='Are you sure you want to approve these merchant records?'
       />
@@ -346,6 +350,8 @@ const PendingMerchantRecords = () => {
         onConfirm={async reason => {
           await rejectMerchants(selectedMerchantIds, reason)
           refetch()
+          queryClient.invalidateQueries(['rejected-merchants'])
+          queryClient.invalidateQueries(['all-merchants'])
         }}
       />
 
@@ -357,6 +363,8 @@ const PendingMerchantRecords = () => {
         onConfirm={async reason => {
           await revertMerchants(selectedMerchantIds, reason)
           refetch()
+          queryClient.invalidateQueries(['reverted-merchants'])
+          queryClient.invalidateQueries(['all-merchants'])
         }}
       />
 
