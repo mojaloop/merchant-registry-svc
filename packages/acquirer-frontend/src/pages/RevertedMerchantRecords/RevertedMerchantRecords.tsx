@@ -173,7 +173,7 @@ const RevertedMerchantRecords = () => {
     return revertedMerchants.map(transformIntoTableData)
   }
 
-  const { data, isLoading, isError, refetch } = useQuery({
+  const { data, isLoading, isFetching, isError, refetch } = useQuery({
     queryKey: ['reverted-merchants'],
     queryFn: () => getRevertedMerchantRecords(getValues()),
   })
@@ -309,9 +309,9 @@ const RevertedMerchantRecords = () => {
           Export
         </CustomButton>
 
-        {isLoading && <TableSkeleton breakpoint='xl' />}
+        {isFetching && <TableSkeleton breakpoint='xl' />}
 
-        {!isLoading && !isError && (
+        {!isLoading && !isFetching && !isError && (
           <DataTable
             columns={columns}
             data={data}

@@ -156,7 +156,7 @@ const RejectedMerchantRecords = () => {
     return rejectedMerchants.map(transformIntoTableData)
   }
 
-  const { data, isLoading, isError, refetch } = useQuery({
+  const { data, isLoading, isFetching, isError, refetch } = useQuery({
     queryKey: ['rejected-merchants'],
     queryFn: () => getRejectedMerchantRecords(getValues()),
   })
@@ -292,9 +292,9 @@ const RejectedMerchantRecords = () => {
           Export
         </CustomButton>
 
-        {isLoading && <TableSkeleton breakpoint='xl' />}
+        {isFetching && <TableSkeleton breakpoint='xl' />}
 
-        {!isLoading && !isError && (
+        {!isLoading && !isFetching && !isError && (
           <DataTable
             columns={columns}
             data={data}

@@ -159,7 +159,7 @@ const ApprovedMerchantRecords = () => {
     return approvedMerchants.map(transformIntoTableData)
   }
 
-  const { data, isLoading, isError, refetch } = useQuery({
+  const { data, isLoading, isFetching, isError, refetch } = useQuery({
     queryKey: ['approved-merchants'],
     queryFn: () => getApprovedMerchantRecords(getValues()),
   })
@@ -295,9 +295,9 @@ const ApprovedMerchantRecords = () => {
           Export
         </CustomButton>
 
-        {isLoading && <TableSkeleton breakpoint='xl' />}
+        {isFetching && <TableSkeleton breakpoint='xl' />}
 
-        {!isLoading && !isError && (
+        {!isLoading && !isFetching && !isError && (
           <DataTable
             columns={columns}
             data={data}

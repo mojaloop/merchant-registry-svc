@@ -195,7 +195,7 @@ const PendingMerchantRecords = () => {
     return pendingMerchants.map(transformIntoTableData)
   }
 
-  const { data, isLoading, isError, refetch } = useQuery({
+  const { data, isLoading, isFetching, isError, refetch } = useQuery({
     queryKey: ['pending-merchants'],
     queryFn: () => getPendingMerchantRecords(getValues()),
   })
@@ -370,9 +370,9 @@ const PendingMerchantRecords = () => {
         flexGrow='1'
         mb='-14'
       >
-        {isLoading && <TableSkeleton breakpoint='xl' />}
+        {isFetching && <TableSkeleton breakpoint='xl' />}
 
-        {!isLoading && !isError && (
+        {!isLoading && !isFetching && !isError && (
           <PendingMerchantsDataTable
             columns={columns}
             data={data}

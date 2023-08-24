@@ -148,7 +148,7 @@ const DraftApplications = () => {
     return drafts.map(transformIntoTableData)
   }
 
-  const { data, isLoading, isError, refetch } = useQuery({
+  const { data, isLoading, isFetching, isError, refetch } = useQuery({
     queryKey: ['drafts'],
     queryFn: () => getDrafts(getValues()),
   })
@@ -270,9 +270,9 @@ const DraftApplications = () => {
         flexGrow='1'
         mb='-14'
       >
-        {isLoading && <TableSkeleton breakpoint='xl' />}
+        {isFetching && <TableSkeleton breakpoint='xl' />}
 
-        {!isLoading && !isError && (
+        {!isLoading && !isFetching && !isError && (
           <DataTable
             data={data}
             columns={columns}
