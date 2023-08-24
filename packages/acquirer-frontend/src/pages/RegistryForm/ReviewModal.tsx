@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import {
   Grid,
   Modal,
@@ -31,6 +32,7 @@ interface ReviewModalProps {
 
 const ReviewModal = ({ isOpen, onClose, draftData }: ReviewModalProps) => {
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
 
   const {
     dba_trading_name,
@@ -53,14 +55,22 @@ const ReviewModal = ({ isOpen, onClose, draftData }: ReviewModalProps) => {
   const businessOwner = business_owners?.[0]
   const contactPerson = contact_persons?.[0]
 
+  const changeToReview = useMutation({
+    mutationFn: (merchantId: string) => changeStatusToReview(merchantId),
+    onSuccess: () => {
+      sessionStorage.removeItem('merchantId')
+      onClose()
+      queryClient.invalidateQueries(['pending-merchants'])
+      queryClient.invalidateQueries(['all-merchants'])
+      navigate('/registry')
+    },
+  })
+
   const handleSubmit = async () => {
     const merchantId = sessionStorage.getItem('merchantId')
     if (!merchantId) return
 
-    await changeStatusToReview(merchantId)
-    sessionStorage.removeItem('merchantId')
-    onClose()
-    navigate('/registry')
+    changeToReview.mutate(merchantId)
   }
 
   return (

@@ -232,15 +232,7 @@ export async function updateContactPersonInfo(
 }
 
 export async function changeStatusToReview(merchantId: string) {
-  try {
-    return await instance.put(`/merchants/${merchantId}/ready-to-review`)
-  } catch (error) {
-    if (isAxiosError(error)) {
-      alert(
-        error.response?.data?.message || 'Something went wrong! Please try again later.'
-      )
-    }
-  }
+  return await instance.put(`/merchants/${merchantId}/ready-to-review`)
 }
 
 export async function getMerchants(params: AllMerchantsFilterForm | MerchantsFilterForm) {
