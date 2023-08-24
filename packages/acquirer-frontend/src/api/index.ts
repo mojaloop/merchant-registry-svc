@@ -252,17 +252,11 @@ export const changeStatusToReview = async (merchantId: string) => {
 export const getMerchants = async (
   params: AllMerchantsFilterForm | MerchantsFilterForm
 ) => {
-  try {
-    const response = await instance.get<{ data: MerchantDetails[] }>('/merchants', {
-      params,
-    })
+  const response = await instance.get<{ data: MerchantDetails[] }>('/merchants', {
+    params,
+  })
 
-    return response.data.data
-  } catch (error) {
-    if (isAxiosError(error)) {
-      alert(error.response?.data?.message)
-    }
-  }
+  return response.data.data
 }
 
 export const getMerchant = async (merchantId: number) => {

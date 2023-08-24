@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
 import { createColumnHelper } from '@tanstack/react-table'
 import {
   Box,
@@ -29,11 +30,11 @@ import {
   CustomLink,
   DataTable,
   MerchantInformationModal,
+  TableSkeleton,
 } from '@/components/ui'
 import { FormInput } from '@/components/form'
 
 const DraftApplications = () => {
-  const [data, setData] = useState<MerchantInfo[]>([])
   const [selectedMerchantId, setSelectedMerchantId] = useState<number | null>(null)
 
   const { isOpen, onOpen, onClose } = useDisclosure()
@@ -133,30 +134,27 @@ const DraftApplications = () => {
   const {
     register,
     formState: { errors },
+    getValues,
     handleSubmit,
     reset,
   } = useForm<MerchantsFilterForm>({
     resolver: zodResolver(merchantsFilterSchema),
   })
 
-  const getDrafts = async (values?: MerchantsFilterForm) => {
-    const params = values
-      ? { ...values, registrationStatus: MerchantRegistrationStatus.DRAFT }
-      : { registrationStatus: MerchantRegistrationStatus.DRAFT }
+  const getDrafts = async (values: MerchantsFilterForm) => {
+    const params = { ...values, registrationStatus: MerchantRegistrationStatus.DRAFT }
     const drafts = await getMerchants(params)
 
-    if (drafts) {
-      const transformedData = drafts.map(transformIntoTableData)
-      setData(transformedData)
-    }
+    return drafts.map(transformIntoTableData)
   }
 
-  useEffect(() => {
-    getDrafts()
-  }, [])
+  const { data, isLoading, isError, refetch } = useQuery({
+    queryKey: ['drafts'],
+    queryFn: () => getDrafts(getValues()),
+  })
 
-  const onSubmit = (values: MerchantsFilterForm) => {
-    getDrafts(values)
+  const onSubmit = () => {
+    refetch()
   }
 
   return (
@@ -242,7 +240,7 @@ const DraftApplications = () => {
             mr='4'
             onClick={() => {
               reset()
-              getDrafts()
+              refetch()
             }}
           >
             Clear Filter
@@ -272,12 +270,16 @@ const DraftApplications = () => {
         flexGrow='1'
         mb='-14'
       >
-        <DataTable
-          data={data}
-          columns={columns}
-          breakpoint='xl'
-          alwaysVisibleColumns={[0]}
-        />
+        {isLoading && <TableSkeleton breakpoint='xl' />}
+
+        {!isLoading && !isError && (
+          <DataTable
+            data={data}
+            columns={columns}
+            breakpoint='xl'
+            alwaysVisibleColumns={[0]}
+          />
+        )}
       </Box>
     </Stack>
   )
