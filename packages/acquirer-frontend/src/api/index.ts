@@ -12,7 +12,7 @@ import type {
 import type { MerchantsFilterForm } from '@/lib/validations/merchantsFilter'
 import type { AllMerchantsFilterForm } from '@/lib/validations/allMerchantsFilter'
 
-export const login = async (email: string, password: string) => {
+export async function login(email: string, password: string) {
   try {
     const response = await instance.post<{ token: string }>('/users/login', {
       email,
@@ -33,7 +33,7 @@ export const login = async (email: string, password: string) => {
   }
 }
 
-export const getDraftCount = async () => {
+export async function getDraftCount() {
   try {
     const response = await instance.get<{ data: number }>('/merchants/draft-counts')
 
@@ -45,7 +45,7 @@ export const getDraftCount = async () => {
   }
 }
 
-export const getDraftData = async (merchantId: string) => {
+export async function getDraftData(merchantId: string) {
   try {
     const response = await instance.get<{ data: MerchantDetails }>(
       `/merchants/${merchantId}`
@@ -59,7 +59,7 @@ export const getDraftData = async (merchantId: string) => {
   }
 }
 
-export const createBusinessInfo = async (values: BusinessInfoForm) => {
+export async function createBusinessInfo(values: BusinessInfoForm) {
   const formData = new FormData()
 
   // Loop over the form values and append each one to the form data.
@@ -82,10 +82,7 @@ export const createBusinessInfo = async (values: BusinessInfoForm) => {
   }
 }
 
-export const updateBusinessInfo = async (
-  values: BusinessInfoForm,
-  merchantId: string
-) => {
+export async function updateBusinessInfo(values: BusinessInfoForm, merchantId: string) {
   const formData = new FormData()
 
   // Loop over the form values and append each one to the form data.
@@ -111,10 +108,7 @@ export const updateBusinessInfo = async (
   }
 }
 
-export const createLocationInfo = async (
-  values: LocationInfoForm,
-  merchantId: string
-) => {
+export async function createLocationInfo(values: LocationInfoForm, merchantId: string) {
   try {
     const response = await instance.post<FormReponse>(
       `/merchants/${merchantId}/locations`,
@@ -132,11 +126,11 @@ export const createLocationInfo = async (
   }
 }
 
-export const updateLocationInfo = async (
+export async function updateLocationInfo(
   values: LocationInfoForm,
   merchantId: string,
   locationId: number
-) => {
+) {
   try {
     const response = await instance.put<FormReponse>(
       `/merchants/${merchantId}/locations/${locationId}`,
@@ -154,7 +148,7 @@ export const updateLocationInfo = async (
   }
 }
 
-export const createOwnerInfo = async (values: OwnerInfoForm, merchantId: string) => {
+export async function createOwnerInfo(values: OwnerInfoForm, merchantId: string) {
   try {
     const response = await instance.post<FormReponse>(
       `/merchants/${merchantId}/business-owners`,
@@ -172,11 +166,11 @@ export const createOwnerInfo = async (values: OwnerInfoForm, merchantId: string)
   }
 }
 
-export const updateOwnerInfo = async (
+export async function updateOwnerInfo(
   values: OwnerInfoForm,
   merchantId: string,
   ownerId: number
-) => {
+) {
   try {
     const response = await instance.put<FormReponse>(
       `/merchants/${merchantId}/business-owners/${ownerId}`,
@@ -194,10 +188,10 @@ export const updateOwnerInfo = async (
   }
 }
 
-export const createContactPersonInfo = async (
+export async function createContactPersonInfo(
   values: ContactPersonForm,
   merchantId: string
-) => {
+) {
   try {
     const response = await instance.post<FormReponse>(
       `/merchants/${merchantId}/contact-persons`,
@@ -215,11 +209,11 @@ export const createContactPersonInfo = async (
   }
 }
 
-export const updateContactPersonInfo = async (
+export async function updateContactPersonInfo(
   values: ContactPersonForm,
   merchantId: string,
   contactPersonId: number
-) => {
+) {
   try {
     const response = await instance.put<FormReponse>(
       `/merchants/${merchantId}/contact-persons/${contactPersonId}`,
@@ -237,7 +231,7 @@ export const updateContactPersonInfo = async (
   }
 }
 
-export const changeStatusToReview = async (merchantId: string) => {
+export async function changeStatusToReview(merchantId: string) {
   try {
     return await instance.put(`/merchants/${merchantId}/ready-to-review`)
   } catch (error) {
@@ -249,9 +243,7 @@ export const changeStatusToReview = async (merchantId: string) => {
   }
 }
 
-export const getMerchants = async (
-  params: AllMerchantsFilterForm | MerchantsFilterForm
-) => {
+export async function getMerchants(params: AllMerchantsFilterForm | MerchantsFilterForm) {
   const response = await instance.get<{ data: MerchantDetails[] }>('/merchants', {
     params,
   })
@@ -259,7 +251,7 @@ export const getMerchants = async (
   return response.data.data
 }
 
-export const getMerchant = async (merchantId: number) => {
+export async function getMerchant(merchantId: number) {
   try {
     const response = await instance.get<{ data: MerchantDetails }>(
       `/merchants/${merchantId}`
@@ -273,7 +265,7 @@ export const getMerchant = async (merchantId: number) => {
   }
 }
 
-export const approveMerchants = async (selectedMerchantIds: number[]) => {
+export async function approveMerchants(selectedMerchantIds: number[]) {
   try {
     await instance.put('/merchants/bulk-approve', {
       ids: selectedMerchantIds,
@@ -285,7 +277,7 @@ export const approveMerchants = async (selectedMerchantIds: number[]) => {
   }
 }
 
-export const rejectMerchants = async (selectedMerchantIds: number[], reason: string) => {
+export async function rejectMerchants(selectedMerchantIds: number[], reason: string) {
   try {
     await instance.put('/merchants/bulk-reject', {
       ids: selectedMerchantIds,
@@ -298,7 +290,7 @@ export const rejectMerchants = async (selectedMerchantIds: number[], reason: str
   }
 }
 
-export const revertMerchants = async (selectedMerchantIds: number[], reason: string) => {
+export async function revertMerchants(selectedMerchantIds: number[], reason: string) {
   try {
     await instance.put('/merchants/bulk-revert', {
       ids: selectedMerchantIds,
@@ -311,9 +303,9 @@ export const revertMerchants = async (selectedMerchantIds: number[], reason: str
   }
 }
 
-export const exportMerchants = async (
+export async function exportMerchants(
   params: AllMerchantsFilterForm | MerchantsFilterForm
-) => {
+) {
   try {
     const response = await instance.get<Blob>(`/merchants/export-with-filter`, {
       params,
