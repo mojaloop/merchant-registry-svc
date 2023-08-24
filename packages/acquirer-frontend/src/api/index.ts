@@ -252,17 +252,11 @@ export async function getMerchants(params: AllMerchantsFilterForm | MerchantsFil
 }
 
 export async function getMerchant(merchantId: number) {
-  try {
-    const response = await instance.get<{ data: MerchantDetails }>(
-      `/merchants/${merchantId}`
-    )
+  const response = await instance.get<{ data: MerchantDetails }>(
+    `/merchants/${merchantId}`
+  )
 
-    return response.data.data
-  } catch (error) {
-    if (isAxiosError(error)) {
-      alert(error.response?.data?.message)
-    }
-  }
+  return response.data.data
 }
 
 export async function approveMerchants(selectedMerchantIds: number[]) {
