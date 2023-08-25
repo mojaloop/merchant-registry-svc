@@ -162,6 +162,11 @@ const ApprovedMerchantRecords = () => {
   const { data, isLoading, isFetching, isError, refetch } = useQuery({
     queryKey: ['approved-merchants'],
     queryFn: () => getApprovedMerchantRecords(getValues()),
+    meta: {
+      toastStatus: 'error',
+      toastTitle: 'Operation Failed!',
+      toastDescription: 'Something went wrong! Please try again later.',
+    },
   })
 
   const onSubmit = () => {
@@ -291,19 +296,21 @@ const ApprovedMerchantRecords = () => {
         flexGrow='1'
         mb='-14'
       >
-        <CustomButton px='6' mb='4' onClick={handleExport}>
-          Export
-        </CustomButton>
-
         {isFetching && <TableSkeleton breakpoint='xl' />}
 
         {!isLoading && !isFetching && !isError && (
-          <DataTable
-            columns={columns}
-            data={data}
-            breakpoint='xl'
-            alwaysVisibleColumns={[0, 1]}
-          />
+          <>
+            <CustomButton px='6' mb='4' onClick={handleExport}>
+              Export
+            </CustomButton>
+
+            <DataTable
+              columns={columns}
+              data={data}
+              breakpoint='xl'
+              alwaysVisibleColumns={[0, 1]}
+            />
+          </>
         )}
       </Box>
     </Stack>

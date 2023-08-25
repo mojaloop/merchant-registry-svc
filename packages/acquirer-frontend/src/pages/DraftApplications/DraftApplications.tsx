@@ -151,6 +151,11 @@ const DraftApplications = () => {
   const { data, isLoading, isFetching, isError, refetch } = useQuery({
     queryKey: ['drafts'],
     queryFn: () => getDrafts(getValues()),
+    meta: {
+      toastStatus: 'error',
+      toastTitle: 'Operation Failed!',
+      toastDescription: 'Something went wrong! Please try again later.',
+    },
   })
 
   const onSubmit = () => {

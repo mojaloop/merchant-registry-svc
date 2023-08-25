@@ -200,6 +200,11 @@ const PendingMerchantRecords = () => {
   const { data, isLoading, isFetching, isError, refetch } = useQuery({
     queryKey: ['pending-merchants'],
     queryFn: () => getPendingMerchantRecords(getValues()),
+    meta: {
+      toastStatus: 'error',
+      toastTitle: 'Operation Failed!',
+      toastDescription: 'Something went wrong! Please try again later.',
+    },
   })
 
   const onSubmit = () => {
