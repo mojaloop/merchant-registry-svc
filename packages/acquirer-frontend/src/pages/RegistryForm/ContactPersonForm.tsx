@@ -1,12 +1,18 @@
 import { useEffect, useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
 import { Box, Checkbox, Heading, Stack, useDisclosure } from '@chakra-ui/react'
 import { Controller, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 
 import type { MerchantDetails } from '@/types/merchantDetails'
 import { type ContactPersonForm, contactPersonSchema } from '@/lib/validations/registry'
-import { createContactPersonInfo, getDraftData, updateContactPersonInfo } from '@/api'
-import { CustomButton } from '@/components/ui'
+import {
+  createContactPersonInfo,
+  getDraftData,
+  getMerchant,
+  updateContactPersonInfo,
+} from '@/api'
+import { CustomButton, FloatingSpinner } from '@/components/ui'
 import { FormInput } from '@/components/form'
 import ReviewModal from './ReviewModal'
 import GridShell from './GridShell'
@@ -18,6 +24,7 @@ interface ContactPersonProps {
 const ContactPersonForm = ({ setActiveStep }: ContactPersonProps) => {
   const { isOpen, onOpen, onClose } = useDisclosure()
 
+  const [merchantId, setMerchantId] = useState('')
   const [formData, setFormData] = useState<MerchantDetails | null>(null)
   const [isDraft, setIsDraft] = useState(false)
   const [contactPersonId, setContactPersonId] = useState<number | null>(null)
@@ -38,13 +45,22 @@ const ContactPersonForm = ({ setActiveStep }: ContactPersonProps) => {
     },
   })
 
-  const watchedIsSameAsBusinessOwner = watch('is_same_as_business_owner')
-
-  const setInitDraftData = async () => {
+  useEffect(() => {
     const merchantId = sessionStorage.getItem('merchantId')
     if (!merchantId) return
 
-    const draftData = await getDraftData(merchantId)
+    setMerchantId(merchantId)
+  }, [])
+
+  const { data: draftData, isLoading } = useQuery({
+    queryKey: ['merchants', merchantId],
+    queryFn: () => getMerchant(Number(merchantId)),
+    enabled: !!merchantId,
+  })
+
+  const watchedIsSameAsBusinessOwner = watch('is_same_as_business_owner')
+
+  useEffect(() => {
     if (!draftData) return
 
     setFormData(draftData)
@@ -59,12 +75,7 @@ const ContactPersonForm = ({ setActiveStep }: ContactPersonProps) => {
     name && setValue('name', name)
     phone_number && setValue('phone_number', phone_number)
     email && setValue('email', email)
-  }
-
-  useEffect(() => {
-    setInitDraftData()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [draftData, setValue])
 
   useEffect(() => {
     if (!watchedIsSameAsBusinessOwner) return
@@ -119,6 +130,8 @@ const ContactPersonForm = ({ setActiveStep }: ContactPersonProps) => {
 
   return (
     <>
+      {isLoading && <FloatingSpinner />}
+
       {formData && <ReviewModal draftData={formData} isOpen={isOpen} onClose={onClose} />}
 
       <Stack as='form' onSubmit={handleSubmit(onSubmit)} noValidate>

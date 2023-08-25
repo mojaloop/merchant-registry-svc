@@ -16,7 +16,7 @@ const Layout = () => {
 
         <Box
           id='main'
-          position={'relative'}
+          position='relative'
           as='main'
           ml={{ base: '0', lg: '24' }}
           mt='14'
