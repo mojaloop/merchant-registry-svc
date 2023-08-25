@@ -1,21 +1,62 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
-import { ChakraProvider } from '@chakra-ui/react'
+import { QueryCache, QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+import { isAxiosError } from 'axios'
+import {
+  ChakraProvider,
+  type UseToastOptions,
+  createStandaloneToast,
+} from '@chakra-ui/react'
 
 import theme from '@/theme'
 import DrawerDisclosureProvider from '@/context/DrawerDisclosureContext.tsx'
 import App from './App.tsx'
 import './index.css'
 
+const { ToastContainer, toast } = createStandaloneToast(theme)
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 3 * 60 * 1000,
+      refetchOnWindowFocus: false,
+    },
+  },
+  queryCache: new QueryCache({
+    onError: (error, query) => {
+      if (isAxiosError(error) && query.meta?.toastTitle && query.meta?.toastStatus) {
+        toast({
+          title: (query.meta.toastTitle as string) || '',
+          description: error.response?.data.message || query.meta?.toastDescription,
+          status: query.meta.toastStatus as UseToastOptions['status'],
+          variant: 'subtle',
+          position: 'top',
+          isClosable: true,
+        })
+      }
+    },
+  }),
+})
+
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
-    <BrowserRouter>
-      <ChakraProvider theme={theme}>
-        <DrawerDisclosureProvider>
-          <App />
-        </DrawerDisclosureProvider>
-      </ChakraProvider>
-    </BrowserRouter>
+    <QueryClientProvider client={queryClient}>
+      <ReactQueryDevtools />
+      <BrowserRouter>
+        <ChakraProvider
+          theme={theme}
+          toastOptions={{
+            defaultOptions: { variant: 'subtle', position: 'top', isClosable: true },
+          }}
+        >
+          <DrawerDisclosureProvider>
+            <ToastContainer />
+            <App />
+          </DrawerDisclosureProvider>
+        </ChakraProvider>
+      </BrowserRouter>
+    </QueryClientProvider>
   </React.StrictMode>
 )

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { createColumnHelper } from '@tanstack/react-table'
 import {
   Box,
@@ -19,13 +19,19 @@ import {
   type AllMerchantsFilterForm,
   allMerchantsFilterSchema,
 } from '@/lib/validations/allMerchantsFilter'
-import { exportMerchants, getMerchants } from '@/api'
+import { exportMerchants } from '@/api/merchants'
+import { useAllMerchants } from '@/api/hooks/merchants'
 import {
   REGISTRATION_STATUS_COLORS,
   type RegistrationStatus,
 } from '@/constants/registrationStatus'
-import { downloadMerchantsBlobAsXlsx, transformIntoTableData } from '@/utils'
-import { CustomButton, DataTable, MerchantInformationModal } from '@/components/ui'
+import { downloadMerchantsBlobAsXlsx } from '@/utils'
+import {
+  CustomButton,
+  DataTable,
+  MerchantInformationModal,
+  TableSkeleton,
+} from '@/components/ui'
 import { FormInput, FormSelect } from '@/components/form'
 
 const REGISTRATION_STATUSES = Object.values(MerchantRegistrationStatus).map(value => ({
@@ -34,7 +40,6 @@ const REGISTRATION_STATUSES = Object.values(MerchantRegistrationStatus).map(valu
 }))
 
 const AllMerchantRecords = () => {
-  const [data, setData] = useState<MerchantInfo[]>([])
   const [selectedMerchantId, setSelectedMerchantId] = useState<number | null>(null)
 
   const { isOpen, onOpen, onClose } = useDisclosure()
@@ -148,23 +153,11 @@ const AllMerchantRecords = () => {
     },
   })
 
-  const getAllMerchantRecords = async (values?: AllMerchantsFilterForm) => {
-    const params = values ?? {}
-    const allMerchants = await getMerchants(params)
+  const allMerchants = useAllMerchants(getValues())
 
-    if (allMerchants) {
-      const transformedData = allMerchants.map(transformIntoTableData)
-      setData(transformedData)
-    }
+  const onSubmit = () => {
+    allMerchants.refetch()
   }
-
-  const onSubmit = (values: AllMerchantsFilterForm) => {
-    getAllMerchantRecords(values)
-  }
-
-  useEffect(() => {
-    getAllMerchantRecords()
-  }, [])
 
   const handleExport = async () => {
     const blobData = await exportMerchants(getValues())
@@ -264,8 +257,8 @@ const AllMerchantRecords = () => {
             colorVariant='accent-outline'
             mr='4'
             onClick={() => {
-              getAllMerchantRecords()
               reset()
+              allMerchants.refetch()
             }}
           >
             Clear Filter
@@ -295,16 +288,22 @@ const AllMerchantRecords = () => {
         flexGrow='1'
         mb='-14'
       >
-        <CustomButton px='6' mb='4' onClick={handleExport}>
-          Export
-        </CustomButton>
+        {allMerchants.isFetching && <TableSkeleton breakpoint='xl' />}
 
-        <DataTable
-          columns={columns}
-          data={data}
-          breakpoint='xl'
-          alwaysVisibleColumns={[0, 1]}
-        />
+        {!allMerchants.isLoading && !allMerchants.isFetching && !allMerchants.isError && (
+          <>
+            <CustomButton px='6' mb='4' onClick={handleExport}>
+              Export
+            </CustomButton>
+
+            <DataTable
+              columns={columns}
+              data={allMerchants.data}
+              breakpoint='xl'
+              alwaysVisibleColumns={[0, 1]}
+            />
+          </>
+        )}
       </Box>
     </Stack>
   )

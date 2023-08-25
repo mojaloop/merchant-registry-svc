@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { createColumnHelper } from '@tanstack/react-table'
 import {
   Box,
@@ -19,17 +19,22 @@ import {
   type MerchantsFilterForm,
   merchantsFilterSchema,
 } from '@/lib/validations/merchantsFilter'
-import { exportMerchants, getMerchants } from '@/api'
+import { exportMerchants } from '@/api/merchants'
+import { useApprovedMerchants } from '@/api/hooks/merchants'
 import {
   REGISTRATION_STATUS_COLORS,
   type RegistrationStatus,
 } from '@/constants/registrationStatus'
-import { downloadMerchantsBlobAsXlsx, transformIntoTableData } from '@/utils'
-import { CustomButton, DataTable, MerchantInformationModal } from '@/components/ui'
+import { downloadMerchantsBlobAsXlsx } from '@/utils'
+import {
+  CustomButton,
+  DataTable,
+  MerchantInformationModal,
+  TableSkeleton,
+} from '@/components/ui'
 import { FormInput } from '@/components/form'
 
 const ApprovedMerchantRecords = () => {
-  const [data, setData] = useState<MerchantInfo[]>([])
   const [selectedMerchantId, setSelectedMerchantId] = useState<number | null>(null)
 
   const {
@@ -144,28 +149,11 @@ const ApprovedMerchantRecords = () => {
     resolver: zodResolver(merchantsFilterSchema),
   })
 
-  const getApprovedMerchantRecords = async (values?: MerchantsFilterForm) => {
-    const params = values
-      ? {
-          ...values,
-          registrationStatus: MerchantRegistrationStatus.WAITINGALIASGENERATION,
-        }
-      : { registrationStatus: MerchantRegistrationStatus.WAITINGALIASGENERATION }
-    const approvedMerchants = await getMerchants(params)
+  const approvedMerchants = useApprovedMerchants(getValues())
 
-    if (approvedMerchants) {
-      const transformedData = approvedMerchants.map(transformIntoTableData)
-      setData(transformedData)
-    }
+  const onSubmit = () => {
+    approvedMerchants.refetch()
   }
-
-  const onSubmit = (values: MerchantsFilterForm) => {
-    getApprovedMerchantRecords(values)
-  }
-
-  useEffect(() => {
-    getApprovedMerchantRecords()
-  }, [])
 
   const handleExport = async () => {
     const blobData = await exportMerchants({
@@ -259,8 +247,8 @@ const ApprovedMerchantRecords = () => {
             colorVariant='accent-outline'
             mr='4'
             onClick={() => {
-              getApprovedMerchantRecords()
               reset()
+              approvedMerchants.refetch()
             }}
           >
             Clear Filter
@@ -290,16 +278,24 @@ const ApprovedMerchantRecords = () => {
         flexGrow='1'
         mb='-14'
       >
-        <CustomButton px='6' mb='4' onClick={handleExport}>
-          Export
-        </CustomButton>
+        {approvedMerchants.isFetching && <TableSkeleton breakpoint='xl' />}
 
-        <DataTable
-          columns={columns}
-          data={data}
-          breakpoint='xl'
-          alwaysVisibleColumns={[0, 1]}
-        />
+        {!approvedMerchants.isLoading &&
+          !approvedMerchants.isFetching &&
+          !approvedMerchants.isError && (
+            <>
+              <CustomButton px='6' mb='4' onClick={handleExport}>
+                Export
+              </CustomButton>
+
+              <DataTable
+                columns={columns}
+                data={approvedMerchants.data}
+                breakpoint='xl'
+                alwaysVisibleColumns={[0, 1]}
+              />
+            </>
+          )}
       </Box>
     </Stack>
   )

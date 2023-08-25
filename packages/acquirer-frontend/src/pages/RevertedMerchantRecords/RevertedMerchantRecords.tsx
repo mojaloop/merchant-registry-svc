@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { createColumnHelper } from '@tanstack/react-table'
 import {
   Box,
@@ -19,22 +19,23 @@ import {
   type MerchantsFilterForm,
   merchantsFilterSchema,
 } from '@/lib/validations/merchantsFilter'
-import { exportMerchants, getMerchants } from '@/api'
+import { exportMerchants } from '@/api/merchants'
+import { useRevertedMerchants } from '@/api/hooks/merchants'
 import {
   REGISTRATION_STATUS_COLORS,
   type RegistrationStatus,
 } from '@/constants/registrationStatus'
-import { downloadMerchantsBlobAsXlsx, transformIntoTableData } from '@/utils'
+import { downloadMerchantsBlobAsXlsx } from '@/utils'
 import {
   CustomButton,
   CustomLink,
   DataTable,
   MerchantInformationModal,
+  TableSkeleton,
 } from '@/components/ui'
 import { FormInput } from '@/components/form'
 
 const RevertedMerchantRecords = () => {
-  const [data, setData] = useState<MerchantInfo[]>([])
   const [selectedMerchantId, setSelectedMerchantId] = useState<number | null>(null)
 
   const {
@@ -165,25 +166,11 @@ const RevertedMerchantRecords = () => {
     resolver: zodResolver(merchantsFilterSchema),
   })
 
-  const getRevertedMerchantRecords = async (values?: MerchantsFilterForm) => {
-    const params = values
-      ? { ...values, registrationStatus: MerchantRegistrationStatus.REVERTED }
-      : { registrationStatus: MerchantRegistrationStatus.REVERTED }
-    const revertedMerchants = await getMerchants(params)
+  const revertedMerchants = useRevertedMerchants(getValues())
 
-    if (revertedMerchants) {
-      const transformedData = revertedMerchants.map(transformIntoTableData)
-      setData(transformedData)
-    }
+  const onSubmit = () => {
+    revertedMerchants.refetch()
   }
-
-  const onSubmit = (values: MerchantsFilterForm) => {
-    getRevertedMerchantRecords(values)
-  }
-
-  useEffect(() => {
-    getRevertedMerchantRecords()
-  }, [])
 
   const handleExport = async () => {
     const blobData = await exportMerchants({
@@ -277,8 +264,8 @@ const RevertedMerchantRecords = () => {
             colorVariant='accent-outline'
             mr='4'
             onClick={() => {
-              getRevertedMerchantRecords()
               reset()
+              revertedMerchants.refetch()
             }}
           >
             Clear Filter
@@ -308,16 +295,24 @@ const RevertedMerchantRecords = () => {
         flexGrow='1'
         mb='-14'
       >
-        <CustomButton px='6' mb='4' onClick={handleExport}>
-          Export
-        </CustomButton>
+        {revertedMerchants.isFetching && <TableSkeleton breakpoint='xl' />}
 
-        <DataTable
-          columns={columns}
-          data={data}
-          breakpoint='xl'
-          alwaysVisibleColumns={[0, 1]}
-        />
+        {!revertedMerchants.isLoading &&
+          !revertedMerchants.isFetching &&
+          !revertedMerchants.isError && (
+            <>
+              <CustomButton px='6' mb='4' onClick={handleExport}>
+                Export
+              </CustomButton>
+
+              <DataTable
+                columns={columns}
+                data={revertedMerchants.data}
+                breakpoint='xl'
+                alwaysVisibleColumns={[0, 1]}
+              />
+            </>
+          )}
       </Box>
     </Stack>
   )

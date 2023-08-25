@@ -1,19 +1,10 @@
-import { useEffect, useState } from 'react'
-import { Box, Heading, Link, Text } from '@chakra-ui/react'
+import { Box, Heading, Link, Spinner, Text } from '@chakra-ui/react'
 
-import { getDraftCount } from '@/api'
+import { useDraftCount } from '@/api/hooks/forms'
 import { CustomButton, CustomLink } from '@/components/ui'
 
 const Registry = () => {
-  const [draftCount, setDraftCount] = useState<number>(0)
-
-  useEffect(() => {
-    getDraftCount().then(data => {
-      if (data) {
-        setDraftCount(data)
-      }
-    })
-  }, [])
+  const draftCount = useDraftCount()
 
   return (
     <Box>
@@ -36,11 +27,19 @@ const Registry = () => {
       </CustomLink>
 
       <Box position='relative' display='inline-block'>
-        <CustomLink to='/registry/draft-applications' isDisabled={draftCount === 0}>
-          Continue with saved draft
+        <CustomLink
+          to='/registry/draft-applications'
+          isDisabled={!(typeof draftCount === 'number') || draftCount === 0}
+          w='12.5rem'
+        >
+          {draftCount.isLoading ? (
+            <Spinner color='white' size='xs' />
+          ) : (
+            'Continue with saved draft'
+          )}
         </CustomLink>
 
-        {draftCount > 0 && (
+        {typeof draftCount === 'number' && draftCount > 0 && (
           <Box
             as='span'
             w='6'

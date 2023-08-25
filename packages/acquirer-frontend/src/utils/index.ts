@@ -1,11 +1,11 @@
 import type { MerchantInfo } from '@/types/merchants'
 import type { MerchantDetails } from '@/types/merchantDetails'
 
-export const scrollToTop = () => {
+export function scrollToTop() {
   document.getElementById('main')?.scrollTo({ top: 0, behavior: 'smooth' })
 }
 
-export const formatLatitudeLongitude = (latitude?: string, longitude?: string) => {
+export function formatLatitudeLongitude(latitude?: string, longitude?: string) {
   if (!latitude && !longitude) return 'N/A'
 
   if (!latitude || !longitude) return latitude || longitude
@@ -13,7 +13,7 @@ export const formatLatitudeLongitude = (latitude?: string, longitude?: string) =
   return `${latitude}, ${longitude}`
 }
 
-export const transformIntoTableData = (merchantData: MerchantDetails): MerchantInfo => {
+export function transformIntoTableData(merchantData: MerchantDetails): MerchantInfo {
   return {
     no: merchantData.id, // Assuming 'no' is the id of the merchant
     dbaName: merchantData.dba_trading_name,
@@ -34,7 +34,7 @@ export const transformIntoTableData = (merchantData: MerchantDetails): MerchantI
   }
 }
 
-export const downloadMerchantsBlobAsXlsx = (blobData: Blob) => {
+export function downloadMerchantsBlobAsXlsx(blobData: Blob) {
   const url = URL.createObjectURL(blobData)
   const link = document.createElement('a')
   link.href = url

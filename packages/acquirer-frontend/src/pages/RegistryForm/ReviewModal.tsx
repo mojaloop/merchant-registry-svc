@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import {
   Grid,
   Modal,
@@ -11,10 +12,12 @@ import {
   Stack,
   Link,
   Heading,
+  useToast,
+  Spinner,
 } from '@chakra-ui/react'
 
 import type { MerchantDetails } from '@/types/merchantDetails'
-import { changeStatusToReview } from '@/api'
+import { changeStatusToReview } from '@/api/forms'
 import { formatLatitudeLongitude } from '@/utils'
 import { CustomButton } from '@/components/ui'
 import {
@@ -31,6 +34,8 @@ interface ReviewModalProps {
 
 const ReviewModal = ({ isOpen, onClose, draftData }: ReviewModalProps) => {
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
+  const toast = useToast()
 
   const {
     dba_trading_name,
@@ -53,14 +58,34 @@ const ReviewModal = ({ isOpen, onClose, draftData }: ReviewModalProps) => {
   const businessOwner = business_owners?.[0]
   const contactPerson = contact_persons?.[0]
 
+  const { mutate, isLoading } = useMutation({
+    mutationFn: (merchantId: string) => changeStatusToReview(merchantId),
+    onSuccess: () => {
+      sessionStorage.removeItem('merchantId')
+      onClose()
+      queryClient.invalidateQueries(['pending-merchants'])
+      queryClient.invalidateQueries(['all-merchants'])
+      navigate('/registry')
+      toast({
+        title: 'Submission Successful!',
+        description: 'Submitted the data successfully.',
+        status: 'success',
+      })
+    },
+    onError: () => {
+      toast({
+        title: 'Submission Failed!',
+        description: 'Something went wrong! Please try again later.',
+        status: 'error',
+      })
+    },
+  })
+
   const handleSubmit = async () => {
     const merchantId = sessionStorage.getItem('merchantId')
     if (!merchantId) return
 
-    await changeStatusToReview(merchantId)
-    sessionStorage.removeItem('merchantId')
-    onClose()
-    navigate('/registry')
+    mutate(merchantId)
   }
 
   return (
@@ -334,7 +359,9 @@ const ReviewModal = ({ isOpen, onClose, draftData }: ReviewModalProps) => {
             Close
           </CustomButton>
 
-          <CustomButton onClick={handleSubmit}>Submit</CustomButton>
+          <CustomButton onClick={handleSubmit} w='4.5rem'>
+            {isLoading ? <Spinner color='white' size='xs' /> : 'Submit'}
+          </CustomButton>
         </ModalFooter>
       </ModalContent>
     </Modal>

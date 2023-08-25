@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { createColumnHelper } from '@tanstack/react-table'
 import {
   Box,
@@ -19,17 +19,22 @@ import {
   type MerchantsFilterForm,
   merchantsFilterSchema,
 } from '@/lib/validations/merchantsFilter'
-import { exportMerchants, getMerchants } from '@/api'
+import { exportMerchants } from '@/api/merchants'
+import { useRejectedMerchants } from '@/api/hooks/merchants'
 import {
   REGISTRATION_STATUS_COLORS,
   type RegistrationStatus,
 } from '@/constants/registrationStatus'
-import { downloadMerchantsBlobAsXlsx, transformIntoTableData } from '@/utils'
-import { CustomButton, DataTable, MerchantInformationModal } from '@/components/ui'
+import { downloadMerchantsBlobAsXlsx } from '@/utils'
+import {
+  CustomButton,
+  DataTable,
+  MerchantInformationModal,
+  TableSkeleton,
+} from '@/components/ui'
 import { FormInput } from '@/components/form'
 
 const RejectedMerchantRecords = () => {
-  const [data, setData] = useState<MerchantInfo[]>([])
   const [selectedMerchantId, setSelectedMerchantId] = useState<number | null>(null)
 
   const {
@@ -144,25 +149,11 @@ const RejectedMerchantRecords = () => {
     resolver: zodResolver(merchantsFilterSchema),
   })
 
-  const getRejectedMerchantRecords = async (values?: MerchantsFilterForm) => {
-    const params = values
-      ? { ...values, registrationStatus: MerchantRegistrationStatus.REJECTED }
-      : { registrationStatus: MerchantRegistrationStatus.REJECTED }
-    const rejectedMerchants = await getMerchants(params)
+  const rejectedMerchants = useRejectedMerchants(getValues())
 
-    if (rejectedMerchants) {
-      const transformedData = rejectedMerchants.map(transformIntoTableData)
-      setData(transformedData)
-    }
+  const onSubmit = () => {
+    rejectedMerchants.refetch()
   }
-
-  const onSubmit = (values: MerchantsFilterForm) => {
-    getRejectedMerchantRecords(values)
-  }
-
-  useEffect(() => {
-    getRejectedMerchantRecords()
-  }, [])
 
   const handleExport = async () => {
     const blobData = await exportMerchants({
@@ -256,8 +247,8 @@ const RejectedMerchantRecords = () => {
             colorVariant='accent-outline'
             mr='4'
             onClick={() => {
-              getRejectedMerchantRecords()
               reset()
+              rejectedMerchants.refetch()
             }}
           >
             Clear Filter
@@ -287,16 +278,24 @@ const RejectedMerchantRecords = () => {
         flexGrow='1'
         mb='-14'
       >
-        <CustomButton px='6' mb='4' onClick={handleExport}>
-          Export
-        </CustomButton>
+        {rejectedMerchants.isFetching && <TableSkeleton breakpoint='xl' />}
 
-        <DataTable
-          columns={columns}
-          data={data}
-          breakpoint='xl'
-          alwaysVisibleColumns={[0, 1]}
-        />
+        {!rejectedMerchants.isLoading &&
+          !rejectedMerchants.isFetching &&
+          !rejectedMerchants.isError && (
+            <>
+              <CustomButton px='6' mb='4' onClick={handleExport}>
+                Export
+              </CustomButton>
+
+              <DataTable
+                columns={columns}
+                data={rejectedMerchants.data}
+                breakpoint='xl'
+                alwaysVisibleColumns={[0, 1]}
+              />
+            </>
+          )}
       </Box>
     </Stack>
   )

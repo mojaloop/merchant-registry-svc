@@ -1,4 +1,4 @@
-import { NavLink, useNavigate } from 'react-router-dom'
+import { NavLink } from 'react-router-dom'
 import {
   Box,
   Checkbox,
@@ -7,6 +7,7 @@ import {
   Heading,
   Image,
   Link,
+  Spinner,
   Stack,
   Text,
   VStack,
@@ -16,13 +17,11 @@ import { zodResolver } from '@hookform/resolvers/zod'
 
 import mojaloopLogo from '@/assets/mojaloop-logo.png'
 import { type LoginForm, loginSchema } from '@/lib/validations/login'
-import { login } from '@/api'
+import { useLogin } from '@/api/hooks/auth'
 import { CustomButton } from '@/components/ui'
 import { FormInput } from '@/components/form'
 
 const Login = () => {
-  const navigate = useNavigate()
-
   const {
     register,
     formState: { errors },
@@ -31,12 +30,10 @@ const Login = () => {
     resolver: zodResolver(loginSchema),
   })
 
+  const login = useLogin()
+
   const onSubmit = async (values: LoginForm) => {
-    const token = await login(values.email, values.password)
-    if (token) {
-      sessionStorage.setItem('token', token)
-      navigate('/')
-    }
+    login.mutate({ email: values.email, password: values.password })
   }
 
   return (
@@ -100,7 +97,7 @@ const Login = () => {
             </HStack>
 
             <CustomButton type='submit' size='md' mt='8'>
-              Log In
+              {login.isLoading ? <Spinner color='white' size='xs' /> : 'Log In'}
             </CustomButton>
           </Stack>
         </Stack>

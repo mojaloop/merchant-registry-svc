@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { createColumnHelper } from '@tanstack/react-table'
 import {
   Box,
@@ -11,29 +11,27 @@ import {
 } from '@chakra-ui/react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { MerchantRegistrationStatus } from 'shared-lib'
 
 import type { MerchantInfo } from '@/types/merchants'
 import {
   type MerchantsFilterForm,
   merchantsFilterSchema,
 } from '@/lib/validations/merchantsFilter'
-import { getMerchants } from '@/api'
+import { useDrafts } from '@/api/hooks/merchants'
 import {
   REGISTRATION_STATUS_COLORS,
   type RegistrationStatus,
 } from '@/constants/registrationStatus'
-import { transformIntoTableData } from '@/utils'
 import {
   CustomButton,
   CustomLink,
   DataTable,
   MerchantInformationModal,
+  TableSkeleton,
 } from '@/components/ui'
 import { FormInput } from '@/components/form'
 
 const DraftApplications = () => {
-  const [data, setData] = useState<MerchantInfo[]>([])
   const [selectedMerchantId, setSelectedMerchantId] = useState<number | null>(null)
 
   const { isOpen, onOpen, onClose } = useDisclosure()
@@ -133,30 +131,17 @@ const DraftApplications = () => {
   const {
     register,
     formState: { errors },
+    getValues,
     handleSubmit,
     reset,
   } = useForm<MerchantsFilterForm>({
     resolver: zodResolver(merchantsFilterSchema),
   })
 
-  const getDrafts = async (values?: MerchantsFilterForm) => {
-    const params = values
-      ? { ...values, registrationStatus: MerchantRegistrationStatus.DRAFT }
-      : { registrationStatus: MerchantRegistrationStatus.DRAFT }
-    const drafts = await getMerchants(params)
+  const drafts = useDrafts(getValues())
 
-    if (drafts) {
-      const transformedData = drafts.map(transformIntoTableData)
-      setData(transformedData)
-    }
-  }
-
-  useEffect(() => {
-    getDrafts()
-  }, [])
-
-  const onSubmit = (values: MerchantsFilterForm) => {
-    getDrafts(values)
+  const onSubmit = () => {
+    drafts.refetch()
   }
 
   return (
@@ -242,7 +227,7 @@ const DraftApplications = () => {
             mr='4'
             onClick={() => {
               reset()
-              getDrafts()
+              drafts.refetch()
             }}
           >
             Clear Filter
@@ -272,12 +257,16 @@ const DraftApplications = () => {
         flexGrow='1'
         mb='-14'
       >
-        <DataTable
-          data={data}
-          columns={columns}
-          breakpoint='xl'
-          alwaysVisibleColumns={[0]}
-        />
+        {drafts.isFetching && <TableSkeleton breakpoint='xl' />}
+
+        {!drafts.isLoading && !drafts.isFetching && !drafts.isError && (
+          <DataTable
+            data={drafts.data}
+            columns={columns}
+            breakpoint='xl'
+            alwaysVisibleColumns={[0]}
+          />
+        )}
       </Box>
     </Stack>
   )

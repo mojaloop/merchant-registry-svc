@@ -25,9 +25,10 @@ import {
 } from 'shared-lib'
 
 import { type BusinessInfoForm, businessInfoSchema } from '@/lib/validations/registry'
-import { createBusinessInfo, getDraftData, updateBusinessInfo } from '@/api'
+import { createBusinessInfo, updateBusinessInfo } from '@/api/forms'
+import { useDraft } from '@/api/hooks/forms'
 import { scrollToTop } from '@/utils'
-import { CustomButton } from '@/components/ui'
+import { CustomButton, FloatingSpinner } from '@/components/ui'
 import { FormInput, FormSelect } from '@/components/form'
 import GridShell from './GridShell'
 
@@ -71,6 +72,7 @@ interface LicenseDocument {
 
 const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
   const navigate = useNavigate()
+  const [merchantId, setMerchantId] = useState('')
   const [isDraft, setIsDraft] = useState(false)
   const [licenseDocument, setLicenseDocument] = useState<LicenseDocument | null>(null)
 
@@ -92,12 +94,17 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
     },
   })
 
-  const setDraftData = async () => {
+  useEffect(() => {
     const merchantId = sessionStorage.getItem('merchantId')
     if (!merchantId) return
 
-    const draftData = await getDraftData(merchantId)
+    setMerchantId(merchantId)
+  }, [])
 
+  const draft = useDraft(Number(merchantId))
+  const draftData = draft.data
+
+  useEffect(() => {
     if (!draftData) return
 
     setIsDraft(
@@ -143,12 +150,7 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
         link: business_license.license_document_link,
         name: extractFileNameFromUrl(business_license.license_document_link),
       })
-  }
-
-  useEffect(() => {
-    setDraftData()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [draftData, setValue])
 
   const watchedLicenseDocument = watch('license_document')
   const watchedHaveLicense = watch('have_business_license')
@@ -191,233 +193,237 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
   }, [watchedHaveLicense, setValue])
 
   return (
-    <Stack as='form' onSubmit={handleSubmit(onSubmit)} noValidate>
-      <GridShell justifyItems='center'>
-        <FormInput
-          isRequired
-          name='dba_trading_name'
-          register={register}
-          errors={errors}
-          label='Doing Business As Name'
-          placeholder='Business Name'
-        />
+    <>
+      {draft.isFetching && <FloatingSpinner />}
 
-        <FormInput
-          name='registered_name'
-          register={register}
-          errors={errors}
-          label='Registered Name'
-          placeholder='Registered Name'
-        />
-
-        {/* <FormInput
-          isRequired
-          name='payinto_alias'
-          register={register}
-          errors={errors}
-          label='Payinto Account ID'
-          placeholder='Payinto Account ID'
-        /> */}
-
-        <FormSelect
-          isRequired
-          name='employees_num'
-          register={register}
-          errors={errors}
-          label='Number of Employee'
-          placeholder='Number of Employee'
-          options={EMPLOYEE_COUNTS}
-        />
-
-        <FormInput
-          name='monthly_turnover'
-          register={register}
-          errors={errors}
-          label='Monthly Turn Over'
-          placeholder='Monthly Turn Over'
-          inputProps={{ type: 'number' }}
-        />
-
-        <FormSelect
-          isRequired
-          name='category_code'
-          register={register}
-          errors={errors}
-          label='Merchant Category'
-          placeholder='Merchant Category'
-          options={MERCHANT_CATEGORY_CODES}
-        />
-
-        <FormSelect
-          isRequired
-          name='merchant_type'
-          register={register}
-          errors={errors}
-          label='Merchant Type'
-          placeholder='Merchant Type'
-          options={MERCHANT_TYPES}
-        />
-
-        <FormSelect
-          name='dfsp_name'
-          register={register}
-          errors={errors}
-          label='Registered DFSP Name'
-          placeholder='DFSP'
-          options={[
-            { value: 'AA', label: 'AA' },
-            { value: 'BB', label: 'BB' },
-            { value: 'CC', label: 'CC' },
-          ]}
-        />
-
-        <FormSelect
-          isRequired
-          name='currency_code'
-          register={register}
-          errors={errors}
-          label='Currency'
-          placeholder='Currency'
-          options={CURRENCIES}
-        />
-      </GridShell>
-
-      <GridShell justifyItems='center'>
-        <FormControl maxW={{ md: '20rem' }}>
-          <Text mb='4' fontSize='0.9375rem'>
-            Do you have Business license?
-          </Text>
-          <Controller
-            control={control}
-            name='have_business_license'
-            render={({ field }) => (
-              <RadioGroup {...field} onChange={value => field.onChange(value)}>
-                <Stack>
-                  <Radio value='yes'>Yes</Radio>
-                  <Radio value='no'>No</Radio>
-                </Stack>
-              </RadioGroup>
-            )}
+      <Stack as='form' onSubmit={handleSubmit(onSubmit)} noValidate>
+        <GridShell justifyItems='center'>
+          <FormInput
+            isRequired
+            name='dba_trading_name'
+            register={register}
+            errors={errors}
+            label='Doing Business As Name'
+            placeholder='Business Name'
           />
-        </FormControl>
-      </GridShell>
 
-      <GridShell justifyItems='center' pb={{ base: '8', sm: '12' }}>
-        <FormInput
-          isDisabled={!haveLicense}
-          name='license_number'
-          register={register}
-          errors={errors}
-          label='License Number'
-          placeholder='License Number'
-        />
+          <FormInput
+            name='registered_name'
+            register={register}
+            errors={errors}
+            label='Registered Name'
+            placeholder='Registered Name'
+          />
 
-        <Box w='full' maxW={{ md: '20rem' }}>
-          <FormControl
-            isDisabled={!haveLicense}
-            isInvalid={!!errors.license_document}
-            maxW={{ md: '20rem' }}
-          >
-            <FormLabel
-              htmlFor='licenseDocument'
-              fontSize='sm'
-              pointerEvents={haveLicense ? undefined : 'none'}
-            >
-              License Document
-            </FormLabel>
+          {/* <FormInput
+            isRequired
+            name='payinto_alias'
+            register={register}
+            errors={errors}
+            label='Payinto Account ID'
+            placeholder='Payinto Account ID'
+          /> */}
+
+          <FormSelect
+            isRequired
+            name='employees_num'
+            register={register}
+            errors={errors}
+            label='Number of Employee'
+            placeholder='Number of Employee'
+            options={EMPLOYEE_COUNTS}
+          />
+
+          <FormInput
+            name='monthly_turnover'
+            register={register}
+            errors={errors}
+            label='Monthly Turn Over'
+            placeholder='Monthly Turn Over'
+            inputProps={{ type: 'number' }}
+          />
+
+          <FormSelect
+            isRequired
+            name='category_code'
+            register={register}
+            errors={errors}
+            label='Merchant Category'
+            placeholder='Merchant Category'
+            options={MERCHANT_CATEGORY_CODES}
+          />
+
+          <FormSelect
+            isRequired
+            name='merchant_type'
+            register={register}
+            errors={errors}
+            label='Merchant Type'
+            placeholder='Merchant Type'
+            options={MERCHANT_TYPES}
+          />
+
+          <FormSelect
+            name='dfsp_name'
+            register={register}
+            errors={errors}
+            label='Registered DFSP Name'
+            placeholder='DFSP'
+            options={[
+              { value: 'AA', label: 'AA' },
+              { value: 'BB', label: 'BB' },
+              { value: 'CC', label: 'CC' },
+            ]}
+          />
+
+          <FormSelect
+            isRequired
+            name='currency_code'
+            register={register}
+            errors={errors}
+            label='Currency'
+            placeholder='Currency'
+            options={CURRENCIES}
+          />
+        </GridShell>
+
+        <GridShell justifyItems='center'>
+          <FormControl maxW={{ md: '20rem' }}>
+            <Text mb='4' fontSize='0.9375rem'>
+              Do you have Business license?
+            </Text>
             <Controller
               control={control}
-              name='license_document'
-              render={({ field: { name, onBlur, onChange } }) => (
-                <VisuallyHiddenInput
-                  id='licenseDocument'
-                  ref={licenseDocumentRef}
-                  type='file'
-                  accept='.pdf'
-                  name={name}
-                  onBlur={onBlur}
-                  onChange={e => {
-                    if (!e.target.files) return
-                    onChange(e.target.files[0])
-                  }}
-                />
+              name='have_business_license'
+              render={({ field }) => (
+                <RadioGroup {...field} onChange={value => field.onChange(value)}>
+                  <Stack>
+                    <Radio value='yes'>Yes</Radio>
+                    <Radio value='no'>No</Radio>
+                  </Stack>
+                </RadioGroup>
               )}
             />
-            <HStack
-              w='full'
-              h='10'
-              position='relative'
-              px='4'
-              rounded='md'
-              border='1px'
-              borderColor='gray.200'
-              opacity={!haveLicense ? '0.4' : '1'}
-            >
-              <Text color='gray.500'>
-                {watchedLicenseDocument
-                  ? watchedLicenseDocument?.name
-                  : licenseDocument?.name || 'Upload your file'}
-              </Text>
-              <IconButton
-                ref={uploadFileButtonRef}
-                aria-label='Upload file'
-                icon={<MdFileUpload />}
-                variant='unstyled'
-                h='auto'
-                minW='auto'
-                position='absolute'
-                top='0.45rem'
-                right='2.5'
-                fontSize='22px'
-                color='accent'
-                isDisabled={!haveLicense}
-                onClick={() => {
-                  licenseDocumentRef.current?.click()
-                  uploadFileButtonRef.current?.focus()
-                }}
-              />
-            </HStack>
-            <FormErrorMessage>{errors.license_document?.message}</FormErrorMessage>
           </FormControl>
+        </GridShell>
 
-          {licenseDocument && (
-            <Text fontSize='sm' mt='3'>
-              Document is already uploaded.
-            </Text>
-          )}
+        <GridShell justifyItems='center' pb={{ base: '8', sm: '12' }}>
+          <FormInput
+            isDisabled={!haveLicense}
+            name='license_number'
+            register={register}
+            errors={errors}
+            label='License Number'
+            placeholder='License Number'
+          />
 
-          {haveLicense && (
-            <Box mt='2'>
-              <Text mb='1.5' fontSize='sm'>
-                Download sample files here.
-              </Text>
-
-              <Link
-                download
-                href='https://images.pexels.com/photos/268533/pexels-photo-268533.jpeg?cs=srgb&dl=pexels-pixabay-268533.jpg&fm=jpg'
-                color='blue.500'
+          <Box w='full' maxW={{ md: '20rem' }}>
+            <FormControl
+              isDisabled={!haveLicense}
+              isInvalid={!!errors.license_document}
+              maxW={{ md: '20rem' }}
+            >
+              <FormLabel
+                htmlFor='licenseDocument'
                 fontSize='sm'
+                pointerEvents={haveLicense ? undefined : 'none'}
               >
-                Sample license document template
-              </Link>
-            </Box>
-          )}
+                License Document
+              </FormLabel>
+              <Controller
+                control={control}
+                name='license_document'
+                render={({ field: { name, onBlur, onChange } }) => (
+                  <VisuallyHiddenInput
+                    id='licenseDocument'
+                    ref={licenseDocumentRef}
+                    type='file'
+                    accept='.pdf'
+                    name={name}
+                    onBlur={onBlur}
+                    onChange={e => {
+                      if (!e.target.files) return
+                      onChange(e.target.files[0])
+                    }}
+                  />
+                )}
+              />
+              <HStack
+                w='full'
+                h='10'
+                position='relative'
+                px='4'
+                rounded='md'
+                border='1px'
+                borderColor='gray.200'
+                opacity={!haveLicense ? '0.4' : '1'}
+              >
+                <Text color='gray.500'>
+                  {watchedLicenseDocument
+                    ? watchedLicenseDocument?.name
+                    : licenseDocument?.name || 'Upload your file'}
+                </Text>
+                <IconButton
+                  ref={uploadFileButtonRef}
+                  aria-label='Upload file'
+                  icon={<MdFileUpload />}
+                  variant='unstyled'
+                  h='auto'
+                  minW='auto'
+                  position='absolute'
+                  top='0.45rem'
+                  right='2.5'
+                  fontSize='22px'
+                  color='accent'
+                  isDisabled={!haveLicense}
+                  onClick={() => {
+                    licenseDocumentRef.current?.click()
+                    uploadFileButtonRef.current?.focus()
+                  }}
+                />
+              </HStack>
+              <FormErrorMessage>{errors.license_document?.message}</FormErrorMessage>
+            </FormControl>
+
+            {licenseDocument && (
+              <Text fontSize='sm' mt='3'>
+                Document is already uploaded.
+              </Text>
+            )}
+
+            {haveLicense && (
+              <Box mt='2'>
+                <Text mb='1.5' fontSize='sm'>
+                  Download sample files here.
+                </Text>
+
+                <Link
+                  download
+                  href='https://images.pexels.com/photos/268533/pexels-photo-268533.jpeg?cs=srgb&dl=pexels-pixabay-268533.jpg&fm=jpg'
+                  color='blue.500'
+                  fontSize='sm'
+                >
+                  Sample license document template
+                </Link>
+              </Box>
+            )}
+          </Box>
+        </GridShell>
+
+        <Box alignSelf='end'>
+          <CustomButton
+            colorVariant='accent-outline'
+            w='32'
+            mr='4'
+            onClick={() => navigate(-1)}
+          >
+            Back
+          </CustomButton>
+
+          <CustomButton type='submit'>Save and proceed</CustomButton>
         </Box>
-      </GridShell>
-
-      <Box alignSelf='end'>
-        <CustomButton
-          colorVariant='accent-outline'
-          w='32'
-          mr='4'
-          onClick={() => navigate(-1)}
-        >
-          Back
-        </CustomButton>
-
-        <CustomButton type='submit'>Save and proceed</CustomButton>
-      </Box>
-    </Stack>
+      </Stack>
+    </>
   )
 }
 

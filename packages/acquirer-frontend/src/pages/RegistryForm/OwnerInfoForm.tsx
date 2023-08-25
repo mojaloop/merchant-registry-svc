@@ -5,9 +5,10 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { Countries, BusinessOwnerIDType } from 'shared-lib'
 
 import { type OwnerInfoForm, ownerInfoSchema } from '@/lib/validations/registry'
-import { createOwnerInfo, getDraftData, updateOwnerInfo } from '@/api'
+import { createOwnerInfo, updateOwnerInfo } from '@/api/forms'
+import { useDraft } from '@/api/hooks/forms'
 import { scrollToTop } from '@/utils'
-import { CustomButton } from '@/components/ui'
+import { CustomButton, FloatingSpinner } from '@/components/ui'
 import { FormInput, FormSelect } from '@/components/form'
 import GridShell from './GridShell'
 
@@ -26,6 +27,7 @@ interface OwnerInfoFormProps {
 }
 
 const OwnerInfoForm = ({ setActiveStep }: OwnerInfoFormProps) => {
+  const [merchantId, setMerchantId] = useState('')
   const [isDraft, setIsDraft] = useState(false)
   const [ownerId, setOwnerId] = useState<number | null>(null)
 
@@ -42,12 +44,17 @@ const OwnerInfoForm = ({ setActiveStep }: OwnerInfoFormProps) => {
     },
   })
 
-  const setDraftData = async () => {
+  useEffect(() => {
     const merchantId = sessionStorage.getItem('merchantId')
     if (!merchantId) return
 
-    const draftData = await getDraftData(merchantId)
+    setMerchantId(merchantId)
+  }, [])
 
+  const draft = useDraft(Number(merchantId))
+  const draftData = draft.data
+
+  useEffect(() => {
     if (!draftData) return
 
     if (draftData.business_owners?.[0]) {
@@ -99,12 +106,7 @@ const OwnerInfoForm = ({ setActiveStep }: OwnerInfoFormProps) => {
       longitude && setValue('longitude', longitude)
       latitude && setValue('latitude', latitude)
     }
-  }
-
-  useEffect(() => {
-    setDraftData()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [draftData, setValue])
 
   const onSubmit = async (values: OwnerInfoForm) => {
     const merchantId = sessionStorage.getItem('merchantId')
@@ -142,199 +144,203 @@ const OwnerInfoForm = ({ setActiveStep }: OwnerInfoFormProps) => {
   }, [errors, setFocus])
 
   return (
-    <Stack as='form' onSubmit={handleSubmit(onSubmit)} noValidate>
-      <GridShell justifyItems='center'>
-        <FormInput
-          isRequired
-          name='name'
-          register={register}
-          errors={errors}
-          label='Name'
-          placeholder='Name'
-        />
+    <>
+      {draft.isFetching && <FloatingSpinner />}
 
-        <FormSelect
-          isRequired
-          name='identificaton_type'
-          register={register}
-          errors={errors}
-          label='ID Type'
-          placeholder='Chosse National ID Type'
-          options={ID_TYPES}
-        />
+      <Stack as='form' onSubmit={handleSubmit(onSubmit)} noValidate>
+        <GridShell justifyItems='center'>
+          <FormInput
+            isRequired
+            name='name'
+            register={register}
+            errors={errors}
+            label='Name'
+            placeholder='Name'
+          />
 
-        <FormInput
-          isRequired
-          name='identification_number'
-          register={register}
-          errors={errors}
-          label='Identification Number'
-          placeholder='Identification Number'
-        />
+          <FormSelect
+            isRequired
+            name='identificaton_type'
+            register={register}
+            errors={errors}
+            label='ID Type'
+            placeholder='Chosse National ID Type'
+            options={ID_TYPES}
+          />
 
-        <FormInput
-          isRequired
-          name='phone_number'
-          register={register}
-          errors={errors}
-          label='Phone Number'
-          placeholder='Phone Number'
-          inputProps={{ type: 'number' }}
-        />
+          <FormInput
+            isRequired
+            name='identification_number'
+            register={register}
+            errors={errors}
+            label='Identification Number'
+            placeholder='Identification Number'
+          />
 
-        <FormInput
-          name='email'
-          register={register}
-          errors={errors}
-          label='Email'
-          placeholder='Email'
-        />
-      </GridShell>
+          <FormInput
+            isRequired
+            name='phone_number'
+            register={register}
+            errors={errors}
+            label='Phone Number'
+            placeholder='Phone Number'
+            inputProps={{ type: 'number' }}
+          />
 
-      <GridShell pt='2'>
-        <Heading size='sm' as='h3' w='20rem' justifySelf={{ md: 'center' }}>
-          Physical Address
-        </Heading>
-      </GridShell>
+          <FormInput
+            name='email'
+            register={register}
+            errors={errors}
+            label='Email'
+            placeholder='Email'
+          />
+        </GridShell>
 
-      <GridShell justifyItems='center'>
-        <FormInput
-          name='department'
-          register={register}
-          errors={errors}
-          label='Department'
-          placeholder='Department'
-        />
+        <GridShell pt='2'>
+          <Heading size='sm' as='h3' w='20rem' justifySelf={{ md: 'center' }}>
+            Physical Address
+          </Heading>
+        </GridShell>
 
-        <FormInput
-          name='sub_department'
-          register={register}
-          errors={errors}
-          label='Sub Department'
-          placeholder='Sub Department'
-        />
+        <GridShell justifyItems='center'>
+          <FormInput
+            name='department'
+            register={register}
+            errors={errors}
+            label='Department'
+            placeholder='Department'
+          />
 
-        <FormInput
-          name='street_name'
-          register={register}
-          errors={errors}
-          label='Street Name'
-          placeholder='Street Name'
-        />
+          <FormInput
+            name='sub_department'
+            register={register}
+            errors={errors}
+            label='Sub Department'
+            placeholder='Sub Department'
+          />
 
-        <FormInput
-          name='building_number'
-          register={register}
-          errors={errors}
-          label='Building Number'
-          placeholder='Building Number'
-        />
+          <FormInput
+            name='street_name'
+            register={register}
+            errors={errors}
+            label='Street Name'
+            placeholder='Street Name'
+          />
 
-        <FormInput
-          name='building_name'
-          register={register}
-          errors={errors}
-          label='Building Name'
-          placeholder='Building Name'
-        />
+          <FormInput
+            name='building_number'
+            register={register}
+            errors={errors}
+            label='Building Number'
+            placeholder='Building Number'
+          />
 
-        <FormInput
-          name='floor_number'
-          register={register}
-          errors={errors}
-          label='Floor Number'
-          placeholder='Floor Number'
-        />
+          <FormInput
+            name='building_name'
+            register={register}
+            errors={errors}
+            label='Building Name'
+            placeholder='Building Name'
+          />
 
-        <FormInput
-          name='room_number'
-          register={register}
-          errors={errors}
-          label='Room Number'
-          placeholder='Room Number'
-        />
+          <FormInput
+            name='floor_number'
+            register={register}
+            errors={errors}
+            label='Floor Number'
+            placeholder='Floor Number'
+          />
 
-        <FormInput
-          name='post_box'
-          register={register}
-          errors={errors}
-          label='Post Box'
-          placeholder='Post Box'
-        />
+          <FormInput
+            name='room_number'
+            register={register}
+            errors={errors}
+            label='Room Number'
+            placeholder='Room Number'
+          />
 
-        <FormInput
-          name='postal_code'
-          register={register}
-          errors={errors}
-          label='Postal Code'
-          placeholder='Postal Code'
-        />
+          <FormInput
+            name='post_box'
+            register={register}
+            errors={errors}
+            label='Post Box'
+            placeholder='Post Box'
+          />
 
-        <FormSelect
-          name='country'
-          register={register}
-          errors={errors}
-          label='Country'
-          placeholder='Choose Country'
-          options={COUNTRIES}
-        />
+          <FormInput
+            name='postal_code'
+            register={register}
+            errors={errors}
+            label='Postal Code'
+            placeholder='Postal Code'
+          />
 
-        <FormInput
-          name='town_name'
-          register={register}
-          errors={errors}
-          label='Township'
-          placeholder='Township'
-        />
+          <FormSelect
+            name='country'
+            register={register}
+            errors={errors}
+            label='Country'
+            placeholder='Choose Country'
+            options={COUNTRIES}
+          />
 
-        <FormInput
-          name='district_name'
-          register={register}
-          errors={errors}
-          label='District'
-          placeholder='District'
-        />
+          <FormInput
+            name='town_name'
+            register={register}
+            errors={errors}
+            label='Township'
+            placeholder='Township'
+          />
 
-        <FormInput
-          name='country_subdivision'
-          register={register}
-          errors={errors}
-          label='Country Subdivision (State/Divison)'
-          placeholder='Country Subdivision'
-        />
+          <FormInput
+            name='district_name'
+            register={register}
+            errors={errors}
+            label='District'
+            placeholder='District'
+          />
 
-        <FormInput
-          name='longitude'
-          register={register}
-          errors={errors}
-          label='Longitude'
-          placeholder='Longitude'
-          inputProps={{ type: 'number' }}
-        />
+          <FormInput
+            name='country_subdivision'
+            register={register}
+            errors={errors}
+            label='Country Subdivision (State/Divison)'
+            placeholder='Country Subdivision'
+          />
 
-        <FormInput
-          name='latitude'
-          register={register}
-          errors={errors}
-          label='Latitude'
-          placeholder='Latitude'
-          inputProps={{ type: 'number' }}
-        />
-      </GridShell>
+          <FormInput
+            name='longitude'
+            register={register}
+            errors={errors}
+            label='Longitude'
+            placeholder='Longitude'
+            inputProps={{ type: 'number' }}
+          />
 
-      <Box alignSelf='end'>
-        <CustomButton
-          colorVariant='accent-outline'
-          w='32'
-          mr='4'
-          onClick={() => setActiveStep(activeStep => activeStep - 1)}
-        >
-          Back
-        </CustomButton>
+          <FormInput
+            name='latitude'
+            register={register}
+            errors={errors}
+            label='Latitude'
+            placeholder='Latitude'
+            inputProps={{ type: 'number' }}
+          />
+        </GridShell>
 
-        <CustomButton type='submit'>Save and proceed</CustomButton>
-      </Box>
-    </Stack>
+        <Box alignSelf='end'>
+          <CustomButton
+            colorVariant='accent-outline'
+            w='32'
+            mr='4'
+            onClick={() => setActiveStep(activeStep => activeStep - 1)}
+          >
+            Back
+          </CustomButton>
+
+          <CustomButton type='submit'>Save and proceed</CustomButton>
+        </Box>
+      </Stack>
+    </>
   )
 }
 
