@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react'
-import { useQuery } from '@tanstack/react-query'
 import { Box, Heading, Stack } from '@chakra-ui/react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -7,7 +6,7 @@ import { MerchantLocationType, Countries } from 'shared-lib'
 
 import { type LocationInfoForm, locationInfoSchema } from '@/lib/validations/registry'
 import { createLocationInfo, updateLocationInfo } from '@/api/forms'
-import { getMerchant } from '@/api/merchants'
+import { useDraft } from '@/api/hooks/forms'
 import { scrollToTop } from '@/utils'
 import { CustomButton, FloatingSpinner } from '@/components/ui'
 import { FormInput, FormSelect } from '@/components/form'
@@ -52,11 +51,8 @@ const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
     setMerchantId(merchantId)
   }, [])
 
-  const { data: draftData, isLoading } = useQuery({
-    queryKey: ['merchants', merchantId],
-    queryFn: () => getMerchant(Number(merchantId)),
-    enabled: !!merchantId,
-  })
+  const draft = useDraft(Number(merchantId))
+  const draftData = draft.data
 
   useEffect(() => {
     if (!draftData) return
@@ -146,7 +142,7 @@ const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
 
   return (
     <>
-      {isLoading && <FloatingSpinner />}
+      {draft.isFetching && <FloatingSpinner />}
 
       <Stack as='form' onSubmit={handleSubmit(onSubmit)} noValidate>
         <GridShell justifyItems='center'>

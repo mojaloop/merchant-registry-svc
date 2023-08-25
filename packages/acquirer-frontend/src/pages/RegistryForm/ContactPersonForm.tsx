@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react'
-import { useQuery } from '@tanstack/react-query'
 import { Box, Checkbox, Heading, Stack, useDisclosure } from '@chakra-ui/react'
 import { Controller, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -11,7 +10,7 @@ import {
   getDraftData,
   updateContactPersonInfo,
 } from '@/api/forms'
-import { getMerchant } from '@/api/merchants'
+import { useDraft } from '@/api/hooks/forms'
 import { CustomButton, FloatingSpinner } from '@/components/ui'
 import { FormInput } from '@/components/form'
 import ReviewModal from './ReviewModal'
@@ -52,11 +51,8 @@ const ContactPersonForm = ({ setActiveStep }: ContactPersonProps) => {
     setMerchantId(merchantId)
   }, [])
 
-  const { data: draftData, isLoading } = useQuery({
-    queryKey: ['merchants', merchantId],
-    queryFn: () => getMerchant(Number(merchantId)),
-    enabled: !!merchantId,
-  })
+  const draft = useDraft(Number(merchantId))
+  const draftData = draft.data
 
   const watchedIsSameAsBusinessOwner = watch('is_same_as_business_owner')
 
@@ -130,7 +126,7 @@ const ContactPersonForm = ({ setActiveStep }: ContactPersonProps) => {
 
   return (
     <>
-      {isLoading && <FloatingSpinner />}
+      {draft.isFetching && <FloatingSpinner />}
 
       {formData && <ReviewModal draftData={formData} isOpen={isOpen} onClose={onClose} />}
 

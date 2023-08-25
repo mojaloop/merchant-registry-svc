@@ -1,8 +1,8 @@
 import { useQuery } from '@tanstack/react-query'
 import { MerchantRegistrationStatus } from 'shared-lib'
 
-import { AllMerchantsFilterForm } from '@/lib/validations/allMerchantsFilter'
-import { MerchantsFilterForm } from '@/lib/validations/merchantsFilter'
+import type { AllMerchantsFilterForm } from '@/lib/validations/allMerchantsFilter'
+import type { MerchantsFilterForm } from '@/lib/validations/merchantsFilter'
 import { transformIntoTableData } from '@/utils'
 import { getMerchant, getMerchants } from '../merchants'
 

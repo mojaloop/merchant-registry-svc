@@ -1,14 +1,10 @@
-import { useQuery } from '@tanstack/react-query'
 import { Box, Heading, Link, Spinner, Text } from '@chakra-ui/react'
 
-import { getDraftCount } from '@/api/forms'
+import { useDraftCount } from '@/api/hooks/forms'
 import { CustomButton, CustomLink } from '@/components/ui'
 
 const Registry = () => {
-  const { data: draftCount, isLoading } = useQuery({
-    queryKey: ['draft-count'],
-    queryFn: getDraftCount,
-  })
+  const draftCount = useDraftCount()
 
   return (
     <Box>
@@ -36,7 +32,11 @@ const Registry = () => {
           isDisabled={!(typeof draftCount === 'number') || draftCount === 0}
           w='12.5rem'
         >
-          {isLoading ? <Spinner color='white' size='xs' /> : 'Continue with saved draft'}
+          {draftCount.isLoading ? (
+            <Spinner color='white' size='xs' />
+          ) : (
+            'Continue with saved draft'
+          )}
         </CustomLink>
 
         {typeof draftCount === 'number' && draftCount > 0 && (
