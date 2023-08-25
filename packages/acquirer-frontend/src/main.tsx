@@ -33,9 +33,6 @@ const queryClient = new QueryClient({
           description: error.response?.data.message || query.meta?.toastDescription,
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           status: query.meta!.toastStatus as UseToastOptions['status'],
-          variant: 'subtle',
-          position: 'top',
-          isClosable: true,
         })
       }
     },
@@ -47,7 +44,12 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
     <QueryClientProvider client={queryClient}>
       <ReactQueryDevtools />
       <BrowserRouter>
-        <ChakraProvider theme={theme}>
+        <ChakraProvider
+          theme={theme}
+          toastOptions={{
+            defaultOptions: { variant: 'subtle', position: 'top', isClosable: true },
+          }}
+        >
           <DrawerDisclosureProvider>
             <App />
           </DrawerDisclosureProvider>

@@ -12,6 +12,8 @@ import {
   Stack,
   Link,
   Heading,
+  useToast,
+  Spinner,
 } from '@chakra-ui/react'
 
 import type { MerchantDetails } from '@/types/merchantDetails'
@@ -33,6 +35,7 @@ interface ReviewModalProps {
 const ReviewModal = ({ isOpen, onClose, draftData }: ReviewModalProps) => {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
+  const toast = useToast()
 
   const {
     dba_trading_name,
@@ -55,14 +58,26 @@ const ReviewModal = ({ isOpen, onClose, draftData }: ReviewModalProps) => {
   const businessOwner = business_owners?.[0]
   const contactPerson = contact_persons?.[0]
 
-  const changeToReview = useMutation({
+  const { mutate, isLoading } = useMutation({
     mutationFn: (merchantId: string) => changeStatusToReview(merchantId),
     onSuccess: () => {
       sessionStorage.removeItem('merchantId')
       onClose()
+      toast({
+        title: 'Operation Successful!',
+        description: 'Submitted the data successfully.',
+        status: 'success',
+      })
       queryClient.invalidateQueries(['pending-merchants'])
       queryClient.invalidateQueries(['all-merchants'])
       navigate('/registry')
+    },
+    onError: () => {
+      toast({
+        title: 'Operation Failed!',
+        description: 'Something went wrong! Please try again later.',
+        status: 'error',
+      })
     },
   })
 
@@ -70,7 +85,7 @@ const ReviewModal = ({ isOpen, onClose, draftData }: ReviewModalProps) => {
     const merchantId = sessionStorage.getItem('merchantId')
     if (!merchantId) return
 
-    changeToReview.mutate(merchantId)
+    mutate(merchantId)
   }
 
   return (
@@ -344,7 +359,9 @@ const ReviewModal = ({ isOpen, onClose, draftData }: ReviewModalProps) => {
             Close
           </CustomButton>
 
-          <CustomButton onClick={handleSubmit}>Submit</CustomButton>
+          <CustomButton onClick={handleSubmit} w='4.5rem'>
+            {isLoading ? <Spinner color='white' size='xs' /> : 'Submit'}
+          </CustomButton>
         </ModalFooter>
       </ModalContent>
     </Modal>
