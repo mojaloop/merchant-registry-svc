@@ -1,5 +1,4 @@
 import { useMemo, useState } from 'react'
-import { useQuery } from '@tanstack/react-query'
 import { createColumnHelper } from '@tanstack/react-table'
 import {
   Box,
@@ -12,19 +11,17 @@ import {
 } from '@chakra-ui/react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { MerchantRegistrationStatus } from 'shared-lib'
 
 import type { MerchantInfo } from '@/types/merchants'
 import {
   type MerchantsFilterForm,
   merchantsFilterSchema,
 } from '@/lib/validations/merchantsFilter'
-import { getMerchants } from '@/api/merchants'
+import { useDrafts } from '@/api/hooks/merchants'
 import {
   REGISTRATION_STATUS_COLORS,
   type RegistrationStatus,
 } from '@/constants/registrationStatus'
-import { transformIntoTableData } from '@/utils'
 import {
   CustomButton,
   CustomLink,
@@ -141,25 +138,10 @@ const DraftApplications = () => {
     resolver: zodResolver(merchantsFilterSchema),
   })
 
-  const getDrafts = async (values: MerchantsFilterForm) => {
-    const params = { ...values, registrationStatus: MerchantRegistrationStatus.DRAFT }
-    const drafts = await getMerchants(params)
-
-    return drafts.map(transformIntoTableData)
-  }
-
-  const { data, isLoading, isFetching, isError, refetch } = useQuery({
-    queryKey: ['drafts'],
-    queryFn: () => getDrafts(getValues()),
-    meta: {
-      toastStatus: 'error',
-      toastTitle: 'Operation Failed!',
-      toastDescription: 'Something went wrong! Please try again later.',
-    },
-  })
+  const drafts = useDrafts(getValues())
 
   const onSubmit = () => {
-    refetch()
+    drafts.refetch()
   }
 
   return (
@@ -245,7 +227,7 @@ const DraftApplications = () => {
             mr='4'
             onClick={() => {
               reset()
-              refetch()
+              drafts.refetch()
             }}
           >
             Clear Filter
@@ -275,11 +257,11 @@ const DraftApplications = () => {
         flexGrow='1'
         mb='-14'
       >
-        {isFetching && <TableSkeleton breakpoint='xl' />}
+        {drafts.isFetching && <TableSkeleton breakpoint='xl' />}
 
-        {!isLoading && !isFetching && !isError && (
+        {!drafts.isLoading && !drafts.isFetching && !drafts.isError && (
           <DataTable
-            data={data}
+            data={drafts.data}
             columns={columns}
             breakpoint='xl'
             alwaysVisibleColumns={[0]}

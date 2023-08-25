@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useQueryClient } from '@tanstack/react-query'
 import { createColumnHelper } from '@tanstack/react-table'
 import {
   Box,
@@ -23,15 +23,15 @@ import {
 import {
   approveMerchants,
   exportMerchants,
-  getMerchants,
   rejectMerchants,
   revertMerchants,
 } from '@/api/merchants'
+import { usePendingMerchants } from '@/api/hooks/merchants'
 import {
   REGISTRATION_STATUS_COLORS,
   type RegistrationStatus,
 } from '@/constants/registrationStatus'
-import { downloadMerchantsBlobAsXlsx, transformIntoTableData } from '@/utils'
+import { downloadMerchantsBlobAsXlsx } from '@/utils'
 import {
   AlertDialog,
   CustomButton,
@@ -190,25 +190,10 @@ const PendingMerchantRecords = () => {
     resolver: zodResolver(merchantsFilterSchema),
   })
 
-  const getPendingMerchantRecords = async (values: MerchantsFilterForm) => {
-    const params = { ...values, registrationStatus: MerchantRegistrationStatus.REVIEW }
-    const pendingMerchants = await getMerchants(params)
-
-    return pendingMerchants.map(transformIntoTableData)
-  }
-
-  const { data, isLoading, isFetching, isError, refetch } = useQuery({
-    queryKey: ['pending-merchants'],
-    queryFn: () => getPendingMerchantRecords(getValues()),
-    meta: {
-      toastStatus: 'error',
-      toastTitle: 'Operation Failed!',
-      toastDescription: 'Something went wrong! Please try again later.',
-    },
-  })
+  const pendingMerchants = usePendingMerchants(getValues())
 
   const onSubmit = () => {
-    refetch()
+    pendingMerchants.refetch()
   }
 
   return (
@@ -294,7 +279,7 @@ const PendingMerchantRecords = () => {
             mr='4'
             onClick={() => {
               reset()
-              refetch()
+              pendingMerchants.refetch()
             }}
           >
             Clear Filter
@@ -330,7 +315,7 @@ const PendingMerchantRecords = () => {
         onConfirm={async () => {
           onApproveAlertClose()
           await approveMerchants(selectedMerchantIds)
-          refetch()
+          pendingMerchants.refetch()
           queryClient.invalidateQueries(['approved-merchants'])
           queryClient.invalidateQueries(['all-merchants'])
         }}
@@ -354,7 +339,7 @@ const PendingMerchantRecords = () => {
         inputLabel='Enter the rejecting reason'
         onConfirm={async reason => {
           await rejectMerchants(selectedMerchantIds, reason)
-          refetch()
+          pendingMerchants.refetch()
           queryClient.invalidateQueries(['rejected-merchants'])
           queryClient.invalidateQueries(['all-merchants'])
         }}
@@ -367,7 +352,7 @@ const PendingMerchantRecords = () => {
         inputLabel='Enter the reverting reason'
         onConfirm={async reason => {
           await revertMerchants(selectedMerchantIds, reason)
-          refetch()
+          pendingMerchants.refetch()
           queryClient.invalidateQueries(['reverted-merchants'])
           queryClient.invalidateQueries(['all-merchants'])
         }}
@@ -383,37 +368,39 @@ const PendingMerchantRecords = () => {
         flexGrow='1'
         mb='-14'
       >
-        {isFetching && <TableSkeleton breakpoint='xl' />}
+        {pendingMerchants.isFetching && <TableSkeleton breakpoint='xl' />}
 
-        {!isLoading && !isFetching && !isError && (
-          <PendingMerchantsDataTable
-            columns={columns}
-            data={data}
-            breakpoint='xl'
-            alwaysVisibleColumns={[0, 1]}
-            onExport={async () => {
-              const blobData = await exportMerchants({
-                ...getValues(),
-                registrationStatus: MerchantRegistrationStatus.REVIEW,
-              })
-              if (blobData) {
-                downloadMerchantsBlobAsXlsx(blobData)
-              }
-            }}
-            onReject={selectedMerchantIds => {
-              setSelectedMerchantIds(selectedMerchantIds)
-              onRejectAlertOpen()
-            }}
-            onApprove={async selectedMerchantIds => {
-              setSelectedMerchantIds(selectedMerchantIds)
-              onApproveAlertOpen()
-            }}
-            onRevert={selectedMerchantIds => {
-              setSelectedMerchantIds(selectedMerchantIds)
-              onRevertAlertOpen()
-            }}
-          />
-        )}
+        {!pendingMerchants.isLoading &&
+          !pendingMerchants.isFetching &&
+          !pendingMerchants.isError && (
+            <PendingMerchantsDataTable
+              columns={columns}
+              data={pendingMerchants.data}
+              breakpoint='xl'
+              alwaysVisibleColumns={[0, 1]}
+              onExport={async () => {
+                const blobData = await exportMerchants({
+                  ...getValues(),
+                  registrationStatus: MerchantRegistrationStatus.REVIEW,
+                })
+                if (blobData) {
+                  downloadMerchantsBlobAsXlsx(blobData)
+                }
+              }}
+              onReject={selectedMerchantIds => {
+                setSelectedMerchantIds(selectedMerchantIds)
+                onRejectAlertOpen()
+              }}
+              onApprove={async selectedMerchantIds => {
+                setSelectedMerchantIds(selectedMerchantIds)
+                onApproveAlertOpen()
+              }}
+              onRevert={selectedMerchantIds => {
+                setSelectedMerchantIds(selectedMerchantIds)
+                onRevertAlertOpen()
+              }}
+            />
+          )}
       </Box>
     </Stack>
   )

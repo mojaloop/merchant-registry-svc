@@ -1,5 +1,4 @@
 import { useMemo, useState } from 'react'
-import { useQuery } from '@tanstack/react-query'
 import { createColumnHelper } from '@tanstack/react-table'
 import {
   Box,
@@ -20,12 +19,13 @@ import {
   type MerchantsFilterForm,
   merchantsFilterSchema,
 } from '@/lib/validations/merchantsFilter'
-import { exportMerchants, getMerchants } from '@/api/merchants'
+import { exportMerchants } from '@/api/merchants'
+import { useApprovedMerchants } from '@/api/hooks/merchants'
 import {
   REGISTRATION_STATUS_COLORS,
   type RegistrationStatus,
 } from '@/constants/registrationStatus'
-import { downloadMerchantsBlobAsXlsx, transformIntoTableData } from '@/utils'
+import { downloadMerchantsBlobAsXlsx } from '@/utils'
 import {
   CustomButton,
   DataTable,
@@ -149,28 +149,10 @@ const ApprovedMerchantRecords = () => {
     resolver: zodResolver(merchantsFilterSchema),
   })
 
-  const getApprovedMerchantRecords = async (values: MerchantsFilterForm) => {
-    const params = {
-      ...values,
-      registrationStatus: MerchantRegistrationStatus.WAITINGALIASGENERATION,
-    }
-    const approvedMerchants = await getMerchants(params)
-
-    return approvedMerchants.map(transformIntoTableData)
-  }
-
-  const { data, isLoading, isFetching, isError, refetch } = useQuery({
-    queryKey: ['approved-merchants'],
-    queryFn: () => getApprovedMerchantRecords(getValues()),
-    meta: {
-      toastStatus: 'error',
-      toastTitle: 'Operation Failed!',
-      toastDescription: 'Something went wrong! Please try again later.',
-    },
-  })
+  const approvedMerchants = useApprovedMerchants(getValues())
 
   const onSubmit = () => {
-    refetch()
+    approvedMerchants.refetch()
   }
 
   const handleExport = async () => {
@@ -266,7 +248,7 @@ const ApprovedMerchantRecords = () => {
             mr='4'
             onClick={() => {
               reset()
-              refetch()
+              approvedMerchants.refetch()
             }}
           >
             Clear Filter
@@ -296,22 +278,24 @@ const ApprovedMerchantRecords = () => {
         flexGrow='1'
         mb='-14'
       >
-        {isFetching && <TableSkeleton breakpoint='xl' />}
+        {approvedMerchants.isFetching && <TableSkeleton breakpoint='xl' />}
 
-        {!isLoading && !isFetching && !isError && (
-          <>
-            <CustomButton px='6' mb='4' onClick={handleExport}>
-              Export
-            </CustomButton>
+        {!approvedMerchants.isLoading &&
+          !approvedMerchants.isFetching &&
+          !approvedMerchants.isError && (
+            <>
+              <CustomButton px='6' mb='4' onClick={handleExport}>
+                Export
+              </CustomButton>
 
-            <DataTable
-              columns={columns}
-              data={data}
-              breakpoint='xl'
-              alwaysVisibleColumns={[0, 1]}
-            />
-          </>
-        )}
+              <DataTable
+                columns={columns}
+                data={approvedMerchants.data}
+                breakpoint='xl'
+                alwaysVisibleColumns={[0, 1]}
+              />
+            </>
+          )}
       </Box>
     </Stack>
   )

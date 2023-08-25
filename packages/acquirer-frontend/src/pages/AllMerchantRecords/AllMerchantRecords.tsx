@@ -1,5 +1,4 @@
 import { useMemo, useState } from 'react'
-import { useQuery } from '@tanstack/react-query'
 import { createColumnHelper } from '@tanstack/react-table'
 import {
   Box,
@@ -20,12 +19,13 @@ import {
   type AllMerchantsFilterForm,
   allMerchantsFilterSchema,
 } from '@/lib/validations/allMerchantsFilter'
-import { exportMerchants, getMerchants } from '@/api/merchants'
+import { exportMerchants } from '@/api/merchants'
+import { useAllMerchants } from '@/api/hooks/merchants'
 import {
   REGISTRATION_STATUS_COLORS,
   type RegistrationStatus,
 } from '@/constants/registrationStatus'
-import { downloadMerchantsBlobAsXlsx, transformIntoTableData } from '@/utils'
+import { downloadMerchantsBlobAsXlsx } from '@/utils'
 import {
   CustomButton,
   DataTable,
@@ -153,24 +153,10 @@ const AllMerchantRecords = () => {
     },
   })
 
-  const getAllMerchantRecords = async (values: AllMerchantsFilterForm) => {
-    const allMerchants = await getMerchants(values)
-
-    return allMerchants.map(transformIntoTableData)
-  }
-
-  const { data, isLoading, isFetching, isError, refetch } = useQuery({
-    queryKey: ['all-merchants'],
-    queryFn: () => getAllMerchantRecords(getValues()),
-    meta: {
-      toastStatus: 'error',
-      toastTitle: 'Operation Failed!',
-      toastDescription: 'Something went wrong! Please try again later.',
-    },
-  })
+  const allMerchants = useAllMerchants(getValues())
 
   const onSubmit = () => {
-    refetch()
+    allMerchants.refetch()
   }
 
   const handleExport = async () => {
@@ -272,7 +258,7 @@ const AllMerchantRecords = () => {
             mr='4'
             onClick={() => {
               reset()
-              refetch()
+              allMerchants.refetch()
             }}
           >
             Clear Filter
@@ -302,9 +288,9 @@ const AllMerchantRecords = () => {
         flexGrow='1'
         mb='-14'
       >
-        {isFetching && <TableSkeleton breakpoint='xl' />}
+        {allMerchants.isFetching && <TableSkeleton breakpoint='xl' />}
 
-        {!isLoading && !isFetching && !isError && (
+        {!allMerchants.isLoading && !allMerchants.isFetching && !allMerchants.isError && (
           <>
             <CustomButton px='6' mb='4' onClick={handleExport}>
               Export
@@ -312,7 +298,7 @@ const AllMerchantRecords = () => {
 
             <DataTable
               columns={columns}
-              data={data}
+              data={allMerchants.data}
               breakpoint='xl'
               alwaysVisibleColumns={[0, 1]}
             />

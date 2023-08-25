@@ -1,5 +1,4 @@
 import { useMemo, useState } from 'react'
-import { useQuery } from '@tanstack/react-query'
 import { createColumnHelper } from '@tanstack/react-table'
 import {
   Box,
@@ -20,12 +19,13 @@ import {
   type MerchantsFilterForm,
   merchantsFilterSchema,
 } from '@/lib/validations/merchantsFilter'
-import { exportMerchants, getMerchants } from '@/api/merchants'
+import { exportMerchants } from '@/api/merchants'
+import { useRevertedMerchants } from '@/api/hooks/merchants'
 import {
   REGISTRATION_STATUS_COLORS,
   type RegistrationStatus,
 } from '@/constants/registrationStatus'
-import { downloadMerchantsBlobAsXlsx, transformIntoTableData } from '@/utils'
+import { downloadMerchantsBlobAsXlsx } from '@/utils'
 import {
   CustomButton,
   CustomLink,
@@ -166,25 +166,10 @@ const RevertedMerchantRecords = () => {
     resolver: zodResolver(merchantsFilterSchema),
   })
 
-  const getRevertedMerchantRecords = async (values: MerchantsFilterForm) => {
-    const params = { ...values, registrationStatus: MerchantRegistrationStatus.REVERTED }
-    const revertedMerchants = await getMerchants(params)
-
-    return revertedMerchants.map(transformIntoTableData)
-  }
-
-  const { data, isLoading, isFetching, isError, refetch } = useQuery({
-    queryKey: ['reverted-merchants'],
-    queryFn: () => getRevertedMerchantRecords(getValues()),
-    meta: {
-      toastStatus: 'error',
-      toastTitle: 'Operation Failed!',
-      toastDescription: 'Something went wrong! Please try again later.',
-    },
-  })
+  const revertedMerchants = useRevertedMerchants(getValues())
 
   const onSubmit = () => {
-    refetch()
+    revertedMerchants.refetch()
   }
 
   const handleExport = async () => {
@@ -280,7 +265,7 @@ const RevertedMerchantRecords = () => {
             mr='4'
             onClick={() => {
               reset()
-              refetch()
+              revertedMerchants.refetch()
             }}
           >
             Clear Filter
@@ -310,22 +295,24 @@ const RevertedMerchantRecords = () => {
         flexGrow='1'
         mb='-14'
       >
-        {isFetching && <TableSkeleton breakpoint='xl' />}
+        {revertedMerchants.isFetching && <TableSkeleton breakpoint='xl' />}
 
-        {!isLoading && !isFetching && !isError && (
-          <>
-            <CustomButton px='6' mb='4' onClick={handleExport}>
-              Export
-            </CustomButton>
+        {!revertedMerchants.isLoading &&
+          !revertedMerchants.isFetching &&
+          !revertedMerchants.isError && (
+            <>
+              <CustomButton px='6' mb='4' onClick={handleExport}>
+                Export
+              </CustomButton>
 
-            <DataTable
-              columns={columns}
-              data={data}
-              breakpoint='xl'
-              alwaysVisibleColumns={[0, 1]}
-            />
-          </>
-        )}
+              <DataTable
+                columns={columns}
+                data={revertedMerchants.data}
+                breakpoint='xl'
+                alwaysVisibleColumns={[0, 1]}
+              />
+            </>
+          )}
       </Box>
     </Stack>
   )

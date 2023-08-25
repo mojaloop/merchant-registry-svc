@@ -1,5 +1,4 @@
-import { NavLink, useNavigate } from 'react-router-dom'
-import { useMutation } from '@tanstack/react-query'
+import { NavLink } from 'react-router-dom'
 import {
   Box,
   Checkbox,
@@ -12,21 +11,17 @@ import {
   Stack,
   Text,
   VStack,
-  useToast,
 } from '@chakra-ui/react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 
 import mojaloopLogo from '@/assets/mojaloop-logo.png'
 import { type LoginForm, loginSchema } from '@/lib/validations/login'
-import { login } from '@/api/auth'
+import { useLogin } from '@/api/hooks/auth'
 import { CustomButton } from '@/components/ui'
 import { FormInput } from '@/components/form'
 
 const Login = () => {
-  const navigate = useNavigate()
-  const toast = useToast()
-
   const {
     register,
     formState: { errors },
@@ -35,29 +30,10 @@ const Login = () => {
     resolver: zodResolver(loginSchema),
   })
 
-  const { mutate, isLoading } = useMutation({
-    mutationFn: ({ email, password }: { email: string; password: string }) => {
-      return login(email, password)
-    },
-    onSuccess: data => {
-      sessionStorage.setItem('token', data)
-      navigate('/')
-      toast({
-        title: 'Login Successful!',
-        status: 'success',
-      })
-    },
-    onError: () => {
-      toast({
-        title: 'Login Failed!',
-        description: 'Please check your credentials and try again.',
-        status: 'error',
-      })
-    },
-  })
+  const login = useLogin()
 
   const onSubmit = async (values: LoginForm) => {
-    mutate({ email: values.email, password: values.password })
+    login.mutate({ email: values.email, password: values.password })
   }
 
   return (
@@ -121,7 +97,7 @@ const Login = () => {
             </HStack>
 
             <CustomButton type='submit' size='md' mt='8'>
-              {isLoading ? <Spinner color='white' size='xs' /> : 'Log In'}
+              {login.isLoading ? <Spinner color='white' size='xs' /> : 'Log In'}
             </CustomButton>
           </Stack>
         </Stack>

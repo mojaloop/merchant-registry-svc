@@ -1,5 +1,4 @@
 import { useMemo, useState } from 'react'
-import { useQuery } from '@tanstack/react-query'
 import { createColumnHelper } from '@tanstack/react-table'
 import {
   Box,
@@ -20,12 +19,13 @@ import {
   type MerchantsFilterForm,
   merchantsFilterSchema,
 } from '@/lib/validations/merchantsFilter'
-import { exportMerchants, getMerchants } from '@/api/merchants'
+import { exportMerchants } from '@/api/merchants'
+import { useRejectedMerchants } from '@/api/hooks/merchants'
 import {
   REGISTRATION_STATUS_COLORS,
   type RegistrationStatus,
 } from '@/constants/registrationStatus'
-import { downloadMerchantsBlobAsXlsx, transformIntoTableData } from '@/utils'
+import { downloadMerchantsBlobAsXlsx } from '@/utils'
 import {
   CustomButton,
   DataTable,
@@ -149,25 +149,10 @@ const RejectedMerchantRecords = () => {
     resolver: zodResolver(merchantsFilterSchema),
   })
 
-  const getRejectedMerchantRecords = async (values: MerchantsFilterForm) => {
-    const params = { ...values, registrationStatus: MerchantRegistrationStatus.REJECTED }
-    const rejectedMerchants = await getMerchants(params)
-
-    return rejectedMerchants.map(transformIntoTableData)
-  }
-
-  const { data, isLoading, isFetching, isError, refetch } = useQuery({
-    queryKey: ['rejected-merchants'],
-    queryFn: () => getRejectedMerchantRecords(getValues()),
-    meta: {
-      toastStatus: 'error',
-      toastTitle: 'Operation Failed!',
-      toastDescription: 'Something went wrong! Please try again later.',
-    },
-  })
+  const rejectedMerchants = useRejectedMerchants(getValues())
 
   const onSubmit = () => {
-    refetch()
+    rejectedMerchants.refetch()
   }
 
   const handleExport = async () => {
@@ -263,7 +248,7 @@ const RejectedMerchantRecords = () => {
             mr='4'
             onClick={() => {
               reset()
-              refetch()
+              rejectedMerchants.refetch()
             }}
           >
             Clear Filter
@@ -293,22 +278,24 @@ const RejectedMerchantRecords = () => {
         flexGrow='1'
         mb='-14'
       >
-        {isFetching && <TableSkeleton breakpoint='xl' />}
+        {rejectedMerchants.isFetching && <TableSkeleton breakpoint='xl' />}
 
-        {!isLoading && !isFetching && !isError && (
-          <>
-            <CustomButton px='6' mb='4' onClick={handleExport}>
-              Export
-            </CustomButton>
+        {!rejectedMerchants.isLoading &&
+          !rejectedMerchants.isFetching &&
+          !rejectedMerchants.isError && (
+            <>
+              <CustomButton px='6' mb='4' onClick={handleExport}>
+                Export
+              </CustomButton>
 
-            <DataTable
-              columns={columns}
-              data={data}
-              breakpoint='xl'
-              alwaysVisibleColumns={[0, 1]}
-            />
-          </>
-        )}
+              <DataTable
+                columns={columns}
+                data={rejectedMerchants.data}
+                breakpoint='xl'
+                alwaysVisibleColumns={[0, 1]}
+              />
+            </>
+          )}
       </Box>
     </Stack>
   )

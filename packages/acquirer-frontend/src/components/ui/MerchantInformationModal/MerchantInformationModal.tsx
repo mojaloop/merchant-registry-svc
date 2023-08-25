@@ -1,4 +1,3 @@
-import { useQuery } from '@tanstack/react-query'
 import {
   Grid,
   GridItem,
@@ -21,7 +20,7 @@ import {
 } from '@chakra-ui/react'
 
 import type { MerchantDetails } from '@/types/merchantDetails'
-import { getMerchant } from '@/api/merchants'
+import { useMerchant } from '@/api/hooks/merchants'
 import { formatLatitudeLongitude } from '@/utils'
 import { CustomButton } from '@/components/ui'
 import { DetailsItem } from '.'
@@ -333,14 +332,7 @@ const MerchantInformationModal = ({
   onClose,
   selectedMerchantId,
 }: MerchantInformationModalProps) => {
-  const {
-    data: merchantDetails,
-    isLoading,
-    isError,
-  } = useQuery({
-    queryKey: ['merchants', selectedMerchantId],
-    queryFn: () => getMerchant(selectedMerchantId),
-  })
+  const merchant = useMerchant(selectedMerchantId)
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} scrollBehavior='inside'>
@@ -355,14 +347,16 @@ const MerchantInformationModal = ({
         <ModalCloseButton top='2.5' right='4' />
 
         <ModalBody py='5' px={{ base: '4', md: '6' }}>
-          {isLoading && (
+          {merchant.isLoading && (
             <HStack>
               <Skeleton w='50%' h='500px' rounded='md' />
               <Skeleton w='50%' h='500px' rounded='md' />
             </HStack>
           )}
 
-          {!isLoading && !isError && <MerchantInfo merchantDetails={merchantDetails} />}
+          {!merchant.isLoading && !merchant.isError && (
+            <MerchantInfo merchantDetails={merchant.data} />
+          )}
         </ModalBody>
 
         <ModalFooter>
