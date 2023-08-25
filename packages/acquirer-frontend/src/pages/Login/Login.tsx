@@ -1,4 +1,5 @@
 import { NavLink, useNavigate } from 'react-router-dom'
+import { useMutation } from '@tanstack/react-query'
 import {
   Box,
   Checkbox,
@@ -7,9 +8,11 @@ import {
   Heading,
   Image,
   Link,
+  Spinner,
   Stack,
   Text,
   VStack,
+  useToast,
 } from '@chakra-ui/react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -22,6 +25,7 @@ import { FormInput } from '@/components/form'
 
 const Login = () => {
   const navigate = useNavigate()
+  const toast = useToast()
 
   const {
     register,
@@ -31,12 +35,29 @@ const Login = () => {
     resolver: zodResolver(loginSchema),
   })
 
-  const onSubmit = async (values: LoginForm) => {
-    const token = await login(values.email, values.password)
-    if (token) {
-      sessionStorage.setItem('token', token)
+  const { mutate, isLoading } = useMutation({
+    mutationFn: ({ email, password }: { email: string; password: string }) => {
+      return login(email, password)
+    },
+    onSuccess: data => {
+      sessionStorage.setItem('token', data)
       navigate('/')
-    }
+      toast({
+        title: 'Login Successful!',
+        status: 'success',
+      })
+    },
+    onError: () => {
+      toast({
+        title: 'Login Failed!',
+        description: 'Please check your credentials and try again.',
+        status: 'error',
+      })
+    },
+  })
+
+  const onSubmit = async (values: LoginForm) => {
+    mutate({ email: values.email, password: values.password })
   }
 
   return (
@@ -100,7 +121,7 @@ const Login = () => {
             </HStack>
 
             <CustomButton type='submit' size='md' mt='8'>
-              Log In
+              {isLoading ? <Spinner color='white' size='xs' /> : 'Log In'}
             </CustomButton>
           </Stack>
         </Stack>

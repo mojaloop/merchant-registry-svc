@@ -63,18 +63,18 @@ const ReviewModal = ({ isOpen, onClose, draftData }: ReviewModalProps) => {
     onSuccess: () => {
       sessionStorage.removeItem('merchantId')
       onClose()
-      toast({
-        title: 'Operation Successful!',
-        description: 'Submitted the data successfully.',
-        status: 'success',
-      })
       queryClient.invalidateQueries(['pending-merchants'])
       queryClient.invalidateQueries(['all-merchants'])
       navigate('/registry')
+      toast({
+        title: 'Submission Successful!',
+        description: 'Submitted the data successfully.',
+        status: 'success',
+      })
     },
     onError: () => {
       toast({
-        title: 'Operation Failed!',
+        title: 'Submission Failed!',
         description: 'Something went wrong! Please try again later.',
         status: 'error',
       })

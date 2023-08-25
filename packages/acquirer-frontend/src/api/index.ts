@@ -13,24 +13,12 @@ import type { MerchantsFilterForm } from '@/lib/validations/merchantsFilter'
 import type { AllMerchantsFilterForm } from '@/lib/validations/allMerchantsFilter'
 
 export async function login(email: string, password: string) {
-  try {
-    const response = await instance.post<{ token: string }>('/users/login', {
-      email,
-      password,
-    })
+  const response = await instance.post<{ token: string }>('/users/login', {
+    email,
+    password,
+  })
 
-    if (response.data.token) {
-      alert('Login Successful')
-      return response.data.token
-    }
-  } catch (error) {
-    if (isAxiosError(error)) {
-      alert(
-        error.response?.data?.message ||
-          'Something went wrong! Please check your credentials and try again.'
-      )
-    }
-  }
+  return response.data.token
 }
 
 export async function getDraftCount() {
