@@ -21,7 +21,7 @@ import {
 } from '@chakra-ui/react'
 
 import type { MerchantDetails } from '@/types/merchantDetails'
-import { getMerchant } from '@/api'
+import { getMerchant } from '@/api/merchants'
 import { formatLatitudeLongitude } from '@/utils'
 import { CustomButton } from '@/components/ui'
 import { DetailsItem } from '.'

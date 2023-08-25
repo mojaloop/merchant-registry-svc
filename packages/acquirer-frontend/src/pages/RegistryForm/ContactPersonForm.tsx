@@ -9,9 +9,9 @@ import { type ContactPersonForm, contactPersonSchema } from '@/lib/validations/r
 import {
   createContactPersonInfo,
   getDraftData,
-  getMerchant,
   updateContactPersonInfo,
-} from '@/api'
+} from '@/api/forms'
+import { getMerchant } from '@/api/merchants'
 import { CustomButton, FloatingSpinner } from '@/components/ui'
 import { FormInput } from '@/components/form'
 import ReviewModal from './ReviewModal'

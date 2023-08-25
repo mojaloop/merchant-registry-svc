@@ -20,7 +20,7 @@ import {
   type AllMerchantsFilterForm,
   allMerchantsFilterSchema,
 } from '@/lib/validations/allMerchantsFilter'
-import { exportMerchants, getMerchants } from '@/api'
+import { exportMerchants, getMerchants } from '@/api/merchants'
 import {
   REGISTRATION_STATUS_COLORS,
   type RegistrationStatus,

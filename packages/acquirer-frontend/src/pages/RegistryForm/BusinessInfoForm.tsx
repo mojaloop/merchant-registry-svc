@@ -26,7 +26,8 @@ import {
 } from 'shared-lib'
 
 import { type BusinessInfoForm, businessInfoSchema } from '@/lib/validations/registry'
-import { createBusinessInfo, getMerchant, updateBusinessInfo } from '@/api'
+import { createBusinessInfo, updateBusinessInfo } from '@/api/forms'
+import { getMerchant } from '@/api/merchants'
 import { scrollToTop } from '@/utils'
 import { CustomButton, FloatingSpinner } from '@/components/ui'
 import { FormInput, FormSelect } from '@/components/form'

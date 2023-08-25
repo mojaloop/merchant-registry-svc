@@ -26,7 +26,7 @@ import {
   getMerchants,
   rejectMerchants,
   revertMerchants,
-} from '@/api'
+} from '@/api/merchants'
 import {
   REGISTRATION_STATUS_COLORS,
   type RegistrationStatus,

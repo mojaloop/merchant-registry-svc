@@ -19,7 +19,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 
 import mojaloopLogo from '@/assets/mojaloop-logo.png'
 import { type LoginForm, loginSchema } from '@/lib/validations/login'
-import { login } from '@/api'
+import { login } from '@/api/auth'
 import { CustomButton } from '@/components/ui'
 import { FormInput } from '@/components/form'
 

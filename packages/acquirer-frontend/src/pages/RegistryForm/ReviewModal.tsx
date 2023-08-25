@@ -17,7 +17,7 @@ import {
 } from '@chakra-ui/react'
 
 import type { MerchantDetails } from '@/types/merchantDetails'
-import { changeStatusToReview } from '@/api'
+import { changeStatusToReview } from '@/api/forms'
 import { formatLatitudeLongitude } from '@/utils'
 import { CustomButton } from '@/components/ui'
 import {

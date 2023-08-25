@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { Box, Heading, Link, Spinner, Text } from '@chakra-ui/react'
 
-import { getDraftCount } from '@/api'
+import { getDraftCount } from '@/api/forms'
 import { CustomButton, CustomLink } from '@/components/ui'
 
 const Registry = () => {
