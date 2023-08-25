@@ -22,15 +22,9 @@ export async function login(email: string, password: string) {
 }
 
 export async function getDraftCount() {
-  try {
-    const response = await instance.get<{ data: number }>('/merchants/draft-counts')
+  const response = await instance.get<{ data: number }>('/merchants/draft-counts')
 
-    return response.data.data
-  } catch (error) {
-    if (isAxiosError(error)) {
-      alert(error.response?.data?.message)
-    }
-  }
+  return response.data.data
 }
 
 export async function getDraftData(merchantId: string) {
