@@ -102,9 +102,9 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
   }, [])
 
   const { data: draftData, isFetching } = useQuery({
-    queryKey: ['merchants', 90],
-    queryFn: () => getMerchant(Number(90)),
-    enabled: !!90,
+    queryKey: ['merchants', merchantId],
+    queryFn: () => getMerchant(Number(merchantId)),
+    enabled: !!merchantId,
     meta: {
       toastStatus: 'error',
       toastTitle: 'Operation Failed!',
