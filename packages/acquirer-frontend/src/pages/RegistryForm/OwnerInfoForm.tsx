@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react'
-import { Box, Heading, Spinner, Stack } from '@chakra-ui/react'
+import { Box, Heading, Spinner, Stack, useToast } from '@chakra-ui/react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Countries, BusinessOwnerIDType } from 'shared-lib'
 
 import { type OwnerInfoForm, ownerInfoSchema } from '@/lib/validations/registry'
 import { useCreateOwnerInfo, useDraft, useUpdateOwnerInfo } from '@/api/hooks/forms'
+import { useMerchantId } from '@/hooks'
 import { CustomButton, FloatingSpinner } from '@/components/ui'
 import { FormInput, FormSelect } from '@/components/form'
 import GridShell from './GridShell'
@@ -25,7 +26,8 @@ interface OwnerInfoFormProps {
 }
 
 const OwnerInfoForm = ({ setActiveStep }: OwnerInfoFormProps) => {
-  const [merchantId, setMerchantId] = useState('')
+  const toast = useToast()
+
   const [isDraft, setIsDraft] = useState(false)
   const [ownerId, setOwnerId] = useState<number | null>(null)
 
@@ -42,12 +44,7 @@ const OwnerInfoForm = ({ setActiveStep }: OwnerInfoFormProps) => {
     },
   })
 
-  useEffect(() => {
-    const merchantId = sessionStorage.getItem('merchantId')
-    if (!merchantId) return
-
-    setMerchantId(merchantId)
-  }, [])
+  const merchantId = useMerchantId()
 
   const goToNextStep = () => setActiveStep(activeStep => activeStep + 1)
 
@@ -112,6 +109,13 @@ const OwnerInfoForm = ({ setActiveStep }: OwnerInfoFormProps) => {
   }, [draftData, setValue])
 
   const onSubmit = (values: OwnerInfoForm) => {
+    if (!merchantId) {
+      return toast({
+        title: 'Merchant ID not found!',
+        status: 'error',
+      })
+    }
+
     // Server expects null instead of empty string or any other falsy value
     values.email = values.email || null
     values.country = values.country || null

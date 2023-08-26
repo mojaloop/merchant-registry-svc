@@ -28,6 +28,7 @@ import {
 
 import { type BusinessInfoForm, businessInfoSchema } from '@/lib/validations/registry'
 import { useCreateBusinessInfo, useDraft, useUpdateBusinessInfo } from '@/api/hooks/forms'
+import { useMerchantId } from '@/hooks'
 import { CustomButton, FloatingSpinner } from '@/components/ui'
 import { FormInput, FormSelect } from '@/components/form'
 import GridShell from './GridShell'
@@ -74,7 +75,6 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
   const navigate = useNavigate()
   const toast = useToast()
 
-  const [merchantId, setMerchantId] = useState('')
   const [isDraft, setIsDraft] = useState(false)
   const [licenseDocument, setLicenseDocument] = useState<LicenseDocument | null>(null)
 
@@ -96,12 +96,7 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
     },
   })
 
-  useEffect(() => {
-    const merchantId = sessionStorage.getItem('merchantId')
-    if (!merchantId) return
-
-    setMerchantId(merchantId)
-  }, [])
+  const merchantId = useMerchantId()
 
   const goToNextStep = () => setActiveStep(activeStep => activeStep + 1)
 
@@ -167,7 +162,6 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
     if (!isDraft) {
       createBusinessInfo.mutate(values)
     } else {
-      const merchantId = sessionStorage.getItem('merchantId')
       if (!merchantId) {
         return toast({
           title: 'Merchant ID not found!',

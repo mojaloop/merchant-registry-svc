@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react'
-import { Box, Heading, Spinner, Stack } from '@chakra-ui/react'
+import { Box, Heading, Spinner, Stack, useToast } from '@chakra-ui/react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { MerchantLocationType, Countries } from 'shared-lib'
 
 import { type LocationInfoForm, locationInfoSchema } from '@/lib/validations/registry'
 import { useCreateLocationInfo, useDraft, useUpdateLocationInfo } from '@/api/hooks/forms'
+import { useMerchantId } from '@/hooks'
 import { CustomButton, FloatingSpinner } from '@/components/ui'
 import { FormInput, FormSelect } from '@/components/form'
 import GridShell from './GridShell'
@@ -25,7 +26,8 @@ interface LocationInfoFormProps {
 }
 
 const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
-  const [merchantId, setMerchantId] = useState('')
+  const toast = useToast()
+
   const [isDraft, setIsDraft] = useState(false)
   const [locationId, setLocationId] = useState<number | null>(null)
 
@@ -42,12 +44,7 @@ const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
     },
   })
 
-  useEffect(() => {
-    const merchantId = sessionStorage.getItem('merchantId')
-    if (!merchantId) return
-
-    setMerchantId(merchantId)
-  }, [])
+  const merchantId = useMerchantId()
 
   const goToNextStep = () => setActiveStep(activeStep => activeStep + 1)
 
@@ -110,6 +107,13 @@ const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
   }, [draftData, setValue])
 
   const onSubmit = (values: LocationInfoForm) => {
+    if (!merchantId) {
+      return toast({
+        title: 'Merchant ID not found!',
+        status: 'error',
+      })
+    }
+
     // Server expects null instead of empty string or any other falsy value
     values.country = values.country || null
 

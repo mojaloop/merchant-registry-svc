@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Box, Checkbox, Heading, Stack, useDisclosure } from '@chakra-ui/react'
+import { Box, Checkbox, Heading, Stack, useDisclosure, useToast } from '@chakra-ui/react'
 import { Controller, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 
@@ -9,6 +9,7 @@ import {
   useDraft,
   useUpdateContactPerson,
 } from '@/api/hooks/forms'
+import { useMerchantId } from '@/hooks'
 import { CustomButton, FloatingSpinner } from '@/components/ui'
 import { FormInput } from '@/components/form'
 import ReviewModal from './ReviewModal'
@@ -19,9 +20,9 @@ interface ContactPersonProps {
 }
 
 const ContactPersonForm = ({ setActiveStep }: ContactPersonProps) => {
+  const toast = useToast()
   const { isOpen, onOpen, onClose } = useDisclosure()
 
-  const [merchantId, setMerchantId] = useState('')
   const [isDraft, setIsDraft] = useState(false)
   const [contactPersonId, setContactPersonId] = useState<number | null>(null)
 
@@ -41,12 +42,7 @@ const ContactPersonForm = ({ setActiveStep }: ContactPersonProps) => {
     },
   })
 
-  useEffect(() => {
-    const merchantId = sessionStorage.getItem('merchantId')
-    if (!merchantId) return
-
-    setMerchantId(merchantId)
-  }, [])
+  const merchantId = useMerchantId()
 
   const draft = useDraft(Number(merchantId))
   const draftData = draft.data
@@ -85,6 +81,13 @@ const ContactPersonForm = ({ setActiveStep }: ContactPersonProps) => {
   }, [watchedIsSameAsBusinessOwner, draftData, setValue])
 
   const onSubmit = (values: ContactPersonForm) => {
+    if (!merchantId) {
+      return toast({
+        title: 'Merchant ID not found!',
+        status: 'error',
+      })
+    }
+
     // Server expects null instead of empty string or any other falsy value
     values.email = values.email || null
 
