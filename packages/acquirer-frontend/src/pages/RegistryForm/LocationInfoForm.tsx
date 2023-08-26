@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Box, Heading, Spinner, Stack, useToast } from '@chakra-ui/react'
+import { Box, Heading, Stack, useToast } from '@chakra-ui/react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { MerchantLocationType, Countries } from 'shared-lib'
@@ -313,14 +313,9 @@ const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
 
           <CustomButton
             type='submit'
-            w='36'
-            isDisabled={createLocationInfo.isLoading || updateLocationInfo.isLoading}
+            isLoading={createLocationInfo.isLoading || updateLocationInfo.isLoading}
           >
-            {createLocationInfo.isLoading || updateLocationInfo.isLoading ? (
-              <Spinner color='white' size='xs' />
-            ) : (
-              'Save and proceed'
-            )}
+            Save and Proceed
           </CustomButton>
         </Box>
       </Stack>

@@ -179,7 +179,12 @@ const ContactPersonForm = ({ setActiveStep }: ContactPersonProps) => {
             Back
           </CustomButton>
 
-          <CustomButton type='submit'>Save and Review Submission</CustomButton>
+          <CustomButton
+            type='submit'
+            isLoading={createContactPerson.isLoading || updateContactPerson.isLoading}
+          >
+            Review Submission
+          </CustomButton>
         </Box>
       </Stack>
     </>

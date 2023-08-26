@@ -10,7 +10,6 @@ import {
   Link,
   Radio,
   RadioGroup,
-  Spinner,
   Stack,
   Text,
   VisuallyHiddenInput,
@@ -419,14 +418,9 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
 
           <CustomButton
             type='submit'
-            w='36'
-            isDisabled={createBusinessInfo.isLoading || updateBusinessInfo.isLoading}
+            isLoading={createBusinessInfo.isLoading || updateBusinessInfo.isLoading}
           >
-            {createBusinessInfo.isLoading || updateBusinessInfo.isLoading ? (
-              <Spinner color='white' size='xs' />
-            ) : (
-              'Save and proceed'
-            )}
+            Save and Proceed
           </CustomButton>
         </Box>
       </Stack>

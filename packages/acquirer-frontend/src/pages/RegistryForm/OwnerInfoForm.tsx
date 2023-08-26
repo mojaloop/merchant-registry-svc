@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Box, Heading, Spinner, Stack, useToast } from '@chakra-ui/react'
+import { Box, Heading, Stack, useToast } from '@chakra-ui/react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Countries, BusinessOwnerIDType } from 'shared-lib'
@@ -334,14 +334,9 @@ const OwnerInfoForm = ({ setActiveStep }: OwnerInfoFormProps) => {
 
           <CustomButton
             type='submit'
-            w='36'
-            isDisabled={createOwnerInfo.isLoading || updateOwnerInfo.isLoading}
+            isLoading={createOwnerInfo.isLoading || updateOwnerInfo.isLoading}
           >
-            {createOwnerInfo.isLoading || updateOwnerInfo.isLoading ? (
-              <Spinner color='white' size='xs' />
-            ) : (
-              'Save and proceed'
-            )}
+            Save and Proceed
           </CustomButton>
         </Box>
       </Stack>

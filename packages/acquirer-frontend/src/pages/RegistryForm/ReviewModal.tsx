@@ -7,7 +7,6 @@ import {
   ModalHeader,
   ModalOverlay,
   Heading,
-  Spinner,
   HStack,
   Skeleton,
 } from '@chakra-ui/react'
@@ -61,16 +60,8 @@ const ReviewModal = ({ isOpen, onClose, merchantId }: ReviewModalProps) => {
             Close
           </CustomButton>
 
-          <CustomButton
-            onClick={handleSubmit}
-            w='4.5rem'
-            isDisabled={changeStatusToReview.isLoading}
-          >
-            {changeStatusToReview.isLoading ? (
-              <Spinner color='white' size='xs' />
-            ) : (
-              'Submit'
-            )}
+          <CustomButton onClick={handleSubmit} isLoading={changeStatusToReview.isLoading}>
+            Submit
           </CustomButton>
         </ModalFooter>
       </ModalContent>
