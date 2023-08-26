@@ -29,7 +29,7 @@ const Registry = () => {
       <Box position='relative' display='inline-block'>
         <CustomLink
           to='/registry/draft-applications'
-          isDisabled={!(typeof draftCount === 'number') || draftCount === 0}
+          isDisabled={!(typeof draftCount.data === 'number') || draftCount.data === 0}
           w='12.5rem'
         >
           {draftCount.isLoading ? (
@@ -39,7 +39,7 @@ const Registry = () => {
           )}
         </CustomLink>
 
-        {typeof draftCount === 'number' && draftCount > 0 && (
+        {typeof draftCount.data === 'number' && draftCount.data > 0 && (
           <Box
             as='span'
             w='6'
@@ -59,7 +59,7 @@ const Registry = () => {
             borderColor='secondary'
             shadow='md'
           >
-            {draftCount}
+            {draftCount.data}
           </Box>
         )}
       </Box>

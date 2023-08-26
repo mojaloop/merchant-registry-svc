@@ -7,7 +7,6 @@ import {
   Heading,
   Image,
   Link,
-  Spinner,
   Stack,
   Text,
   VStack,
@@ -96,8 +95,8 @@ const Login = () => {
               </Link>
             </HStack>
 
-            <CustomButton type='submit' size='md' mt='8'>
-              {login.isLoading ? <Spinner color='white' size='xs' /> : 'Log In'}
+            <CustomButton type='submit' size='md' mt='8' isLoading={login.isLoading}>
+              Log In
             </CustomButton>
           </Stack>
         </Stack>

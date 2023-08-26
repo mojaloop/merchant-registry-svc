@@ -1,13 +1,12 @@
 import { useEffect, useState } from 'react'
-import { Box, Heading, Stack } from '@chakra-ui/react'
+import { Box, Heading, Stack, useToast } from '@chakra-ui/react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { MerchantLocationType, Countries } from 'shared-lib'
 
 import { type LocationInfoForm, locationInfoSchema } from '@/lib/validations/registry'
-import { createLocationInfo, updateLocationInfo } from '@/api/forms'
-import { useDraft } from '@/api/hooks/forms'
-import { scrollToTop } from '@/utils'
+import { useCreateLocationInfo, useDraft, useUpdateLocationInfo } from '@/api/hooks/forms'
+import { useMerchantId } from '@/hooks'
 import { CustomButton, FloatingSpinner } from '@/components/ui'
 import { FormInput, FormSelect } from '@/components/form'
 import GridShell from './GridShell'
@@ -27,7 +26,8 @@ interface LocationInfoFormProps {
 }
 
 const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
-  const [merchantId, setMerchantId] = useState('')
+  const toast = useToast()
+
   const [isDraft, setIsDraft] = useState(false)
   const [locationId, setLocationId] = useState<number | null>(null)
 
@@ -44,15 +44,15 @@ const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
     },
   })
 
-  useEffect(() => {
-    const merchantId = sessionStorage.getItem('merchantId')
-    if (!merchantId) return
+  const merchantId = useMerchantId()
 
-    setMerchantId(merchantId)
-  }, [])
+  const goToNextStep = () => setActiveStep(activeStep => activeStep + 1)
 
   const draft = useDraft(Number(merchantId))
   const draftData = draft.data
+
+  const createLocationInfo = useCreateLocationInfo(goToNextStep)
+  const updateLocationInfo = useUpdateLocationInfo(goToNextStep)
 
   useEffect(() => {
     if (!draftData) return
@@ -106,29 +106,24 @@ const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
       setValue('checkout_description', checkoutCounter.description)
   }, [draftData, setValue])
 
-  const onSubmit = async (values: LocationInfoForm) => {
-    const merchantId = sessionStorage.getItem('merchantId')
-    if (merchantId === null) {
-      alert('Merchant ID not found. Go back to the previous page and try again')
-      return
+  const onSubmit = (values: LocationInfoForm) => {
+    if (!merchantId) {
+      return toast({
+        title: 'Merchant ID not found!',
+        status: 'error',
+      })
     }
 
     // Server expects null instead of empty string or any other falsy value
     values.country = values.country || null
 
-    let response
     if (!isDraft) {
-      response = await createLocationInfo(values, merchantId)
+      createLocationInfo.mutate({ params: values, merchantId })
     } else {
       if (locationId) {
-        response = await updateLocationInfo(values, merchantId, locationId)
+        updateLocationInfo.mutate({ params: values, merchantId, locationId })
       }
     }
-    if (!response) return
-
-    alert(response.message)
-    setActiveStep(activeStep => activeStep + 1)
-    scrollToTop()
   }
 
   // focus on first input that has error after validation
@@ -316,7 +311,12 @@ const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
             Back
           </CustomButton>
 
-          <CustomButton type='submit'>Save and proceed</CustomButton>
+          <CustomButton
+            type='submit'
+            isLoading={createLocationInfo.isLoading || updateLocationInfo.isLoading}
+          >
+            Save and Proceed
+          </CustomButton>
         </Box>
       </Stack>
     </>

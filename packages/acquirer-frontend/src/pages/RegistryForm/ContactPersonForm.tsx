@@ -1,16 +1,15 @@
 import { useEffect, useState } from 'react'
-import { Box, Checkbox, Heading, Stack, useDisclosure } from '@chakra-ui/react'
+import { Box, Checkbox, Heading, Stack, useDisclosure, useToast } from '@chakra-ui/react'
 import { Controller, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 
-import type { MerchantDetails } from '@/types/merchantDetails'
 import { type ContactPersonForm, contactPersonSchema } from '@/lib/validations/registry'
 import {
-  createContactPersonInfo,
-  getDraftData,
-  updateContactPersonInfo,
-} from '@/api/forms'
-import { useDraft } from '@/api/hooks/forms'
+  useCreateContactPerson,
+  useDraft,
+  useUpdateContactPerson,
+} from '@/api/hooks/forms'
+import { useMerchantId } from '@/hooks'
 import { CustomButton, FloatingSpinner } from '@/components/ui'
 import { FormInput } from '@/components/form'
 import ReviewModal from './ReviewModal'
@@ -21,10 +20,9 @@ interface ContactPersonProps {
 }
 
 const ContactPersonForm = ({ setActiveStep }: ContactPersonProps) => {
+  const toast = useToast()
   const { isOpen, onOpen, onClose } = useDisclosure()
 
-  const [merchantId, setMerchantId] = useState('')
-  const [formData, setFormData] = useState<MerchantDetails | null>(null)
   const [isDraft, setIsDraft] = useState(false)
   const [contactPersonId, setContactPersonId] = useState<number | null>(null)
 
@@ -44,22 +42,18 @@ const ContactPersonForm = ({ setActiveStep }: ContactPersonProps) => {
     },
   })
 
-  useEffect(() => {
-    const merchantId = sessionStorage.getItem('merchantId')
-    if (!merchantId) return
-
-    setMerchantId(merchantId)
-  }, [])
+  const merchantId = useMerchantId()
 
   const draft = useDraft(Number(merchantId))
   const draftData = draft.data
+
+  const createContactPerson = useCreateContactPerson(onOpen)
+  const updateContactPerson = useUpdateContactPerson(onOpen)
 
   const watchedIsSameAsBusinessOwner = watch('is_same_as_business_owner')
 
   useEffect(() => {
     if (!draftData) return
-
-    setFormData(draftData)
 
     const contact_person = draftData.contact_persons?.[0]
     if (!contact_person) return
@@ -76,7 +70,7 @@ const ContactPersonForm = ({ setActiveStep }: ContactPersonProps) => {
   useEffect(() => {
     if (!watchedIsSameAsBusinessOwner) return
 
-    const business_owner = formData?.business_owners?.[0]
+    const business_owner = draftData?.business_owners?.[0]
     if (!business_owner) return
 
     const { name, phone_number, email } = business_owner
@@ -84,35 +78,30 @@ const ContactPersonForm = ({ setActiveStep }: ContactPersonProps) => {
     name && setValue('name', name)
     phone_number && setValue('phone_number', phone_number)
     email && setValue('email', email)
-  }, [watchedIsSameAsBusinessOwner, formData, setValue])
+  }, [watchedIsSameAsBusinessOwner, draftData, setValue])
 
-  const onSubmit = async (values: ContactPersonForm) => {
-    const merchantId = sessionStorage.getItem('merchantId')
-    if (merchantId === null) {
-      alert('Merchant ID not found. Go back to the previous page and try again')
-      return
+  const onSubmit = (values: ContactPersonForm) => {
+    if (!merchantId) {
+      return toast({
+        title: 'Merchant ID not found!',
+        status: 'error',
+      })
     }
 
     // Server expects null instead of empty string or any other falsy value
     values.email = values.email || null
 
-    let response
     if (!isDraft) {
-      response = await createContactPersonInfo(values, merchantId)
+      createContactPerson.mutate({ params: values, merchantId })
     } else {
       if (contactPersonId) {
-        response = await updateContactPersonInfo(values, merchantId, contactPersonId)
+        updateContactPerson.mutate({
+          params: values,
+          merchantId,
+          contactPersonId,
+        })
       }
     }
-    if (!response) return
-
-    const draftData = await getDraftData(merchantId)
-    if (draftData) {
-      setFormData(draftData)
-    }
-
-    alert(response.message)
-    onOpen()
   }
 
   // focus on first input that has error after validation
@@ -128,7 +117,9 @@ const ContactPersonForm = ({ setActiveStep }: ContactPersonProps) => {
     <>
       {draft.isFetching && <FloatingSpinner />}
 
-      {formData && <ReviewModal draftData={formData} isOpen={isOpen} onClose={onClose} />}
+      {merchantId && (
+        <ReviewModal merchantId={merchantId} isOpen={isOpen} onClose={onClose} />
+      )}
 
       <Stack as='form' onSubmit={handleSubmit(onSubmit)} noValidate>
         <GridShell>
@@ -188,7 +179,12 @@ const ContactPersonForm = ({ setActiveStep }: ContactPersonProps) => {
             Back
           </CustomButton>
 
-          <CustomButton type='submit'>Save and Review Submission</CustomButton>
+          <CustomButton
+            type='submit'
+            isLoading={createContactPerson.isLoading || updateContactPerson.isLoading}
+          >
+            Review Submission
+          </CustomButton>
         </Box>
       </Stack>
     </>

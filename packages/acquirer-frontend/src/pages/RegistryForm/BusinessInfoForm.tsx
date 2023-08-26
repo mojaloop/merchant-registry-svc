@@ -13,6 +13,7 @@ import {
   Stack,
   Text,
   VisuallyHiddenInput,
+  useToast,
 } from '@chakra-ui/react'
 import { Controller, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -25,9 +26,8 @@ import {
 } from 'shared-lib'
 
 import { type BusinessInfoForm, businessInfoSchema } from '@/lib/validations/registry'
-import { createBusinessInfo, updateBusinessInfo } from '@/api/forms'
-import { useDraft } from '@/api/hooks/forms'
-import { scrollToTop } from '@/utils'
+import { useCreateBusinessInfo, useDraft, useUpdateBusinessInfo } from '@/api/hooks/forms'
+import { useMerchantId } from '@/hooks'
 import { CustomButton, FloatingSpinner } from '@/components/ui'
 import { FormInput, FormSelect } from '@/components/form'
 import GridShell from './GridShell'
@@ -72,7 +72,8 @@ interface LicenseDocument {
 
 const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
   const navigate = useNavigate()
-  const [merchantId, setMerchantId] = useState('')
+  const toast = useToast()
+
   const [isDraft, setIsDraft] = useState(false)
   const [licenseDocument, setLicenseDocument] = useState<LicenseDocument | null>(null)
 
@@ -94,15 +95,15 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
     },
   })
 
-  useEffect(() => {
-    const merchantId = sessionStorage.getItem('merchantId')
-    if (!merchantId) return
+  const merchantId = useMerchantId()
 
-    setMerchantId(merchantId)
-  }, [])
+  const goToNextStep = () => setActiveStep(activeStep => activeStep + 1)
 
   const draft = useDraft(Number(merchantId))
   const draftData = draft.data
+
+  const createBusinessInfo = useCreateBusinessInfo(goToNextStep)
+  const updateBusinessInfo = useUpdateBusinessInfo(goToNextStep)
 
   useEffect(() => {
     if (!draftData) return
@@ -156,24 +157,19 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
   const watchedHaveLicense = watch('have_business_license')
   const haveLicense = watchedHaveLicense === 'yes'
 
-  const onSubmit = async (values: BusinessInfoForm) => {
-    let response
+  const onSubmit = (values: BusinessInfoForm) => {
     if (!isDraft) {
-      response = await createBusinessInfo(values)
+      createBusinessInfo.mutate(values)
     } else {
-      const merchantId = sessionStorage.getItem('merchantId')
-      if (merchantId === null) {
-        alert('Merchant ID not found. Go back to the previous page and try again')
-        return
+      if (!merchantId) {
+        return toast({
+          title: 'Merchant ID not found!',
+          description: 'Go back to the previous page and try again.',
+          status: 'error',
+        })
       }
-      response = await updateBusinessInfo(values, merchantId)
+      updateBusinessInfo.mutate({ params: values, merchantId })
     }
-    if (!response) return
-
-    sessionStorage.setItem('merchantId', response.data.id.toString())
-    alert(response.message)
-    setActiveStep(activeStep => activeStep + 1)
-    scrollToTop()
   }
 
   // focus on first input that has error after validation
@@ -420,7 +416,12 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
             Back
           </CustomButton>
 
-          <CustomButton type='submit'>Save and proceed</CustomButton>
+          <CustomButton
+            type='submit'
+            isLoading={createBusinessInfo.isLoading || updateBusinessInfo.isLoading}
+          >
+            Save and Proceed
+          </CustomButton>
         </Box>
       </Stack>
     </>
