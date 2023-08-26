@@ -1,13 +1,11 @@
 import { useEffect, useState } from 'react'
-import { Box, Heading, Stack } from '@chakra-ui/react'
+import { Box, Heading, Spinner, Stack, useToast } from '@chakra-ui/react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Countries, BusinessOwnerIDType } from 'shared-lib'
 
 import { type OwnerInfoForm, ownerInfoSchema } from '@/lib/validations/registry'
-import { createOwnerInfo, updateOwnerInfo } from '@/api/forms'
-import { useDraft } from '@/api/hooks/forms'
-import { scrollToTop } from '@/utils'
+import { useCreateOwnerInfo, useDraft, useUpdateOwnerInfo } from '@/api/hooks/forms'
 import { CustomButton, FloatingSpinner } from '@/components/ui'
 import { FormInput, FormSelect } from '@/components/form'
 import GridShell from './GridShell'
@@ -27,6 +25,8 @@ interface OwnerInfoFormProps {
 }
 
 const OwnerInfoForm = ({ setActiveStep }: OwnerInfoFormProps) => {
+  const toast = useToast()
+
   const [merchantId, setMerchantId] = useState('')
   const [isDraft, setIsDraft] = useState(false)
   const [ownerId, setOwnerId] = useState<number | null>(null)
@@ -51,8 +51,13 @@ const OwnerInfoForm = ({ setActiveStep }: OwnerInfoFormProps) => {
     setMerchantId(merchantId)
   }, [])
 
+  const goToNextStep = () => setActiveStep(activeStep => activeStep + 1)
+
   const draft = useDraft(Number(merchantId))
   const draftData = draft.data
+
+  const createOwnerInfo = useCreateOwnerInfo(goToNextStep)
+  const updateOwnerInfo = useUpdateOwnerInfo(goToNextStep)
 
   useEffect(() => {
     if (!draftData) return
@@ -108,30 +113,27 @@ const OwnerInfoForm = ({ setActiveStep }: OwnerInfoFormProps) => {
     }
   }, [draftData, setValue])
 
-  const onSubmit = async (values: OwnerInfoForm) => {
+  const onSubmit = (values: OwnerInfoForm) => {
     const merchantId = sessionStorage.getItem('merchantId')
-    if (merchantId === null) {
-      alert('Merchant ID not found. Go back to the previous page and try again')
-      return
+    if (!merchantId) {
+      return toast({
+        title: 'Merchant ID not found!',
+        description: 'Go back to the previous page and try again.',
+        status: 'error',
+      })
     }
 
     // Server expects null instead of empty string or any other falsy value
     values.email = values.email || null
     values.country = values.country || null
 
-    let response
     if (!isDraft) {
-      response = await createOwnerInfo(values, merchantId)
+      createOwnerInfo.mutate({ params: values, merchantId })
     } else {
       if (ownerId) {
-        response = await updateOwnerInfo(values, merchantId, ownerId)
+        updateOwnerInfo.mutate({ params: values, merchantId, ownerId })
       }
     }
-    if (!response) return
-
-    alert(response.message)
-    setActiveStep(activeStep => activeStep + 1)
-    scrollToTop()
   }
 
   // focus on first input that has error after validation
@@ -337,7 +339,17 @@ const OwnerInfoForm = ({ setActiveStep }: OwnerInfoFormProps) => {
             Back
           </CustomButton>
 
-          <CustomButton type='submit'>Save and proceed</CustomButton>
+          <CustomButton
+            type='submit'
+            w='36'
+            isDisabled={createOwnerInfo.isLoading || updateOwnerInfo.isLoading}
+          >
+            {createOwnerInfo.isLoading || updateOwnerInfo.isLoading ? (
+              <Spinner color='white' size='xs' />
+            ) : (
+              'Save and proceed'
+            )}
+          </CustomButton>
         </Box>
       </Stack>
     </>

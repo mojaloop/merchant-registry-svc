@@ -96,7 +96,7 @@ const Login = () => {
               </Link>
             </HStack>
 
-            <CustomButton type='submit' size='md' mt='8'>
+            <CustomButton type='submit' size='md' mt='8' isDisabled={login.isLoading}>
               {login.isLoading ? <Spinner color='white' size='xs' /> : 'Log In'}
             </CustomButton>
           </Stack>

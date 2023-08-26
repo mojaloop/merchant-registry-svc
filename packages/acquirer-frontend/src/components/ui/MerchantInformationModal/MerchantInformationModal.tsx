@@ -47,7 +47,11 @@ export const GridItemShell = ({ children, ...props }: GridItemProps) => {
   )
 }
 
-const MerchantInfo = ({ merchantDetails }: { merchantDetails: MerchantDetails }) => {
+export const MerchantInfo = ({
+  merchantDetails,
+}: {
+  merchantDetails: MerchantDetails
+}) => {
   const {
     dba_trading_name,
     registered_name,
