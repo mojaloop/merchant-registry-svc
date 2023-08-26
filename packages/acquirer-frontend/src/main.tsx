@@ -11,7 +11,7 @@ import {
 } from '@chakra-ui/react'
 
 import theme from '@/theme'
-import DrawerDisclosureProvider from '@/context/DrawerDisclosureContext.tsx'
+import { DrawerDisclosureProvider } from '@/context'
 import App from './App.tsx'
 import './index.css'
 
