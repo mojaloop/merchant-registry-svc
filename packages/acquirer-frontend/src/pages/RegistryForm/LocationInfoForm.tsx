@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Box, Heading, Spinner, Stack, useToast } from '@chakra-ui/react'
+import { Box, Heading, Spinner, Stack } from '@chakra-ui/react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { MerchantLocationType, Countries } from 'shared-lib'
@@ -25,8 +25,6 @@ interface LocationInfoFormProps {
 }
 
 const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
-  const toast = useToast()
-
   const [merchantId, setMerchantId] = useState('')
   const [isDraft, setIsDraft] = useState(false)
   const [locationId, setLocationId] = useState<number | null>(null)
@@ -112,15 +110,6 @@ const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
   }, [draftData, setValue])
 
   const onSubmit = (values: LocationInfoForm) => {
-    const merchantId = sessionStorage.getItem('merchantId')
-    if (!merchantId) {
-      return toast({
-        title: 'Merchant ID not found!',
-        description: 'Go back to the previous page and try again.',
-        status: 'error',
-      })
-    }
-
     // Server expects null instead of empty string or any other falsy value
     values.country = values.country || null
 

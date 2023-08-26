@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Box, Heading, Spinner, Stack, useToast } from '@chakra-ui/react'
+import { Box, Heading, Spinner, Stack } from '@chakra-ui/react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Countries, BusinessOwnerIDType } from 'shared-lib'
@@ -25,8 +25,6 @@ interface OwnerInfoFormProps {
 }
 
 const OwnerInfoForm = ({ setActiveStep }: OwnerInfoFormProps) => {
-  const toast = useToast()
-
   const [merchantId, setMerchantId] = useState('')
   const [isDraft, setIsDraft] = useState(false)
   const [ownerId, setOwnerId] = useState<number | null>(null)
@@ -114,15 +112,6 @@ const OwnerInfoForm = ({ setActiveStep }: OwnerInfoFormProps) => {
   }, [draftData, setValue])
 
   const onSubmit = (values: OwnerInfoForm) => {
-    const merchantId = sessionStorage.getItem('merchantId')
-    if (!merchantId) {
-      return toast({
-        title: 'Merchant ID not found!',
-        description: 'Go back to the previous page and try again.',
-        status: 'error',
-      })
-    }
-
     // Server expects null instead of empty string or any other falsy value
     values.email = values.email || null
     values.country = values.country || null

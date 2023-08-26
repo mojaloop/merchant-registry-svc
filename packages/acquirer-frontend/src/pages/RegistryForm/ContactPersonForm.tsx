@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Box, Checkbox, Heading, Stack, useDisclosure, useToast } from '@chakra-ui/react'
+import { Box, Checkbox, Heading, Stack, useDisclosure } from '@chakra-ui/react'
 import { Controller, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 
@@ -19,7 +19,6 @@ interface ContactPersonProps {
 }
 
 const ContactPersonForm = ({ setActiveStep }: ContactPersonProps) => {
-  const toast = useToast()
   const { isOpen, onOpen, onClose } = useDisclosure()
 
   const [merchantId, setMerchantId] = useState('')
@@ -86,15 +85,6 @@ const ContactPersonForm = ({ setActiveStep }: ContactPersonProps) => {
   }, [watchedIsSameAsBusinessOwner, draftData, setValue])
 
   const onSubmit = (values: ContactPersonForm) => {
-    const merchantId = sessionStorage.getItem('merchantId')
-    if (!merchantId) {
-      return toast({
-        title: 'Merchant ID not found!',
-        description: 'Go back to the previous page and try again.',
-        status: 'error',
-      })
-    }
-
     // Server expects null instead of empty string or any other falsy value
     values.email = values.email || null
 
