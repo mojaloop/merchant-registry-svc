@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
-import express, { type Request, type Response } from 'express'
-import { getAuthenticatedPortalUser } from '../middleware/authenticate'
-import logger from '../logger'
+import express, { type Response } from 'express'
+import { type AuthRequest } from 'src/types/express'
+import { authenticateJWT } from '../middleware/authenticate'
+import logger from '../services/logger'
 
 /**
  * @openapi
@@ -47,8 +48,8 @@ import logger from '../logger'
  *                   example: "Invalid log level: error"
  */
 const router = express.Router()
-router.put('/config/trace-level', async (req: Request, res: Response) => {
-  const portalUser = await getAuthenticatedPortalUser(req.headers.authorization)
+router.put('/config/trace-level', authenticateJWT, async (req: AuthRequest, res: Response) => {
+  const portalUser = req.user
   if (portalUser == null) {
     return res.status(401).send({ message: 'Unauthorized' })
   }

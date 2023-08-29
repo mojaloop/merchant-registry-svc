@@ -1,6 +1,6 @@
 import path from 'path'
 import multer from 'multer'
-import logger from '../logger'
+import logger from './logger'
 import dotenv from 'dotenv'
 import { Client, type UploadedObjectInfo } from 'minio'
 import { convertURLFriendly } from '../utils/utils'

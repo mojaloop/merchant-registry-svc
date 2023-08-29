@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
-import { type Request, type Response } from 'express'
+import { type Response } from 'express'
 import { AppDataSource } from '../../database/data-source'
-import logger from '../../logger'
+import logger from '../../services/logger'
 import { type AuditTrasactionStatus, type AuditActionType } from 'shared-lib'
-import { getAuthenticatedPortalUser } from '../../middleware/authenticate'
 import { AuditEntity } from '../../entity/AuditEntity'
+import { type AuthRequest } from 'src/types/express'
 
 /**
  * @openapi
@@ -56,8 +56,8 @@ import { AuditEntity } from '../../entity/AuditEntity'
  *                   items:
  *                     type: object
  */
-export async function getAudits (req: Request, res: Response) {
-  const portalUser = await getAuthenticatedPortalUser(req.headers.authorization)
+export async function getAudits (req: AuthRequest, res: Response) {
+  const portalUser = req.user
   if (portalUser == null) {
     return res.status(401).send({ message: 'Unauthorized' })
   }

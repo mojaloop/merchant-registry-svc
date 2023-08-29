@@ -1,16 +1,16 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
-import { type Request, type Response } from 'express'
+import { type Response } from 'express'
 import { AppDataSource } from '../../database/data-source'
 import { MerchantEntity } from '../../entity/MerchantEntity'
-import logger from '../../logger'
+import logger from '../../services/logger'
 import { CheckoutCounterEntity } from '../../entity/CheckoutCounterEntity'
 import { PortalUserEntity } from '../../entity/PortalUserEntity'
 import { type MerchantRegistrationStatus } from 'shared-lib'
 
 import { isValidDate } from '../../utils/utils'
-import { getAuthenticatedPortalUser } from '../../middleware/authenticate'
 import { audit } from '../../utils/audit'
 import { AuditActionType, AuditTrasactionStatus } from 'shared-lib'
+import { type AuthRequest } from '../../types/express'
 
 /**
  * @openapi
@@ -84,11 +84,12 @@ import { AuditActionType, AuditTrasactionStatus } from 'shared-lib'
  *                     type: object
  */
 // TODO: Protect the route
-export async function getMerchants (req: Request, res: Response) {
-  const portalUser = await getAuthenticatedPortalUser(req.headers.authorization)
+export async function getMerchants (req: AuthRequest, res: Response) {
+  const portalUser = req.user
   if (portalUser == null) {
     return res.status(401).send({ message: 'Unauthorized' })
   }
+  logger.info('%o', portalUser)
 
   try {
     const {

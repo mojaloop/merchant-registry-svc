@@ -1,59 +1,71 @@
+import path from 'path'
+import jwt from 'jsonwebtoken'
+import dotenv from 'dotenv'
+import { type Request, type Response, type NextFunction } from 'express'
 import { audit } from '../utils/audit'
 import { AppDataSource } from '../database/data-source'
 import { PortalUserEntity } from '../entity/PortalUserEntity'
 import { AuditActionType, AuditTrasactionStatus } from 'shared-lib'
+import { type IJWTUser } from 'src/types/jwt-user'
 
-export async function getAuthenticatedPortalUser (authorization: string | null | undefined):
-Promise<PortalUserEntity | null> {
+if (process.env.NODE_ENV === 'test') {
+  dotenv.config({ path: path.resolve(process.cwd(), '.env.test'), override: true })
+}
+
+export const JWT_SECRET = process.env.JWT_SECRET ?? ''
+
+/* eslint-disable-next-line @typescript-eslint/explicit-function-return-type */
+export async function authenticateJWT (req: Request, res: Response, next: NextFunction) {
+  const authorization = req.header('Authorization')
+
   if (authorization === undefined) {
     await audit(
       AuditActionType.UNAUTHORIZED_ACCESS,
       AuditTrasactionStatus.FAILURE,
-      'getAuthenticatedPortalUser',
+      'authenticateJWT',
       'Authorization header is undefined',
       'PortalUserEntity',
       {}, {}, null
     )
-    return null
+    return res.status(401).send({ message: 'Authorization Failed' })
   }
 
   if (authorization === null) {
     await audit(
       AuditActionType.UNAUTHORIZED_ACCESS,
       AuditTrasactionStatus.FAILURE,
-      'getAuthenticatedPortalUser',
+      'authenticateJWT',
       'Authorization header is null',
       'PortalUserEntity',
       {}, {}, null
     )
-    return null
+    return res.status(401).send({ message: 'Authorization Failed' })
   }
 
   const token = authorization.replace('Bearer', '').trim()
 
-  let portalUser: PortalUserEntity | null = null
+  try {
+    const jwtUser = jwt.verify(token, JWT_SECRET) as IJWTUser
+    const user = await AppDataSource.manager.findOne(
+      PortalUserEntity,
+      { where: { email: jwtUser.email } }
+    )
 
-  if (token === process.env.TEST1_DUMMY_AUTH_TOKEN) {
-    portalUser = await AppDataSource.manager.findOne(
-      PortalUserEntity,
-      { where: { email: process.env.TEST1_EMAIL } }
-    )
-  } else if (token === process.env.TEST2_DUMMY_AUTH_TOKEN) {
-    portalUser = await AppDataSource.manager.findOne(
-      PortalUserEntity,
-      { where: { email: process.env.TEST2_EMAIL } }
-    )
-  } else {
+    if (user == null) {
+      throw new Error('JWT User\'s Email not found')
+    }
+
+    req.user = user
+    next()
+  } catch (err) {
     await audit(
       AuditActionType.UNAUTHORIZED_ACCESS,
       AuditTrasactionStatus.FAILURE,
-      'getAuthenticatedPortalUser',
+      'authenticateJWT',
       'Invalid token',
       'PortalUserEntity',
-      {}, {}, null
+      {}, { token }, null
     )
-    return null
+    res.status(401).send({ message: 'Authorization Failed', error: err })
   }
-
-  return portalUser
 }

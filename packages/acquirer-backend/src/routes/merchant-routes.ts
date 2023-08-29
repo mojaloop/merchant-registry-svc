@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
 import express from 'express'
 
-import { pdfUpload } from '../middleware/minioClient'
+import { pdfUpload } from '../services/minioClient'
 import { getMerchants } from './merchant-controllers/get-merchants'
 import { getMerchantById } from './merchant-controllers/get-merchant-by-id'
 import { postMerchantDraft } from './merchant-controllers/post-merchant-draft'
@@ -23,47 +23,59 @@ import { putBulkWaitingAliasGeneration } from './merchant-controllers/put-mercha
 import { putBulkReject } from './merchant-controllers/put-merchant-reject-bulk'
 import { putBulkRevert } from './merchant-controllers/put-merchant-revert-bulk'
 import { exportMerchantFilterXlsx } from './merchant-controllers/get-merchant-export-filter-xlsx'
+import { authenticateJWT } from '../middleware/authenticate'
 
 const router = express.Router()
 
-router.get('/merchants', getMerchants)
+router.get('/merchants', authenticateJWT, getMerchants)
 
-router.get('/merchants/draft-counts', getMerchantDraftCountsByUser)
+router.get('/merchants/draft-counts', authenticateJWT, getMerchantDraftCountsByUser)
 
-router.get('/merchants/export-with-ids', exportMerchantIdsXlsx)
+router.get('/merchants/export-with-ids', authenticateJWT, exportMerchantIdsXlsx)
 
-router.get('/merchants/export-with-filter', exportMerchantFilterXlsx)
+router.get('/merchants/export-with-filter', authenticateJWT, exportMerchantFilterXlsx)
 
-router.post('/merchants/draft', pdfUpload.single('license_document'), postMerchantDraft)
+router.post('/merchants/draft',
+  authenticateJWT,
+  pdfUpload.single('license_document'),
+  postMerchantDraft
+)
 
-router.get('/merchants/:id', getMerchantById)
+router.get('/merchants/:id', authenticateJWT, getMerchantById)
 
-router.put('/merchants/:id/draft', pdfUpload.single('license_document'), putMerchantDraft)
+router.put('/merchants/:id/draft',
+  authenticateJWT,
+  pdfUpload.single('license_document'),
+  putMerchantDraft
+)
 
-router.put('/merchants/:id/approve', putWaitingAliasGeneration)
+router.put('/merchants/:id/approve', authenticateJWT, putWaitingAliasGeneration)
 
-router.put('/merchants/bulk-approve', putBulkWaitingAliasGeneration)
+router.put('/merchants/bulk-approve', authenticateJWT, putBulkWaitingAliasGeneration)
 
-router.put('/merchants/bulk-reject', putBulkReject)
+router.put('/merchants/bulk-reject', authenticateJWT, putBulkReject)
 
-router.put('/merchants/bulk-revert', putBulkRevert)
+router.put('/merchants/bulk-revert', authenticateJWT, putBulkRevert)
 
-router.put('/merchants/:id/ready-to-review', putMerchantStatusReadyToReview)
+router.put('/merchants/:id/ready-to-review', authenticateJWT, putMerchantStatusReadyToReview)
 
-router.get('/merchants/:id/locations', getMerchantLocations)
+router.get('/merchants/:id/locations', authenticateJWT, getMerchantLocations)
 
-router.post('/merchants/:id/locations', postMerchantLocation)
+router.post('/merchants/:id/locations', authenticateJWT, postMerchantLocation)
 
-router.put('/merchants/:merchantId/locations/:locationId', putMerchantLocation)
+router.put('/merchants/:merchantId/locations/:locationId', authenticateJWT, putMerchantLocation)
 
-router.post('/merchants/:id/contact-persons', postMerchantContactPerson)
+router.post('/merchants/:id/contact-persons', authenticateJWT, postMerchantContactPerson)
 
-router.put('/merchants/:merchantId/contact-persons/:contactPersonId', putMerchantContactPerson)
+router.put('/merchants/:merchantId/contact-persons/:contactPersonId',
+  authenticateJWT,
+  putMerchantContactPerson
+)
 
-router.post('/merchants/:id/business-owners', postMerchantOwner)
+router.post('/merchants/:id/business-owners', authenticateJWT, postMerchantOwner)
 
-router.put('/merchants/:merchantId/business-owners/:ownerId', putMerchantOwner)
+router.put('/merchants/:merchantId/business-owners/:ownerId', authenticateJWT, putMerchantOwner)
 
-router.get('/merchants/:id/checkout-counters', getMerchantCheckoutCounters)
+router.get('/merchants/:id/checkout-counters', authenticateJWT, getMerchantCheckoutCounters)
 
 export default router

@@ -1,5 +1,5 @@
 import { AppDataSource } from './data-source'
-import logger from '../logger'
+import logger from '../services/logger'
 import 'dotenv/config'
 import {
   CurrencyCodes, CurrencyDescriptions,

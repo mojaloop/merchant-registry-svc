@@ -1,6 +1,6 @@
 import { Workbook } from 'exceljs'
 import { type MerchantEntity } from '../entity/MerchantEntity'
-import { getMerchantDocumentURL } from '../middleware/minioClient'
+import { getMerchantDocumentURL } from '../services/minioClient'
 
 interface ICategory {
   category_code: string

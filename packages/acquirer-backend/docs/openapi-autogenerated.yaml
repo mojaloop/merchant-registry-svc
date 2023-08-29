@@ -2,9 +2,7 @@ openapi: 3.0.0
 info:
   title: Merchant Acquirer API
   version: 0.1.0
-  description: >-
-    TEST1 User Bearer Authorization Token: test_1_dummy_auth_token <br/>TEST2
-    User Bearer Authorization Token: test_2_dummy_auth_token  
+  description: Merchant Acquirer Backend
 servers:
   - url: /api/v1
 components:
@@ -291,9 +289,7 @@ paths:
             type: array
             items:
               type: number
-          description: >-
-            Merchant Record IDs are either as a comma-separated string or an
-            array of numbers.
+          description: IDs are either as a comma-separated string or an array of numbers.
           example:
             - 1
             - 2

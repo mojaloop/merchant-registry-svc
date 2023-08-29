@@ -3,7 +3,7 @@ import cors from 'cors'
 import 'dotenv/config'
 import swaggerUi from 'swagger-ui-express'
 import { initializeDatabase } from './database/init-database'
-import logger from './logger'
+import logger from './services/logger'
 import morgan_config from './morgan-config'
 import health_check_route from './routes/health-check-route'
 import merchant_routes from './routes/merchant-routes'
@@ -14,7 +14,7 @@ import { openAPISpecification } from './openapi-spec-config'
 import {
   merchantDocumentBucketName,
   minioClient, createMerchantDocumentBucket
-} from './middleware/minioClient'
+} from './services/minioClient'
 
 const HOSTNAME: string = process.env.HOST ?? 'localhost'
 const PORT: number = parseInt(
@@ -70,7 +70,7 @@ async function tryInitializeDatabase (): Promise<void> {
     logger.error('MySQL Database Initializing error: %s', error.message)
     logger.info('Retrying in 3 seconds...')
 
-    // Retry after 5 seconds
+    // Retry after 3 seconds
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
     setTimeout(tryInitializeDatabase, 3000)
   }
