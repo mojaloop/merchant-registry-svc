@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
-import { type Request, type Response } from 'express'
+import { type Response } from 'express'
 import { AppDataSource } from '../../database/data-source'
 import { MerchantEntity } from '../../entity/MerchantEntity'
-import logger from '../../logger'
-import { getAuthenticatedPortalUser } from '../../middleware/authenticate'
+import logger from '../../services/logger'
 import { audit } from '../../utils/audit'
 import { AuditActionType, AuditTrasactionStatus } from 'shared-lib'
 import { In } from 'typeorm'
 import { merchantsToXlsxWorkbook } from '../../utils/merchantsToXlsxWorkbook'
+import { type AuthRequest } from 'src/types/express'
 
 /**
  * @openapi
@@ -27,7 +27,7 @@ import { merchantsToXlsxWorkbook } from '../../utils/merchantsToXlsxWorkbook'
  *           type: array
  *           items:
  *             type: number
- *         description: Merchant Record IDs are either as a comma-separated string or an array of numbers.
+ *         description: IDs are either as a comma-separated string or an array of numbers.
  *         example: [1, 2, 3]
  *     responses:
  *       200:
@@ -43,8 +43,8 @@ import { merchantsToXlsxWorkbook } from '../../utils/merchantsToXlsxWorkbook'
  *                   type: object
  */
 
-export async function exportMerchantIdsXlsx (req: Request, res: Response) {
-  const portalUser = await getAuthenticatedPortalUser(req.headers.authorization)
+export async function exportMerchantIdsXlsx (req: AuthRequest, res: Response) {
+  const portalUser = req.user
   if (portalUser == null) {
     return res.status(401).send({ message: 'Unauthorized' })
   }

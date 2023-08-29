@@ -1,15 +1,15 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
-import { type Request, type Response } from 'express'
+import { type Response } from 'express'
 import { QueryFailedError } from 'typeorm'
 import { AppDataSource } from '../../database/data-source'
 import { MerchantEntity } from '../../entity/MerchantEntity'
-import logger from '../../logger'
+import logger from '../../services/logger'
 import {
   MerchantRegistrationStatus
   , AuditActionType, AuditTrasactionStatus
 } from 'shared-lib'
-import { getAuthenticatedPortalUser } from '../../middleware/authenticate'
 import { audit } from '../../utils/audit'
+import { type AuthRequest } from 'src/types/express'
 
 /**
  * @openapi
@@ -52,8 +52,8 @@ import { audit } from '../../utils/audit'
  *       500:
  *         description: Server error
  */
-export async function putMerchantStatusReadyToReview (req: Request, res: Response) {
-  const portalUser = await getAuthenticatedPortalUser(req.headers.authorization)
+export async function putMerchantStatusReadyToReview (req: AuthRequest, res: Response) {
+  const portalUser = req.user
   if (portalUser == null) {
     return res.status(401).send({ message: 'Unauthorized' })
   }

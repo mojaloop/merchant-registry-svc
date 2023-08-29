@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
-import { type Request, type Response } from 'express'
-import { getMerchantDocumentURL } from '../../middleware/minioClient'
+import { type Response } from 'express'
+import { getMerchantDocumentURL } from '../../services/minioClient'
 import { AppDataSource } from '../../database/data-source'
 import { MerchantEntity } from '../../entity/MerchantEntity'
-import logger from '../../logger'
-import { getAuthenticatedPortalUser } from '../../middleware/authenticate'
+import logger from '../../services/logger'
 import { audit } from '../../utils/audit'
 import { AuditActionType, AuditTrasactionStatus } from 'shared-lib'
+import { type AuthRequest } from 'src/types/express'
 
 /**
  * @openapi
@@ -38,8 +38,8 @@ import { AuditActionType, AuditTrasactionStatus } from 'shared-lib'
  *                   type: object
  */
 // TODO: Protect the route
-export async function getMerchantById (req: Request, res: Response) {
-  const portalUser = await getAuthenticatedPortalUser(req.headers.authorization)
+export async function getMerchantById (req: AuthRequest, res: Response) {
+  const portalUser = req.user
   if (portalUser == null) {
     return res.status(401).send({ message: 'Unauthorized' })
   }

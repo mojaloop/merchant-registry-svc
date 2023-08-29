@@ -1,7 +1,7 @@
 import { type IncomingMessage } from 'http'
 import morgan from 'morgan'
 
-import logger from './logger'
+import logger from './services/logger'
 
 const morganStream = {
   write: (message: string) => {

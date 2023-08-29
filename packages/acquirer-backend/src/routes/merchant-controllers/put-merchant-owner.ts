@@ -1,18 +1,18 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
-import { type Request, type Response } from 'express'
+import { type Response } from 'express'
 import * as z from 'zod'
 import { AppDataSource } from '../../database/data-source'
 import { MerchantEntity } from '../../entity/MerchantEntity'
-import logger from '../../logger'
+import logger from '../../services/logger'
 import { BusinessOwnerEntity } from '../../entity/BusinessOwnerEntity'
 import { BusinessPersonLocationEntity } from '../../entity/BusinessPersonLocationEntity'
 
 import {
   BusinessOwnerSubmitDataSchema
 } from '../schemas'
-import { getAuthenticatedPortalUser } from '../../middleware/authenticate'
 import { AuditActionType, AuditTrasactionStatus } from 'shared-lib'
 import { audit } from '../../utils/audit'
+import { type AuthRequest } from 'src/types/express'
 
 /**
  * @openapi
@@ -88,8 +88,8 @@ import { audit } from '../../utils/audit'
  *                 data:
  *                   type: object
  */
-export async function putMerchantOwner (req: Request, res: Response) {
-  const portalUser = await getAuthenticatedPortalUser(req.headers.authorization)
+export async function putMerchantOwner (req: AuthRequest, res: Response) {
+  const portalUser = req.user
   if (portalUser == null) {
     return res.status(401).send({ message: 'Unauthorized' })
   }

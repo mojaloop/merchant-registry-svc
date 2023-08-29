@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
-import { type Request, type Response } from 'express'
+import { type Response } from 'express'
 import { QueryFailedError } from 'typeorm'
 import * as z from 'zod'
 import { AppDataSource } from '../../database/data-source'
 import { MerchantEntity } from '../../entity/MerchantEntity'
-import logger from '../../logger'
+import logger from '../../services/logger'
 import { CheckoutCounterEntity } from '../../entity/CheckoutCounterEntity'
 import { BusinessLicenseEntity } from '../../entity/BusinessLicenseEntity'
 import {
@@ -16,10 +16,10 @@ import {
 import {
   MerchantSubmitDataSchema
 } from '../schemas'
-import { uploadMerchantDocument } from '../../middleware/minioClient'
-import { getAuthenticatedPortalUser } from '../../middleware/authenticate'
+import { uploadMerchantDocument } from '../../services/minioClient'
 
 import { audit } from '../../utils/audit'
+import { type AuthRequest } from 'src/types/express'
 /**
  * @openapi
  * /merchants/{id}/draft:
@@ -98,8 +98,8 @@ import { audit } from '../../utils/audit'
  */
 // TODO: Protect the route with User Authentication (Keycloak)
 // TODO: check if the authenticated user is a Maker
-export async function putMerchantDraft (req: Request, res: Response) {
-  const portalUser = await getAuthenticatedPortalUser(req.headers.authorization)
+export async function putMerchantDraft (req: AuthRequest, res: Response) {
+  const portalUser = req.user
   if (portalUser == null) {
     return res.status(401).send({ message: 'Unauthorized' })
   }

@@ -3,7 +3,7 @@ import express from 'express'
 import path from 'path'
 import merchant_router from '../../src/routes/merchant-routes'
 import { AppDataSource } from '../../src/database/data-source'
-import logger from '../../src/logger'
+import logger from '../../src/services/logger'
 import { PortalUserEntity } from '../../src/entity/PortalUserEntity'
 import { initializeDatabase } from '../../src/database/init-database'
 import { MerchantEntity } from '../../src/entity/MerchantEntity'
@@ -24,7 +24,7 @@ import {
   getMerchantDocumentURL,
   removeMerchantDocument,
   removeMerchantDocumentBucket
-} from '../../src/middleware/minioClient'
+} from '../../src/services/minioClient'
 
 const app = express()
 app.use(express.json())
