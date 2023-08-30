@@ -42,4 +42,6 @@ export function downloadMerchantsBlobAsXlsx(blobData: Blob) {
   document.body.appendChild(link)
   link.click()
   document.body.removeChild(link)
+  // Revoke the Object URL when it's no longer needed
+  URL.revokeObjectURL(url)
 }
