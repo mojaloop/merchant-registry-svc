@@ -42,26 +42,25 @@ app.listen(PORT, HOSTNAME, async () => {
   logger.info(`Merchant Acquirer API is running on http://${HOSTNAME}:${PORT}/api/v1`)
   logger.info(`Swagger API Documentation UI is running on http://${HOSTNAME}:${PORT}/docs`)
 
-  // check if client able to connect to storage server
-  minioClient.listBuckets().then(async (buckets) => {
-    logger.info('Storage buckets: %o', buckets)
-    try {
-      await createMerchantDocumentBucket()
-
-      logger.info('Uploading test file to Storage Server bucket: %s', merchantDocumentBucketName)
-      await minioClient.putObject(merchantDocumentBucketName, 'test.txt', 'Hello World!')
-      logger.info('Test file uploaded to Storage Server bucket: %s', merchantDocumentBucketName)
-    } catch (error) {
-      logger.error('createMerchantDocumentBucket error: %o', error)
-      process.exit(1)
-    }
-  }).catch((error) => {
-    logger.error('listBuckets error: %s', error.message)
-    process.exit(1)
-  })
-
+  await tryInitializeMinio()
   await tryInitializeDatabase()
 })
+
+async function tryInitializeMinio (): Promise<void> {
+  try {
+    await minioClient.listBuckets()
+    await createMerchantDocumentBucket()
+    await minioClient.putObject(merchantDocumentBucketName, 'test.txt', 'Hello World!')
+    logger.info('Minio successfully initialized.')
+  } catch (error: any) {
+    logger.error('Minio Initializing error: %s', error.message)
+    logger.info('Retrying Minio setup in 3 seconds...')
+
+    // Retry after 3 seconds
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
+    setTimeout(tryInitializeMinio, 3000)
+  }
+}
 
 async function tryInitializeDatabase (): Promise<void> {
   try {
