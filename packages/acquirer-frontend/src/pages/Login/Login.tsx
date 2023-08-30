@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { NavLink } from 'react-router-dom'
 import {
   Box,
@@ -5,6 +6,7 @@ import {
   Flex,
   HStack,
   Heading,
+  IconButton,
   Image,
   Link,
   Stack,
@@ -13,6 +15,7 @@ import {
 } from '@chakra-ui/react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { AiFillEye, AiFillEyeInvisible } from 'react-icons/ai'
 
 import mojaloopLogo from '@/assets/mojaloop-logo.png'
 import { type LoginForm, loginSchema } from '@/lib/validations/login'
@@ -21,6 +24,8 @@ import { CustomButton } from '@/components/ui'
 import { FormInput } from '@/components/form'
 
 const Login = () => {
+  const [isPasswordShown, setIsPasswordShown] = useState(false)
+
   const {
     register,
     formState: { errors },
@@ -78,15 +83,53 @@ const Login = () => {
               mb='4'
             />
 
-            <FormInput
-              name='password'
-              register={register}
-              errors={errors}
-              label='Password'
-              placeholder='Enter password'
-              inputProps={{ type: 'password' }}
-              maxW='full'
-            />
+            <Box position='relative'>
+              <FormInput
+                name='password'
+                register={register}
+                errors={errors}
+                label='Password'
+                placeholder='Enter password'
+                inputProps={{ type: isPasswordShown ? 'text' : 'password' }}
+                maxW='full'
+              />
+
+              {isPasswordShown ? (
+                <IconButton
+                  aria-label='Hide password'
+                  icon={<AiFillEyeInvisible />}
+                  size='lg'
+                  position='absolute'
+                  top='2.35rem'
+                  right='3'
+                  minW='auto'
+                  h='auto'
+                  p='0.5'
+                  color='blackAlpha.800'
+                  bg='transparent !important'
+                  zIndex='docked'
+                  _hover={{ color: 'blackAlpha.600' }}
+                  onClick={() => setIsPasswordShown(false)}
+                />
+              ) : (
+                <IconButton
+                  aria-label='Show password'
+                  icon={<AiFillEye />}
+                  size='lg'
+                  position='absolute'
+                  top='2.35rem'
+                  right='3'
+                  minW='auto'
+                  h='auto'
+                  p='0.5'
+                  color='blackAlpha.800'
+                  bg='transparent !important'
+                  zIndex='docked'
+                  _hover={{ color: 'blackAlpha.600' }}
+                  onClick={() => setIsPasswordShown(true)}
+                />
+              )}
+            </Box>
 
             <HStack justify='space-between'>
               <Checkbox size='sm'>Remember me</Checkbox>
