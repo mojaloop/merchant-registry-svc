@@ -30,6 +30,10 @@ const theme = extendTheme({
     global: {
       'input, textarea, select': {
         fontSize: '0.9375rem !important',
+        _focusVisible: {
+          borderColor: '#90CDF4 !important',
+          boxShadow: '0 0 0 2px #90CDF4 !important',
+        },
       },
     },
   },
