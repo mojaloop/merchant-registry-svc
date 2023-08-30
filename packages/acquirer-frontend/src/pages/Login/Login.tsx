@@ -7,6 +7,7 @@ import {
   HStack,
   Heading,
   IconButton,
+  type IconButtonProps,
   Image,
   Link,
   Stack,
@@ -38,6 +39,20 @@ const Login = () => {
 
   const onSubmit = async (values: LoginForm) => {
     login.mutate({ email: values.email, password: values.password })
+  }
+
+  const iconButtonProps: Omit<IconButtonProps, 'icon' | 'aria-label'> = {
+    size: 'lg',
+    position: 'absolute',
+    top: '2.35rem',
+    right: '3',
+    minW: 'auto',
+    h: 'auto',
+    p: '0.5',
+    color: 'blackAlpha.800',
+    bg: 'transparent !important',
+    zIndex: 'docked',
+    _hover: { color: 'blackAlpha.600' },
   }
 
   return (
@@ -98,35 +113,15 @@ const Login = () => {
                 <IconButton
                   aria-label='Hide password'
                   icon={<AiFillEyeInvisible />}
-                  size='lg'
-                  position='absolute'
-                  top='2.35rem'
-                  right='3'
-                  minW='auto'
-                  h='auto'
-                  p='0.5'
-                  color='blackAlpha.800'
-                  bg='transparent !important'
-                  zIndex='docked'
-                  _hover={{ color: 'blackAlpha.600' }}
                   onClick={() => setIsPasswordShown(false)}
+                  {...iconButtonProps}
                 />
               ) : (
                 <IconButton
                   aria-label='Show password'
                   icon={<AiFillEye />}
-                  size='lg'
-                  position='absolute'
-                  top='2.35rem'
-                  right='3'
-                  minW='auto'
-                  h='auto'
-                  p='0.5'
-                  color='blackAlpha.800'
-                  bg='transparent !important'
-                  zIndex='docked'
-                  _hover={{ color: 'blackAlpha.600' }}
                   onClick={() => setIsPasswordShown(true)}
+                  {...iconButtonProps}
                 />
               )}
             </Box>
