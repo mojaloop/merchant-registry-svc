@@ -21,12 +21,12 @@ import {
   merchantsFilterSchema,
 } from '@/lib/validations/merchantsFilter'
 import {
-  approveMerchants,
-  exportMerchants,
-  rejectMerchants,
-  revertMerchants,
-} from '@/api/merchants'
-import { usePendingMerchants } from '@/api/hooks/merchants'
+  useApproveMerchants,
+  useExportMerchants,
+  usePendingMerchants,
+  useRejectMerchants,
+  useRevertMerchants,
+} from '@/api/hooks/merchants'
 import {
   REGISTRATION_STATUS_COLORS,
   type RegistrationStatus,
@@ -191,6 +191,10 @@ const PendingMerchantRecords = () => {
   })
 
   const pendingMerchants = usePendingMerchants(getValues())
+  const exportMerchants = useExportMerchants()
+  const approveMerchants = useApproveMerchants()
+  const rejectMerchants = useRejectMerchants()
+  const revertMerchants = useRevertMerchants()
 
   const onSubmit = () => {
     pendingMerchants.refetch()
@@ -265,7 +269,7 @@ const PendingMerchantRecords = () => {
           />
 
           <FormInput
-            name='payintoAccountId'
+            name='payintoId'
             register={register}
             errors={errors}
             label='Payinto Account ID'
@@ -314,7 +318,7 @@ const PendingMerchantRecords = () => {
         onClose={onApproveAlertClose}
         onConfirm={async () => {
           onApproveAlertClose()
-          await approveMerchants(selectedMerchantIds)
+          await approveMerchants.mutateAsync(selectedMerchantIds)
           pendingMerchants.refetch()
           queryClient.invalidateQueries(['approved-merchants'])
           queryClient.invalidateQueries(['all-merchants'])
@@ -338,7 +342,7 @@ const PendingMerchantRecords = () => {
         title='Rejecting Merchant Records'
         inputLabel='Enter the rejecting reason'
         onConfirm={async reason => {
-          await rejectMerchants(selectedMerchantIds, reason)
+          await rejectMerchants.mutateAsync({ selectedMerchantIds, reason })
           pendingMerchants.refetch()
           queryClient.invalidateQueries(['rejected-merchants'])
           queryClient.invalidateQueries(['all-merchants'])
@@ -351,7 +355,7 @@ const PendingMerchantRecords = () => {
         title='Reverting Merchant Records'
         inputLabel='Enter the reverting reason'
         onConfirm={async reason => {
-          await revertMerchants(selectedMerchantIds, reason)
+          await revertMerchants.mutateAsync({ selectedMerchantIds, reason })
           pendingMerchants.refetch()
           queryClient.invalidateQueries(['reverted-merchants'])
           queryClient.invalidateQueries(['all-merchants'])
@@ -379,7 +383,7 @@ const PendingMerchantRecords = () => {
               breakpoint='xl'
               alwaysVisibleColumns={[0, 1]}
               onExport={async () => {
-                const blobData = await exportMerchants({
+                const blobData = await exportMerchants.mutateAsync({
                   ...getValues(),
                   registrationStatus: MerchantRegistrationStatus.REVIEW,
                 })

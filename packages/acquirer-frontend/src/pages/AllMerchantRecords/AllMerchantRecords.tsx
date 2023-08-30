@@ -19,8 +19,7 @@ import {
   type AllMerchantsFilterForm,
   allMerchantsFilterSchema,
 } from '@/lib/validations/allMerchantsFilter'
-import { exportMerchants } from '@/api/merchants'
-import { useAllMerchants } from '@/api/hooks/merchants'
+import { useAllMerchants, useExportMerchants } from '@/api/hooks/merchants'
 import {
   REGISTRATION_STATUS_COLORS,
   type RegistrationStatus,
@@ -154,13 +153,14 @@ const AllMerchantRecords = () => {
   })
 
   const allMerchants = useAllMerchants(getValues())
+  const exportMerchants = useExportMerchants()
 
   const onSubmit = () => {
     allMerchants.refetch()
   }
 
   const handleExport = async () => {
-    const blobData = await exportMerchants(getValues())
+    const blobData = await exportMerchants.mutateAsync(getValues())
     if (blobData) {
       downloadMerchantsBlobAsXlsx(blobData)
     }
@@ -235,7 +235,7 @@ const AllMerchantRecords = () => {
           />
 
           <FormInput
-            name='payintoAccountId'
+            name='payintoId'
             register={register}
             errors={errors}
             label='Payinto Account ID'

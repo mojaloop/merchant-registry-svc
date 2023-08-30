@@ -19,8 +19,7 @@ import {
   type MerchantsFilterForm,
   merchantsFilterSchema,
 } from '@/lib/validations/merchantsFilter'
-import { exportMerchants } from '@/api/merchants'
-import { useRevertedMerchants } from '@/api/hooks/merchants'
+import { useExportMerchants, useRevertedMerchants } from '@/api/hooks/merchants'
 import {
   REGISTRATION_STATUS_COLORS,
   type RegistrationStatus,
@@ -167,13 +166,14 @@ const RevertedMerchantRecords = () => {
   })
 
   const revertedMerchants = useRevertedMerchants(getValues())
+  const exportMerchants = useExportMerchants()
 
   const onSubmit = () => {
     revertedMerchants.refetch()
   }
 
   const handleExport = async () => {
-    const blobData = await exportMerchants({
+    const blobData = await exportMerchants.mutateAsync({
       ...getValues(),
       registrationStatus: MerchantRegistrationStatus.REVERTED,
     })
@@ -251,7 +251,7 @@ const RevertedMerchantRecords = () => {
           />
 
           <FormInput
-            name='payintoAccountId'
+            name='payintoId'
             register={register}
             errors={errors}
             label='Payinto Account ID'
