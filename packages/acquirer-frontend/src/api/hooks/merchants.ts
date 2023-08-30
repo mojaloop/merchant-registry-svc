@@ -66,7 +66,7 @@ async function getApprovedMerchantRecords(values: MerchantsFilterForm) {
 
 export function useDrafts(params: MerchantsFilterForm) {
   return useQuery({
-    queryKey: ['drafts'],
+    queryKey: ['drafts', params],
     queryFn: () => getDrafts(params),
     meta: {
       toastStatus: 'error',
@@ -90,7 +90,7 @@ export function useAllMerchants(params: AllMerchantsFilterForm) {
 
 export function usePendingMerchants(params: MerchantsFilterForm) {
   return useQuery({
-    queryKey: ['pending-merchants'],
+    queryKey: ['pending-merchants', params],
     queryFn: () => getPendingMerchantRecords(params),
     meta: {
       toastStatus: 'error',
@@ -102,7 +102,7 @@ export function usePendingMerchants(params: MerchantsFilterForm) {
 
 export function useRejectedMerchants(params: MerchantsFilterForm) {
   return useQuery({
-    queryKey: ['rejected-merchants'],
+    queryKey: ['rejected-merchants', params],
     queryFn: () => getRejectedMerchantRecords(params),
     meta: {
       toastStatus: 'error',
@@ -114,7 +114,7 @@ export function useRejectedMerchants(params: MerchantsFilterForm) {
 
 export function useRevertedMerchants(params: MerchantsFilterForm) {
   return useQuery({
-    queryKey: ['reverted-merchants'],
+    queryKey: ['reverted-merchants', params],
     queryFn: () => getRevertedMerchantRecords(params),
     meta: {
       toastStatus: 'error',
@@ -126,7 +126,7 @@ export function useRevertedMerchants(params: MerchantsFilterForm) {
 
 export function useApprovedMerchants(params: MerchantsFilterForm) {
   return useQuery({
-    queryKey: ['approved-merchants'],
+    queryKey: ['approved-merchants', params],
     queryFn: () => getApprovedMerchantRecords(params),
     meta: {
       toastStatus: 'error',
