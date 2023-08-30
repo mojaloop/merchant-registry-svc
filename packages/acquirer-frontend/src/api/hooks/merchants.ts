@@ -64,7 +64,7 @@ export function useDrafts(params: MerchantsFilterForm) {
 
 export function useAllMerchants(params: AllMerchantsFilterForm) {
   return useQuery({
-    queryKey: ['all-merchants'],
+    queryKey: ['all-merchants', params],
     queryFn: () => getAllMerchantRecords(params),
     meta: {
       toastStatus: 'error',

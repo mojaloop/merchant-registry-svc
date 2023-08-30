@@ -235,7 +235,7 @@ const AllMerchantRecords = () => {
           />
 
           <FormInput
-            name='payintoAccountId'
+            name='payintoId'
             register={register}
             errors={errors}
             label='Payinto Account ID'

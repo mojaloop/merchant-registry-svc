@@ -9,5 +9,5 @@ export const merchantsFilterSchema = z.object({
   updatedTime: z.string().optional(),
   dbaName: z.string().optional(),
   merchantId: z.string().optional(),
-  payintoAccountId: z.string().optional(),
+  payintoId: z.string().optional(),
 })
