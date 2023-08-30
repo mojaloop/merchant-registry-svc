@@ -24,7 +24,7 @@ import {
   getMerchantDocumentURL,
   removeMerchantDocument,
   removeMerchantDocumentBucket
-} from '../../src/services/minioClient'
+} from '../../src/services/S3Client'
 
 const app = express()
 app.use(express.json())

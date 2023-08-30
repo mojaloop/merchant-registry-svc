@@ -15,7 +15,7 @@ import {
 import {
   MerchantSubmitDataSchema
 } from '../schemas'
-import { uploadMerchantDocument } from '../../services/minioClient'
+import { uploadMerchantDocument } from '../../services/S3Client'
 import { audit } from '../../utils/audit'
 import { type AuthRequest } from 'src/types/express'
 

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
 import express from 'express'
 
-import { pdfUpload } from '../services/minioClient'
+import { pdfUpload } from '../services/S3Client'
 import { getMerchants } from './merchant-controllers/get-merchants'
 import { getMerchantById } from './merchant-controllers/get-merchant-by-id'
 import { postMerchantDraft } from './merchant-controllers/post-merchant-draft'

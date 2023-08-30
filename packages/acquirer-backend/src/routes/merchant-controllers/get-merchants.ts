@@ -89,7 +89,6 @@ export async function getMerchants (req: AuthRequest, res: Response) {
   if (portalUser == null) {
     return res.status(401).send({ message: 'Unauthorized' })
   }
-  logger.info('%o', portalUser)
 
   try {
     const {

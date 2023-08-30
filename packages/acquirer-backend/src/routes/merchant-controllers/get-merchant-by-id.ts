@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { type Response } from 'express'
-import { getMerchantDocumentURL } from '../../services/minioClient'
+import { getMerchantDocumentURL } from '../../services/S3Client'
 import { AppDataSource } from '../../database/data-source'
 import { MerchantEntity } from '../../entity/MerchantEntity'
 import logger from '../../services/logger'
