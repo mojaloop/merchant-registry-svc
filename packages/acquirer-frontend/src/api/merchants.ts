@@ -1,5 +1,3 @@
-import { isAxiosError } from 'axios'
-
 import type { MerchantDetails } from '@/types/merchantDetails'
 import instance from '@/lib/axiosInstance'
 import type { MerchantsFilterForm } from '@/lib/validations/merchantsFilter'
@@ -22,55 +20,34 @@ export async function getMerchant(merchantId: number) {
 }
 
 export async function approveMerchants(selectedMerchantIds: number[]) {
-  try {
-    await instance.put('/merchants/bulk-approve', {
-      ids: selectedMerchantIds,
-    })
-  } catch (error) {
-    if (isAxiosError(error)) {
-      alert(error.response?.data?.message)
-    }
-  }
+  const response = await instance.put('/merchants/bulk-approve', {
+    ids: selectedMerchantIds,
+  })
+  return response.data
 }
 
 export async function rejectMerchants(selectedMerchantIds: number[], reason: string) {
-  try {
-    await instance.put('/merchants/bulk-reject', {
-      ids: selectedMerchantIds,
-      reason,
-    })
-  } catch (error) {
-    if (isAxiosError(error)) {
-      alert(error.response?.data?.message)
-    }
-  }
+  const response = await instance.put('/merchants/bulk-reject', {
+    ids: selectedMerchantIds,
+    reason,
+  })
+  return response.data
 }
 
 export async function revertMerchants(selectedMerchantIds: number[], reason: string) {
-  try {
-    await instance.put('/merchants/bulk-revert', {
-      ids: selectedMerchantIds,
-      reason,
-    })
-  } catch (error) {
-    if (isAxiosError(error)) {
-      alert(error.response?.data?.message)
-    }
-  }
+  const response = await instance.put('/merchants/bulk-revert', {
+    ids: selectedMerchantIds,
+    reason,
+  })
+  return response.data
 }
 
 export async function exportMerchants(
   params: AllMerchantsFilterForm | MerchantsFilterForm
 ) {
-  try {
-    const response = await instance.get<Blob>(`/merchants/export-with-filter`, {
-      params,
-      responseType: 'blob',
-    })
-    return response.data
-  } catch (error) {
-    if (isAxiosError(error)) {
-      alert(error.response?.data?.message)
-    }
-  }
+  const response = await instance.get<Blob>(`/merchants/export-with-filter`, {
+    params,
+    responseType: 'blob',
+  })
+  return response.data
 }

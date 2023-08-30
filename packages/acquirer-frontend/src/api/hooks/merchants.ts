@@ -1,10 +1,24 @@
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
+import { isAxiosError } from 'axios'
+import { useToast } from '@chakra-ui/react'
 import { MerchantRegistrationStatus } from 'shared-lib'
 
 import type { AllMerchantsFilterForm } from '@/lib/validations/allMerchantsFilter'
 import type { MerchantsFilterForm } from '@/lib/validations/merchantsFilter'
 import { transformIntoTableData } from '@/utils'
-import { getMerchant, getMerchants } from '../merchants'
+import {
+  approveMerchants,
+  exportMerchants,
+  getMerchant,
+  getMerchants,
+  rejectMerchants,
+  revertMerchants,
+} from '../merchants'
+
+interface ActionWithReasonParams {
+  selectedMerchantIds: number[]
+  reason: string
+}
 
 async function getDrafts(values: MerchantsFilterForm) {
   const params = { ...values, registrationStatus: MerchantRegistrationStatus.DRAFT }
@@ -126,5 +140,100 @@ export function useMerchant(merchantId: number) {
   return useQuery({
     queryKey: ['merchants', merchantId],
     queryFn: () => getMerchant(merchantId),
+  })
+}
+
+export function useApproveMerchants() {
+  const toast = useToast()
+
+  return useMutation({
+    mutationFn: (selectedMerchantIds: number[]) => approveMerchants(selectedMerchantIds),
+    onSuccess: () => {
+      toast({
+        title: 'Approving Merchants Successful!',
+        status: 'success',
+      })
+    },
+    onError: error => {
+      if (isAxiosError(error)) {
+        toast({
+          title: 'Approving Failed!',
+          description: error.response?.data.message,
+          status: 'error',
+        })
+      }
+    },
+  })
+}
+
+export function useRejectMerchants() {
+  const toast = useToast()
+
+  return useMutation({
+    mutationFn: ({ selectedMerchantIds, reason }: ActionWithReasonParams) =>
+      rejectMerchants(selectedMerchantIds, reason),
+    onSuccess: () => {
+      toast({
+        title: 'Rejecting Merchants Successful!',
+        status: 'success',
+      })
+    },
+    onError: error => {
+      if (isAxiosError(error)) {
+        toast({
+          title: 'Rejecting Failed!',
+          description: error.response?.data.message,
+          status: 'error',
+        })
+      }
+    },
+  })
+}
+
+export function useRevertMerchants() {
+  const toast = useToast()
+
+  return useMutation({
+    mutationFn: ({ selectedMerchantIds, reason }: ActionWithReasonParams) =>
+      revertMerchants(selectedMerchantIds, reason),
+    onSuccess: () => {
+      toast({
+        title: 'Reverting Merchants Successful!',
+        status: 'success',
+      })
+    },
+    onError: error => {
+      if (isAxiosError(error)) {
+        toast({
+          title: 'Reverting Failed!',
+          description: error.response?.data.message,
+          status: 'error',
+        })
+      }
+    },
+  })
+}
+
+export function useExportMerchants() {
+  const toast = useToast()
+
+  return useMutation({
+    mutationFn: (params: AllMerchantsFilterForm | MerchantsFilterForm) =>
+      exportMerchants(params),
+    onSuccess: () => {
+      toast({
+        title: 'Exporting Merchants Successful!',
+        status: 'success',
+      })
+    },
+    onError: error => {
+      if (isAxiosError(error)) {
+        toast({
+          title: 'Exporting Failed!',
+          description: error.response?.data.message,
+          status: 'error',
+        })
+      }
+    },
   })
 }

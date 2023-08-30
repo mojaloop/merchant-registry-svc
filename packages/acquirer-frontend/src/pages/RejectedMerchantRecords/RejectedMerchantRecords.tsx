@@ -19,8 +19,7 @@ import {
   type MerchantsFilterForm,
   merchantsFilterSchema,
 } from '@/lib/validations/merchantsFilter'
-import { exportMerchants } from '@/api/merchants'
-import { useRejectedMerchants } from '@/api/hooks/merchants'
+import { useExportMerchants, useRejectedMerchants } from '@/api/hooks/merchants'
 import {
   REGISTRATION_STATUS_COLORS,
   type RegistrationStatus,
@@ -150,13 +149,14 @@ const RejectedMerchantRecords = () => {
   })
 
   const rejectedMerchants = useRejectedMerchants(getValues())
+  const exportMerchants = useExportMerchants()
 
   const onSubmit = () => {
     rejectedMerchants.refetch()
   }
 
   const handleExport = async () => {
-    const blobData = await exportMerchants({
+    const blobData = await exportMerchants.mutateAsync({
       ...getValues(),
       registrationStatus: MerchantRegistrationStatus.REJECTED,
     })
