@@ -301,7 +301,7 @@ const RevertedMerchantRecords = () => {
           !revertedMerchants.isFetching &&
           !revertedMerchants.isError && (
             <>
-              <CustomButton px='6' mb='4' onClick={handleExport}>
+              <CustomButton px='6' mb={{ base: '6', xl: '3' }} onClick={handleExport}>
                 Export
               </CustomButton>
 
