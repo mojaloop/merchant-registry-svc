@@ -10,7 +10,7 @@ import {
 } from '@chakra-ui/react'
 
 import { navItems } from '@/components/layout/Sidebar/navItems'
-import { useDrawerDisclosure } from '@/context/DrawerDisclosureContext'
+import { useDrawerDisclosure } from '@/contexts/DrawerDisclosureContext'
 import DrawerNavItem from './DrawerNavItem'
 import DrawerNavAccordion from './DrawerNavAccordion'
 

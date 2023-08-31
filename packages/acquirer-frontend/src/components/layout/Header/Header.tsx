@@ -3,7 +3,7 @@ import { FiMenu } from 'react-icons/fi'
 import { MdOutlineNotifications } from 'react-icons/md'
 
 import mojaloopLogo from '@/assets/mojaloop-logo.png'
-import { useDrawerDisclosure } from '@/context/DrawerDisclosureContext'
+import { useDrawerDisclosure } from '@/contexts/DrawerDisclosureContext'
 import { Drawer } from '@/components/layout'
 
 const Header = () => {
