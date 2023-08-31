@@ -25,10 +25,10 @@ import type { MerchantInfo } from '@/types/merchants'
 import { CustomButton } from '@/components/ui'
 import { MobileTable, PaginationControl } from '@/components/ui/DataTable'
 
-interface PendingMerchantsDataTableProps<T> extends TableContainerProps {
-  data: T[]
+interface PendingMerchantsDataTableProps extends TableContainerProps {
+  data: MerchantInfo[]
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  columns: ColumnDef<T, any>[]
+  columns: ColumnDef<MerchantInfo, any>[]
   alwaysVisibleColumns: number[]
   breakpoint: 'sm' | 'md' | 'lg' | 'xl' | '2xl'
   onExport: () => void
@@ -39,7 +39,7 @@ interface PendingMerchantsDataTableProps<T> extends TableContainerProps {
   rowStyle?: TableRowProps
 }
 
-const PendingMerchantsDataTable = <T,>({
+const PendingMerchantsDataTable = ({
   data,
   columns,
   alwaysVisibleColumns,
@@ -51,7 +51,7 @@ const PendingMerchantsDataTable = <T,>({
   hidePerPage,
   rowStyle,
   ...props
-}: PendingMerchantsDataTableProps<T>) => {
+}: PendingMerchantsDataTableProps) => {
   const [sorting, setSorting] = useState<SortingState>([])
   const [rowSelection, setRowSelection] = useState({})
 
@@ -73,9 +73,7 @@ const PendingMerchantsDataTable = <T,>({
   const { getHeaderGroups, getRowModel, getSelectedRowModel } = table
 
   const getSelectedMerchantIds = (): number[] => {
-    const selectedRows = getSelectedRowModel().rows.map(
-      row => row.original
-    ) as MerchantInfo[]
+    const selectedRows = getSelectedRowModel().rows.map(row => row.original)
 
     return selectedRows.map(selectedRow => selectedRow.no)
   }
