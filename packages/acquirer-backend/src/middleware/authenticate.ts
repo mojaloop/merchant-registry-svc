@@ -48,7 +48,10 @@ export async function authenticateJWT (req: Request, res: Response, next: NextFu
     const jwtUser = jwt.verify(token, JWT_SECRET) as IJWTUser
     const user = await AppDataSource.manager.findOne(
       PortalUserEntity,
-      { where: { email: jwtUser.email } }
+      {
+        where: { email: jwtUser.email },
+        relations: ['role', 'role.permissions', 'dfsp']
+      }
     )
 
     if (user == null) {

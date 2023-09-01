@@ -10,6 +10,13 @@ import { MerchantCategoryEntity } from '../entity/MerchantCategoryEntity'
 import { CurrencyEntity } from '../entity/CurrencyEntity'
 import { hashPassword } from '../utils/utils'
 import { PortalUserEntity } from '../entity/PortalUserEntity'
+import { PermissionsEnum } from '../types/permissions'
+import { DefaultRoles } from './default-roles'
+import { PortalPermissionEntity } from '../entity/PortalPermissionEntity'
+import { PortalRoleEntity } from '../entity/PortalRoleEntity'
+import { DefaultUsers } from './default-users'
+import { DefaultDFSPs } from './default-dfsps'
+import { DFSPEntity } from '../entity/DFSPEntity'
 
 export const initializeDatabase = async (): Promise<void> => {
   logger.info('Connecting MySQL database...')
@@ -22,10 +29,11 @@ export const initializeDatabase = async (): Promise<void> => {
 
       await seedCurrency()
 
-      //
-      //  TODO: Remove Test Accounts in Production
-      //
-      await seedTestAccounts()
+      await seedDFSPs()
+
+      await seedDefaultPermissions()
+      await seedDefaultRoles()
+      await seedDefaultUsers()
     })
     .catch((error) => {
       throw error
@@ -35,6 +43,7 @@ export const initializeDatabase = async (): Promise<void> => {
 async function seedCategoryCode (): Promise<void> {
   // skip if already seeded by checking size
   // TODO: Is there a better way?
+  logger.info('Seeding Merchant Category Codes...')
   const alreadySeedSize = await AppDataSource.manager.count(MerchantCategoryEntity)
   if (Object.keys(MerchantCategoryCodes).length <= alreadySeedSize) {
     logger.info('Merchant Category Codes already seeded. Skipping...')
@@ -47,11 +56,13 @@ async function seedCategoryCode (): Promise<void> {
     category.description = MerchantCategoryCodes[categoryCode]
     await AppDataSource.manager.save(category)
   }
+  logger.info('Seeding Merchant Category Codes... Done')
 }
 
 async function seedCurrency (): Promise<void> {
   // skip if already seeded by checking size
   // TODO: Is there a better way?
+  logger.info('Seeding Currency Codes...')
   const alreadySeedSize = await AppDataSource.manager.count(CurrencyEntity)
   if (Object.keys(CurrencyCodes).length <= alreadySeedSize) {
     logger.info('Currency Codes already seeded. Skipping...')
@@ -64,50 +75,111 @@ async function seedCurrency (): Promise<void> {
     currency.description = CurrencyDescriptions[currencyCode as keyof typeof CurrencyDescriptions]
     await AppDataSource.manager.save(currency)
   }
+  logger.info('Seeding Currency Codes... Done')
 }
 
-async function seedTestAccounts (): Promise<void> {
-  const test1Account: ITestAccount = {
-    name: process.env.TEST1_NAME ?? 'Test 1',
-    email: process.env.TEST1_EMAIL ?? 'test1@email.com',
-    phone: process.env.TEST1_PHONE_NUMBER ?? '0000000',
-    password: process.env.TEST1_PASSWORD ?? 'password'
-  }
-  await createAccount(test1Account)
+async function seedDFSPs (): Promise<void> {
+  logger.info('Seeding Default DFSPs...')
+  for (const dfsp of DefaultDFSPs) {
+    const dfspEntity = await AppDataSource.manager.findOne(
+      DFSPEntity,
+      { where: { name: dfsp.name } }
+    )
 
-  const test2Account: ITestAccount = {
-    name: process.env.TEST2_NAME ?? 'Test 2',
-    email: process.env.TEST2_EMAIL ?? 'test2@email.com',
-    phone: process.env.TEST2_PHONE_NUMBER ?? '1111111',
-    password: process.env.TEST2_PASSWORD ?? 'password'
+    if (dfspEntity == null) {
+      const newDFSP = new DFSPEntity()
+      newDFSP.name = dfsp.name
+      newDFSP.dfsp_type = dfsp.dfsp_type
+      newDFSP.joined_date = dfsp.joined_date
+      newDFSP.activated = dfsp.activated
+      newDFSP.logo_uri = dfsp.logo_uri
+      await AppDataSource.manager.save(newDFSP)
+    }
   }
-  await createAccount(test2Account)
+  logger.info('Seeding Default DFSPs... Done')
 }
 
-async function createAccount (account: ITestAccount): Promise<void> {
-  const { name, email, password, phone } = account
-  let testCheckerAccount = await AppDataSource.manager.findOne(
-    PortalUserEntity,
-    { where: { email } }
-  )
-  if (testCheckerAccount != null) {
-    logger.info(`Test Account ${email} already seeded. Skipping...`)
-    return
-  }
+async function seedDefaultPermissions (): Promise<void> {
+  logger.info('Seeding Default Permissions...')
+  for (const key of Object.keys(PermissionsEnum)) {
+    const permission = PermissionsEnum[key as keyof typeof PermissionsEnum]
+    let permissionEntity = await AppDataSource.manager.findOne(
+      PortalPermissionEntity,
+      { where: { name: permission } }
+    )
 
-  testCheckerAccount = new PortalUserEntity()
-  testCheckerAccount.name = name
-  testCheckerAccount.email = email
-  testCheckerAccount.phone_number = phone
-  testCheckerAccount.password = await hashPassword(password)
-  testCheckerAccount.user_type = PortalUserType.HUB
-  testCheckerAccount.status = PortalUserStatus.FRESH
-  await AppDataSource.manager.save(testCheckerAccount)
+    if (permissionEntity == null) {
+      permissionEntity = new PortalPermissionEntity()
+      permissionEntity.name = permission
+      permissionEntity.description = permission
+      await AppDataSource.manager.save(permissionEntity)
+    }
+  }
+  logger.info('Seeding Default Permissions... Done')
 }
 
-interface ITestAccount {
-  name: string
-  email: string
-  phone: string
-  password: string
+async function seedDefaultRoles (): Promise<void> {
+  logger.info('Seeding Default Roles...')
+  const permissions = await AppDataSource.manager.find(PortalPermissionEntity)
+
+  for (const role of DefaultRoles) {
+    const filteredPermissions = permissions.filter(permission =>
+      role.permissions.includes(permission.name as unknown as PermissionsEnum)
+    )
+
+    const roleEntity = await AppDataSource.manager.findOne(
+      PortalRoleEntity,
+      { where: { name: role.name } }
+    )
+
+    if (roleEntity == null) {
+      const newRole = new PortalRoleEntity()
+      newRole.name = role.name
+      newRole.description = role.name
+      newRole.permissions = filteredPermissions
+      await AppDataSource.manager.save(newRole)
+    }
+  }
+  logger.info('Seeding Default Roles... Done')
+}
+
+async function seedDefaultUsers (): Promise<void> {
+  logger.info('Seeding Default Users...')
+
+  const roles = await AppDataSource.manager.find(PortalRoleEntity)
+
+  const dfsps = await AppDataSource.manager.find(DFSPEntity)
+
+  for (const user of DefaultUsers) {
+    const userEntity = await AppDataSource.manager.findOne(
+      PortalUserEntity,
+      { where: { email: user.email } }
+    )
+
+    if (userEntity == null) {
+      const newUserRole = roles.find(role => user.role === role.name)
+      if (newUserRole == null) {
+        throw new Error(`Role '${user.role}' not found for seeding with '${user.email}'.`)
+      }
+
+      const newUserDFSP = dfsps.find(dfsp => user.dfsp_name === dfsp.name)
+      if (newUserDFSP == null) {
+        throw new Error(`DFSP '${user.dfsp_name}' not found for seeding with '${user.email}'.`)
+      }
+
+      const newUser = new PortalUserEntity()
+      newUser.name = user.email
+      newUser.email = user.email
+      newUser.password = await hashPassword(user.password)
+      newUser.phone_number = user.phone_number
+      newUser.user_type = PortalUserType.DFSP
+      newUser.status = PortalUserStatus.FRESH
+      newUser.role = newUserRole
+      newUser.dfsp = newUserDFSP
+      await AppDataSource.manager.save(newUser)
+    } else {
+      logger.info(`User ${user.email} already seeded. Skipping...`)
+    }
+  }
+  logger.info('Seeding Default Users... Done')
 }

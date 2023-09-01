@@ -74,9 +74,42 @@ export async function getMerchantById (req: AuthRequest, res: Response) {
           'created_by',
           'business_owners',
           'business_owners.businessPersonLocation',
-          'checked_by'
+          'checked_by',
+          'dfsps'
         ]
       })
+
+      if (merchant == null) {
+        logger.error('Merchant not found')
+        await audit(
+          AuditActionType.ACCESS,
+          AuditTrasactionStatus.FAILURE,
+          'getMerchantById',
+        `User ${portalUser.id} (${portalUser.email}) failed to fetch merchant ${req.params.id}`,
+        'MerchantEntity',
+        {}, {}, portalUser
+        )
+        return res.status(404).send({ message: 'Merchant not found' })
+      }
+
+      const validMerchantForUser = merchant.dfsps
+        .map(dfsp => dfsp.id)
+        .includes(portalUser.dfsp.id)
+      if (!validMerchantForUser) {
+        logger.error('Accessing different DFSP\'s Merchant is not allowed.')
+        await audit(
+          AuditActionType.ACCESS,
+          AuditTrasactionStatus.FAILURE,
+          'getMerchantById',
+          `User ${portalUser.id} (${portalUser.email}) 
+trying to access unauthorized(different DFSP) merchant ${merchant.id}`,
+          'MerchantEntity',
+          {}, {}, portalUser
+        )
+        return res.status(400).send({
+          message: 'Accessing different DFSP\'s Merchant is not allowed.'
+        })
+      }
     } catch (e) {
       logger.error('Error fetching merchant: %o', e)
       await audit(
@@ -89,20 +122,6 @@ export async function getMerchantById (req: AuthRequest, res: Response) {
       )
       res.status(500).send({ message: e })
       return
-    }
-
-    if (merchant == null) {
-      logger.error('Merchant not found')
-      await audit(
-        AuditActionType.ACCESS,
-        AuditTrasactionStatus.FAILURE,
-        'getMerchantById',
-        `User ${portalUser.id} (${portalUser.email}) failed to fetch merchant ${req.params.id}`,
-        'MerchantEntity',
-        {}, {}, portalUser
-      )
-
-      return res.status(404).send({ message: 'Merchant not found' })
     }
 
     // Create a new object that excludes the created_by's hasheded password field

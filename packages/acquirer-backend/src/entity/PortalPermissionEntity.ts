@@ -18,19 +18,10 @@ export class PortalPermissionEntity {
     id!: number
 
   @Column({ nullable: false, length: 255 })
-    permission_name!: string
+    name!: string
 
-  @Column({ nullable: false, length: 255 })
+  @Column({ nullable: false, length: 255, default: '' })
     description!: string
-
-  @Column({ nullable: false, length: 255 })
-    api_route_path!: string
-
-  @Column({ type: 'enum', enum: APIRouteMethod, nullable: false, default: APIRouteMethod.GET })
-    api_route_method!: APIRouteMethod
-
-  @Column({ type: 'boolean', default: false })
-    is_allowed!: boolean
 
   @ManyToMany(() => PortalRoleEntity, role => role.permissions)
     roles!: PortalRoleEntity[]

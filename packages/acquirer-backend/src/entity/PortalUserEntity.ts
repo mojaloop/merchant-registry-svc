@@ -36,9 +36,8 @@ export class PortalUserEntity extends PersonEntity {
   @OneToMany(() => AuditEntity, audit => audit.portal_user)
     audits!: AuditEntity[]
 
-  @ManyToMany(() => DFSPEntity, dfsp => dfsp.portal_users)
-  @JoinTable()
-    dfsps!: DFSPEntity[]
+  @ManyToOne(() => DFSPEntity, dfsp => dfsp.portal_users)
+    dfsp!: DFSPEntity
 
   @ManyToOne(() => PortalRoleEntity, role => role.users)
     role!: PortalRoleEntity

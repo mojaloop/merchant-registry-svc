@@ -125,11 +125,32 @@ export async function putMerchantDraft (req: AuthRequest, res: Response) {
   const merchantRepository = AppDataSource.getRepository(MerchantEntity)
   const merchant = await merchantRepository.findOne({
     where: { id },
-    relations: ['checkout_counters', 'business_licenses']
+    relations: ['checkout_counters', 'business_licenses', 'dfsps']
   })
+
   if (merchant === null) {
     return res.status(422).send({ message: 'Merchant ID does not exist' })
   }
+
+  const validMerchantForUser = merchant.dfsps
+    .map(dfsp => dfsp.id)
+    .includes(portalUser.dfsp.id)
+  if (!validMerchantForUser) {
+    logger.error('Accessing different DFSP\'s Merchant is not allowed.')
+    await audit(
+      AuditActionType.ACCESS,
+      AuditTrasactionStatus.FAILURE,
+      'putMerchantDraft',
+          `User ${portalUser.id} (${portalUser.email}) 
+trying to access unauthorized(different DFSP) merchant ${merchant.id}`,
+          'MerchantEntity',
+          {}, {}, portalUser
+    )
+    return res.status(400).send({
+      message: 'Accessing different DFSP\'s Merchant is not allowed.'
+    })
+  }
+
   if (merchant.registration_status !== MerchantRegistrationStatus.DRAFT &&
     merchant.registration_status !== MerchantRegistrationStatus.REVERTED) {
     return res.status(422).send({

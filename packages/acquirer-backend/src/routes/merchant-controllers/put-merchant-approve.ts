@@ -68,12 +68,32 @@ export async function putWaitingAliasGeneration (req: AuthRequest, res: Response
       where: { id },
       relations: [
         'created_by',
-        'checked_by'
+        'checked_by',
+        'dfsps'
       ]
     })
 
     if (merchant == null) {
       return res.status(404).send({ message: 'Merchant not found' })
+    }
+
+    const validMerchantForUser = merchant.dfsps
+      .map(dfsp => dfsp.id)
+      .includes(portalUser.dfsp.id)
+    if (!validMerchantForUser) {
+      logger.error('Accessing different DFSP\'s Merchant is not allowed.')
+      await audit(
+        AuditActionType.ACCESS,
+        AuditTrasactionStatus.FAILURE,
+        'putWaitingAliasGeneration',
+          `User ${portalUser.id} (${portalUser.email}) 
+trying to access unauthorized(different DFSP) merchant ${merchant.id}`,
+          'MerchantEntity',
+          {}, {}, portalUser
+      )
+      return res.status(400).send({
+        message: 'Accessing different DFSP\'s Merchant is not allowed.'
+      })
     }
 
     if (portalUser.id === merchant.created_by.id) {

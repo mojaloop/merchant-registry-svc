@@ -114,6 +114,25 @@ export async function putMerchantReject (req: AuthRequest, res: Response) {
       return res.status(404).send({ message: 'Merchant not found' })
     }
 
+    const validMerchantForUser = merchant.dfsps
+      .map(dfsp => dfsp.id)
+      .includes(portalUser.dfsp.id)
+    if (!validMerchantForUser) {
+      logger.error('Accessing different DFSP\'s Merchant is not allowed.')
+      await audit(
+        AuditActionType.ACCESS,
+        AuditTrasactionStatus.FAILURE,
+        'putMerchantReject',
+          `User ${portalUser.id} (${portalUser.email}) 
+trying to access unauthorized(different DFSP) merchant ${merchant.id}`,
+          'MerchantEntity',
+          {}, {}, portalUser
+      )
+      return res.status(400).send({
+        message: 'Accessing different DFSP\'s Merchant is not allowed.'
+      })
+    }
+
     if (portalUser.id === merchant.created_by.id) {
       const msg = 'User is not allowed to change status'
 

@@ -81,7 +81,8 @@ export async function getMerchantCheckoutCounters (req: AuthRequest, res: Respon
       where: { id: Number(req.params.id) },
       relations: [
         'checkout_counters',
-        'checkout_counters.checkout_location'
+        'checkout_counters.checkout_location',
+        'dfsps'
       ]
     })
 
@@ -96,6 +97,25 @@ export async function getMerchantCheckoutCounters (req: AuthRequest, res: Respon
       )
       res.status(404).send({ message: 'Merchant not found' })
       return
+    }
+
+    const validMerchantForUser = merchant.dfsps
+      .map(dfsp => dfsp.id)
+      .includes(portalUser.dfsp.id)
+    if (!validMerchantForUser) {
+      logger.error('Accessing different DFSP\'s Merchant is not allowed.')
+      await audit(
+        AuditActionType.ACCESS,
+        AuditTrasactionStatus.FAILURE,
+        'getMerchantCheckoutCounters',
+          `User ${portalUser.id} (${portalUser.email}) 
+trying to access unauthorized(different DFSP) merchant ${merchant.id}`,
+          'MerchantEntity',
+          {}, {}, portalUser
+      )
+      return res.status(400).send({
+        message: 'Accessing different DFSP\'s Merchant is not allowed.'
+      })
     }
 
     const checkoutCounters = merchant.checkout_counters

@@ -138,13 +138,13 @@ export async function getMerchants (req: AuthRequest, res: Response) {
       whereClause.registration_status = registrationStatus as MerchantRegistrationStatus
     }
 
-    // Need to use query builder to do a LIKE query
     const queryBuilder = merchantRepository.createQueryBuilder('merchant')
     queryBuilder
       .leftJoin('merchant.created_by', 'created_by')
       .leftJoin('merchant.checked_by', 'checked_by')
       .leftJoin('merchant.locations', 'locations')
       .leftJoin('merchant.checkout_counters', 'checkout_counters')
+      .leftJoinAndSelect('merchant.dfsps', 'dfsps')
       .addSelect(['created_by.id', 'created_by.name'])
       .addSelect(['checked_by.id', 'checked_by.name'])
       .addSelect(['locations.country_subdivision', 'locations.town_name'])
@@ -153,7 +153,6 @@ export async function getMerchants (req: AuthRequest, res: Response) {
       .orderBy('merchant.created_at', 'DESC') // Sort by latest
 
     logger.debug('WhereClause: %o', whereClause)
-    // queryBuilder.where(whereClause)
 
     if (typeof dbaName === 'string' && dbaName.length > 0) {
       queryBuilder.andWhere('merchant.dba_trading_name LIKE :name', { name: `%${dbaName}%` })
@@ -189,7 +188,15 @@ export async function getMerchants (req: AuthRequest, res: Response) {
       }
     }
 
-    const merchants = await queryBuilder.getMany()
+    let merchants = await queryBuilder.getMany()
+
+    // Now filter based on dfsps
+    merchants = merchants.filter(merchant =>
+      merchant.dfsps
+        .map(dfsp => dfsp.id)
+        .includes(portalUser.dfsp.id)
+    )
+
     merchants.forEach((merchant: any) => {
       delete merchant.created_by?.password
       delete merchant.created_by?.created_at

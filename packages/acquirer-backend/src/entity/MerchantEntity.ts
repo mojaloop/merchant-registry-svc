@@ -19,7 +19,7 @@ import { CheckoutCounterEntity } from './CheckoutCounterEntity'
 import { BusinessLicenseEntity } from './BusinessLicenseEntity'
 import { BusinessOwnerEntity } from './BusinessOwnerEntity'
 import { ContactPersonEntity } from './ContactPersonEntity'
-import { DFSPMerchantRelationsEntity } from './DFSPMerchantRelationsEntity'
+import { DFSPEntity } from './DFSPEntity'
 
 @Entity('merchants')
 export class MerchantEntity {
@@ -134,12 +134,20 @@ export class MerchantEntity {
   )
     contact_persons!: ContactPersonEntity[]
 
-  @OneToMany(
-    () => DFSPMerchantRelationsEntity,
-    relation => relation.merchant,
+  @ManyToMany(
+    () => DFSPEntity,
+    dfsp => dfsp.merchants,
     { onDelete: 'CASCADE' }
   )
-    dfsp_merchant_relations!: DFSPMerchantRelationsEntity[]
+  @JoinTable()
+    dfsps!: DFSPEntity[]
+
+  @ManyToOne(
+    () => DFSPEntity,
+    dfsp => dfsp.defaulted_merchants,
+    { onDelete: 'SET NULL' }
+  )
+    default_dfsp!: DFSPEntity
 
   @CreateDateColumn()
     created_at!: Date

@@ -103,10 +103,29 @@ export async function putBulkRevert (req: AuthRequest, res: Response) {
       // registration_status: MerchantRegistrationStatus.REVIEW,
       // created_by: Not(portalUser.id)
     },
-    relations: ['created_by']
+    relations: ['created_by', 'dfsp']
   })
 
   for (const merchant of merchants) {
+    const validMerchantForUser = merchant.dfsps
+      .map(dfsp => dfsp.id)
+      .includes(portalUser.dfsp.id)
+    if (!validMerchantForUser) {
+      logger.error('Accessing different DFSP\'s Merchant is not allowed.')
+      await audit(
+        AuditActionType.ACCESS,
+        AuditTrasactionStatus.FAILURE,
+        'putMerchantReject',
+          `User ${portalUser.id} (${portalUser.email}) 
+trying to access unauthorized(different DFSP) merchant ${merchant.id}`,
+          'MerchantEntity',
+          {}, {}, portalUser
+      )
+      return res.status(400).send({
+        message: 'Accessing different DFSP\'s Merchant is not allowed.'
+      })
+    }
+
     if (merchant.registration_status !== MerchantRegistrationStatus.REVIEW) {
       await audit(
         AuditActionType.UPDATE,

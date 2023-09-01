@@ -99,7 +99,8 @@ export async function putMerchantContactPerson (req: AuthRequest, res: Response)
       relations: [
         'business_owners', // for is_same_as_business_owner
         'contact_persons',
-        'created_by'
+        'created_by',
+        'dfsps'
       ]
     }
   )
@@ -107,6 +108,25 @@ export async function putMerchantContactPerson (req: AuthRequest, res: Response)
   if (merchant == null) {
     logger.error('Merchant not found')
     return res.status(404).json({ message: 'Merchant not found' })
+  }
+
+  const validMerchantForUser = merchant.dfsps
+    .map(dfsp => dfsp.id)
+    .includes(portalUser.dfsp.id)
+  if (!validMerchantForUser) {
+    logger.error('Accessing different DFSP\'s Merchant is not allowed.')
+    await audit(
+      AuditActionType.ACCESS,
+      AuditTrasactionStatus.FAILURE,
+      'putWaitingAliasGeneration',
+          `User ${portalUser.id} (${portalUser.email}) 
+trying to access unauthorized(different DFSP) merchant ${merchant.id}`,
+          'MerchantEntity',
+          {}, {}, portalUser
+    )
+    return res.status(400).send({
+      message: 'Accessing different DFSP\'s Merchant is not allowed.'
+    })
   }
 
   const contactPerson = merchant.contact_persons.find(

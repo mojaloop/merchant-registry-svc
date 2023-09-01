@@ -129,7 +129,7 @@ export async function postMerchantOwner (req: AuthRequest, res: Response) {
   const merchant = await merchantRepository.findOne(
     {
       where: { id },
-      relations: ['business_owners']
+      relations: ['business_owners', 'dfsps']
     }
   )
 
@@ -146,6 +146,24 @@ export async function postMerchantOwner (req: AuthRequest, res: Response) {
     return res.status(404).json({ message: 'Merchant not found' })
   }
 
+  const validMerchantForUser = merchant.dfsps
+    .map(dfsp => dfsp.id)
+    .includes(portalUser.dfsp.id)
+  if (!validMerchantForUser) {
+    logger.error('Accessing different DFSP\'s Merchant is not allowed.')
+    await audit(
+      AuditActionType.ACCESS,
+      AuditTrasactionStatus.FAILURE,
+      'postMerchantOwner',
+          `User ${portalUser.id} (${portalUser.email}) 
+trying to access unauthorized(different DFSP) merchant ${merchant.id}`,
+          'MerchantEntity',
+          {}, {}, portalUser
+    )
+    return res.status(400).send({
+      message: 'Accessing different DFSP\'s Merchant is not allowed.'
+    })
+  }
   const locationObj = locationRepository.create({
     ...businessOwnerData
   })
