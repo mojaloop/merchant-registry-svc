@@ -29,6 +29,7 @@ import {
   CustomButton,
   CustomLink,
   DataTable,
+  EmptyState,
   MerchantInformationModal,
   TableSkeleton,
 } from '@/components/ui'
@@ -301,7 +302,12 @@ const RevertedMerchantRecords = () => {
           !revertedMerchants.isFetching &&
           !revertedMerchants.isError && (
             <>
-              <CustomButton px='6' mb={{ base: '6', xl: '3' }} onClick={handleExport}>
+              <CustomButton
+                px='6'
+                mb={{ base: '6', xl: '3' }}
+                isDisabled={revertedMerchants.data.length === 0}
+                onClick={handleExport}
+              >
                 Export
               </CustomButton>
 
@@ -311,6 +317,10 @@ const RevertedMerchantRecords = () => {
                 breakpoint='xl'
                 alwaysVisibleColumns={[0, 1]}
               />
+
+              {revertedMerchants.data.length === 0 && (
+                <EmptyState text='There are no reverted merchant records.' mt='10' />
+              )}
             </>
           )}
       </Box>

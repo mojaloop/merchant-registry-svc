@@ -5,6 +5,7 @@ import DataTable from './DataTable/DataTable'
 import MerchantInformationModal from './MerchantInformationModal/MerchantInformationModal'
 import TableSkeleton from './TableSkeleton/TableSkeleton'
 import FloatingSpinner from './FloatingSpinner/FloatingSpinner'
+import EmptyState from './EmptyState/EmptyState'
 
 export {
   AlertDialog,
@@ -14,4 +15,5 @@ export {
   MerchantInformationModal,
   TableSkeleton,
   FloatingSpinner,
+  EmptyState,
 }
