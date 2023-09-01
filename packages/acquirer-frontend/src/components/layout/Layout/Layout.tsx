@@ -20,9 +20,6 @@ const Layout = () => {
           as='main'
           ml={{ base: '0', lg: '24' }}
           mt='14'
-          px={{ base: '4', sm: '6', lg: '8' }}
-          pt='6'
-          pb='14'
           w={{ base: 'full', lg: 'calc(100vw - 6rem)' }}
           overflow='scroll'
         >

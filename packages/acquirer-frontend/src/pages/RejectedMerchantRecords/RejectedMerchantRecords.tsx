@@ -167,7 +167,7 @@ const RejectedMerchantRecords = () => {
   }
 
   return (
-    <Stack h='full'>
+    <Stack h='full' px={{ base: '4', sm: '6', lg: '8' }} pt='6' pb='14'>
       <Heading size='md' mb='10'>
         Rejected Merchant Report
       </Heading>
