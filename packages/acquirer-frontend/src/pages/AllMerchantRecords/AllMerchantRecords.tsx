@@ -28,6 +28,7 @@ import { downloadMerchantsBlobAsXlsx } from '@/utils'
 import {
   CustomButton,
   DataTable,
+  EmptyState,
   MerchantInformationModal,
   TableSkeleton,
 } from '@/components/ui'
@@ -292,7 +293,12 @@ const AllMerchantRecords = () => {
 
         {!allMerchants.isLoading && !allMerchants.isFetching && !allMerchants.isError && (
           <>
-            <CustomButton px='6' mb={{ base: '6', xl: '3' }} onClick={handleExport}>
+            <CustomButton
+              px='6'
+              mb={{ base: '6', xl: '3' }}
+              isDisabled={allMerchants.data.length === 0}
+              onClick={handleExport}
+            >
               Export
             </CustomButton>
 
@@ -302,6 +308,10 @@ const AllMerchantRecords = () => {
               breakpoint='xl'
               alwaysVisibleColumns={[0, 1]}
             />
+
+            {allMerchants.data.length === 0 && (
+              <EmptyState text='There are no merchant records.' mt='10' />
+            )}
           </>
         )}
       </Box>

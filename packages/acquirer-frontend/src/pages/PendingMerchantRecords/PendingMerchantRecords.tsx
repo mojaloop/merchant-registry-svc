@@ -35,6 +35,7 @@ import { downloadMerchantsBlobAsXlsx } from '@/utils'
 import {
   AlertDialog,
   CustomButton,
+  EmptyState,
   MerchantInformationModal,
   TableSkeleton,
 } from '@/components/ui'
@@ -377,33 +378,39 @@ const PendingMerchantRecords = () => {
         {!pendingMerchants.isLoading &&
           !pendingMerchants.isFetching &&
           !pendingMerchants.isError && (
-            <PendingMerchantsDataTable
-              columns={columns}
-              data={pendingMerchants.data}
-              breakpoint='xl'
-              alwaysVisibleColumns={[0, 1]}
-              onExport={async () => {
-                const blobData = await exportMerchants.mutateAsync({
-                  ...getValues(),
-                  registrationStatus: MerchantRegistrationStatus.REVIEW,
-                })
-                if (blobData) {
-                  downloadMerchantsBlobAsXlsx(blobData)
-                }
-              }}
-              onReject={selectedMerchantIds => {
-                setSelectedMerchantIds(selectedMerchantIds)
-                onRejectAlertOpen()
-              }}
-              onApprove={async selectedMerchantIds => {
-                setSelectedMerchantIds(selectedMerchantIds)
-                onApproveAlertOpen()
-              }}
-              onRevert={selectedMerchantIds => {
-                setSelectedMerchantIds(selectedMerchantIds)
-                onRevertAlertOpen()
-              }}
-            />
+            <>
+              <PendingMerchantsDataTable
+                columns={columns}
+                data={pendingMerchants.data}
+                breakpoint='xl'
+                alwaysVisibleColumns={[0, 1]}
+                onExport={async () => {
+                  const blobData = await exportMerchants.mutateAsync({
+                    ...getValues(),
+                    registrationStatus: MerchantRegistrationStatus.REVIEW,
+                  })
+                  if (blobData) {
+                    downloadMerchantsBlobAsXlsx(blobData)
+                  }
+                }}
+                onReject={selectedMerchantIds => {
+                  setSelectedMerchantIds(selectedMerchantIds)
+                  onRejectAlertOpen()
+                }}
+                onApprove={async selectedMerchantIds => {
+                  setSelectedMerchantIds(selectedMerchantIds)
+                  onApproveAlertOpen()
+                }}
+                onRevert={selectedMerchantIds => {
+                  setSelectedMerchantIds(selectedMerchantIds)
+                  onRevertAlertOpen()
+                }}
+              />
+
+              {pendingMerchants.data.length === 0 && (
+                <EmptyState text='There are no pending merchant records.' mt='10' />
+              )}
+            </>
           )}
       </Box>
     </Stack>

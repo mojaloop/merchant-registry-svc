@@ -96,7 +96,7 @@ const PendingMerchantsDataTable = ({
   return (
     <>
       <HStack spacing='3' mb={{ base: '2', xl: '0' }}>
-        <CustomButton px='6' mb='4' onClick={onExport}>
+        <CustomButton px='6' mb='4' isDisabled={data.length === 0} onClick={onExport}>
           Export
         </CustomButton>
 
