@@ -1,7 +1,9 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
 import express, { type Response } from 'express'
 import { type AuthRequest } from 'src/types/express'
+import { checkPermissions } from '../middleware/check-permissions'
 import { authenticateJWT } from '../middleware/authenticate'
+import { PermissionsEnum } from '../types/permissions'
 import logger from '../services/logger'
 
 /**
@@ -48,22 +50,25 @@ import logger from '../services/logger'
  *                   example: "Invalid log level: error"
  */
 const router = express.Router()
-router.put('/config/trace-level', authenticateJWT, async (req: AuthRequest, res: Response) => {
-  const portalUser = req.user
-  if (portalUser == null) {
-    return res.status(401).send({ message: 'Unauthorized' })
-  }
-  const level: string = req.body.level
+router.put('/config/trace-level',
+  authenticateJWT,
+  checkPermissions(PermissionsEnum.EDIT_SERVER_LOG_LEVEL),
+  async (req: AuthRequest, res: Response) => {
+    const portalUser = req.user
+    if (portalUser == null) {
+      return res.status(401).send({ message: 'Unauthorized' })
+    }
+    const level: string = req.body.level
 
-  if (
-    ['error', 'warn', 'info', 'http', 'verbose', 'debug', 'silly'].includes(level)
-  ) {
-    logger.level = level
-    logger.info(`New Log Level set: ${level}`)
-    return res.send({ message: 'Log level set successfully' })
-  } else {
-    return res.status(400).send({ message: `Invalid log level: ${level}` })
-  }
-})
+    if (
+      ['error', 'warn', 'info', 'http', 'verbose', 'debug', 'silly'].includes(level)
+    ) {
+      logger.level = level
+      logger.info(`New Log Level set: ${level}`)
+      return res.send({ message: 'Log level set successfully' })
+    } else {
+      return res.status(400).send({ message: `Invalid log level: ${level}` })
+    }
+  })
 
 export default router

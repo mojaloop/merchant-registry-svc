@@ -12,9 +12,9 @@ export class PortalRoleEntity {
     id!: number
 
   @Column({ nullable: false, length: 255 })
-    role_name!: string
+    name!: string
 
-  @Column({ nullable: false, length: 255 })
+  @Column({ nullable: false, length: 255, default: '' })
     description!: string
 
   @ManyToMany(() => PortalPermissionEntity, permission => permission.roles)

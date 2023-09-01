@@ -6,6 +6,8 @@ import logger from '../../services/logger'
 import { MerchantRegistrationStatus, AuditActionType, AuditTrasactionStatus } from 'shared-lib'
 import { audit } from '../../utils/audit'
 import { type AuthRequest } from 'src/types/express'
+import { In } from 'typeorm'
+
 /**
  * @openapi
  * /merchants/draft-counts:
@@ -47,11 +49,12 @@ export async function getMerchantDraftCountsByUser (req: AuthRequest, res: Respo
     // TODO: Add where clause for DFSP specific
     whereClause.registration_status = MerchantRegistrationStatus.DRAFT
 
-    // Need to use query builder to do a LIKE query
-    const queryBuilder = merchantRepository.createQueryBuilder('merchant')
-    const merchantDraftCountsByUser = await queryBuilder
-      .where(whereClause)
-      .getCount()
+    const merchantDraftCountsByUser = await merchantRepository.count({
+      where: {
+        registration_status: MerchantRegistrationStatus.DRAFT,
+        dfsps: { id: portalUser.dfsp.id }
+      }
+    })
 
     await audit(
       AuditActionType.ACCESS,

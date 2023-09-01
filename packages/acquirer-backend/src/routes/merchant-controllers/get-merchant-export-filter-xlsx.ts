@@ -139,6 +139,7 @@ export async function exportMerchantFilterXlsx (req: AuthRequest, res: Response)
     .leftJoinAndSelect('merchant.currency_code', 'currency_code')
     .leftJoinAndSelect('merchant.checkout_counters', 'checkout_counters')
     .leftJoinAndSelect('checkout_counters.checkout_location', 'checkout_location')
+    .leftJoinAndSelect('merchant.dfsps', 'dfsps')
     .leftJoinAndSelect('merchant.business_licenses', 'business_licenses')
     .leftJoinAndSelect('merchant.contact_persons', 'contact_persons')
     .leftJoinAndSelect('merchant.created_by', 'created_by')
@@ -185,8 +186,15 @@ export async function exportMerchantFilterXlsx (req: AuthRequest, res: Response)
     }
   }
 
-  const merchants = await queryBuilder.getMany()
-  logger.info('%o', merchants)
+  let merchants = await queryBuilder.getMany()
+
+  // Now filter based on dfsps
+  merchants = merchants.filter(merchant =>
+    merchant.dfsps
+      .map(dfsp => dfsp.id)
+      .includes(portalUser.dfsp.id)
+  )
+
   const workbook = await merchantsToXlsxWorkbook(merchants)
 
   const buffer = await workbook.xlsx.writeBuffer()

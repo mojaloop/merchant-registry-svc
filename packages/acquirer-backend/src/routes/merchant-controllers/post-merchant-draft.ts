@@ -149,6 +149,8 @@ export async function postMerchantDraft (req: AuthRequest, res: Response) {
   merchant.registration_status = MerchantRegistrationStatus.DRAFT
   merchant.registration_status_reason = `Draft Merchant by ${portalUser?.email}`
   merchant.allow_block_status = MerchantAllowBlockStatus.PENDING
+  merchant.dfsps = [portalUser.dfsp]
+  merchant.default_dfsp = portalUser.dfsp
 
   if (portalUser !== null) { // Should never be null.. but just in case
     merchant.created_by = portalUser

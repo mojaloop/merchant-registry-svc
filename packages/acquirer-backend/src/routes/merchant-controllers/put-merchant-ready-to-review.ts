@@ -70,11 +70,31 @@ export async function putMerchantStatusReadyToReview (req: AuthRequest, res: Res
     const merchant = await merchantRepository.findOne({
       where: { id: Number(req.params.id) },
       relations: [
-        'created_by'
+        'created_by',
+        'dfsps'
       ]
     })
     if (merchant == null) {
       return res.status(404).send({ message: 'Merchant not found' })
+    }
+
+    const validMerchantForUser = merchant.dfsps
+      .map(dfsp => dfsp.id)
+      .includes(portalUser.dfsp.id)
+    if (!validMerchantForUser) {
+      logger.error('Accessing different DFSP\'s Merchant is not allowed.')
+      await audit(
+        AuditActionType.ACCESS,
+        AuditTrasactionStatus.FAILURE,
+        'putMerchantStatusReadyToReview',
+          `User ${portalUser.id} (${portalUser.email}) 
+          trying to access unauthorized(different DFSP) merchant ${req.params.id}`,
+          'MerchantEntity',
+          {}, {}, portalUser
+      )
+      return res.status(400).send({
+        message: 'Accessing different DFSP\'s Merchant is not allowed.'
+      })
     }
 
     if (portalUser == null || merchant.created_by.id !== portalUser.id) {

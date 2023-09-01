@@ -23,59 +23,125 @@ import { putBulkWaitingAliasGeneration } from './merchant-controllers/put-mercha
 import { putBulkReject } from './merchant-controllers/put-merchant-reject-bulk'
 import { putBulkRevert } from './merchant-controllers/put-merchant-revert-bulk'
 import { exportMerchantFilterXlsx } from './merchant-controllers/get-merchant-export-filter-xlsx'
+
 import { authenticateJWT } from '../middleware/authenticate'
+import { checkPermissions } from '../middleware/check-permissions'
+import { PermissionsEnum } from '../types/permissions'
 
 const router = express.Router()
 
-router.get('/merchants', authenticateJWT, getMerchants)
+router.get('/merchants',
+  authenticateJWT,
+  checkPermissions(PermissionsEnum.VIEW_MERCHANTS),
+  getMerchants
+)
 
-router.get('/merchants/draft-counts', authenticateJWT, getMerchantDraftCountsByUser)
+router.get('/merchants/draft-counts',
+  authenticateJWT,
+  checkPermissions(PermissionsEnum.VIEW_MERCHANTS),
+  getMerchantDraftCountsByUser
+)
 
-router.get('/merchants/export-with-ids', authenticateJWT, exportMerchantIdsXlsx)
+router.get('/merchants/export-with-ids',
+  authenticateJWT,
+  checkPermissions(PermissionsEnum.EXPORT_MERCHANTS),
+  exportMerchantIdsXlsx
+)
 
-router.get('/merchants/export-with-filter', authenticateJWT, exportMerchantFilterXlsx)
+router.get('/merchants/export-with-filter',
+  authenticateJWT,
+  checkPermissions(PermissionsEnum.EXPORT_MERCHANTS),
+  exportMerchantFilterXlsx
+)
 
 router.post('/merchants/draft',
   authenticateJWT,
+  checkPermissions(PermissionsEnum.CREATE_MERCHANTS),
   pdfUpload.single('license_document'),
   postMerchantDraft
 )
 
-router.get('/merchants/:id', authenticateJWT, getMerchantById)
+router.get('/merchants/:id',
+  authenticateJWT,
+  checkPermissions(PermissionsEnum.VIEW_MERCHANTS),
+  getMerchantById
+)
 
 router.put('/merchants/:id/draft',
   authenticateJWT,
+  checkPermissions(PermissionsEnum.EDIT_MERCHANTS),
   pdfUpload.single('license_document'),
   putMerchantDraft
 )
 
-router.put('/merchants/:id/approve', authenticateJWT, putWaitingAliasGeneration)
+router.put('/merchants/:id/approve',
+  authenticateJWT,
+  checkPermissions(PermissionsEnum.APPROVE_MERCHANTS),
+  putWaitingAliasGeneration
+)
 
-router.put('/merchants/bulk-approve', authenticateJWT, putBulkWaitingAliasGeneration)
+router.put('/merchants/bulk-approve',
+  authenticateJWT,
+  checkPermissions(PermissionsEnum.APPROVE_MERCHANTS),
+  putBulkWaitingAliasGeneration)
 
-router.put('/merchants/bulk-reject', authenticateJWT, putBulkReject)
+router.put('/merchants/bulk-reject',
+  authenticateJWT,
+  checkPermissions(PermissionsEnum.REJECT_MERCHANTS),
+  putBulkReject
+)
 
-router.put('/merchants/bulk-revert', authenticateJWT, putBulkRevert)
+router.put('/merchants/bulk-revert',
+  authenticateJWT,
+  checkPermissions(PermissionsEnum.REVERT_MERCHANTS),
+  putBulkRevert)
 
-router.put('/merchants/:id/ready-to-review', authenticateJWT, putMerchantStatusReadyToReview)
+router.put('/merchants/:id/ready-to-review',
+  authenticateJWT,
+  checkPermissions(PermissionsEnum.CREATE_MERCHANTS),
+  putMerchantStatusReadyToReview
+)
 
-router.get('/merchants/:id/locations', authenticateJWT, getMerchantLocations)
+router.get('/merchants/:id/locations',
+  authenticateJWT,
+  checkPermissions(PermissionsEnum.VIEW_MERCHANTS),
+  getMerchantLocations)
 
-router.post('/merchants/:id/locations', authenticateJWT, postMerchantLocation)
+router.post('/merchants/:id/locations',
+  authenticateJWT,
+  checkPermissions(PermissionsEnum.CREATE_MERCHANTS),
+  postMerchantLocation)
 
-router.put('/merchants/:merchantId/locations/:locationId', authenticateJWT, putMerchantLocation)
+router.put('/merchants/:merchantId/locations/:locationId',
+  authenticateJWT,
+  checkPermissions(PermissionsEnum.EDIT_MERCHANTS),
+  putMerchantLocation)
 
-router.post('/merchants/:id/contact-persons', authenticateJWT, postMerchantContactPerson)
+router.post('/merchants/:id/contact-persons',
+  authenticateJWT,
+  checkPermissions(PermissionsEnum.CREATE_MERCHANTS),
+  postMerchantContactPerson)
 
 router.put('/merchants/:merchantId/contact-persons/:contactPersonId',
   authenticateJWT,
+  checkPermissions(PermissionsEnum.EDIT_MERCHANTS),
   putMerchantContactPerson
 )
 
-router.post('/merchants/:id/business-owners', authenticateJWT, postMerchantOwner)
+router.post('/merchants/:id/business-owners',
+  authenticateJWT,
+  checkPermissions(PermissionsEnum.CREATE_MERCHANTS),
+  postMerchantOwner
+)
 
-router.put('/merchants/:merchantId/business-owners/:ownerId', authenticateJWT, putMerchantOwner)
+router.put('/merchants/:merchantId/business-owners/:ownerId',
+  authenticateJWT,
+  checkPermissions(PermissionsEnum.EDIT_MERCHANTS),
+  putMerchantOwner)
 
-router.get('/merchants/:id/checkout-counters', authenticateJWT, getMerchantCheckoutCounters)
+router.get('/merchants/:id/checkout-counters',
+  authenticateJWT,
+  checkPermissions(PermissionsEnum.VIEW_MERCHANTS),
+  getMerchantCheckoutCounters)
 
 export default router

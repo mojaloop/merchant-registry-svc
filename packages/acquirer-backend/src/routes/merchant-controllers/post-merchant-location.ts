@@ -157,7 +157,8 @@ export async function postMerchantLocation (req: AuthRequest, res: Response) {
   const merchant = await merchantRepository.findOne({
     where: { id },
     relations: [
-      'checkout_counters'
+      'checkout_counters',
+      'dfsps'
     ]
   })
 
@@ -172,6 +173,25 @@ export async function postMerchantLocation (req: AuthRequest, res: Response) {
       {}, locationData, portalUser
     )
     return res.status(404).json({ message: 'Merchant not found' })
+  }
+
+  const validMerchantForUser = merchant.dfsps
+    .map(dfsp => dfsp.id)
+    .includes(portalUser.dfsp.id)
+  if (!validMerchantForUser) {
+    logger.error('Accessing different DFSP\'s Merchant is not allowed.')
+    await audit(
+      AuditActionType.ACCESS,
+      AuditTrasactionStatus.FAILURE,
+      'postMerchantLocation',
+          `User ${portalUser.id} (${portalUser.email}) 
+trying to access unauthorized(different DFSP) merchant ${merchant.id}`,
+          'MerchantEntity',
+          {}, {}, portalUser
+    )
+    return res.status(400).send({
+      message: 'Accessing different DFSP\'s Merchant is not allowed.'
+    })
   }
 
   const newLocation = locationRepository.create({
@@ -228,6 +248,11 @@ export async function postMerchantLocation (req: AuthRequest, res: Response) {
   } else {
     logger.error('Merchant Checkout Counter not found')
     return res.status(404).json({ message: 'Merchant Checkout Counter not found' })
+  }
+
+  savedLocation = {
+    ...savedLocation,
+    merchant: { id: merchant.id }
   }
 
   await audit(

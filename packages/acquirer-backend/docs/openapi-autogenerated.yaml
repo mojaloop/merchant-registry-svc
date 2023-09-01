@@ -1200,6 +1200,71 @@ paths:
                 properties:
                   message:
                     type: string
+  /roles:
+    get:
+      tags:
+        - Roles
+      security:
+        - Authorization: []
+      summary: GET Roles
+      responses:
+        '200':
+          description: GET Roles
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: The response message
+                    example: OK
+                  data:
+                    type: array
+                    description: The list of roles with their permissions and users
+                    items:
+                      type: object
+    post:
+      tags:
+        - Roles
+      security:
+        - Authorization: []
+      summary: POST Role
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: DFSP Operator
+                  description: The name of the role
+                description:
+                  type: string
+                  example: DFSP Operator
+                  description: The description of the role
+                permissions:
+                  type: array
+                  items:
+                    type: string
+                    example:
+                      - VIEW_MERCHANTS
+                      - REJECT_MERCHANTS
+                    description: The permissions for the role
+      responses:
+        '200':
+          description: Create Role
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: The response message
+                    example: OK
   /users:
     get:
       tags:

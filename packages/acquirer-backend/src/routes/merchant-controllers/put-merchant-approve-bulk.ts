@@ -73,7 +73,7 @@ export async function putBulkWaitingAliasGeneration (req: AuthRequest, res: Resp
     where: {
       id: In(ids)
     },
-    relations: ['created_by']
+    relations: ['created_by', 'dfsps']
   })
 
   for (const merchant of merchants) {
@@ -103,6 +103,24 @@ export async function putBulkWaitingAliasGeneration (req: AuthRequest, res: Resp
       )
       return res.status(422).send({
         message: `Merchant ${merchant.id} cannot be approved by the same user who submitted it.`
+      })
+    }
+
+    const validMerchantForUser = merchant.dfsps
+      .map(dfsp => dfsp.id)
+      .includes(portalUser.dfsp.id)
+
+    if (!validMerchantForUser) {
+      await audit(
+        AuditActionType.UPDATE,
+        AuditTrasactionStatus.FAILURE,
+        'putBulkApprove',
+        'Merchant does not belong to the same DFSP as the user',
+        'Merchant',
+        {}, {}, portalUser
+      )
+      return res.status(422).send({
+        message: `Merchant ${merchant.id} does not belong to the same DFSP as the user.`
       })
     }
   }

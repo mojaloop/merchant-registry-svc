@@ -107,17 +107,52 @@ export async function exportMerchantIdsXlsx (req: AuthRequest, res: Response) {
     await audit(
       AuditActionType.ACCESS,
       AuditTrasactionStatus.FAILURE,
-      'getMerchantById',
-        `User ${portalUser.id} (${portalUser.email}) failed to fetch merchant ${req.params.id}`,
+      'exportMerchantIdsXlsx',
+        `User ${portalUser.id} (${portalUser.email}) failed to fetch merchant ${ids.join(', ')}`,
         'MerchantEntity',
         {}, {}, portalUser
     )
     res.status(500).send({ message: e })
   }
 
+  // check if merchant is in the same dfsp if not return 400
+  for (const merchant of merchants) {
+    const validMerchantForUser = merchant.dfsps
+      .map(dfsp => dfsp.id)
+      .includes(portalUser.dfsp.id)
+    if (!validMerchantForUser) {
+      logger.error('Accessing different DFSP\'s Merchant is not allowed.')
+      await audit(
+        AuditActionType.ACCESS,
+        AuditTrasactionStatus.FAILURE,
+        'exportMerchantIdsXlsx',
+        `User ${portalUser.id} (${portalUser.email}) 
+trying to access unauthorized(different DFSP) merchant ${merchant.id}`,
+        'MerchantEntity',
+        {}, {}, portalUser
+      )
+      return res.status(400).send({
+        message: 'Accessing different DFSP\'s Merchant is not allowed.'
+      })
+    }
+  }
+
+  // merchants = merchants.filter(merchant =>
+  //   merchant.dfsps.includes(portalUser.dfsp)
+  // )
+
   const workbook = await merchantsToXlsxWorkbook(merchants)
 
   const buffer = await workbook.xlsx.writeBuffer()
+
+  await audit(
+    AuditActionType.ACCESS,
+    AuditTrasactionStatus.SUCCESS,
+    'exportMerchantIdsXlsx',
+    `User ${portalUser.id} (${portalUser.email}) exported ${merchants.length} merchants`,
+    'MerchantEntity',
+    {}, { merchant_ids: merchants.map(m => m.id) }, portalUser
+  )
 
   res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
   res.setHeader('Content-Disposition', 'attachment; filename=merchants.xlsx')

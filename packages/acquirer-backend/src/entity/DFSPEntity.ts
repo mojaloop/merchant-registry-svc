@@ -1,13 +1,13 @@
 import {
   Entity,
   PrimaryGeneratedColumn, Column,
-  OneToMany, ManyToMany,
-  CreateDateColumn, UpdateDateColumn
+  OneToMany,
+  CreateDateColumn, UpdateDateColumn, ManyToMany
 } from 'typeorm'
 
 import { DFSPType } from 'shared-lib'
 import { PortalUserEntity } from './PortalUserEntity'
-import { DFSPMerchantRelationsEntity } from './DFSPMerchantRelationsEntity'
+import { MerchantEntity } from './MerchantEntity'
 
 @Entity('dfsps')
 export class DFSPEntity {
@@ -29,11 +29,14 @@ export class DFSPEntity {
   @Column({ nullable: false, length: 512 })
     logo_uri!: string
 
-  @ManyToMany(() => PortalUserEntity, user => user.dfsps)
+  @OneToMany(() => PortalUserEntity, user => user.dfsp)
     portal_users!: PortalUserEntity[]
 
-  @OneToMany(() => DFSPMerchantRelationsEntity, relation => relation.dfsp)
-    dfsp_merchant_relations!: DFSPMerchantRelationsEntity[]
+  @ManyToMany(() => MerchantEntity, merchant => merchant.dfsps)
+    merchants!: MerchantEntity[]
+
+  @OneToMany(() => MerchantEntity, merchant => merchant.default_dfsp)
+    defaulted_merchants!: MerchantEntity[]
 
   @CreateDateColumn()
     created_at!: Date
