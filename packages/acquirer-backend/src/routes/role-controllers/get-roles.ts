@@ -4,6 +4,7 @@ import { AppDataSource } from '../../database/data-source'
 import logger from '../../services/logger'
 import { type AuthRequest } from 'src/types/express'
 import { PortalRoleEntity } from '../../entity/PortalRoleEntity'
+import { PortalPermissionEntity } from '../../entity/PortalPermissionEntity'
 
 /**
  * @openapi
@@ -42,12 +43,23 @@ export async function getRoles (req: AuthRequest, res: Response) {
     logger.debug('req.query: %o', req.query)
 
     const RoleRepository = AppDataSource.getRepository(PortalRoleEntity)
+    const PermsRepository = AppDataSource.getRepository(PortalPermissionEntity)
 
-    const roles = RoleRepository.find(
+    const roles = await RoleRepository.find(
       { where: {}, relations: ['permissions'] }
     )
 
-    res.send({ message: 'OK', data: roles })
+    const permissions = await PermsRepository.find()
+
+    /* eslint-disable-next-line */
+    const flattenedRoles = roles.map(({ created_at, updated_at, ...role }) => ({
+      ...role,
+      permissions: role.permissions.map(permission => permission.name)
+    }))
+
+    const flattenedPermissions = permissions.map(permission => permission.name)
+
+    res.send({ message: 'OK', data: flattenedRoles, permissions: flattenedPermissions })
   } catch (e) {
     logger.error(e)
     res.status(500).send({ message: e })
