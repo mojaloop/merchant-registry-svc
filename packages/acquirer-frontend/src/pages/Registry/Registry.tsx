@@ -7,7 +7,7 @@ const Registry = () => {
   const draftCount = useDraftCount()
 
   return (
-    <Box>
+    <Box px={{ base: '4', sm: '6', lg: '8' }} pt='6' pb='14'>
       <Heading size='md' mb='10'>
         Merchant Acquiring System
       </Heading>
@@ -26,7 +26,7 @@ const Registry = () => {
         Add new record
       </CustomLink>
 
-      <Box position='relative' display='inline-block'>
+      <Box position='relative' display='inline-block' mt={{ base: '3', sm: 'none' }}>
         <CustomLink
           to='/registry/draft-applications'
           isDisabled={!(typeof draftCount.data === 'number') || draftCount.data === 0}
