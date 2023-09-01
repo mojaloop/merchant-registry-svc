@@ -12,6 +12,7 @@ import {
   RejectedMerchantRecords,
   RevertedMerchantRecords,
   RoleManagement,
+  SetPassword,
   UserManagement,
 } from '@/pages'
 
@@ -80,6 +81,11 @@ const Routes = () => {
     {
       path: '/login',
       element: <Login />,
+      caseSensitive: true,
+    },
+    {
+      path: '/set-password',
+      element: <SetPassword />,
       caseSensitive: true,
     },
   ])

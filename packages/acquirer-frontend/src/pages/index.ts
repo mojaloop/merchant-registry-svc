@@ -9,6 +9,7 @@ import ApprovedMerchantRecords from './ApprovedMerchantRecords/ApprovedMerchantR
 import RoleManagement from './RoleManagement/RoleManagement'
 import UserManagement from './UserManagement/UserManagement'
 import Login from './Login/Login'
+import SetPassword from './SetPassword/SetPassword'
 
 export {
   Registry,
@@ -22,4 +23,5 @@ export {
   RoleManagement,
   UserManagement,
   Login,
+  SetPassword,
 }
