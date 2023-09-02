@@ -9,7 +9,10 @@ instance.interceptors.request.use(config => {
 
   if (config.url === '/users/login') return config
 
-  config.headers.Authorization = `Bearer ${token}`
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`
+  }
+
   return config
 })
 
