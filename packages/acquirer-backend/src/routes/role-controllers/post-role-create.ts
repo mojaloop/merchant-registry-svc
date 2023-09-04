@@ -34,7 +34,7 @@ import { In } from 'typeorm'
  *                 type: array
  *                 items:
  *                   type: string
- *                   example: ["VIEW_MERCHANTS", "REJECT_MERCHANTS"]
+ *                   example: "View Merchants"
  *                   description: "The permissions for the role"
  *     responses:
  *       200:
@@ -49,7 +49,7 @@ import { In } from 'typeorm'
  *                   description: The response message
  *                   example: OK
  */
-export async function postRole (req: AuthRequest, res: Response) {
+export async function postCreateRole (req: AuthRequest, res: Response) {
   const portalUser = req.user
   if (portalUser == null) {
     return res.status(401).send({ message: 'Unauthorized' })
@@ -63,6 +63,8 @@ export async function postRole (req: AuthRequest, res: Response) {
 
     // check if permissions exist
     const perms = await PermsRepository.find({ where: { name: In(permissions) } })
+    logger.debug('Permissions: %o', perms)
+
     if (perms.length !== permissions.length) {
       return res.status(400).send({ message: 'Invalid permissions' })
     }

@@ -20,9 +20,9 @@ export const DefaultRoles = [
       PermissionsEnum.VIEW_PENDING_TABLE,
       PermissionsEnum.VIEW_REVERTED_TABLE,
 
-      PermissionsEnum.CREATE_ROLES,
+      PermissionsEnum.CREATE_ROLES, // TODO: Remove this permission when Hub User is ready.
       PermissionsEnum.VIEW_ROLES,
-      PermissionsEnum.EDIT_ROLES,
+      // PermissionsEnum.EDIT_ROLES,
 
       PermissionsEnum.ASSIGNABLE_ADMIN_ROLES,
       PermissionsEnum.ASSIGNABLE_OPERATOR_ROLES,
@@ -84,9 +84,7 @@ export const DefaultRoles = [
       PermissionsEnum.VIEW_PENDING_TABLE,
       PermissionsEnum.VIEW_REVERTED_TABLE,
 
-      PermissionsEnum.EXPORT_MERCHANTS,
-
-      PermissionsEnum.VIEW_AUDIT_LOGS
+      PermissionsEnum.EXPORT_MERCHANTS
     ]
   },
   {

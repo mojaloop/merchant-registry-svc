@@ -5,6 +5,9 @@ import { PermissionsEnum } from '../types/permissions'
 import { authenticateJWT } from '../middleware/authenticate'
 import { getUsers } from './user-controllers/get-users'
 import { postUserLogin } from './user-controllers/post-user-login'
+import { addUser } from './user-controllers/add-user-by-admin'
+import { verifyUserEmail } from './user-controllers/verify-user'
+import { putUserResetPassword } from './user-controllers/put-user-password'
 
 /**
  * @openapi
@@ -25,6 +28,21 @@ router.get('/users',
   authenticateJWT,
   checkPermissions(PermissionsEnum.VIEW_PORTAL_USERS),
   getUsers
+)
+
+router.post('/users/add',
+  authenticateJWT,
+  checkPermissions(PermissionsEnum.CREATE_PORTAL_USERS),
+  addUser
+)
+
+router.get('/users/verify',
+  verifyUserEmail
+)
+
+router.put('/users/reset-password',
+  authenticateJWT,
+  putUserResetPassword
 )
 
 router.post('/users/login', postUserLogin)

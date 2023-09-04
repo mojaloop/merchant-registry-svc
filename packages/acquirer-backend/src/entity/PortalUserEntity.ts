@@ -1,15 +1,16 @@
-import { Entity, Column, OneToMany, ManyToOne, ManyToMany, JoinTable } from 'typeorm'
+import { Entity, Column, OneToMany, ManyToOne } from 'typeorm'
 import { AuditEntity } from './AuditEntity'
 import { MerchantEntity } from './MerchantEntity'
 import { PortalUserStatus, PortalUserType } from 'shared-lib'
 import { PersonEntity } from './PersonEntity'
 import { DFSPEntity } from './DFSPEntity'
 import { PortalRoleEntity } from './PortalRoleEntity'
+import { EmailVerificationTokenEntity } from './EmailVerificationToken'
 
 @Entity('portal_users')
 export class PortalUserEntity extends PersonEntity {
   // password hashed
-  @Column({ nullable: false, length: 2048 })
+  @Column({ nullable: true, length: 2048 })
     password!: string
 
   @Column({
@@ -35,6 +36,9 @@ export class PortalUserEntity extends PersonEntity {
 
   @OneToMany(() => AuditEntity, audit => audit.portal_user)
     audits!: AuditEntity[]
+
+  @OneToMany(() => EmailVerificationTokenEntity, emailToken => emailToken.portal_user)
+    email_verification_tokens!: EmailVerificationTokenEntity[]
 
   @ManyToOne(() => DFSPEntity, dfsp => dfsp.portal_users)
     dfsp!: DFSPEntity
