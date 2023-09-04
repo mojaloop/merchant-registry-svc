@@ -1,4 +1,4 @@
-import type { FormReponse } from '@/types/form'
+import type { FormReponse } from '@/types/forms'
 import instance from '@/lib/axiosInstance'
 import type {
   BusinessInfoForm,
