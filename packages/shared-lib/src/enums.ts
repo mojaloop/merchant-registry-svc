@@ -47,6 +47,8 @@ export enum DFSPType {
 }
 
 export enum PortalUserStatus {
+  UNVERIFIED = 'Unverified',
+  RESETPASSWORD = 'Reset Password',
   FRESH = 'Fresh',
   INACTIVE = 'Inactive',
   ACTIVE = 'Active',
