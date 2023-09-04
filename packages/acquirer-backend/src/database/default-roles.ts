@@ -35,9 +35,7 @@ export const DefaultRoles = [
 
       PermissionsEnum.EXPORT_MERCHANTS,
 
-      PermissionsEnum.VIEW_AUDIT_LOGS,
-
-      PermissionsEnum.EDIT_SERVER_LOG_LEVEL
+      PermissionsEnum.VIEW_AUDIT_LOGS
     ]
   },
   {
