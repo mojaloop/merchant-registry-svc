@@ -45,7 +45,7 @@ const UserManagement = () => {
 
   return (
     <Stack
-      h='full'
+      minH='full'
       bg='primaryBackground'
       pt='6'
       px={{ base: '4', sm: '6', md: '12', xl: '20' }}
