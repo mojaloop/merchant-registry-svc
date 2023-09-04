@@ -9,6 +9,7 @@ services:
     ports:
       - "5555:5555"
     environment:
+      - APP_URL=http://0.0.0.0:5555
       - HOST=0.0.0.0
       - PORT=5555
 

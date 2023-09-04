@@ -8,7 +8,7 @@ import { PortalUserEntity } from '../../entity/PortalUserEntity'
 import logger from '../../services/logger'
 import jwt from 'jsonwebtoken'
 import { audit } from '../../utils/audit'
-import { AuditActionType, AuditTrasactionStatus } from 'shared-lib'
+import { AuditActionType, AuditTrasactionStatus, PortalUserStatus } from 'shared-lib'
 
 export const LoginFormSchema = z.object({
   email: z.string().email('Please enter a valid email'),
@@ -19,7 +19,7 @@ if (process.env.NODE_ENV === 'test') {
   dotenv.config({ path: path.resolve(process.cwd(), '.env.test'), override: true })
 }
 
-export const JWT_SECRET = process.env.JWT_SECRET ?? ''
+const JWT_SECRET = process.env.JWT_SECRET ?? ''
 /**
  * @openapi
  * /users/login:
@@ -36,7 +36,7 @@ export const JWT_SECRET = process.env.JWT_SECRET ?? ''
  *             properties:
  *               email:
  *                 type: string
- *                 example: "test1@email.com"
+ *                 example: "superadmin1001@email.com"
  *                 description: "The email for login"
  *               password:
  *                 type: string
@@ -97,6 +97,14 @@ export async function postUserLogin (req: Request, res: Response) {
       throw new Error('Invalid credentials')
     }
 
+    if (user.status === PortalUserStatus.UNVERIFIED) {
+      throw new Error('User is not verified')
+    }
+
+    if (user.status === PortalUserStatus.RESETPASSWORD) {
+      throw new Error('User need to reset password')
+    }
+
     const passwordMatch = await bcrypt.compare(req.body.password, user.password)
     if (!passwordMatch) {
       throw new Error('Invalid credentials')
@@ -114,19 +122,19 @@ export async function postUserLogin (req: Request, res: Response) {
     )
 
     res.json({ success: true, mesaage: 'Login successful', token })
-  } catch (error) {
+  } catch (error: any) {
     await audit(
       AuditActionType.ACCESS,
       AuditTrasactionStatus.FAILURE,
       'postUserLogin',
       'User login failed',
       'PortalUserEntity',
-      {}, {}, null
+      {}, { error: error.message }, null
     )
 
     logger.error('User %s login failed: %o', req.body.email, error)
     res
       .status(400)
-      .send({ success: false, message: 'Invalid credentials' })
+      .send({ success: false, message: error.message })
   }
 }

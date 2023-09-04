@@ -15,7 +15,7 @@ export class PersonEntity {
   @Column({ nullable: true, length: 255 })
     email!: string
 
-  @Column({ nullable: false, length: 255 })
+  @Column({ nullable: true, length: 255 })
     phone_number!: string
 
   @OneToOne(() => BusinessPersonLocationEntity)

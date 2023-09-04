@@ -1249,9 +1249,7 @@ paths:
                   type: array
                   items:
                     type: string
-                    example:
-                      - VIEW_MERCHANTS
-                      - REJECT_MERCHANTS
+                    example: View Merchants
                     description: The permissions for the role
       responses:
         '200':
@@ -1265,6 +1263,95 @@ paths:
                     type: string
                     description: The response message
                     example: OK
+  /roles/{id}:
+    post:
+      tags:
+        - Roles
+      security:
+        - Authorization: []
+      summary: Update Permissions for Role
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                permissions:
+                  type: array
+                  items:
+                    type: string
+                    example:
+                      - VIEW_MERCHANTS
+                      - REJECT_MERCHANTS
+                    description: The permissions for the role
+      responses:
+        '200':
+          description: Role Updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: The response message
+                    example: OK
+  /users/add:
+    post:
+      tags:
+        - Portal Users
+      summary: Add a user by Admin
+      security:
+        - Authorization: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: Test User
+                  description: The name of the user
+                email:
+                  type: string
+                  example: test1@email.com
+                  description: The email for login
+                role:
+                  type: string
+                  example: Auditor
+                  description: The role of the user
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Login successful
+        '400':
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: Invalid credentials
+        '422':
+          description: Validation error
   /users:
     get:
       tags:
@@ -1289,7 +1376,7 @@ paths:
               properties:
                 email:
                   type: string
-                  example: test1@email.com
+                  example: superadmin1001@email.com
                   description: The email for login
                 password:
                   type: string
@@ -1324,4 +1411,58 @@ paths:
                     example: Invalid credentials
         '422':
           description: Validation error
+  /users/reset-password:
+    put:
+      tags:
+        - Portal Users
+      summary: Reset Password
+      security:
+        - Authorization: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                password:
+                  type: string
+                  example: password
+      responses:
+        '200':
+          description: Reset Password Successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Reset Password Successful
+        '400':
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: Invalid credentials
+  /users/verify:
+    get:
+      tags:
+        - Portal Users
+      security:
+        - Authorization: []
+      parameters:
+        - in: query
+          name: token
+          schema:
+            type: string
+          description: The token to verify the user email
+      summary: Verify The Email Token and Redirect to Frontend To set password
 tags: []

@@ -4,7 +4,8 @@ import { checkPermissions } from '../middleware/check-permissions'
 import { PermissionsEnum } from '../types/permissions'
 import { authenticateJWT } from '../middleware/authenticate'
 import { getRoles } from './role-controllers/get-roles'
-import { postRole } from './role-controllers/post-role'
+import { postCreateRole } from './role-controllers/post-role-create'
+import { putRoleUpdatePermissions } from './role-controllers/put-role-update-permissions'
 
 const router = express.Router()
 router.get('/roles',
@@ -16,6 +17,12 @@ router.get('/roles',
 router.post('/roles',
   authenticateJWT,
   checkPermissions(PermissionsEnum.CREATE_ROLES),
-  postRole
+  postCreateRole
+)
+
+router.put('/roles/:id',
+  authenticateJWT,
+  checkPermissions(PermissionsEnum.EDIT_ROLES),
+  putRoleUpdatePermissions
 )
 export default router

@@ -46,7 +46,7 @@ export async function getMerchantById (req: AuthRequest, res: Response) {
 
   try {
     const id = Number(req.params.id)
-    if (isNaN(id)) {
+    if (isNaN(id) || id < 1) {
       logger.error('Invalid ID')
       await audit(
         AuditActionType.ACCESS,
