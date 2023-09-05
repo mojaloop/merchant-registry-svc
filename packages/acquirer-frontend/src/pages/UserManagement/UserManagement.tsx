@@ -2,17 +2,9 @@ import { useMemo } from 'react'
 import { createColumnHelper } from '@tanstack/react-table'
 import { HStack, Heading, Stack, Switch } from '@chakra-ui/react'
 
-import type { User } from '@/types/user'
-import { CustomButton, DataTable } from '@/components/ui'
-
-const dummyData: User = {
-  no: 1,
-  name: 'tester1',
-  email: 'tester1@test.com',
-  role: 'Super Admin',
-}
-
-const data = new Array(8).fill(0).map((_, index) => ({ ...dummyData, no: index + 1 }))
+import type { User } from '@/types/users'
+import { useUsers } from '@/api/hooks/users'
+import { CustomButton, DataTable, TableSkeleton } from '@/components/ui'
 
 const UserManagement = () => {
   const columns = useMemo(() => {
@@ -43,6 +35,18 @@ const UserManagement = () => {
     ]
   }, [])
 
+  const users = useUsers()
+  let data
+
+  if (!users.isLoading && !users.isFetching && !users.isError) {
+    data = users.data.map(({ id, name, email, role }) => ({
+      no: id,
+      name,
+      email,
+      role: role.description,
+    }))
+  }
+
   return (
     <Stack
       minH='full'
@@ -58,12 +62,16 @@ const UserManagement = () => {
         <CustomButton>Add New User</CustomButton>
       </HStack>
 
-      <DataTable
-        columns={columns}
-        data={data}
-        breakpoint='md'
-        alwaysVisibleColumns={[0, 1]}
-      />
+      {users.isFetching && <TableSkeleton breakpoint='lg' />}
+
+      {data && (
+        <DataTable
+          columns={columns}
+          data={data}
+          breakpoint='lg'
+          alwaysVisibleColumns={[0, 1]}
+        />
+      )}
     </Stack>
   )
 }

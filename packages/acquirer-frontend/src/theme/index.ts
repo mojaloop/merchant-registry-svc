@@ -14,6 +14,7 @@ const theme = extendTheme({
     body: `'Inter', sans-serif`,
   },
   breakpoints: {
+    md: '50em',
     lg: '65em',
   },
   colors: {
