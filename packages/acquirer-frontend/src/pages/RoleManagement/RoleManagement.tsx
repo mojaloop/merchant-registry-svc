@@ -3,7 +3,7 @@ import { Checkbox, Heading, Stack } from '@chakra-ui/react'
 import camelCase from 'lodash.camelcase'
 
 import { useRoles } from '@/api/hooks/roles'
-import { DataTable, TableSkeleton } from '@/components/ui'
+import { DataTable, EmptyState, TableSkeleton } from '@/components/ui'
 
 const RoleManagement = () => {
   const roles = useRoles()
@@ -59,12 +59,18 @@ const RoleManagement = () => {
       {roles.isFetching && <TableSkeleton breakpoint='md' />}
 
       {data && (
-        <DataTable
-          columns={columns}
-          data={data}
-          breakpoint='md'
-          alwaysVisibleColumns={[0]}
-        />
+        <>
+          <DataTable
+            columns={columns}
+            data={data}
+            breakpoint='md'
+            alwaysVisibleColumns={[0]}
+          />
+
+          {data.length === 0 && (
+            <EmptyState text='There are no roles right now.' mt='14' />
+          )}
+        </>
       )}
     </Stack>
   )
