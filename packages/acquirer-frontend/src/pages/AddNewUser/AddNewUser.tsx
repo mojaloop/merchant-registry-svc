@@ -55,7 +55,7 @@ const AddNewUser = () => {
           name='email'
           register={register}
           errors={errors}
-          label='Name'
+          label='Email'
           inputProps={{ bg: 'white' }}
           maxW='25rem'
         />
@@ -67,6 +67,7 @@ const AddNewUser = () => {
           label='Role'
           placeholder='Choose Role'
           options={ROLE_OPTIONS}
+          errorMsg='Please select a role'
           selectProps={{ bg: 'white' }}
           maxW='25rem'
         />
