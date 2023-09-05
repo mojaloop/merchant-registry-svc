@@ -296,7 +296,9 @@ const RevertedMerchantRecords = () => {
         flexGrow='1'
         mb='-14'
       >
-        {revertedMerchants.isFetching && <TableSkeleton breakpoint='xl' />}
+        {revertedMerchants.isFetching && (
+          <TableSkeleton breakpoint='xl' mt={{ base: '3', xl: '6' }} />
+        )}
 
         {!revertedMerchants.isLoading &&
           !revertedMerchants.isFetching &&

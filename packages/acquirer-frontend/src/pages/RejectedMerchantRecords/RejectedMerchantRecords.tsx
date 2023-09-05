@@ -279,7 +279,9 @@ const RejectedMerchantRecords = () => {
         flexGrow='1'
         mb='-14'
       >
-        {rejectedMerchants.isFetching && <TableSkeleton breakpoint='xl' />}
+        {rejectedMerchants.isFetching && (
+          <TableSkeleton breakpoint='xl' mt={{ base: '3', xl: '6' }} />
+        )}
 
         {!rejectedMerchants.isLoading &&
           !rejectedMerchants.isFetching &&

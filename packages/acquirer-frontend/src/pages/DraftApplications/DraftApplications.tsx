@@ -257,7 +257,9 @@ const DraftApplications = () => {
         flexGrow='1'
         mb='-14'
       >
-        {drafts.isFetching && <TableSkeleton breakpoint='xl' />}
+        {drafts.isFetching && (
+          <TableSkeleton breakpoint='xl' mt={{ base: '3', xl: '6' }} />
+        )}
 
         {!drafts.isLoading && !drafts.isFetching && !drafts.isError && (
           <DataTable
