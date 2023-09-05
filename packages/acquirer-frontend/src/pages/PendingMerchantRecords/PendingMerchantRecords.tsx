@@ -373,7 +373,9 @@ const PendingMerchantRecords = () => {
         flexGrow='1'
         mb='-14'
       >
-        {pendingMerchants.isFetching && <TableSkeleton breakpoint='xl' />}
+        {pendingMerchants.isFetching && (
+          <TableSkeleton breakpoint='xl' mt={{ base: '3', xl: '6' }} />
+        )}
 
         {!pendingMerchants.isLoading &&
           !pendingMerchants.isFetching &&

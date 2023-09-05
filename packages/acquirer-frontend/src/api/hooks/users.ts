@@ -1,14 +1,14 @@
 import { useQuery } from '@tanstack/react-query'
 
-import { getRoles } from '../roles'
+import { getUsers } from '../users'
 
-export function useRoles() {
+export function useUsers() {
   return useQuery({
-    queryKey: ['roles'],
-    queryFn: getRoles,
+    queryKey: ['users'],
+    queryFn: getUsers,
     meta: {
       toastStatus: 'error',
-      toastTitle: 'Fetching Roles Failed!',
+      toastTitle: 'Fetching Users Failed!',
       toastDescription: 'Something went wrong! Please try again later.',
     },
   })

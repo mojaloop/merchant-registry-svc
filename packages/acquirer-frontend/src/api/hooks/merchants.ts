@@ -70,7 +70,7 @@ export function useDrafts(params: MerchantsFilterForm) {
     queryFn: () => getDrafts(params),
     meta: {
       toastStatus: 'error',
-      toastTitle: 'Operation Failed!',
+      toastTitle: 'Fetching Drafts Failed!',
       toastDescription: 'Something went wrong! Please try again later.',
     },
   })
@@ -82,7 +82,7 @@ export function useAllMerchants(params: AllMerchantsFilterForm) {
     queryFn: () => getAllMerchantRecords(params),
     meta: {
       toastStatus: 'error',
-      toastTitle: 'Operation Failed!',
+      toastTitle: 'Fetching Merchants Failed!',
       toastDescription: 'Something went wrong! Please try again later.',
     },
   })
@@ -94,7 +94,7 @@ export function usePendingMerchants(params: MerchantsFilterForm) {
     queryFn: () => getPendingMerchantRecords(params),
     meta: {
       toastStatus: 'error',
-      toastTitle: 'Operation Failed!',
+      toastTitle: 'Fetching Pending Merchants Failed!',
       toastDescription: 'Something went wrong! Please try again later.',
     },
   })
@@ -106,7 +106,7 @@ export function useRejectedMerchants(params: MerchantsFilterForm) {
     queryFn: () => getRejectedMerchantRecords(params),
     meta: {
       toastStatus: 'error',
-      toastTitle: 'Operation Failed!',
+      toastTitle: 'Fetching Rejected Merchants Failed!',
       toastDescription: 'Something went wrong! Please try again later.',
     },
   })
@@ -118,7 +118,7 @@ export function useRevertedMerchants(params: MerchantsFilterForm) {
     queryFn: () => getRevertedMerchantRecords(params),
     meta: {
       toastStatus: 'error',
-      toastTitle: 'Operation Failed!',
+      toastTitle: 'Fetching Reverted Merchants Failed!',
       toastDescription: 'Something went wrong! Please try again later.',
     },
   })
@@ -130,7 +130,7 @@ export function useApprovedMerchants(params: MerchantsFilterForm) {
     queryFn: () => getApprovedMerchantRecords(params),
     meta: {
       toastStatus: 'error',
-      toastTitle: 'Operation Failed!',
+      toastTitle: 'Fetching Approved Merchants Failed!',
       toastDescription: 'Something went wrong! Please try again later.',
     },
   })
@@ -140,6 +140,11 @@ export function useMerchant(merchantId: number) {
   return useQuery({
     queryKey: ['merchants', merchantId],
     queryFn: () => getMerchant(merchantId),
+    meta: {
+      toastStatus: 'error',
+      toastTitle: 'Fetching Merchant Data Failed!',
+      toastDescription: 'Something went wrong! Please try again later.',
+    },
   })
 }
 

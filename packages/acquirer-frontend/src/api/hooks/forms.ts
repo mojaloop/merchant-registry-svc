@@ -27,6 +27,11 @@ export function useDraftCount() {
   return useQuery({
     queryKey: ['draft-count'],
     queryFn: getDraftCount,
+    meta: {
+      toastStatus: 'error',
+      toastTitle: 'Fetching Draft Count Failed!',
+      toastDescription: 'Something went wrong! Please try again later.',
+    },
   })
 }
 
@@ -38,7 +43,7 @@ export function useDraft(merchantId: number) {
     staleTime: 0,
     meta: {
       toastStatus: 'error',
-      toastTitle: 'Operation Failed!',
+      toastTitle: 'Fetching Draft Data Failed!',
       toastDescription: 'Something went wrong! Please try again later.',
     },
   })

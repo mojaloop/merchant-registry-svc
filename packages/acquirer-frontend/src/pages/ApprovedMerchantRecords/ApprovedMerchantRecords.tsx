@@ -279,7 +279,9 @@ const ApprovedMerchantRecords = () => {
         flexGrow='1'
         mb='-14'
       >
-        {approvedMerchants.isFetching && <TableSkeleton breakpoint='xl' />}
+        {approvedMerchants.isFetching && (
+          <TableSkeleton breakpoint='xl' mt={{ base: '3', xl: '6' }} />
+        )}
 
         {!approvedMerchants.isLoading &&
           !approvedMerchants.isFetching &&
