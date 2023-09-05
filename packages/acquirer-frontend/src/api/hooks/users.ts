@@ -1,6 +1,6 @@
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 
-import { getUsers } from '../users'
+import { createUser, getUsers } from '../users'
 
 export function useUsers() {
   return useQuery({
@@ -11,5 +11,11 @@ export function useUsers() {
       toastTitle: 'Fetching Users Failed!',
       toastDescription: 'Something went wrong! Please try again later.',
     },
+  })
+}
+
+export function useCreateUser() {
+  return useMutation({
+    mutationFn: createUser,
   })
 }

@@ -1,10 +1,10 @@
 import { useMemo } from 'react'
 import { createColumnHelper } from '@tanstack/react-table'
-import { HStack, Heading, Stack, Switch } from '@chakra-ui/react'
+import { Flex, Heading, Stack, Switch } from '@chakra-ui/react'
 
 import type { User } from '@/types/users'
 import { useUsers } from '@/api/hooks/users'
-import { CustomButton, DataTable, EmptyState, TableSkeleton } from '@/components/ui'
+import { CustomLink, DataTable, EmptyState, TableSkeleton } from '@/components/ui'
 
 const UserManagement = () => {
   const columns = useMemo(() => {
@@ -56,11 +56,13 @@ const UserManagement = () => {
       pb='14'
       flexGrow='1'
     >
-      <HStack justify='space-between' mb='10'>
+      <Flex justify='space-between' mb='10'>
         <Heading size='md'>User Management</Heading>
 
-        <CustomButton>Add New User</CustomButton>
-      </HStack>
+        <CustomLink to='/portal-user-management/user-management/add-new-user'>
+          Add New User
+        </CustomLink>
+      </Flex>
 
       {users.isFetching && <TableSkeleton breakpoint='lg' />}
 

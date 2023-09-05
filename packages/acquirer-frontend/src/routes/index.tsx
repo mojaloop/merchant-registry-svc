@@ -2,6 +2,7 @@ import { Navigate, useRoutes } from 'react-router-dom'
 
 import { Layout } from '@/components/layout'
 import {
+  AddNewUser,
   AllMerchantRecords,
   ApprovedMerchantRecords,
   DraftApplications,
@@ -74,6 +75,11 @@ const Routes = () => {
         {
           path: 'portal-user-management/user-management',
           element: <UserManagement />,
+          caseSensitive: true,
+        },
+        {
+          path: 'portal-user-management/user-management/add-new-user',
+          element: <AddNewUser />,
           caseSensitive: true,
         },
       ],

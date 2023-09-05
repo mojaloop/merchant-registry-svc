@@ -8,6 +8,7 @@ import RejectedMerchantRecords from './RejectedMerchantRecords/RejectedMerchantR
 import ApprovedMerchantRecords from './ApprovedMerchantRecords/ApprovedMerchantRecords'
 import RoleManagement from './RoleManagement/RoleManagement'
 import UserManagement from './UserManagement/UserManagement'
+import AddNewUser from './AddNewUser/AddNewUser'
 import Login from './Login/Login'
 import SetPassword from './SetPassword/SetPassword'
 
@@ -22,6 +23,7 @@ export {
   ApprovedMerchantRecords,
   RoleManagement,
   UserManagement,
+  AddNewUser,
   Login,
   SetPassword,
 }
