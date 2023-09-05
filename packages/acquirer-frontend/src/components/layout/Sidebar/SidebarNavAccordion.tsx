@@ -76,7 +76,7 @@ const SidebarNavAccordion = ({
                 to={to}
                 w='20'
                 py='1.5'
-                bg={location.pathname === to ? 'secondary' : 'transparent'}
+                bg={location.pathname.includes(to) ? 'secondary' : 'transparent'}
                 textAlign='center'
                 fontSize='sm'
                 fontWeight='medium'

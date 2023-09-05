@@ -4,6 +4,7 @@ import {
   FormErrorMessage,
   FormLabel,
   Select,
+  type SelectProps,
 } from '@chakra-ui/react'
 import type { FieldErrors, FieldValues, Path, UseFormRegister } from 'react-hook-form'
 
@@ -20,6 +21,7 @@ interface FormSelectProps<T extends FieldValues> extends FormControlProps {
   placeholder: string
   options: Option[]
   errorMsg?: string
+  selectProps?: SelectProps
 }
 
 const FormSelect = <T extends FieldValues>({
@@ -30,12 +32,13 @@ const FormSelect = <T extends FieldValues>({
   placeholder,
   options,
   errorMsg,
+  selectProps,
   ...props
 }: FormSelectProps<T>) => {
   return (
     <FormControl isInvalid={!!errors[name]} maxW={{ md: '20rem' }} {...props}>
       <FormLabel fontSize='sm'>{label}</FormLabel>
-      <Select {...register(name)} defaultValue=''>
+      <Select {...register(name)} defaultValue='' {...selectProps}>
         <option value='' disabled>
           {placeholder}
         </option>

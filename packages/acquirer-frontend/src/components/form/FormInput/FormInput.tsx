@@ -13,7 +13,7 @@ interface FormInputProps<T extends FieldValues> extends FormControlProps {
   register: UseFormRegister<T>
   errors: FieldErrors<T>
   label: string
-  placeholder: string
+  placeholder?: string
   errorMsg?: string
   inputProps?: InputProps
 }
