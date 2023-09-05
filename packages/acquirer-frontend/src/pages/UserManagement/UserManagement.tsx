@@ -4,7 +4,7 @@ import { HStack, Heading, Stack, Switch } from '@chakra-ui/react'
 
 import type { User } from '@/types/users'
 import { useUsers } from '@/api/hooks/users'
-import { CustomButton, DataTable, TableSkeleton } from '@/components/ui'
+import { CustomButton, DataTable, EmptyState, TableSkeleton } from '@/components/ui'
 
 const UserManagement = () => {
   const columns = useMemo(() => {
@@ -65,12 +65,18 @@ const UserManagement = () => {
       {users.isFetching && <TableSkeleton breakpoint='lg' />}
 
       {data && (
-        <DataTable
-          columns={columns}
-          data={data}
-          breakpoint='lg'
-          alwaysVisibleColumns={[0, 1]}
-        />
+        <>
+          <DataTable
+            columns={columns}
+            data={data}
+            breakpoint='lg'
+            alwaysVisibleColumns={[0, 1]}
+          />
+
+          {data.length === 0 && (
+            <EmptyState text='There are no users right now.' mt='14' />
+          )}
+        </>
       )}
     </Stack>
   )
