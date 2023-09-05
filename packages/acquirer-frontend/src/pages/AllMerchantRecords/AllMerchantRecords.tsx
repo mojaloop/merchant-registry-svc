@@ -168,7 +168,7 @@ const AllMerchantRecords = () => {
   }
 
   return (
-    <Stack h='full' px={{ base: '4', sm: '6', lg: '8' }} pt='6' pb='14'>
+    <Stack minH='full' px={{ base: '4', sm: '6', lg: '8' }} pt='6' pb='14'>
       <Heading size='md' mb='10'>
         View Registered Merchants
       </Heading>
