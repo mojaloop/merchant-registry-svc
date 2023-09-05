@@ -8,7 +8,7 @@ export function useUsers() {
     queryFn: getUsers,
     meta: {
       toastStatus: 'error',
-      toastTitle: 'Fetching Data Failed!',
+      toastTitle: 'Fetching Users Failed!',
       toastDescription: 'Something went wrong! Please try again later.',
     },
   })

@@ -8,7 +8,7 @@ export function useRoles() {
     queryFn: getRoles,
     meta: {
       toastStatus: 'error',
-      toastTitle: 'Operation Failed!',
+      toastTitle: 'Fetching Roles Failed!',
       toastDescription: 'Something went wrong! Please try again later.',
     },
   })
