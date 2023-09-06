@@ -3,6 +3,7 @@ import { useMutation } from '@tanstack/react-query'
 import { isAxiosError } from 'axios'
 import { useToast } from '@chakra-ui/react'
 
+import { FALLBACK_ERROR_MESSAGE } from '@/constants/errorMessage'
 import { login, setPassword } from '../auth'
 
 export function useLogin() {
@@ -53,9 +54,7 @@ export function useSetPassword() {
       if (isAxiosError(error)) {
         toast({
           title: 'Setting Password Failed!',
-          description:
-            error.response?.data.message ||
-            'Something went wrong! Please try again later.',
+          description: error.response?.data.message || FALLBACK_ERROR_MESSAGE,
           status: 'error',
         })
       }

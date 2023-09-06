@@ -8,6 +8,7 @@ import type {
   LocationInfoForm,
   OwnerInfoForm,
 } from '@/lib/validations/registry'
+import { FALLBACK_ERROR_MESSAGE } from '@/constants/errorMessage'
 import { scrollToTop } from '@/utils'
 import {
   changeStatusToReview,
@@ -22,6 +23,7 @@ import {
   updateOwnerInfo,
 } from '../forms'
 import { getMerchant } from '../merchants'
+import { isAxiosError } from 'axios'
 
 export function useDraftCount() {
   return useQuery({
@@ -30,7 +32,7 @@ export function useDraftCount() {
     meta: {
       toastStatus: 'error',
       toastTitle: 'Fetching Draft Count Failed!',
-      toastDescription: 'Something went wrong! Please try again later.',
+      toastDescription: FALLBACK_ERROR_MESSAGE,
     },
   })
 }
@@ -44,7 +46,7 @@ export function useDraft(merchantId: number) {
     meta: {
       toastStatus: 'error',
       toastTitle: 'Fetching Draft Data Failed!',
-      toastDescription: 'Something went wrong! Please try again later.',
+      toastDescription: FALLBACK_ERROR_MESSAGE,
     },
   })
 }
@@ -303,12 +305,14 @@ export function useChangeStatusToReview(closeReviewModal: () => void) {
         status: 'success',
       })
     },
-    onError: () => {
-      toast({
-        title: 'Submission Failed!',
-        description: 'Something went wrong! Please try again later.',
-        status: 'error',
-      })
+    onError: error => {
+      if (isAxiosError(error)) {
+        toast({
+          title: 'Submission Failed!',
+          description: error.response?.data.message || FALLBACK_ERROR_MESSAGE,
+          status: 'error',
+        })
+      }
     },
   })
 }

@@ -72,7 +72,7 @@ export function useDrafts(params: MerchantsFilterForm) {
     meta: {
       toastStatus: 'error',
       toastTitle: 'Fetching Drafts Failed!',
-      toastDescription: 'Something went wrong! Please try again later.',
+      toastDescription: FALLBACK_ERROR_MESSAGE,
     },
   })
 }
@@ -84,7 +84,7 @@ export function useAllMerchants(params: AllMerchantsFilterForm) {
     meta: {
       toastStatus: 'error',
       toastTitle: 'Fetching Merchants Failed!',
-      toastDescription: 'Something went wrong! Please try again later.',
+      toastDescription: FALLBACK_ERROR_MESSAGE,
     },
   })
 }
@@ -96,7 +96,7 @@ export function usePendingMerchants(params: MerchantsFilterForm) {
     meta: {
       toastStatus: 'error',
       toastTitle: 'Fetching Pending Merchants Failed!',
-      toastDescription: 'Something went wrong! Please try again later.',
+      toastDescription: FALLBACK_ERROR_MESSAGE,
     },
   })
 }
@@ -108,7 +108,7 @@ export function useRejectedMerchants(params: MerchantsFilterForm) {
     meta: {
       toastStatus: 'error',
       toastTitle: 'Fetching Rejected Merchants Failed!',
-      toastDescription: 'Something went wrong! Please try again later.',
+      toastDescription: FALLBACK_ERROR_MESSAGE,
     },
   })
 }
@@ -120,7 +120,7 @@ export function useRevertedMerchants(params: MerchantsFilterForm) {
     meta: {
       toastStatus: 'error',
       toastTitle: 'Fetching Reverted Merchants Failed!',
-      toastDescription: 'Something went wrong! Please try again later.',
+      toastDescription: FALLBACK_ERROR_MESSAGE,
     },
   })
 }
@@ -132,7 +132,7 @@ export function useApprovedMerchants(params: MerchantsFilterForm) {
     meta: {
       toastStatus: 'error',
       toastTitle: 'Fetching Approved Merchants Failed!',
-      toastDescription: 'Something went wrong! Please try again later.',
+      toastDescription: FALLBACK_ERROR_MESSAGE,
     },
   })
 }
@@ -144,7 +144,7 @@ export function useMerchant(merchantId: number) {
     meta: {
       toastStatus: 'error',
       toastTitle: 'Fetching Merchant Data Failed!',
-      toastDescription: 'Something went wrong! Please try again later.',
+      toastDescription: FALLBACK_ERROR_MESSAGE,
     },
   })
 }

@@ -2,6 +2,7 @@ import { useMutation, useQuery } from '@tanstack/react-query'
 import { isAxiosError } from 'axios'
 import { useToast } from '@chakra-ui/react'
 
+import { FALLBACK_ERROR_MESSAGE } from '@/constants/errorMessage'
 import { createUser, getUsers } from '../users'
 
 export function useUsers() {
@@ -11,7 +12,7 @@ export function useUsers() {
     meta: {
       toastStatus: 'error',
       toastTitle: 'Fetching Users Failed!',
-      toastDescription: 'Something went wrong! Please try again later.',
+      toastDescription: FALLBACK_ERROR_MESSAGE,
     },
   })
 }
@@ -32,9 +33,7 @@ export function useCreateUser() {
       if (isAxiosError(error)) {
         toast({
           title: 'User Creation Failed!',
-          description:
-            error.response?.data.message ||
-            'Something went wrong! Please try again later.',
+          description: error.response?.data.message || FALLBACK_ERROR_MESSAGE,
           status: 'error',
         })
       }
