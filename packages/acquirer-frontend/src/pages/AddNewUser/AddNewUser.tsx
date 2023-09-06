@@ -1,28 +1,30 @@
-import { Box, HStack, Heading, Stack } from '@chakra-ui/react'
+import { Box, HStack, Heading, Skeleton, Stack } from '@chakra-ui/react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 
 import { type AddNewUserForm, addNewUserSchema } from '@/lib/validations/addNewUser'
+import { useRoles } from '@/api/hooks/roles'
 import { useCreateUser } from '@/api/hooks/users'
 import { CustomButton } from '@/components/ui'
 import { FormInput, FormSelect } from '@/components/form'
-
-const ROLE_OPTIONS = [
-  { label: 'Admin User', value: 'Admin User' },
-  { label: 'Operator', value: 'Operator' },
-  { label: 'Auditor', value: 'Auditor' },
-]
 
 const AddNewUser = () => {
   const {
     register,
     formState: { errors },
     handleSubmit,
+    reset,
   } = useForm<AddNewUserForm>({
     resolver: zodResolver(addNewUserSchema),
   })
 
+  const roles = useRoles()
   const createUser = useCreateUser()
+
+  let roleOptions
+  if (!roles.isLoading && !roles.isError) {
+    roleOptions = roles.data.data.map(({ name }) => ({ label: name, value: name }))
+  }
 
   const onSubmit = (values: AddNewUserForm) => {
     createUser.mutate(values)
@@ -41,42 +43,58 @@ const AddNewUser = () => {
         User Management
       </Heading>
 
-      <Stack as='form' spacing='4' maxW='25rem' onSubmit={handleSubmit(onSubmit)}>
-        <FormInput
-          name='name'
-          register={register}
-          errors={errors}
-          label='Name'
-          inputProps={{ bg: 'white' }}
-          maxW='25rem'
-        />
+      {roles.isLoading && (
+        <Stack spacing='6'>
+          {new Array(3).fill(0).map((_, index) => (
+            <Box key={index}>
+              <Skeleton h='4' maxW='10' mb='2' rounded='md' />
+              <Skeleton h='10' maxW='25rem' rounded='md' />
+            </Box>
+          ))}
+        </Stack>
+      )}
 
-        <FormInput
-          name='email'
-          register={register}
-          errors={errors}
-          label='Email'
-          inputProps={{ bg: 'white' }}
-          maxW='25rem'
-        />
+      {roleOptions && (
+        <Stack as='form' spacing='4' maxW='25rem' onSubmit={handleSubmit(onSubmit)}>
+          <FormInput
+            name='name'
+            register={register}
+            errors={errors}
+            label='Name'
+            inputProps={{ bg: 'white' }}
+            maxW='25rem'
+          />
 
-        <FormSelect
-          name='role'
-          register={register}
-          errors={errors}
-          label='Role'
-          placeholder='Choose Role'
-          options={ROLE_OPTIONS}
-          errorMsg='Please select a role'
-          selectProps={{ bg: 'white' }}
-          maxW='25rem'
-        />
+          <FormInput
+            name='email'
+            register={register}
+            errors={errors}
+            label='Email'
+            inputProps={{ bg: 'white' }}
+            maxW='25rem'
+          />
 
-        <HStack spacing='3' alignSelf='end' mt='8'>
-          <CustomButton type='submit'>Submit</CustomButton>
-          <CustomButton colorVariant='accent-outline'>Cancel</CustomButton>
-        </HStack>
-      </Stack>
+          <FormSelect
+            name='role'
+            register={register}
+            errors={errors}
+            label='Role'
+            placeholder='Choose Role'
+            options={roleOptions}
+            selectProps={{ bg: 'white' }}
+            maxW='25rem'
+          />
+
+          <HStack spacing='3' alignSelf='end' mt='8'>
+            <CustomButton type='submit' isLoading={createUser.isLoading}>
+              Submit
+            </CustomButton>
+            <CustomButton colorVariant='accent-outline' onClick={() => reset()}>
+              Cancel
+            </CustomButton>
+          </HStack>
+        </Stack>
+      )}
     </Box>
   )
 }

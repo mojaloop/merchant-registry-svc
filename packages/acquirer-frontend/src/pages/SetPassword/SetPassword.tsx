@@ -16,7 +16,7 @@ import { AiFillEye, AiFillEyeInvisible } from 'react-icons/ai'
 
 import mojaloopLogo from '@/assets/mojaloop-logo.png'
 import { type SetPasswordForm, setPasswordSchema } from '@/lib/validations/setPassword'
-import { useLogin } from '@/api/hooks/auth'
+import { useSetPassword } from '@/api/hooks/auth'
 import { CustomButton } from '@/components/ui'
 import { FormInput } from '@/components/form'
 
@@ -32,10 +32,10 @@ const SetPassword = () => {
     resolver: zodResolver(setPasswordSchema),
   })
 
-  const login = useLogin()
+  const setPassword = useSetPassword()
 
-  const onSubmit = async (values: SetPasswordForm) => {
-    console.log(values)
+  const onSubmit = (values: SetPasswordForm) => {
+    setPassword.mutate(values.newPassword)
   }
 
   const iconButtonProps: Omit<IconButtonProps, 'icon' | 'aria-label'> = {
@@ -142,7 +142,12 @@ const SetPassword = () => {
               )}
             </Box>
 
-            <CustomButton type='submit' size='md' mt='8' isLoading={login.isLoading}>
+            <CustomButton
+              type='submit'
+              size='md'
+              mt='8'
+              isLoading={setPassword.isLoading}
+            >
               Confirm
             </CustomButton>
           </Stack>
