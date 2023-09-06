@@ -103,7 +103,7 @@ export async function putBulkRevert (req: AuthRequest, res: Response) {
       // registration_status: MerchantRegistrationStatus.REVIEW,
       // created_by: Not(portalUser.id)
     },
-    relations: ['created_by', 'dfsp']
+    relations: ['created_by', 'dfsps']
   })
 
   for (const merchant of merchants) {
