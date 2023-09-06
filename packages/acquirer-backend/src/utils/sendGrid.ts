@@ -1,4 +1,4 @@
-import sgMail from '@sendgrid/mail'
+import sgMail, { type ResponseError } from '@sendgrid/mail'
 import dotenv from 'dotenv'
 import path from 'path'
 import { AuditActionType, AuditTrasactionStatus } from 'shared-lib'
@@ -49,4 +49,28 @@ in Merchant Acquirer System.<br/>
     'PortalUserEntity',
     {}, {}, null
   )
+}
+
+export async function checkSendGridAPIKeyValidity (apiKey: string): Promise<boolean> {
+  sgMail.setApiKey(apiKey)
+
+  try {
+    const response = await sgMail.send({
+      to: 'test@example.com', // Use a dummy email address
+      from: 'test@example.com', // Use a dummy email address
+      subject: 'Test',
+      text: 'Test',
+      mailSettings: {
+        sandboxMode: {
+          enable: true // Enables SendGrid sandbox mode to avoid actual email sending
+        }
+      }
+    })
+    logger.debug('SendGrid API Key validity check response: %o', response)
+
+    return response[0]?.statusCode === 200
+  } catch (error: any) {
+    logger.error('Invalid SendGrid API Key: %o', error.response?.body as ResponseError)
+    return false
+  }
 }
