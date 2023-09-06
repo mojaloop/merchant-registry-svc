@@ -4,7 +4,8 @@ import { audit } from '../../utils/audit'
 import { AppDataSource } from '../../database/data-source'
 import {
   AuditActionType,
-  AuditTrasactionStatus
+  AuditTrasactionStatus,
+  PortalUserStatus
 } from 'shared-lib'
 import { hashPassword } from '../../utils/utils'
 
@@ -65,6 +66,9 @@ export async function putUserResetPassword (req: Request, res: Response) {
   try {
     const oldPasswordHash = portalUser.password
     portalUser.password = await hashPassword(password)
+    if (portalUser.status === PortalUserStatus.RESETPASSWORD) {
+      portalUser.status = PortalUserStatus.ACTIVE
+    }
     await AppDataSource.manager.save(portalUser)
 
     await audit(
