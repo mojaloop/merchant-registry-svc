@@ -438,6 +438,19 @@ paths:
       summary: GET Merchants List
       parameters:
         - in: query
+          name: page
+          schema:
+            type: integer
+          description: The page number
+          minimum: 1
+          example: 1
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            minimum: 1
+          description: The number of items per page
+        - in: query
           name: merchantId
           schema:
             type: integer

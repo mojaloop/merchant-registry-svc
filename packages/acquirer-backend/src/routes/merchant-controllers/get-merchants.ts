@@ -23,6 +23,20 @@ import { type AuthRequest } from '../../types/express'
  *     summary: GET Merchants List
  *     parameters:
  *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *         description: The page number
+ *         minimum: 1
+ *         example: 1
+ *
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *         description: The number of items per page
+ *       - in: query
  *         name: merchantId
  *         schema:
  *           type: integer
@@ -88,6 +102,14 @@ export async function getMerchants (req: AuthRequest, res: Response) {
   const portalUser = req.user
   if (portalUser == null) {
     return res.status(401).send({ message: 'Unauthorized' })
+  }
+
+  // Pagination parameters
+  const { page = 1, limit = 10 } = req.query
+  const skip = (Number(page) - 1) * Number(limit)
+
+  if (isNaN(skip) || isNaN(Number(limit)) || skip < 0 || Number(limit) < 1) {
+    return res.status(400).send({ message: 'Invalid pagination parameters' })
   }
 
   try {
@@ -188,6 +210,13 @@ export async function getMerchants (req: AuthRequest, res: Response) {
       }
     }
 
+    const totalCount = await queryBuilder.getCount()
+    const totalPages = Math.ceil(totalCount / Number(limit))
+
+    // Add pagination
+    queryBuilder
+      .skip(skip)
+      .take(Number(limit))
     let merchants = await queryBuilder.getMany()
 
     // Now filter based on dfsps
@@ -216,7 +245,7 @@ export async function getMerchants (req: AuthRequest, res: Response) {
       {}, { queryParams: req.query }, portalUser
     )
 
-    res.send({ message: 'OK', data: merchants })
+    res.send({ message: 'OK', data: merchants, totalPages })
   } catch (e) {
     logger.error(e)
 
