@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 
+import { FALLBACK_ERROR_MESSAGE } from '@/constants/errorMessage'
 import { getRoles } from '../roles'
 
 export function useRoles() {
@@ -9,7 +10,7 @@ export function useRoles() {
     meta: {
       toastStatus: 'error',
       toastTitle: 'Fetching Roles Failed!',
-      toastDescription: 'Something went wrong! Please try again later.',
+      toastDescription: FALLBACK_ERROR_MESSAGE,
     },
   })
 }

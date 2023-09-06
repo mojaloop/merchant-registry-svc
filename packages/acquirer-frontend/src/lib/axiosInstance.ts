@@ -13,6 +13,12 @@ instance.interceptors.request.use(config => {
     config.headers.Authorization = `Bearer ${token}`
   }
 
+  if (config.url?.startsWith('/users/reset-password')) {
+    const searchParams = new URLSearchParams(location.search)
+    const token = searchParams.get('token')
+    config.headers.Authorization = `Bearer ${token}`
+  }
+
   return config
 })
 

@@ -1,8 +1,10 @@
 import { useNavigate } from 'react-router-dom'
 import { useMutation } from '@tanstack/react-query'
+import { isAxiosError } from 'axios'
 import { useToast } from '@chakra-ui/react'
 
-import { login } from '../auth'
+import { FALLBACK_ERROR_MESSAGE } from '@/constants/errorMessage'
+import { login, setPassword } from '../auth'
 
 export function useLogin() {
   const navigate = useNavigate()
@@ -20,12 +22,42 @@ export function useLogin() {
         status: 'success',
       })
     },
-    onError: () => {
+    onError: error => {
+      if (isAxiosError(error)) {
+        toast({
+          title: 'Login Failed!',
+          description:
+            error.response?.data.message ||
+            'Please check your credentials and try again.',
+          status: 'error',
+        })
+      }
+    },
+  })
+}
+
+export function useSetPassword() {
+  const navigate = useNavigate()
+  const toast = useToast()
+
+  return useMutation({
+    mutationFn: setPassword,
+    onSuccess: () => {
+      navigate('/login')
       toast({
-        title: 'Login Failed!',
-        description: 'Please check your credentials and try again.',
-        status: 'error',
+        title: 'Setting Password Successful!',
+        description: 'You can now log in using the credentials.',
+        status: 'success',
       })
+    },
+    onError: error => {
+      if (isAxiosError(error)) {
+        toast({
+          title: 'Setting Password Failed!',
+          description: error.response?.data.message || FALLBACK_ERROR_MESSAGE,
+          status: 'error',
+        })
+      }
     },
   })
 }

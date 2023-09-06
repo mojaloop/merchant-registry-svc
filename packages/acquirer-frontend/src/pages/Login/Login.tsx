@@ -37,7 +37,7 @@ const Login = () => {
 
   const login = useLogin()
 
-  const onSubmit = async (values: LoginForm) => {
+  const onSubmit = (values: LoginForm) => {
     login.mutate({ email: values.email, password: values.password })
   }
 

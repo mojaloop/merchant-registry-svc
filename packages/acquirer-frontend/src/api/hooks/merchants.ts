@@ -5,6 +5,7 @@ import { MerchantRegistrationStatus } from 'shared-lib'
 
 import type { AllMerchantsFilterForm } from '@/lib/validations/allMerchantsFilter'
 import type { MerchantsFilterForm } from '@/lib/validations/merchantsFilter'
+import { FALLBACK_ERROR_MESSAGE } from '@/constants/errorMessage'
 import { transformIntoTableData } from '@/utils'
 import {
   approveMerchants,
@@ -71,7 +72,7 @@ export function useDrafts(params: MerchantsFilterForm) {
     meta: {
       toastStatus: 'error',
       toastTitle: 'Fetching Drafts Failed!',
-      toastDescription: 'Something went wrong! Please try again later.',
+      toastDescription: FALLBACK_ERROR_MESSAGE,
     },
   })
 }
@@ -83,7 +84,7 @@ export function useAllMerchants(params: AllMerchantsFilterForm) {
     meta: {
       toastStatus: 'error',
       toastTitle: 'Fetching Merchants Failed!',
-      toastDescription: 'Something went wrong! Please try again later.',
+      toastDescription: FALLBACK_ERROR_MESSAGE,
     },
   })
 }
@@ -95,7 +96,7 @@ export function usePendingMerchants(params: MerchantsFilterForm) {
     meta: {
       toastStatus: 'error',
       toastTitle: 'Fetching Pending Merchants Failed!',
-      toastDescription: 'Something went wrong! Please try again later.',
+      toastDescription: FALLBACK_ERROR_MESSAGE,
     },
   })
 }
@@ -107,7 +108,7 @@ export function useRejectedMerchants(params: MerchantsFilterForm) {
     meta: {
       toastStatus: 'error',
       toastTitle: 'Fetching Rejected Merchants Failed!',
-      toastDescription: 'Something went wrong! Please try again later.',
+      toastDescription: FALLBACK_ERROR_MESSAGE,
     },
   })
 }
@@ -119,7 +120,7 @@ export function useRevertedMerchants(params: MerchantsFilterForm) {
     meta: {
       toastStatus: 'error',
       toastTitle: 'Fetching Reverted Merchants Failed!',
-      toastDescription: 'Something went wrong! Please try again later.',
+      toastDescription: FALLBACK_ERROR_MESSAGE,
     },
   })
 }
@@ -131,7 +132,7 @@ export function useApprovedMerchants(params: MerchantsFilterForm) {
     meta: {
       toastStatus: 'error',
       toastTitle: 'Fetching Approved Merchants Failed!',
-      toastDescription: 'Something went wrong! Please try again later.',
+      toastDescription: FALLBACK_ERROR_MESSAGE,
     },
   })
 }
@@ -143,7 +144,7 @@ export function useMerchant(merchantId: number) {
     meta: {
       toastStatus: 'error',
       toastTitle: 'Fetching Merchant Data Failed!',
-      toastDescription: 'Something went wrong! Please try again later.',
+      toastDescription: FALLBACK_ERROR_MESSAGE,
     },
   })
 }
@@ -163,7 +164,7 @@ export function useApproveMerchants() {
       if (isAxiosError(error)) {
         toast({
           title: 'Approving Failed!',
-          description: error.response?.data.message,
+          description: error.response?.data.message || FALLBACK_ERROR_MESSAGE,
           status: 'error',
         })
       }
@@ -187,7 +188,7 @@ export function useRejectMerchants() {
       if (isAxiosError(error)) {
         toast({
           title: 'Rejecting Failed!',
-          description: error.response?.data.message,
+          description: error.response?.data.message || FALLBACK_ERROR_MESSAGE,
           status: 'error',
         })
       }
@@ -211,7 +212,7 @@ export function useRevertMerchants() {
       if (isAxiosError(error)) {
         toast({
           title: 'Reverting Failed!',
-          description: error.response?.data.message,
+          description: error.response?.data.message || FALLBACK_ERROR_MESSAGE,
           status: 'error',
         })
       }
@@ -235,7 +236,7 @@ export function useExportMerchants() {
       if (isAxiosError(error)) {
         toast({
           title: 'Exporting Failed!',
-          description: error.response?.data.message,
+          description: error.response?.data.message || FALLBACK_ERROR_MESSAGE,
           status: 'error',
         })
       }
