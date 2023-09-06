@@ -5,6 +5,7 @@ import { MerchantRegistrationStatus } from 'shared-lib'
 
 import type { AllMerchantsFilterForm } from '@/lib/validations/allMerchantsFilter'
 import type { MerchantsFilterForm } from '@/lib/validations/merchantsFilter'
+import { FALLBACK_ERROR_MESSAGE } from '@/constants/errorMessage'
 import { transformIntoTableData } from '@/utils'
 import {
   approveMerchants,
@@ -163,7 +164,7 @@ export function useApproveMerchants() {
       if (isAxiosError(error)) {
         toast({
           title: 'Approving Failed!',
-          description: error.response?.data.message,
+          description: error.response?.data.message || FALLBACK_ERROR_MESSAGE,
           status: 'error',
         })
       }
@@ -187,7 +188,7 @@ export function useRejectMerchants() {
       if (isAxiosError(error)) {
         toast({
           title: 'Rejecting Failed!',
-          description: error.response?.data.message,
+          description: error.response?.data.message || FALLBACK_ERROR_MESSAGE,
           status: 'error',
         })
       }
@@ -211,7 +212,7 @@ export function useRevertMerchants() {
       if (isAxiosError(error)) {
         toast({
           title: 'Reverting Failed!',
-          description: error.response?.data.message,
+          description: error.response?.data.message || FALLBACK_ERROR_MESSAGE,
           status: 'error',
         })
       }
@@ -235,7 +236,7 @@ export function useExportMerchants() {
       if (isAxiosError(error)) {
         toast({
           title: 'Exporting Failed!',
-          description: error.response?.data.message,
+          description: error.response?.data.message || FALLBACK_ERROR_MESSAGE,
           status: 'error',
         })
       }
