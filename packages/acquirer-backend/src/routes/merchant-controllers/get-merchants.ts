@@ -167,6 +167,7 @@ export async function getMerchants (req: AuthRequest, res: Response) {
       .leftJoin('merchant.locations', 'locations')
       .leftJoin('merchant.checkout_counters', 'checkout_counters')
       .leftJoinAndSelect('merchant.dfsps', 'dfsps')
+      .leftJoinAndSelect('merchant.default_dfsp', 'default_dfsp')
       .addSelect(['created_by.id', 'created_by.name'])
       .addSelect(['checked_by.id', 'checked_by.name'])
       .addSelect(['locations.country_subdivision', 'locations.town_name'])
