@@ -75,7 +75,8 @@ export async function getMerchantById (req: AuthRequest, res: Response) {
           'business_owners',
           'business_owners.businessPersonLocation',
           'checked_by',
-          'dfsps'
+          'dfsps',
+          'default_dfsp'
         ]
       })
 
