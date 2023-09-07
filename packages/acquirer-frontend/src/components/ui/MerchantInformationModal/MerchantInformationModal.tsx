@@ -59,6 +59,7 @@ export const MerchantInfo = ({
     monthly_turnover,
     category_code,
     merchant_type,
+    default_dfsp,
     currency_code,
     business_licenses,
     checkout_counters,
@@ -125,7 +126,7 @@ export const MerchantInfo = ({
 
             <DetailsItem label='Merchant Type' value={merchant_type || 'N/A'} />
 
-            <DetailsItem label='DFSP Name' value='N/A' />
+            <DetailsItem label='DFSP Name' value={default_dfsp?.name || 'N/A'} />
 
             <DetailsItem label='Currency' value={currency_code?.iso_code || 'N/A'} />
 
