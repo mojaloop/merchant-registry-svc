@@ -3,6 +3,8 @@ import { type Response } from 'express'
 import { type AuthRequest } from 'src/types/express'
 import { AppDataSource } from '../../database/data-source'
 import { PortalUserEntity } from '../../entity/PortalUserEntity'
+import { AuditActionType, AuditTrasactionStatus, PortalUserType } from 'shared-lib'
+import { audit } from '../../utils/audit'
 
 /**
  * @openapi
@@ -24,9 +26,14 @@ export async function getUsers (req: AuthRequest, res: Response) {
     return res.status(401).send({ message: 'Unauthorized' })
   }
 
-  const users = await AppDataSource.manager.find(PortalUserEntity, {
-    relations: ['role', 'role.permissions']
+  let users = await AppDataSource.manager.find(PortalUserEntity, {
+    relations: ['role', 'role.permissions', 'dfsp']
   })
+
+  // DFSPs can only see their own users
+  if (portalUser.user_type === PortalUserType.DFSP) {
+    users = users.filter(user => user.dfsp.id === portalUser.dfsp.id)
+  }
 
   const flattenedUsers = users.map(user => {
     return {
@@ -40,5 +47,15 @@ export async function getUsers (req: AuthRequest, res: Response) {
       password: undefined
     }
   })
+
+  await audit(
+    AuditActionType.ACCESS,
+    AuditTrasactionStatus.SUCCESS,
+    'getUsers',
+    'Get a list of users',
+    'PortalUserEntity',
+    {}, {}, portalUser
+  )
+
   res.send({ message: 'List of users', data: flattenedUsers })
 }
