@@ -168,7 +168,7 @@ async function seedDefaultUsers (): Promise<void> {
       }
 
       const newUser = new PortalUserEntity()
-      newUser.name = user.email
+      newUser.name = user.name
       newUser.email = user.email
       newUser.password = await hashPassword(user.password)
       newUser.phone_number = user.phone_number

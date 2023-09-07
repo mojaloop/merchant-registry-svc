@@ -1,28 +1,40 @@
 export const DefaultUsers = [
   // DFSP 1
   {
-    email: 'superadmin1001@email.com',
+    email: 'd1superadmin1@email.com',
+    name: 'DFSP 1 Super Admin 1',
     password: 'password',
     phone_number: '0000000',
     role: 'DFSP Super Admin',
     dfsp_name: 'DFSP 1'
   },
   {
-    email: 'admin1001@email.com',
+    email: 'd1admin1@email.com',
+    name: 'DFSP 1 Admin 1',
     password: 'password',
     phone_number: '1111111',
     role: 'DFSP Admin',
     dfsp_name: 'DFSP 1'
   },
   {
-    email: 'operator1001@email.com',
+    email: 'd1operator1@email.com',
+    name: 'DFSP 1 Operator 1',
     password: 'password',
     phone_number: '2222222',
     role: 'DFSP Operator',
     dfsp_name: 'DFSP 1'
   },
   {
-    email: 'auditor1001@email.com',
+    email: 'd1operator2@email.com',
+    name: 'DFSP 1 Operator 2',
+    password: 'password',
+    phone_number: '2222222',
+    role: 'DFSP Operator',
+    dfsp_name: 'DFSP 1'
+  },
+  {
+    email: 'd1auditor1@email.com',
+    name: 'DFSP 1 Auditor 1',
     password: 'password',
     phone_number: '3333333',
     role: 'DFSP Auditor',
@@ -31,28 +43,40 @@ export const DefaultUsers = [
 
   // DFSP 2
   {
-    email: 'superadmin2001@email.com',
+    email: 'd2superadmin2@email.com',
+    name: 'DFSP 2 Super Admin 2',
     password: 'password',
     phone_number: '0000000',
     role: 'DFSP Super Admin',
     dfsp_name: 'DFSP 2'
   },
   {
-    email: 'admin2001@email.com',
+    email: 'd2admin1@email.com',
+    name: 'DFSP 2 Admin 1',
     password: 'password',
     phone_number: '1111111',
     role: 'DFSP Admin',
     dfsp_name: 'DFSP 2'
   },
   {
-    email: 'operator2001@email.com',
+    email: 'd2operator1@email.com',
+    name: 'DFSP 2 Operator 1',
     password: 'password',
     phone_number: '2222222',
     role: 'DFSP Operator',
     dfsp_name: 'DFSP 2'
   },
   {
-    email: 'auditor2001@email.com',
+    email: 'd2operator2@email.com',
+    name: 'DFSP 2 Operator 2',
+    password: 'password',
+    phone_number: '2222222',
+    role: 'DFSP Operator',
+    dfsp_name: 'DFSP 2'
+  },
+  {
+    email: 'd2auditor1@email.com',
+    name: 'DFSP 2 Auditor 1',
     password: 'password',
     phone_number: '3333333',
     role: 'DFSP Auditor',
@@ -61,28 +85,40 @@ export const DefaultUsers = [
 
   // DFSP 3
   {
-    email: 'superadmin3001@email.com',
+    email: 'd3superadmin1@email.com',
+    name: 'DFSP 3 Super Admin 1',
     password: 'password',
     phone_number: '0000000',
     role: 'DFSP Super Admin',
     dfsp_name: 'DFSP 3'
   },
   {
-    email: 'admin3001@email.com',
+    email: 'd3admin1@email.com',
+    name: 'DFSP 3 Admin 1',
     password: 'password',
     phone_number: '1111111',
     role: 'DFSP Admin',
     dfsp_name: 'DFSP 3'
   },
   {
-    email: 'operator3001@email.com',
+    email: 'd3operator1@email.com',
+    name: 'DFSP 3 Operator 1',
     password: 'password',
     phone_number: '2222222',
     role: 'DFSP Operator',
     dfsp_name: 'DFSP 3'
   },
   {
-    email: 'auditor3001@email.com',
+    email: 'd3operator2@email.com',
+    name: 'DFSP 3 Operator 2',
+    password: 'password',
+    phone_number: '2222222',
+    role: 'DFSP Operator',
+    dfsp_name: 'DFSP 3'
+  },
+  {
+    email: 'd3auditor1@email.com',
+    name: 'DFSP 3 Auditor 1',
     password: 'password',
     phone_number: '3333333',
     role: 'DFSP Auditor',
