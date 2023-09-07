@@ -29,7 +29,7 @@ export function transformIntoTableData(merchantData: MerchantDetails): MerchantI
 
     // Assuming the first checkout counter's description is the counterDescription
     counterDescription: merchantData.checkout_counters[0]?.description || 'N/A',
-    registeredDfspName: 'N/A', // Not provided yet by API Backend Server
+    registeredDfspName: merchantData.default_dfsp.name,
     registrationStatus: merchantData.registration_status,
   }
 }

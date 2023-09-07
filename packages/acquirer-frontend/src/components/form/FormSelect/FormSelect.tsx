@@ -9,7 +9,7 @@ import {
 import type { FieldErrors, FieldValues, Path, UseFormRegister } from 'react-hook-form'
 
 interface Option {
-  value: string
+  value: string | number
   label: string
 }
 

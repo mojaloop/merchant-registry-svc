@@ -20,6 +20,7 @@ import {
   merchantsFilterSchema,
 } from '@/lib/validations/merchantsFilter'
 import { useApprovedMerchants, useExportMerchants } from '@/api/hooks/merchants'
+import { useUsers } from '@/api/hooks/users'
 import {
   REGISTRATION_STATUS_COLORS,
   type RegistrationStatus,
@@ -33,7 +34,6 @@ import {
   TableSkeleton,
 } from '@/components/ui'
 import { FormInput, FormSelect } from '@/components/form'
-import { useUsers } from '@/api/hooks/users'
 
 const ApprovedMerchantRecords = () => {
   const [selectedMerchantId, setSelectedMerchantId] = useState<number | null>(null)
@@ -154,7 +154,7 @@ const ApprovedMerchantRecords = () => {
   const exportMerchants = useExportMerchants()
 
   const users = useUsers()
-  let userOptions: { value: number; label: string }[] | [] = []
+  let userOptions
 
   if (!users.isLoading && !users.isFetching && !users.isError) {
     userOptions = users.data.map(({ id, name }) => ({
@@ -162,6 +162,7 @@ const ApprovedMerchantRecords = () => {
       label: name,
     }))
   }
+
   const onSubmit = () => {
     approvedMerchants.refetch()
   }
@@ -200,7 +201,7 @@ const ApprovedMerchantRecords = () => {
             errors={errors}
             label='Added By'
             placeholder='Select Added User'
-            options={userOptions}
+            options={userOptions || []}
           />
 
           <FormSelect
@@ -209,7 +210,7 @@ const ApprovedMerchantRecords = () => {
             errors={errors}
             label='Approved By'
             placeholder='Select Approved User'
-            options={userOptions}
+            options={userOptions || []}
           />
 
           <FormInput

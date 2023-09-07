@@ -90,6 +90,17 @@ interface CurrencyCode {
   description: string
 }
 
+interface DFSP {
+  id: number
+  name: string
+  dfsp_type: string
+  logo_uri: string
+  joined_date: string
+  activated: boolean
+  created_at: string
+  updated_at: string
+}
+
 export interface MerchantDetails {
   id: number
   dba_trading_name: string
@@ -104,6 +115,8 @@ export interface MerchantDetails {
   registration_status_reason: string | null
   created_at: string
   updated_at: string
+  default_dfsp: DFSP
+  dfsps: DFSP[]
   locations: Location[]
   checkout_counters: CheckoutCounter[]
   business_licenses: BusinessLicense[]
