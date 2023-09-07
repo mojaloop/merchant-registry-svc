@@ -27,6 +27,7 @@ import {
   useRejectMerchants,
   useRevertMerchants,
 } from '@/api/hooks/merchants'
+import { useUsers } from '@/api/hooks/users'
 import {
   REGISTRATION_STATUS_COLORS,
   type RegistrationStatus,
@@ -39,11 +40,9 @@ import {
   MerchantInformationModal,
   TableSkeleton,
 } from '@/components/ui'
-import { FormInput } from '@/components/form'
+import { FormInput, FormSelect } from '@/components/form'
 import PendingMerchantsDataTable from './PendingMerchantsDataTable'
 import ReasonModal from './ReasonModal'
-import { useUsers } from '@/api/hooks/users'
-import { FormSelect } from '@/components/form/index'
 
 const PendingMerchantRecords = () => {
   const queryClient = useQueryClient()
@@ -200,7 +199,7 @@ const PendingMerchantRecords = () => {
   const revertMerchants = useRevertMerchants()
 
   const users = useUsers()
-  let userOptions: { value: number; label: string }[] | [] = []
+  let userOptions
 
   if (!users.isLoading && !users.isFetching && !users.isError) {
     userOptions = users.data.map(({ id, name }) => ({
@@ -237,7 +236,7 @@ const PendingMerchantRecords = () => {
             errors={errors}
             label='Added By'
             placeholder='Select Added User'
-            options={userOptions}
+            options={userOptions || []}
           />
 
           <FormSelect
@@ -246,7 +245,7 @@ const PendingMerchantRecords = () => {
             errors={errors}
             label='Approved By'
             placeholder='Select Approved User'
-            options={userOptions}
+            options={userOptions || []}
           />
 
           <FormInput
