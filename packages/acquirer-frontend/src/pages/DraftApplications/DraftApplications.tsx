@@ -29,7 +29,8 @@ import {
   MerchantInformationModal,
   TableSkeleton,
 } from '@/components/ui'
-import { FormInput } from '@/components/form'
+import { FormInput, FormSelect } from '@/components/form'
+import { useUsers } from '@/api/hooks/users'
 
 const DraftApplications = () => {
   const [selectedMerchantId, setSelectedMerchantId] = useState<number | null>(null)
@@ -140,6 +141,16 @@ const DraftApplications = () => {
 
   const drafts = useDrafts(getValues())
 
+  const users = useUsers()
+  let userOptions: { value: number; label: string }[] | [] = []
+
+  if (!users.isLoading && !users.isFetching && !users.isError) {
+    userOptions = users.data.map(({ id, name }) => ({
+      value: id,
+      label: name,
+    }))
+  }
+
   const onSubmit = () => {
     drafts.refetch()
   }
@@ -162,20 +173,22 @@ const DraftApplications = () => {
           rowGap={{ base: '4', sm: '6' }}
           justifyItems='center'
         >
-          <FormInput
+          <FormSelect
             name='addedBy'
             register={register}
             errors={errors}
             label='Added By'
-            placeholder='Enter the one who is added by'
+            placeholder='Select Added User'
+            options={userOptions}
           />
 
-          <FormInput
+          <FormSelect
             name='approvedBy'
             register={register}
             errors={errors}
             label='Approved By'
-            placeholder='Enter the one who is approved by'
+            placeholder='Select Approved User'
+            options={userOptions}
           />
 
           <FormInput

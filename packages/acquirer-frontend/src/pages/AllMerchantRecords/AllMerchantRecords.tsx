@@ -33,6 +33,7 @@ import {
   TableSkeleton,
 } from '@/components/ui'
 import { FormInput, FormSelect } from '@/components/form'
+import { useUsers } from '@/api/hooks/users'
 
 const REGISTRATION_STATUSES = Object.values(MerchantRegistrationStatus).map(value => ({
   value,
@@ -154,6 +155,17 @@ const AllMerchantRecords = () => {
   })
 
   const allMerchants = useAllMerchants(getValues())
+
+  const users = useUsers()
+  let userOptions: { value: number; label: string }[] | [] = []
+
+  if (!users.isLoading && !users.isFetching && !users.isError) {
+    userOptions = users.data.map(({ id, name }) => ({
+      value: id,
+      label: name,
+    }))
+  }
+
   const exportMerchants = useExportMerchants()
 
   const onSubmit = () => {
@@ -185,20 +197,22 @@ const AllMerchantRecords = () => {
           rowGap={{ base: '4', sm: '6' }}
           justifyItems='center'
         >
-          <FormInput
+          <FormSelect
             name='addedBy'
             register={register}
             errors={errors}
             label='Added By'
-            placeholder='Enter the one who is added by'
+            placeholder='Select Added User'
+            options={userOptions}
           />
 
-          <FormInput
+          <FormSelect
             name='approvedBy'
             register={register}
             errors={errors}
             label='Approved By'
-            placeholder='Enter the one who is approved by'
+            placeholder='Select Approved User'
+            options={userOptions}
           />
 
           <FormInput

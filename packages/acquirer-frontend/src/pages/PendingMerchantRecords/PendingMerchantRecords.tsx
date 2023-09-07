@@ -42,6 +42,8 @@ import {
 import { FormInput } from '@/components/form'
 import PendingMerchantsDataTable from './PendingMerchantsDataTable'
 import ReasonModal from './ReasonModal'
+import { useUsers } from '@/api/hooks/users'
+import { FormSelect } from '@/components/form/index'
 
 const PendingMerchantRecords = () => {
   const queryClient = useQueryClient()
@@ -197,6 +199,16 @@ const PendingMerchantRecords = () => {
   const rejectMerchants = useRejectMerchants()
   const revertMerchants = useRevertMerchants()
 
+  const users = useUsers()
+  let userOptions: { value: number; label: string }[] | [] = []
+
+  if (!users.isLoading && !users.isFetching && !users.isError) {
+    userOptions = users.data.map(({ id, name }) => ({
+      value: id,
+      label: name,
+    }))
+  }
+
   const onSubmit = () => {
     pendingMerchants.refetch()
   }
@@ -219,20 +231,22 @@ const PendingMerchantRecords = () => {
           rowGap={{ base: '4', sm: '6' }}
           justifyItems='center'
         >
-          <FormInput
+          <FormSelect
             name='addedBy'
             register={register}
             errors={errors}
             label='Added By'
-            placeholder='Enter the one who is added by'
+            placeholder='Select Added User'
+            options={userOptions}
           />
 
-          <FormInput
+          <FormSelect
             name='approvedBy'
             register={register}
             errors={errors}
             label='Approved By'
-            placeholder='Enter the one who is approved by'
+            placeholder='Select Approved User'
+            options={userOptions}
           />
 
           <FormInput
