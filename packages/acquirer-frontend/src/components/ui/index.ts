@@ -4,6 +4,7 @@ import CustomLink from './CustomLink/CustomLink'
 import DataTable from './DataTable/DataTable'
 import MerchantInformationModal from './MerchantInformationModal/MerchantInformationModal'
 import TableSkeleton from './TableSkeleton/TableSkeleton'
+import FormSkeleton from './FormSkeleton/FormSkeleton'
 import FloatingSpinner from './FloatingSpinner/FloatingSpinner'
 import EmptyState from './EmptyState/EmptyState'
 
@@ -14,6 +15,7 @@ export {
   DataTable,
   MerchantInformationModal,
   TableSkeleton,
+  FormSkeleton,
   FloatingSpinner,
   EmptyState,
 }

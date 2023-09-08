@@ -47,7 +47,7 @@ const AddNewUser = () => {
         <Stack spacing='6'>
           {new Array(3).fill(0).map((_, index) => (
             <Box key={index}>
-              <Skeleton h='4' maxW='10' mb='2' rounded='md' />
+              <Skeleton h='3' maxW='10' mb='2' rounded='md' />
               <Skeleton h='10' maxW='25rem' rounded='md' />
             </Box>
           ))}
