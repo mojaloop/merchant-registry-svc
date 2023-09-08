@@ -90,7 +90,7 @@ interface CurrencyCode {
   description: string
 }
 
-interface DFSP {
+export interface DFSP {
   id: number
   name: string
   dfsp_type: string

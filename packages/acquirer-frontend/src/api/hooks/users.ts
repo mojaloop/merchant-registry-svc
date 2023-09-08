@@ -3,7 +3,7 @@ import { isAxiosError } from 'axios'
 import { useToast } from '@chakra-ui/react'
 
 import { FALLBACK_ERROR_MESSAGE } from '@/constants/errorMessage'
-import { createUser, getUsers } from '../users'
+import { createUser, getUserProfile, getUsers } from '../users'
 
 export function useUsers() {
   return useQuery({
@@ -37,6 +37,18 @@ export function useCreateUser() {
           status: 'error',
         })
       }
+    },
+  })
+}
+
+export function useUserProfile() {
+  return useQuery({
+    queryKey: ['users', 'profile'],
+    queryFn: getUserProfile,
+    meta: {
+      toastStatus: 'error',
+      toastTitle: 'Fetching User Profile Failed!',
+      toastDescription: FALLBACK_ERROR_MESSAGE,
     },
   })
 }
