@@ -88,6 +88,8 @@ export const DefaultRoles = [
       PermissionsEnum.EDIT_MERCHANTS,
       PermissionsEnum.DELETE_MERCHANTS,
 
+      PermissionsEnum.VIEW_PORTAL_USERS,
+
       PermissionsEnum.VIEW_PENDING_TABLE,
       PermissionsEnum.VIEW_REVERTED_TABLE,
 
@@ -101,6 +103,8 @@ export const DefaultRoles = [
       PermissionsEnum.VIEW_MERCHANTS,
       PermissionsEnum.VIEW_PENDING_TABLE,
       PermissionsEnum.VIEW_REVERTED_TABLE,
+
+      PermissionsEnum.VIEW_PORTAL_USERS,
 
       PermissionsEnum.VIEW_AUDIT_LOGS
     ]
