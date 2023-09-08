@@ -1365,6 +1365,16 @@ paths:
                     example: Invalid credentials
         '422':
           description: Validation error
+  /users/profile:
+    get:
+      tags:
+        - Portal Users
+      security:
+        - Authorization: []
+      summary: GET Portal User Profile
+      responses:
+        '200':
+          description: GET Portal User Profile
   /users:
     get:
       tags:
@@ -1389,7 +1399,7 @@ paths:
               properties:
                 email:
                   type: string
-                  example: superadmin1001@email.com
+                  example: d1superadmin1@email.com
                   description: The email for login
                 password:
                   type: string
@@ -1465,6 +1475,16 @@ paths:
                   message:
                     type: string
                     example: Invalid credentials
+  /users/refresh:
+    post:
+      tags:
+        - Portal Users
+      security:
+        - Authorization: []
+      summary: Refresh User Token
+      responses:
+        '200':
+          description: Refresh Token
   /users/verify:
     get:
       tags:

@@ -38,7 +38,7 @@ const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN ?? '1d'
  *             properties:
  *               email:
  *                 type: string
- *                 example: "superadmin1001@email.com"
+ *                 example: "d1superadmin1@email.com"
  *                 description: "The email for login"
  *               password:
  *                 type: string
