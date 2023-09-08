@@ -3,19 +3,35 @@ import { useMutation } from '@tanstack/react-query'
 import { isAxiosError } from 'axios'
 import { useToast } from '@chakra-ui/react'
 
+import { useNavItems } from '@/contexts/NavItemsContext'
 import { FALLBACK_ERROR_MESSAGE } from '@/constants/errorMessage'
 import { login, setPassword } from '../auth'
+import { getUserProfile } from '../users'
 
 export function useLogin() {
   const navigate = useNavigate()
   const toast = useToast()
+  const { setNavItems } = useNavItems()
 
   return useMutation({
     mutationFn: ({ email, password }: { email: string; password: string }) => {
       return login(email, password)
     },
-    onSuccess: data => {
+    onSuccess: async data => {
       sessionStorage.setItem('token', data)
+
+      // Remove portal user management from sidebar if the user is operator or auditor
+      const userProfile = await getUserProfile()
+      if (
+        userProfile.role.name === 'DFSP Operator' ||
+        userProfile.role.name === 'DFSP Auditor'
+      ) {
+        setNavItems(prevNavItems => {
+          const newNavItems = [...prevNavItems]
+          return newNavItems.filter(navItem => navItem.name !== 'Portal User Management')
+        })
+      }
+
       navigate('/')
       toast({
         title: 'Login Successful!',

@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { isAxiosError } from 'axios'
 import { useToast } from '@chakra-ui/react'
 
 import type {
@@ -23,7 +24,8 @@ import {
   updateOwnerInfo,
 } from '../forms'
 import { getMerchant } from '../merchants'
-import { isAxiosError } from 'axios'
+
+const FORM_FALLBACK_ERROR_MESSAGE = 'Please check your data and try again.'
 
 export function useDraftCount() {
   return useQuery({
@@ -67,12 +69,14 @@ export function useCreateBusinessInfo(goToNextStep: () => void) {
       goToNextStep()
       scrollToTop()
     },
-    onError: () => {
-      toast({
-        title: 'Creating Failed!',
-        description: 'Please check your data and try again.',
-        status: 'error',
-      })
+    onError: error => {
+      if (isAxiosError(error)) {
+        toast({
+          title: 'Creating Failed!',
+          description: error.response?.data.message || FORM_FALLBACK_ERROR_MESSAGE,
+          status: 'error',
+        })
+      }
     },
   })
 }
@@ -98,12 +102,14 @@ export function useUpdateBusinessInfo(goToNextStep: () => void) {
       goToNextStep()
       scrollToTop()
     },
-    onError: () => {
-      toast({
-        title: 'Updating Failed!',
-        description: 'Please check your data and try again.',
-        status: 'error',
-      })
+    onError: error => {
+      if (isAxiosError(error)) {
+        toast({
+          title: 'Updating Failed!',
+          description: error.response?.data.message || FORM_FALLBACK_ERROR_MESSAGE,
+          status: 'error',
+        })
+      }
     },
   })
 }
@@ -127,12 +133,14 @@ export function useCreateLocationInfo(goToNextStep: () => void) {
       goToNextStep()
       scrollToTop()
     },
-    onError: () => {
-      toast({
-        title: 'Creating Failed!',
-        description: 'Please check your data and try again.',
-        status: 'error',
-      })
+    onError: error => {
+      if (isAxiosError(error)) {
+        toast({
+          title: 'Creating Failed!',
+          description: error.response?.data.message || FORM_FALLBACK_ERROR_MESSAGE,
+          status: 'error',
+        })
+      }
     },
   })
 }
@@ -158,12 +166,14 @@ export function useUpdateLocationInfo(goToNextStep: () => void) {
       goToNextStep()
       scrollToTop()
     },
-    onError: () => {
-      toast({
-        title: 'Updating Failed!',
-        description: 'Please check your data and try again.',
-        status: 'error',
-      })
+    onError: error => {
+      if (isAxiosError(error)) {
+        toast({
+          title: 'Updating Failed!',
+          description: error.response?.data.message || FORM_FALLBACK_ERROR_MESSAGE,
+          status: 'error',
+        })
+      }
     },
   })
 }
@@ -182,12 +192,14 @@ export function useCreateOwnerInfo(goToNextStep: () => void) {
       goToNextStep()
       scrollToTop()
     },
-    onError: () => {
-      toast({
-        title: 'Creating Failed!',
-        description: 'Please check your data and try again.',
-        status: 'error',
-      })
+    onError: error => {
+      if (isAxiosError(error)) {
+        toast({
+          title: 'Creating Failed!',
+          description: error.response?.data.message || FORM_FALLBACK_ERROR_MESSAGE,
+          status: 'error',
+        })
+      }
     },
   })
 }
@@ -213,12 +225,14 @@ export function useUpdateOwnerInfo(goToNextStep: () => void) {
       goToNextStep()
       scrollToTop()
     },
-    onError: () => {
-      toast({
-        title: 'Updating Failed!',
-        description: 'Please check your data and try again.',
-        status: 'error',
-      })
+    onError: error => {
+      if (isAxiosError(error)) {
+        toast({
+          title: 'Updating Failed!',
+          description: error.response?.data.message || FORM_FALLBACK_ERROR_MESSAGE,
+          status: 'error',
+        })
+      }
     },
   })
 }
@@ -243,12 +257,14 @@ export function useCreateContactPerson(openReviewModal: () => void) {
       })
       openReviewModal()
     },
-    onError: () => {
-      toast({
-        title: 'Creating Failed!',
-        description: 'Please check your data and try again.',
-        status: 'error',
-      })
+    onError: error => {
+      if (isAxiosError(error)) {
+        toast({
+          title: 'Creating Failed!',
+          description: error.response?.data.message || FORM_FALLBACK_ERROR_MESSAGE,
+          status: 'error',
+        })
+      }
     },
   })
 }
@@ -275,12 +291,14 @@ export function useUpdateContactPerson(openReviewModal: () => void) {
       })
       openReviewModal()
     },
-    onError: () => {
-      toast({
-        title: 'Updating Failed!',
-        description: 'Please check your data and try again.',
-        status: 'error',
-      })
+    onError: error => {
+      if (isAxiosError(error)) {
+        toast({
+          title: 'Updating Failed!',
+          description: error.response?.data.message || FORM_FALLBACK_ERROR_MESSAGE,
+          status: 'error',
+        })
+      }
     },
   })
 }

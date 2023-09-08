@@ -1,28 +1,9 @@
-import { type IconType } from 'react-icons'
+import { createContext, useContext, useState } from 'react'
+
 import { MdAssignmentAdd } from 'react-icons/md'
 import { TbFileText, TbUserSearch } from 'react-icons/tb'
 
-export interface NavItem {
-  name: string
-  to: string
-  label?: string
-  icon?: IconType
-}
-
-export interface SubNavItem {
-  name: string
-  shortName: string
-  to: string
-}
-
-export interface NavAccordion {
-  name: string
-  label: string
-  icon: IconType
-  subNavItems: SubNavItem[]
-}
-
-export const navItems = [
+export const NAV_ITEMS = [
   {
     name: 'Registry',
     to: '/registry',
@@ -80,3 +61,32 @@ export const navItems = [
     ],
   },
 ]
+
+interface NavItemsContextProps {
+  navItems: typeof NAV_ITEMS
+  setNavItems: React.Dispatch<React.SetStateAction<typeof NAV_ITEMS>>
+}
+
+const NavItemsContext = createContext<NavItemsContextProps | null>(null)
+
+export const useNavItems = () => {
+  const context = useContext(NavItemsContext)
+
+  if (!context) {
+    throw new Error('`useNavItems` hook must be called inside `NavItemsProvider`')
+  }
+
+  return context
+}
+
+const NavItemsProvider = ({ children }: { children: React.ReactNode }) => {
+  const [navItems, setNavItems] = useState(NAV_ITEMS)
+
+  return (
+    <NavItemsContext.Provider value={{ navItems, setNavItems }}>
+      {children}
+    </NavItemsContext.Provider>
+  )
+}
+
+export default NavItemsProvider

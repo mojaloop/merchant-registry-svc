@@ -11,7 +11,7 @@ import {
 } from '@chakra-ui/react'
 
 import theme from '@/theme'
-import { DrawerDisclosureProvider } from '@/contexts'
+import { DrawerDisclosureProvider, NavItemsProvider } from '@/contexts'
 import App from './App.tsx'
 import './index.css'
 
@@ -51,10 +51,12 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
             defaultOptions: { variant: 'subtle', position: 'top', isClosable: true },
           }}
         >
-          <DrawerDisclosureProvider>
-            <ToastContainer />
-            <App />
-          </DrawerDisclosureProvider>
+          <NavItemsProvider>
+            <DrawerDisclosureProvider>
+              <ToastContainer />
+              <App />
+            </DrawerDisclosureProvider>
+          </NavItemsProvider>
         </ChakraProvider>
       </BrowserRouter>
     </QueryClientProvider>

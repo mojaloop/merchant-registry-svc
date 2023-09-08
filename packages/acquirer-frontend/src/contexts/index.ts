@@ -1,3 +1,4 @@
 import DrawerDisclosureProvider from './DrawerDisclosureContext'
+import NavItemsProvider from './NavItemsContext'
 
-export { DrawerDisclosureProvider }
+export { DrawerDisclosureProvider, NavItemsProvider }

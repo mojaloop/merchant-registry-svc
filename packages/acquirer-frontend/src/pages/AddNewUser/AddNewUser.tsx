@@ -2,9 +2,10 @@ import { Box, HStack, Heading, Skeleton, Stack } from '@chakra-ui/react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 
+import type { Role } from '@/types/roles'
 import { type AddNewUserForm, addNewUserSchema } from '@/lib/validations/addNewUser'
 import { useRoles } from '@/api/hooks/roles'
-import { useCreateUser } from '@/api/hooks/users'
+import { useCreateUser, useUserProfile } from '@/api/hooks/users'
 import { CustomButton } from '@/components/ui'
 import { FormInput, FormSelect } from '@/components/form'
 
@@ -20,14 +21,36 @@ const AddNewUser = () => {
 
   const roles = useRoles()
   const createUser = useCreateUser()
+  const userProfile = useUserProfile()
 
   let roleOptions
-  if (!roles.isLoading && !roles.isError) {
-    roleOptions = roles.data.data.map(({ name }) => ({ label: name, value: name }))
+  if (
+    !roles.isLoading &&
+    !roles.isError &&
+    !userProfile.isLoading &&
+    !userProfile.isError
+  ) {
+    const createAccesses: Role[] = []
+    if (userProfile.data.role.permissions.includes('Assignable Admin Roles')) {
+      createAccesses.push(roles.data.data.filter(role => role.name === 'DFSP Admin')[0])
+    }
+
+    if (userProfile.data.role.permissions.includes('Assignable Operator Roles')) {
+      createAccesses.push(
+        roles.data.data.filter(role => role.name === 'DFSP Operator')[0]
+      )
+    }
+
+    if (userProfile.data.role.permissions.includes('Assignable Auditor Roles')) {
+      createAccesses.push(roles.data.data.filter(role => role.name === 'DFSP Auditor')[0])
+    }
+
+    roleOptions = createAccesses.map(({ name }) => ({ label: name, value: name }))
   }
 
-  const onSubmit = (values: AddNewUserForm) => {
-    createUser.mutate(values)
+  const onSubmit = async (values: AddNewUserForm) => {
+    await createUser.mutateAsync(values)
+    reset()
   }
 
   return (
@@ -47,7 +70,7 @@ const AddNewUser = () => {
         <Stack spacing='6'>
           {new Array(3).fill(0).map((_, index) => (
             <Box key={index}>
-              <Skeleton h='4' maxW='10' mb='2' rounded='md' />
+              <Skeleton h='3' maxW='10' mb='2' rounded='md' />
               <Skeleton h='10' maxW='25rem' rounded='md' />
             </Box>
           ))}

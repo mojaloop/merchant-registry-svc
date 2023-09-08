@@ -27,6 +27,7 @@ import {
   CustomButton,
   CustomLink,
   DataTable,
+  FormSkeleton,
   MerchantInformationModal,
   TableSkeleton,
 } from '@/components/ui'
@@ -161,96 +162,100 @@ const DraftApplications = () => {
         Merchant Acquiring System &gt; Draft Applications
       </Heading>
 
-      <Stack as='form' spacing='8' onSubmit={handleSubmit(onSubmit)}>
-        <SimpleGrid
-          templateColumns={{
-            base: 'repeat(1, 1fr)',
-            md: 'repeat(2, 1fr)',
-            lg: 'repeat(3, 1fr)',
-            xl: 'repeat(4, 1fr)',
-          }}
-          columnGap='8'
-          rowGap={{ base: '4', sm: '6' }}
-          justifyItems='center'
-        >
-          <FormSelect
-            name='addedBy'
-            register={register}
-            errors={errors}
-            label='Added By'
-            placeholder='Select Added User'
-            options={userOptions || []}
-          />
-
-          <FormSelect
-            name='approvedBy'
-            register={register}
-            errors={errors}
-            label='Approved By'
-            placeholder='Select Approved User'
-            options={userOptions || []}
-          />
-
-          <FormInput
-            name='addedTime'
-            register={register}
-            errors={errors}
-            label='Added Time'
-            placeholder='Choose added date and time'
-            inputProps={{ type: 'date' }}
-          />
-
-          <FormInput
-            name='updatedTime'
-            register={register}
-            errors={errors}
-            label='Updated Time'
-            placeholder='Choose updated date and time'
-            inputProps={{ type: 'date' }}
-          />
-
-          <FormInput
-            name='dbaName'
-            register={register}
-            errors={errors}
-            label='DBA Name'
-            placeholder='Enter DBA name'
-          />
-
-          <FormInput
-            name='merchantId'
-            register={register}
-            errors={errors}
-            label='Merchant ID'
-            placeholder='Enter Merchant ID'
-          />
-
-          <FormInput
-            name='payintoId'
-            register={register}
-            errors={errors}
-            label='Payinto Account ID'
-            placeholder='Enter Payinto Account ID'
-          />
-        </SimpleGrid>
-
-        <Box alignSelf='end'>
-          <CustomButton
-            colorVariant='accent-outline'
-            mr='4'
-            onClick={() => {
-              reset()
-              drafts.refetch()
+      {users.isLoading ? (
+        <FormSkeleton />
+      ) : (
+        <Stack as='form' spacing='8' onSubmit={handleSubmit(onSubmit)}>
+          <SimpleGrid
+            templateColumns={{
+              base: 'repeat(1, 1fr)',
+              md: 'repeat(2, 1fr)',
+              lg: 'repeat(3, 1fr)',
+              xl: 'repeat(4, 1fr)',
             }}
+            columnGap='8'
+            rowGap={{ base: '4', sm: '6' }}
+            justifyItems='center'
           >
-            Clear Filter
-          </CustomButton>
+            <FormSelect
+              name='addedBy'
+              register={register}
+              errors={errors}
+              label='Added By'
+              placeholder='Select Added User'
+              options={userOptions || []}
+            />
 
-          <CustomButton type='submit' px='6'>
-            Search
-          </CustomButton>
-        </Box>
-      </Stack>
+            <FormSelect
+              name='approvedBy'
+              register={register}
+              errors={errors}
+              label='Approved By'
+              placeholder='Select Approved User'
+              options={userOptions || []}
+            />
+
+            <FormInput
+              name='addedTime'
+              register={register}
+              errors={errors}
+              label='Added Time'
+              placeholder='Choose added date and time'
+              inputProps={{ type: 'date' }}
+            />
+
+            <FormInput
+              name='updatedTime'
+              register={register}
+              errors={errors}
+              label='Updated Time'
+              placeholder='Choose updated date and time'
+              inputProps={{ type: 'date' }}
+            />
+
+            <FormInput
+              name='dbaName'
+              register={register}
+              errors={errors}
+              label='DBA Name'
+              placeholder='Enter DBA name'
+            />
+
+            <FormInput
+              name='merchantId'
+              register={register}
+              errors={errors}
+              label='Merchant ID'
+              placeholder='Enter Merchant ID'
+            />
+
+            <FormInput
+              name='payintoId'
+              register={register}
+              errors={errors}
+              label='Payinto Account ID'
+              placeholder='Enter Payinto Account ID'
+            />
+          </SimpleGrid>
+
+          <Box alignSelf='end'>
+            <CustomButton
+              colorVariant='accent-outline'
+              mr='4'
+              onClick={() => {
+                reset()
+                drafts.refetch()
+              }}
+            >
+              Clear Filter
+            </CustomButton>
+
+            <CustomButton type='submit' px='6'>
+              Search
+            </CustomButton>
+          </Box>
+        </Stack>
+      )}
 
       {selectedMerchantId && (
         <MerchantInformationModal
