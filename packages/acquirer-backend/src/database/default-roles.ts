@@ -59,6 +59,11 @@ export const DefaultRoles = [
 
       PermissionsEnum.VIEW_ROLES,
 
+      PermissionsEnum.VIEW_PORTAL_USERS,
+      PermissionsEnum.CREATE_PORTAL_USERS,
+      PermissionsEnum.EDIT_PORTAL_USERS,
+      PermissionsEnum.DELETE_PORTAL_USERS,
+
       PermissionsEnum.ASSIGNABLE_OPERATOR_ROLES,
       PermissionsEnum.ASSIGNABLE_AUDITOR_ROLES,
 
