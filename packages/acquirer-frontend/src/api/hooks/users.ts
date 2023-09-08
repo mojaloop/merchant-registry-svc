@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { isAxiosError } from 'axios'
 import { useToast } from '@chakra-ui/react'
 
@@ -18,11 +18,13 @@ export function useUsers() {
 }
 
 export function useCreateUser() {
+  const queryClient = useQueryClient()
   const toast = useToast()
 
   return useMutation({
     mutationFn: createUser,
     onSuccess: () => {
+      queryClient.invalidateQueries(['users'])
       toast({
         title: 'User Creation Successful!',
         description: 'Please notify the new user to check the email.',

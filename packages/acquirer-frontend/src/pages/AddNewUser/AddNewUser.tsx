@@ -48,8 +48,9 @@ const AddNewUser = () => {
     roleOptions = createAccesses.map(({ name }) => ({ label: name, value: name }))
   }
 
-  const onSubmit = (values: AddNewUserForm) => {
-    createUser.mutate(values)
+  const onSubmit = async (values: AddNewUserForm) => {
+    await createUser.mutateAsync(values)
+    reset()
   }
 
   return (
