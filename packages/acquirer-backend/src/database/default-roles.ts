@@ -57,6 +57,8 @@ export const DefaultRoles = [
       PermissionsEnum.VIEW_PENDING_TABLE,
       PermissionsEnum.VIEW_REVERTED_TABLE,
 
+      PermissionsEnum.VIEW_ROLES,
+
       PermissionsEnum.ASSIGNABLE_OPERATOR_ROLES,
       PermissionsEnum.ASSIGNABLE_AUDITOR_ROLES,
 
