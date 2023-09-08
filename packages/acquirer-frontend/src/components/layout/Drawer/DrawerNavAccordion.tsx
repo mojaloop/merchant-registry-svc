@@ -12,7 +12,7 @@ import {
   Stack,
 } from '@chakra-ui/react'
 
-import type { NavAccordion } from '@/components/layout/Sidebar/navItems'
+import type { NavAccordion } from '@/types/navItems'
 import DrawerNavItem from './DrawerNavItem'
 
 interface DrawerNavAccordionProps {

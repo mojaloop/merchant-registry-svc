@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { Box, IconButton, Stack } from '@chakra-ui/react'
 import { FiMenu } from 'react-icons/fi'
 
-import { navItems } from './navItems'
+import { useNavItems } from '@/contexts/NavItemsContext'
 import DrawerNavAccordion from '@/components/layout/Drawer/DrawerNavAccordion'
 import DrawerNavItem from '@/components/layout/Drawer/DrawerNavItem'
 import SidebarNavAccordion from './SidebarNavAccordion'
@@ -10,6 +10,8 @@ import SidebarNavItem from './SidebarNavItem'
 
 const Sidebar = () => {
   const [isExpanded, setIsExpanded] = useState(false)
+
+  const { navItems } = useNavItems()
 
   useEffect(() => {
     setIsExpanded(false)

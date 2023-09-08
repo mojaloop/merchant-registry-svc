@@ -9,7 +9,7 @@ import {
   Link,
 } from '@chakra-ui/react'
 
-import type { NavAccordion } from './navItems'
+import type { NavAccordion } from '@/types/navItems'
 import TooltipShell from './TooltipShell'
 
 interface SidebarNavAccordionProps {

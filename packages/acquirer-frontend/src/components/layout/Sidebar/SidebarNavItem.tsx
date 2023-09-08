@@ -1,7 +1,7 @@
 import { NavLink } from 'react-router-dom'
 import { Icon, Link } from '@chakra-ui/react'
 
-import type { NavItem } from './navItems'
+import type { NavItem } from '@/types/navItems'
 import TooltipShell from './TooltipShell'
 
 interface SidebarNavItemProps {

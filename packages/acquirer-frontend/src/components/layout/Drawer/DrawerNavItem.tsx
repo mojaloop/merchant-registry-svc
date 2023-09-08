@@ -1,7 +1,7 @@
 import { NavLink } from 'react-router-dom'
 import { Box, Flex, HStack, Icon, Link, type LinkProps } from '@chakra-ui/react'
 
-import type { NavItem } from '@/components/layout/Sidebar/navItems'
+import type { NavItem } from '@/types/navItems'
 import { useDrawerDisclosure } from '@/contexts/DrawerDisclosureContext'
 
 interface DrawerNavItemProps extends LinkProps {

@@ -9,13 +9,14 @@ import {
   VStack,
 } from '@chakra-ui/react'
 
-import { navItems } from '@/components/layout/Sidebar/navItems'
+import { useNavItems } from '@/contexts/NavItemsContext'
 import { useDrawerDisclosure } from '@/contexts/DrawerDisclosureContext'
 import DrawerNavItem from './DrawerNavItem'
 import DrawerNavAccordion from './DrawerNavAccordion'
 
 const Drawer = () => {
   const { isOpen, onClose } = useDrawerDisclosure()
+  const { navItems } = useNavItems()
 
   return (
     <ChakraDrawer isOpen={isOpen} placement='left' onClose={onClose}>
