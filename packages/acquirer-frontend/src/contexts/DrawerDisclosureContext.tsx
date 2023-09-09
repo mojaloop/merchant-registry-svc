@@ -1,15 +1,25 @@
-/* eslint-disable @typescript-eslint/no-empty-function */
-
 import { createContext, useContext } from 'react'
 import { useDisclosure } from '@chakra-ui/react'
 
-const DrawerDisclosureContext = createContext({
-  isOpen: false,
-  onOpen: () => {},
-  onClose: () => {},
-})
+interface DrawerDisclosureContextProps {
+  isOpen: boolean
+  onOpen: () => void
+  onClose: () => void
+}
 
-export const useDrawerDisclosure = () => useContext(DrawerDisclosureContext)
+const DrawerDisclosureContext = createContext<DrawerDisclosureContextProps | null>(null)
+
+export const useDrawerDisclosure = () => {
+  const context = useContext(DrawerDisclosureContext)
+
+  if (!context) {
+    throw new Error(
+      '`useDrawerDisclosure` hook must be called inside `DrawerDisclosureProvider`'
+    )
+  }
+
+  return context
+}
 
 const DrawerDisclosureProvider = ({ children }: { children: React.ReactNode }) => {
   const { isOpen, onOpen, onClose } = useDisclosure()
