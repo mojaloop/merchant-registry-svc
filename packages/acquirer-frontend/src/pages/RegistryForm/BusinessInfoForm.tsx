@@ -136,7 +136,6 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
     monthly_turnover && setValue('monthly_turnover', monthly_turnover)
     merchant_category && setValue('category_code', merchant_category)
     merchant_type && setValue('merchant_type', merchant_type)
-    setValue('dfsp_name', '')
     currency_code?.iso_code && setValue('currency_code', currency_code.iso_code)
     setValue(
       'have_business_license',
@@ -257,19 +256,6 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
             label='Merchant Type'
             placeholder='Merchant Type'
             options={MERCHANT_TYPES}
-          />
-
-          <FormSelect
-            name='dfsp_name'
-            register={register}
-            errors={errors}
-            label='Registered DFSP Name'
-            placeholder='DFSP'
-            options={[
-              { value: 'AA', label: 'AA' },
-              { value: 'BB', label: 'BB' },
-              { value: 'CC', label: 'CC' },
-            ]}
           />
 
           <FormSelect

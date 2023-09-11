@@ -5,7 +5,6 @@ import {
   NumberOfEmployees,
   MerchantLocationType,
   MerchantType,
-  Countries,
   BusinessOwnerIDType,
 } from 'shared-lib'
 
@@ -26,7 +25,6 @@ export const businessInfoSchema = z.object({
   merchant_type: z.nativeEnum(MerchantType, {
     errorMap: () => ({ message: 'Please select a merchant type' }),
   }),
-  dfsp_name: z.string().optional(),
   currency_code: z.nativeEnum(CurrencyCodes, {
     errorMap: () => ({ message: 'Please select a currency' }),
   }),
@@ -50,7 +48,7 @@ export const locationInfoSchema = z.object({
   room_number: z.string().optional(),
   post_box: z.string().optional(),
   postal_code: z.string().optional(),
-  country: z.nativeEnum(Countries).or(z.null()).or(z.literal('')),
+  country: z.string().optional(),
   town_name: z.string().optional(),
   district_name: z.string().optional(),
   country_subdivision: z.string().optional(),
@@ -68,7 +66,10 @@ export const ownerInfoSchema = z.object({
   identificaton_type: z.nativeEnum(BusinessOwnerIDType, {
     errorMap: () => ({ message: 'Please select an ID type' }),
   }),
-  phone_number: z.string().nonempty({ message: 'Phone number is required' }),
+  phone_number: z
+    .string()
+    .regex(/^[0-9+-]*$/, 'Please enter a valid phone number')
+    .nonempty({ message: 'Phone number is required' }),
   email: z.string().email().or(z.literal(null)).or(z.literal('')),
   department: z.string().optional(),
   sub_department: z.string().optional(),
@@ -79,7 +80,7 @@ export const ownerInfoSchema = z.object({
   room_number: z.string().optional(),
   post_box: z.string().optional(),
   postal_code: z.string().optional(),
-  country: z.nativeEnum(Countries).or(z.null()).or(z.literal('')),
+  country: z.string().optional(),
   town_name: z.string().optional(),
   district_name: z.string().optional(),
   country_subdivision: z.string().optional(),
@@ -90,6 +91,9 @@ export const ownerInfoSchema = z.object({
 export const contactPersonSchema = z.object({
   is_same_as_business_owner: z.boolean(),
   name: z.string().nonempty({ message: 'Name is required' }),
-  phone_number: z.string().nonempty({ message: 'Phone number is required' }),
+  phone_number: z
+    .string()
+    .regex(/^[0-9+-]*$/, 'Please enter a valid phone number')
+    .nonempty({ message: 'Phone number is required' }),
   email: z.string().email().or(z.literal(null)).or(z.literal('')),
 })

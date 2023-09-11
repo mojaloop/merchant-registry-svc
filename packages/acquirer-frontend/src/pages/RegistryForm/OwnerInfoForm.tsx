@@ -2,19 +2,21 @@ import { useEffect, useState } from 'react'
 import { Box, Heading, Stack, useToast } from '@chakra-ui/react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Countries, BusinessOwnerIDType } from 'shared-lib'
+import { BusinessOwnerIDType } from 'shared-lib'
 
 import { type OwnerInfoForm, ownerInfoSchema } from '@/lib/validations/registry'
-import { useCreateOwnerInfo, useDraft, useUpdateOwnerInfo } from '@/api/hooks/forms'
+import {
+  useCountries,
+  useCreateOwnerInfo,
+  useDistricts,
+  useDraft,
+  useSubdivisions,
+  useUpdateOwnerInfo,
+} from '@/api/hooks/forms'
 import { useMerchantId } from '@/hooks'
 import { CustomButton, FloatingSpinner } from '@/components/ui'
 import { FormInput, FormSelect } from '@/components/form'
 import GridShell from './GridShell'
-
-const COUNTRIES = Object.entries(Countries).map(([, label]) => ({
-  value: label,
-  label,
-}))
 
 const ID_TYPES = Object.entries(BusinessOwnerIDType).map(([, label]) => ({
   value: label,
@@ -33,6 +35,7 @@ const OwnerInfoForm = ({ setActiveStep }: OwnerInfoFormProps) => {
 
   const {
     register,
+    watch,
     formState: { errors },
     setValue,
     setFocus,
@@ -44,7 +47,26 @@ const OwnerInfoForm = ({ setActiveStep }: OwnerInfoFormProps) => {
     },
   })
 
+  const watchedCountry = watch('country') || ''
+  const watchedSubdivision = watch('country_subdivision') || ''
+
   const merchantId = useMerchantId()
+  const countries = useCountries()
+  const subdivisions = useSubdivisions(watchedCountry)
+  const districts = useDistricts(watchedCountry, watchedSubdivision)
+
+  const countryOptions = countries.data?.map(country => ({
+    value: country,
+    label: country,
+  }))
+  const subdivisionOptions = subdivisions.data?.map(subdivision => ({
+    value: subdivision,
+    label: subdivision,
+  }))
+  const districtOptions = districts.data?.map(district => ({
+    value: district,
+    label: district,
+  }))
 
   const goToNextStep = () => setActiveStep(activeStep => activeStep + 1)
 
@@ -118,7 +140,6 @@ const OwnerInfoForm = ({ setActiveStep }: OwnerInfoFormProps) => {
 
     // Server expects null instead of empty string or any other falsy value
     values.email = values.email || null
-    values.country = values.country || null
 
     if (!isDraft) {
       createOwnerInfo.mutate({ params: values, merchantId })
@@ -140,7 +161,10 @@ const OwnerInfoForm = ({ setActiveStep }: OwnerInfoFormProps) => {
 
   return (
     <>
-      {draft.isFetching && <FloatingSpinner />}
+      {(draft.isFetching ||
+        countries.isLoading ||
+        subdivisions.isFetching ||
+        districts.isFetching) && <FloatingSpinner />}
 
       <Stack as='form' onSubmit={handleSubmit(onSubmit)} noValidate>
         <GridShell justifyItems='center'>
@@ -179,7 +203,6 @@ const OwnerInfoForm = ({ setActiveStep }: OwnerInfoFormProps) => {
             errors={errors}
             label='Phone Number'
             placeholder='Phone Number'
-            inputProps={{ type: 'number' }}
           />
 
           <FormInput
@@ -276,7 +299,32 @@ const OwnerInfoForm = ({ setActiveStep }: OwnerInfoFormProps) => {
             errors={errors}
             label='Country'
             placeholder='Choose Country'
-            options={COUNTRIES}
+            options={countryOptions || []}
+            onChange={() => {
+              setValue('country_subdivision', '')
+              setValue('district_name', '')
+            }}
+          />
+
+          <FormSelect
+            name='country_subdivision'
+            register={register}
+            errors={errors}
+            label='Country Subdivision (State/Divison)'
+            placeholder='Choose Country Subdivision'
+            options={subdivisionOptions || []}
+            onChange={() => {
+              setValue('district_name', '')
+            }}
+          />
+
+          <FormSelect
+            name='district_name'
+            register={register}
+            errors={errors}
+            label='District'
+            placeholder='Choose District'
+            options={districtOptions || []}
           />
 
           <FormInput
@@ -285,22 +333,6 @@ const OwnerInfoForm = ({ setActiveStep }: OwnerInfoFormProps) => {
             errors={errors}
             label='Township'
             placeholder='Township'
-          />
-
-          <FormInput
-            name='district_name'
-            register={register}
-            errors={errors}
-            label='District'
-            placeholder='District'
-          />
-
-          <FormInput
-            name='country_subdivision'
-            register={register}
-            errors={errors}
-            label='Country Subdivision (State/Divison)'
-            placeholder='Country Subdivision'
           />
 
           <FormInput

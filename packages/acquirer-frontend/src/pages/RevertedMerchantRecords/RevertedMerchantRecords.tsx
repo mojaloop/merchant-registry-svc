@@ -127,8 +127,8 @@ const RevertedMerchantRecords = () => {
         id: 'view-details',
         cell: ({ row }) => (
           <CustomButton
-            mt={{ base: '2', xl: '0' }}
-            mr={{ base: '-2', xl: '3' }}
+            mt={{ base: '2', lg: '0' }}
+            mr={{ base: '-2', lg: '3' }}
             onClick={() => {
               setSelectedMerchantId(row.original.no)
               onInfoModalOpen()
@@ -144,8 +144,8 @@ const RevertedMerchantRecords = () => {
         cell: ({ row }) => (
           <CustomLink
             to='/registry/registry-form'
-            mt={{ base: '2', xl: '0' }}
-            mr={{ base: '-2', xl: '3' }}
+            mt={{ base: '2', lg: '0' }}
+            mr={{ base: '-2', lg: '3' }}
             onClick={() => {
               sessionStorage.setItem('merchantId', row.original.no.toString())
             }}
@@ -315,7 +315,7 @@ const RevertedMerchantRecords = () => {
         mb='-14'
       >
         {revertedMerchants.isFetching && (
-          <TableSkeleton breakpoint='xl' mt={{ base: '3', xl: '6' }} />
+          <TableSkeleton breakpoint='lg' mt={{ base: '3', lg: '6' }} />
         )}
 
         {!revertedMerchants.isLoading &&
@@ -324,7 +324,7 @@ const RevertedMerchantRecords = () => {
             <>
               <CustomButton
                 px='6'
-                mb={{ base: '6', xl: '3' }}
+                mb={{ base: '6', lg: '3' }}
                 isDisabled={revertedMerchants.data.length === 0}
                 onClick={handleExport}
               >
@@ -334,7 +334,7 @@ const RevertedMerchantRecords = () => {
               <DataTable
                 columns={columns}
                 data={revertedMerchants.data}
-                breakpoint='xl'
+                breakpoint='lg'
                 alwaysVisibleColumns={[0, 1]}
               />
 

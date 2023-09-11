@@ -127,8 +127,8 @@ const AllMerchantRecords = () => {
         id: 'view-details',
         cell: ({ row }) => (
           <CustomButton
-            mt={{ base: '2', xl: '0' }}
-            mr={{ base: '-2', xl: '3' }}
+            mt={{ base: '2', lg: '0' }}
+            mr={{ base: '-2', lg: '3' }}
             onClick={() => {
               setSelectedMerchantId(row.original.no)
               onOpen()
@@ -309,14 +309,14 @@ const AllMerchantRecords = () => {
         mb='-14'
       >
         {allMerchants.isFetching && (
-          <TableSkeleton breakpoint='xl' mt={{ base: '3', xl: '6' }} />
+          <TableSkeleton breakpoint='lg' mt={{ base: '3', lg: '6' }} />
         )}
 
         {!allMerchants.isLoading && !allMerchants.isFetching && !allMerchants.isError && (
           <>
             <CustomButton
               px='6'
-              mb={{ base: '6', xl: '3' }}
+              mb={{ base: '6', lg: '3' }}
               isDisabled={allMerchants.data.length === 0}
               onClick={handleExport}
             >
@@ -326,7 +326,7 @@ const AllMerchantRecords = () => {
             <DataTable
               columns={columns}
               data={allMerchants.data}
-              breakpoint='xl'
+              breakpoint='lg'
               alwaysVisibleColumns={[0, 1]}
             />
 

@@ -2,21 +2,23 @@ import { useEffect, useState } from 'react'
 import { Box, Heading, Stack, useToast } from '@chakra-ui/react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { MerchantLocationType, Countries } from 'shared-lib'
+import { MerchantLocationType } from 'shared-lib'
 
 import { type LocationInfoForm, locationInfoSchema } from '@/lib/validations/registry'
-import { useCreateLocationInfo, useDraft, useUpdateLocationInfo } from '@/api/hooks/forms'
+import {
+  useCountries,
+  useCreateLocationInfo,
+  useDistricts,
+  useDraft,
+  useSubdivisions,
+  useUpdateLocationInfo,
+} from '@/api/hooks/forms'
 import { useMerchantId } from '@/hooks'
 import { CustomButton, FloatingSpinner } from '@/components/ui'
 import { FormInput, FormSelect } from '@/components/form'
 import GridShell from './GridShell'
 
 const LOCATION_TYPES = Object.entries(MerchantLocationType).map(([, label]) => ({
-  value: label,
-  label,
-}))
-
-const COUNTRIES = Object.entries(Countries).map(([, label]) => ({
   value: label,
   label,
 }))
@@ -33,18 +35,35 @@ const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
 
   const {
     register,
+    watch,
     formState: { errors },
     setValue,
     setFocus,
     handleSubmit,
   } = useForm<LocationInfoForm>({
     resolver: zodResolver(locationInfoSchema),
-    defaultValues: {
-      country: null,
-    },
   })
 
+  const watchedCountry = watch('country') || ''
+  const watchedSubdivision = watch('country_subdivision') || ''
+
   const merchantId = useMerchantId()
+  const countries = useCountries()
+  const subdivisions = useSubdivisions(watchedCountry)
+  const districts = useDistricts(watchedCountry, watchedSubdivision)
+
+  const countryOptions = countries.data?.map(country => ({
+    value: country,
+    label: country,
+  }))
+  const subdivisionOptions = subdivisions.data?.map(subdivision => ({
+    value: subdivision,
+    label: subdivision,
+  }))
+  const districtOptions = districts.data?.map(district => ({
+    value: district,
+    label: district,
+  }))
 
   const goToNextStep = () => setActiveStep(activeStep => activeStep + 1)
 
@@ -114,9 +133,6 @@ const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
       })
     }
 
-    // Server expects null instead of empty string or any other falsy value
-    values.country = values.country || null
-
     if (!isDraft) {
       createLocationInfo.mutate({ params: values, merchantId })
     } else {
@@ -137,7 +153,10 @@ const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
 
   return (
     <>
-      {draft.isFetching && <FloatingSpinner />}
+      {(draft.isFetching ||
+        countries.isLoading ||
+        subdivisions.isFetching ||
+        districts.isFetching) && <FloatingSpinner />}
 
       <Stack as='form' onSubmit={handleSubmit(onSubmit)} noValidate>
         <GridShell justifyItems='center'>
@@ -245,7 +264,32 @@ const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
             errors={errors}
             label='Country'
             placeholder='Choose Country'
-            options={COUNTRIES}
+            options={countryOptions || []}
+            onChange={() => {
+              setValue('country_subdivision', '')
+              setValue('district_name', '')
+            }}
+          />
+
+          <FormSelect
+            name='country_subdivision'
+            register={register}
+            errors={errors}
+            label='Country Subdivision (State/Divison)'
+            placeholder='Choose Country Subdivision'
+            options={subdivisionOptions || []}
+            onChange={() => {
+              setValue('district_name', '')
+            }}
+          />
+
+          <FormSelect
+            name='district_name'
+            register={register}
+            errors={errors}
+            label='District'
+            placeholder='Choose District'
+            options={districtOptions || []}
           />
 
           <FormInput
@@ -254,22 +298,6 @@ const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
             errors={errors}
             label='Township'
             placeholder='Township'
-          />
-
-          <FormInput
-            name='district_name'
-            register={register}
-            errors={errors}
-            label='District'
-            placeholder='District'
-          />
-
-          <FormInput
-            name='country_subdivision'
-            register={register}
-            errors={errors}
-            label='Country Subdivision (State/Divison)'
-            placeholder='Country Subdivision'
           />
 
           <FormInput

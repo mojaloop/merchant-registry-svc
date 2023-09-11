@@ -168,8 +168,8 @@ const PendingMerchantRecords = () => {
         id: 'view-details',
         cell: ({ row }) => (
           <CustomButton
-            mt={{ base: '2', xl: '0' }}
-            mr={{ base: '-2', xl: '3' }}
+            mt={{ base: '2', lg: '0' }}
+            mr={{ base: '-2', lg: '3' }}
             onClick={() => {
               setSelectedMerchantId(row.original.no)
               onInfoModalOpen()
@@ -392,7 +392,7 @@ const PendingMerchantRecords = () => {
         mb='-14'
       >
         {pendingMerchants.isFetching && (
-          <TableSkeleton breakpoint='xl' mt={{ base: '3', xl: '6' }} />
+          <TableSkeleton breakpoint='lg' mt={{ base: '3', lg: '6' }} />
         )}
 
         {!pendingMerchants.isLoading &&
@@ -402,7 +402,7 @@ const PendingMerchantRecords = () => {
               <PendingMerchantsDataTable
                 columns={columns}
                 data={pendingMerchants.data}
-                breakpoint='xl'
+                breakpoint='lg'
                 alwaysVisibleColumns={[0, 1]}
                 onExport={async () => {
                   const blobData = await exportMerchants.mutateAsync({

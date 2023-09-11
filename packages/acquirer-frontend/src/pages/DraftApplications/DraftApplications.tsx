@@ -99,8 +99,8 @@ const DraftApplications = () => {
         id: 'view-details',
         cell: ({ row }) => (
           <CustomButton
-            mt={{ base: '2', xl: '0' }}
-            mr={{ base: '-2', xl: '3' }}
+            mt={{ base: '2', lg: '0' }}
+            mr={{ base: '-2', lg: '3' }}
             onClick={() => {
               setSelectedMerchantId(row.original.no)
               onOpen()
@@ -116,8 +116,8 @@ const DraftApplications = () => {
         cell: ({ row }) => (
           <CustomLink
             to='/registry/registry-form'
-            mt={{ base: '2', xl: '0' }}
-            mr={{ base: '-2', xl: '3' }}
+            mt={{ base: '2', lg: '0' }}
+            mr={{ base: '-2', lg: '3' }}
             onClick={() => {
               sessionStorage.setItem('merchantId', row.original.no.toString())
             }}
@@ -276,14 +276,14 @@ const DraftApplications = () => {
         mb='-14'
       >
         {drafts.isFetching && (
-          <TableSkeleton breakpoint='xl' mt={{ base: '3', xl: '6' }} />
+          <TableSkeleton breakpoint='lg' mt={{ base: '3', lg: '6' }} />
         )}
 
         {!drafts.isLoading && !drafts.isFetching && !drafts.isError && (
           <DataTable
             data={drafts.data}
             columns={columns}
-            breakpoint='xl'
+            breakpoint='lg'
             alwaysVisibleColumns={[0]}
           />
         )}

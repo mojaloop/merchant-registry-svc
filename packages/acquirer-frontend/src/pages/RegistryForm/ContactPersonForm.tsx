@@ -33,6 +33,7 @@ const ContactPersonForm = ({ setActiveStep }: ContactPersonProps) => {
     formState: { errors },
     setValue,
     setFocus,
+    resetField,
     handleSubmit,
   } = useForm<ContactPersonForm>({
     resolver: zodResolver(contactPersonSchema),
@@ -132,7 +133,16 @@ const ContactPersonForm = ({ setActiveStep }: ContactPersonProps) => {
               control={control}
               name='is_same_as_business_owner'
               render={({ field: { value, onChange, ...field } }) => (
-                <Checkbox mt='4' isChecked={value} onChange={onChange} {...field}>
+                <Checkbox
+                  mt='4'
+                  isChecked={value}
+                  onChange={e => {
+                    onChange(e)
+                    resetField('name')
+                    resetField('phone_number')
+                  }}
+                  {...field}
+                >
                   Same as business owner
                 </Checkbox>
               )}
@@ -157,7 +167,6 @@ const ContactPersonForm = ({ setActiveStep }: ContactPersonProps) => {
             errors={errors}
             label='Phone Number'
             placeholder='Phone Number'
-            inputProps={{ type: 'number' }}
           />
 
           <FormInput
