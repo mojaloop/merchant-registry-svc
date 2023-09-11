@@ -25,7 +25,6 @@ export const businessInfoSchema = z.object({
   merchant_type: z.nativeEnum(MerchantType, {
     errorMap: () => ({ message: 'Please select a merchant type' }),
   }),
-  dfsp_name: z.string().optional(),
   currency_code: z.nativeEnum(CurrencyCodes, {
     errorMap: () => ({ message: 'Please select a currency' }),
   }),
