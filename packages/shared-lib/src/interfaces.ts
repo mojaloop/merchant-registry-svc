@@ -1,4 +1,3 @@
-import { type Countries } from 'shared-lib'
 import { type MerchantAllowBlockStatus, type MerchantRegistrationStatus } from './enums'
 
 export interface IMerchantSubmitData {
@@ -38,7 +37,7 @@ export interface ILocationSubmitData {
   town_name?: string
   district_name?: string
   country_subdivision?: string
-  country: Countries
+  country?: string
   address_line?: string
   latitude?: string
   longitude?: string

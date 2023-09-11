@@ -2,8 +2,6 @@ import {
   Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn
 } from 'typeorm'
 
-import { Countries } from 'shared-lib'
-
 export class LocationEntity {
   @PrimaryGeneratedColumn()
     id!: number
@@ -47,12 +45,8 @@ export class LocationEntity {
   @Column({ nullable: true, length: 255 })
     country_subdivision!: string
 
-  @Column({
-    type: 'enum',
-    enum: Countries,
-    nullable: true
-  })
-    country!: Countries
+  @Column({ nullable: true, length: 1024 })
+    country!: string
 
   @Column({ nullable: true, length: 1024 })
     address_line!: string

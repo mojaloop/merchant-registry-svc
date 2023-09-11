@@ -1,5 +1,5 @@
 import {
-  BusinessOwnerIDType, Countries, CurrencyCodes, MerchantLocationType,
+  BusinessOwnerIDType, CurrencyCodes, MerchantLocationType,
   MerchantType,
   NumberOfEmployees
 } from 'shared-lib'
@@ -24,7 +24,7 @@ export const MerchantSubmitDataSchema = z.object({
 
 export const MerchantLocationSubmitDataSchema = z.object({
   location_type: z.nativeEnum(MerchantLocationType).optional(),
-  country: z.nativeEnum(Countries).or(z.null()),
+  country: z.string().optional(),
   web_url: z.string().optional(),
   address_type: z.string().optional(),
   department: z.string().optional(),
@@ -71,7 +71,7 @@ export const BusinessOwnerSubmitDataSchema = z.object({
   postal_code: z.string().optional(),
   town_name: z.string().optional(),
   district_name: z.string().optional(),
-  country: z.nativeEnum(Countries).or(z.null()).or(z.literal('')),
+  country: z.string().optional(),
   country_subdivision: z.string().optional(),
   address_line: z.string().optional(),
   latitude: z.string().optional(),
