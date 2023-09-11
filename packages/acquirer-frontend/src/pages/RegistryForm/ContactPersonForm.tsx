@@ -157,7 +157,6 @@ const ContactPersonForm = ({ setActiveStep }: ContactPersonProps) => {
             errors={errors}
             label='Phone Number'
             placeholder='Phone Number'
-            inputProps={{ type: 'number' }}
           />
 
           <FormInput

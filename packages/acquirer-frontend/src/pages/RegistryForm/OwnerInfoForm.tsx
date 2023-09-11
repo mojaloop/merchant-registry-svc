@@ -203,7 +203,6 @@ const OwnerInfoForm = ({ setActiveStep }: OwnerInfoFormProps) => {
             errors={errors}
             label='Phone Number'
             placeholder='Phone Number'
-            inputProps={{ type: 'number' }}
           />
 
           <FormInput

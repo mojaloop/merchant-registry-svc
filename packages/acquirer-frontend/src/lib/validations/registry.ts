@@ -67,7 +67,10 @@ export const ownerInfoSchema = z.object({
   identificaton_type: z.nativeEnum(BusinessOwnerIDType, {
     errorMap: () => ({ message: 'Please select an ID type' }),
   }),
-  phone_number: z.string().nonempty({ message: 'Phone number is required' }),
+  phone_number: z
+    .string()
+    .regex(/^[0-9+-]*$/, 'Please enter a valid phone number')
+    .nonempty({ message: 'Phone number is required' }),
   email: z.string().email().or(z.literal(null)).or(z.literal('')),
   department: z.string().optional(),
   sub_department: z.string().optional(),
@@ -89,6 +92,9 @@ export const ownerInfoSchema = z.object({
 export const contactPersonSchema = z.object({
   is_same_as_business_owner: z.boolean(),
   name: z.string().nonempty({ message: 'Name is required' }),
-  phone_number: z.string().nonempty({ message: 'Phone number is required' }),
+  phone_number: z
+    .string()
+    .regex(/^[0-9+-]*$/, 'Please enter a valid phone number')
+    .nonempty({ message: 'Phone number is required' }),
   email: z.string().email().or(z.literal(null)).or(z.literal('')),
 })
