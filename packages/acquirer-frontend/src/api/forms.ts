@@ -12,6 +12,25 @@ export async function getDraftCount() {
   return response.data.data
 }
 
+export async function getCountries() {
+  const response = await instance.get<{ data: string[] }>('/countries')
+  return response.data.data
+}
+
+export async function getSubdivisions(country: string) {
+  const response = await instance.get<{ data: string[] }>(
+    `/countries/${country}/subdivisions`
+  )
+  return response.data.data
+}
+
+export async function getDistricts(country: string, subdivision: string) {
+  const response = await instance.get<{ data: string[] }>(
+    `/countries/${country}/subdivisions/${subdivision}/districts`
+  )
+  return response.data.data
+}
+
 export async function createBusinessInfo(values: BusinessInfoForm) {
   const formData = new FormData()
 

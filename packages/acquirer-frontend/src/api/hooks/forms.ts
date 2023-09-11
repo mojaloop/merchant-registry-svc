@@ -17,7 +17,10 @@ import {
   createContactPersonInfo,
   createLocationInfo,
   createOwnerInfo,
+  getCountries,
+  getDistricts,
   getDraftCount,
+  getSubdivisions,
   updateBusinessInfo,
   updateContactPersonInfo,
   updateLocationInfo,
@@ -48,6 +51,44 @@ export function useDraft(merchantId: number) {
     meta: {
       toastStatus: 'error',
       toastTitle: 'Fetching Draft Data Failed!',
+      toastDescription: FALLBACK_ERROR_MESSAGE,
+    },
+  })
+}
+
+export function useCountries() {
+  return useQuery({
+    queryKey: ['countries'],
+    queryFn: getCountries,
+    meta: {
+      toastStatus: 'error',
+      toastTitle: 'Fetching Countries Failed!',
+      toastDescription: FALLBACK_ERROR_MESSAGE,
+    },
+  })
+}
+
+export function useSubdivisions(country: string) {
+  return useQuery({
+    queryKey: ['countries', country, 'subdivisions'],
+    queryFn: () => getSubdivisions(country),
+    enabled: !!country,
+    meta: {
+      toastStatus: 'error',
+      toastTitle: 'Fetching Country Subdivisions Failed!',
+      toastDescription: FALLBACK_ERROR_MESSAGE,
+    },
+  })
+}
+
+export function useDistricts(country: string, subdivision: string) {
+  return useQuery({
+    queryKey: ['countries', country, 'subdivisions', subdivision, 'districts'],
+    queryFn: () => getDistricts(country, subdivision),
+    enabled: !!(country && subdivision),
+    meta: {
+      toastStatus: 'error',
+      toastTitle: 'Fetching Districts Failed!',
       toastDescription: FALLBACK_ERROR_MESSAGE,
     },
   })
