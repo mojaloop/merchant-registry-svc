@@ -126,8 +126,8 @@ const RejectedMerchantRecords = () => {
         id: 'view-details',
         cell: ({ row }) => (
           <CustomButton
-            mt={{ base: '2', xl: '0' }}
-            mr={{ base: '-2', xl: '3' }}
+            mt={{ base: '2', lg: '0' }}
+            mr={{ base: '-2', lg: '3' }}
             onClick={() => {
               setSelectedMerchantId(row.original.no)
               onInfoModalOpen()
@@ -298,7 +298,7 @@ const RejectedMerchantRecords = () => {
         mb='-14'
       >
         {rejectedMerchants.isFetching && (
-          <TableSkeleton breakpoint='xl' mt={{ base: '3', xl: '6' }} />
+          <TableSkeleton breakpoint='lg' mt={{ base: '3', lg: '6' }} />
         )}
 
         {!rejectedMerchants.isLoading &&
@@ -307,7 +307,7 @@ const RejectedMerchantRecords = () => {
             <>
               <CustomButton
                 px='6'
-                mb={{ base: '6', xl: '3' }}
+                mb={{ base: '6', lg: '3' }}
                 isDisabled={rejectedMerchants.data.length === 0}
                 onClick={handleExport}
               >
@@ -317,7 +317,7 @@ const RejectedMerchantRecords = () => {
               <DataTable
                 columns={columns}
                 data={rejectedMerchants.data}
-                breakpoint='xl'
+                breakpoint='lg'
                 alwaysVisibleColumns={[0, 1]}
               />
 
