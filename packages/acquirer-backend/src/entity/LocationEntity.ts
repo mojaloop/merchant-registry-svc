@@ -1,11 +1,9 @@
 import {
-  Entity,
   Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn
 } from 'typeorm'
 
 import { Countries } from 'shared-lib'
 
-@Entity('locations')
 export class LocationEntity {
   @PrimaryGeneratedColumn()
     id!: number

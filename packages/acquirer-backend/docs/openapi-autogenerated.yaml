@@ -114,6 +114,98 @@ paths:
                   message:
                     type: string
                     example: 'Invalid log level: error'
+  /countries:
+    get:
+      tags:
+        - Countries
+      security:
+        - Authorization: []
+      summary: GET List of Countries
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: The response message
+                    example: OK
+                  data:
+                    type: array
+                    description: The list of countries
+                    items:
+                      type: object
+  /countries/{countryName}/subdivisions/{subdivisionName}/districts:
+    get:
+      tags:
+        - Countries
+      security:
+        - Authorization: []
+      summary: GET List of Districts
+      parameters:
+        - in: path
+          name: countryName
+          schema:
+            type: string
+          required: true
+          description: Name of the Country
+        - in: path
+          name: subdivisionName
+          schema:
+            type: string
+          required: true
+          description: Name of the Country Subdivision
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: The response message
+                    example: OK
+                  data:
+                    type: array
+                    description: The list of districts
+                    items:
+                      type: object
+  /countries/{countryName}/subdivisions:
+    get:
+      tags:
+        - Countries
+      security:
+        - Authorization: []
+      summary: GET List of Country Subdivisions
+      parameters:
+        - in: path
+          name: countryName
+          schema:
+            type: string
+          required: true
+          description: Name of the Country
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: The response message
+                    example: OK
+                  data:
+                    type: array
+                    description: The list of country subdivisions
+                    items:
+                      type: object
   /health-check:
     get:
       tags:

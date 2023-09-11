@@ -1,4 +1,6 @@
 import { AppDataSource } from './data-source'
+import fs from 'fs'
+import path from 'path'
 import logger from '../services/logger'
 import 'dotenv/config'
 import {
@@ -17,6 +19,9 @@ import { PortalRoleEntity } from '../entity/PortalRoleEntity'
 import { DefaultUsers } from './default-users'
 import { DefaultDFSPs } from './default-dfsps'
 import { DFSPEntity } from '../entity/DFSPEntity'
+import { CountryEntity } from '../entity/CountryEntity'
+import { CountrySubdivisionEntity } from '../entity/CountrySubdivisionEntity'
+import { DistrictEntity } from '../entity/DistrictEntity'
 
 export const initializeDatabase = async (): Promise<void> => {
   logger.info('Connecting MySQL database...')
@@ -34,6 +39,8 @@ export const initializeDatabase = async (): Promise<void> => {
       await seedDefaultPermissions()
       await seedDefaultRoles()
       await seedDefaultUsers()
+
+      await seedCountriesSubdivisionsDistricts()
     })
     .catch((error) => {
       throw error
@@ -50,12 +57,14 @@ async function seedCategoryCode (): Promise<void> {
     return
   }
 
+  const categories: MerchantCategoryEntity[] = []
   for (const categoryCode in MerchantCategoryCodes) {
     const category = new MerchantCategoryEntity()
     category.category_code = categoryCode
     category.description = MerchantCategoryCodes[categoryCode]
-    await AppDataSource.manager.save(category)
+    categories.push(category)
   }
+  await AppDataSource.manager.save(categories)
   logger.info('Seeding Merchant Category Codes... Done')
 }
 
@@ -182,4 +191,59 @@ async function seedDefaultUsers (): Promise<void> {
     }
   }
   logger.info('Seeding Default Users... Done')
+}
+
+interface SubdivisionData {
+  name: string
+  districts: string[]
+}
+
+interface CountryData {
+  name: string
+  country_subdivisions: SubdivisionData[]
+}
+
+export async function seedCountriesSubdivisionsDistricts (): Promise<void> {
+  logger.warn('Seeding Countries, Subdivisions, Districts... please wait...')
+
+  const filePath = path.join(__dirname, 'countries.json')
+  const rawData = fs.readFileSync(filePath, 'utf-8')
+  const seedData: CountryData[] = JSON.parse(rawData)
+
+  await AppDataSource.manager.clear(DistrictEntity)
+  for (const countryData of seedData) {
+    let country = await AppDataSource.manager.findOne(
+      CountryEntity, { where: { name: countryData.name } }
+    )
+
+    if (country == null) {
+      country = new CountryEntity()
+      country.name = countryData.name
+      await AppDataSource.manager.save(country)
+    }
+
+    for (const subdivisionData of countryData.country_subdivisions) {
+      let subdivision = await AppDataSource.manager.findOne(
+        CountrySubdivisionEntity, { where: { name: subdivisionData.name } }
+      )
+
+      if (subdivision == null) {
+        subdivision = new CountrySubdivisionEntity()
+        subdivision.name = subdivisionData.name
+        subdivision.country = country
+        await AppDataSource.manager.save(subdivision)
+      }
+
+      const districtEntities: DistrictEntity[] = []
+      for (const districtName of subdivisionData.districts) {
+        const district = new DistrictEntity()
+        district.name = districtName
+        district.subdivision = subdivision
+        districtEntities.push(district)
+      }
+      await AppDataSource.manager.save(districtEntities)
+    }
+  }
+
+  logger.info('Seeding Countries, Subdivisions, Districts... Done')
 }

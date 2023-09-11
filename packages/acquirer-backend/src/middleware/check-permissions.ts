@@ -25,3 +25,26 @@ export const checkPermissions = (requiredPermission: PermissionsEnum) => {
     next()
   }
 }
+
+export const checkPermissionsOr = (requiredPermissions: PermissionsEnum[]) => {
+  return (req: AuthRequest, res: Response, next: NextFunction) => {
+    const user = req.user as PortalUserEntity
+
+    if (user?.role?.permissions == null) {
+      return res.status(403).send({ message: 'Forbidden' })
+    }
+
+    const hasPermission = user.role.permissions.some(permission =>
+      requiredPermissions.includes(permission.name as PermissionsEnum)
+    )
+
+    if (!hasPermission) {
+      return res.status(403).json({
+        message:
+`Forbidden. One of the following permissions is required: ${requiredPermissions.join(', ')}.`
+      })
+    }
+
+    next()
+  }
+}
