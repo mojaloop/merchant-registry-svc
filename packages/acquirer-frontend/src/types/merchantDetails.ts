@@ -1,6 +1,5 @@
 import type {
   BusinessOwnerIDType,
-  Countries,
   CurrencyCodes,
   MerchantLocationType,
   MerchantRegistrationStatus,
@@ -57,7 +56,7 @@ type Location = {
   town_name: string
   district_name: string
   country_subdivision: string
-  country: Countries
+  country: string
   address_line: string
   latitude: string
   longitude: string

@@ -211,12 +211,7 @@ export const MerchantInfo = ({
             <DetailsItem label='Name' value={businessOwner?.name || 'N/A'} />
 
             <DetailsItem
-              label='National ID'
-              value={businessOwner?.identificaton_type || 'N/A'}
-            />
-
-            <DetailsItem
-              label='Nationality'
+              label={businessOwner?.identificaton_type}
               value={businessOwner?.identification_number || 'N/A'}
             />
 

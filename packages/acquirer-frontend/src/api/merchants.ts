@@ -7,7 +7,6 @@ export async function getMerchants(params: AllMerchantsFilterForm | MerchantsFil
   const response = await instance.get<{ data: MerchantDetails[] }>('/merchants', {
     params,
   })
-
   return response.data.data
 }
 
@@ -15,7 +14,6 @@ export async function getMerchant(merchantId: number) {
   const response = await instance.get<{ data: MerchantDetails }>(
     `/merchants/${merchantId}`
   )
-
   return response.data.data
 }
 
