@@ -18,6 +18,14 @@ import { CustomButton, FloatingSpinner } from '@/components/ui'
 import { FormInput, FormSelect } from '@/components/form'
 import GridShell from './GridShell'
 
+function removePropFromObj<TObj extends object, TKey extends keyof TObj>(
+  obj: TObj,
+  key: TKey
+) {
+  const filteredEntries = Object.entries(obj).filter(value => value[0] !== key)
+  return Object.fromEntries(filteredEntries) as Omit<TObj, TKey>
+}
+
 const LOCATION_TYPES = Object.entries(MerchantLocationType).map(([, label]) => ({
   value: label,
   label,
@@ -137,7 +145,12 @@ const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
       createLocationInfo.mutate({ params: values, merchantId })
     } else {
       if (locationId) {
-        updateLocationInfo.mutate({ params: values, merchantId, locationId })
+        const params = removePropFromObj(values, 'checkout_description')
+        updateLocationInfo.mutate({
+          params,
+          merchantId,
+          locationId,
+        })
       }
     }
   }
