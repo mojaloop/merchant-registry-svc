@@ -188,25 +188,22 @@ trying to access unauthorized(different DFSP) merchant ${merchant.id}`,
     return res.status(404).json({ message: 'Merchant Location not found' })
   }
 
-  if (location.checkout_counters == null || location.checkout_counters.length === 0) {
-    logger.error('location\'s Checkout Counter not found')
-    return res.status(404).json({ message: 'location\'s Checkout Counter not found' })
-  }
+  if (location.checkout_counters.length !== 0) {
+    // Assuming one checkoutout counter, one location, and one merchant
+    const checkoutDescription: string = req.body.checkout_description
+    if (checkoutDescription !== null && checkoutDescription !== '') {
+      location.checkout_counters[0].description = req.body.checkout_description
 
-  // Assuming one checkoutout counter, one location, and one merchant
-  const checkoutDescription: string = req.body.checkout_description
-  if (checkoutDescription !== null && checkoutDescription !== '') {
-    location.checkout_counters[0].description = req.body.checkout_description
-
-    try {
-      await AppDataSource.getRepository(CheckoutCounterEntity).update(
-        location.checkout_counters[0].id,
-        location.checkout_counters[0]
-      )
-    } catch (err) {
-      if (err instanceof QueryFailedError) {
-        logger.error('Query Failed: %o', err.message)
-        return res.status(500).send({ message: err.message })
+      try {
+        await AppDataSource.getRepository(CheckoutCounterEntity).update(
+          location.checkout_counters[0].id,
+          location.checkout_counters[0]
+        )
+      } catch (err) {
+        if (err instanceof QueryFailedError) {
+          logger.error('Query Failed: %o', err.message)
+          return res.status(500).send({ message: err.message })
+        }
       }
     }
   }
