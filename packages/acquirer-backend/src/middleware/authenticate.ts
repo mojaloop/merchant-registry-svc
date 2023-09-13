@@ -3,10 +3,10 @@ import jwt from 'jsonwebtoken'
 import dotenv from 'dotenv'
 import { type Request, type Response, type NextFunction } from 'express'
 import { audit } from '../utils/audit'
-import { AppDataSource } from '../database/data-source'
+import { AppDataSource } from '../database/dataSource'
 import { PortalUserEntity } from '../entity/PortalUserEntity'
 import { AuditActionType, AuditTrasactionStatus } from 'shared-lib'
-import { type IJWTUser } from 'src/types/jwt-user'
+import { type IJWTUser } from 'src/types/jwtUser'
 
 if (process.env.NODE_ENV === 'test') {
   dotenv.config({ path: path.resolve(process.cwd(), '.env.test'), override: true })

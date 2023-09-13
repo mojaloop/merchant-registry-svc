@@ -1,5 +1,5 @@
 import { type AuditTrasactionStatus, type AuditActionType } from 'shared-lib'
-import { AppDataSource } from '../database/data-source'
+import { AppDataSource } from '../database/dataSource'
 import { AuditEntity } from '../entity/AuditEntity'
 import { type PortalUserEntity } from '../entity/PortalUserEntity'
 

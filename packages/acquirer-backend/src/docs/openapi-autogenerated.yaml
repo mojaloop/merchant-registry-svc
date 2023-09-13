@@ -1,0 +1,1605 @@
+openapi: 3.0.0
+info:
+  title: Merchant Acquirer API
+  version: 0.1.0
+  description: Merchant Acquirer Backend
+servers:
+  - url: /api/v1
+components:
+  securitySchemes:
+    Authorization:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      value: Bearer <JWT token here>
+paths:
+  /audits:
+    get:
+      tags:
+        - Audits
+      security:
+        - Authorization: []
+      summary: GET Audit Logs
+      parameters:
+        - in: query
+          name: actionType
+          schema:
+            type: string
+            enum:
+              - UnauthorizedAccess
+              - Access
+              - Add
+              - Update
+              - Delete
+          description: The action type
+        - in: query
+          name: transactionStatus
+          schema:
+            type: string
+            enum:
+              - Success
+              - Failure
+          description: The transaction status Success or Failure
+        - in: query
+          name: applicationModule
+          schema:
+            type: string
+          description: The application module
+        - in: query
+          name: entityName
+          schema:
+            type: string
+          description: The entity name
+      responses:
+        '200':
+          description: GET Audit Logs
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: The response message
+                    example: OK
+                  data:
+                    type: array
+                    description: The list of audit logs
+                    items:
+                      type: object
+  /config/trace-level:
+    put:
+      tags:
+        - Server Configuration
+      security:
+        - Authorization: []
+      summary: Set the log level
+      description: This endpoint allows you to set the logging level
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                level:
+                  type: string
+                  description: The registration status of the merchant
+                  enum:
+                    - error
+                    - warn
+                    - info
+                    - http
+                    - verbose
+                    - debug
+                    - silly
+                  example: error
+      responses:
+        '200':
+          description: Log level set successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        '400':
+          description: Invalid log level
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'Invalid log level: error'
+  /countries:
+    get:
+      tags:
+        - Countries
+      security:
+        - Authorization: []
+      summary: GET List of Countries
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: The response message
+                    example: OK
+                  data:
+                    type: array
+                    description: The list of countries
+                    items:
+                      type: object
+  /countries/{countryName}/subdivisions/{subdivisionName}/districts:
+    get:
+      tags:
+        - Countries
+      security:
+        - Authorization: []
+      summary: GET List of Districts
+      parameters:
+        - in: path
+          name: countryName
+          schema:
+            type: string
+          required: true
+          description: Name of the Country
+        - in: path
+          name: subdivisionName
+          schema:
+            type: string
+          required: true
+          description: Name of the Country Subdivision
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: The response message
+                    example: OK
+                  data:
+                    type: array
+                    description: The list of districts
+                    items:
+                      type: object
+  /countries/{countryName}/subdivisions:
+    get:
+      tags:
+        - Countries
+      security:
+        - Authorization: []
+      summary: GET List of Country Subdivisions
+      parameters:
+        - in: path
+          name: countryName
+          schema:
+            type: string
+          required: true
+          description: Name of the Country
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: The response message
+                    example: OK
+                  data:
+                    type: array
+                    description: The list of country subdivisions
+                    items:
+                      type: object
+  /health-check:
+    get:
+      tags:
+        - Health Check
+      summary: Health Check
+      responses:
+        '200':
+          description: Health Check
+  /merchants/{id}:
+    get:
+      tags:
+        - Merchants
+      security:
+        - Authorization: []
+      summary: GET Merchant by ID
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: number
+          required: true
+          description: Numeric ID of the Merchant Record
+      responses:
+        '200':
+          description: GET Merchant by ID
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  data:
+                    type: object
+  /merchants/{id}/checkout-counters:
+    get:
+      tags:
+        - Merchants
+        - Checkout Counters
+      security:
+        - Authorization: []
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: number
+          required: true
+          description: Numeric ID of the Merchant Record
+      summary: GET Merchant Location List
+      responses:
+        '200':
+          description: GET Merchant Checkout Counter List
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: The response message
+                    example: OK
+                  data:
+                    type: array
+                    description: The list of merchants
+                    items:
+                      type: object
+  /merchants/draft-counts:
+    get:
+      tags:
+        - Merchants
+      security:
+        - Authorization: []
+      summary: GET Merchants Draft Count
+      responses:
+        '200':
+          description: GET Merchants List
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: The response message
+                    example: OK
+                  data:
+                    type: string
+                    description: merchant drafts counts
+                    example: 4
+  /merchants/export-with-filter:
+    get:
+      tags:
+        - Merchants
+        - Exports / Imports
+      security:
+        - Authorization: []
+      summary: Export Merchants as XLSX
+      parameters:
+        - in: query
+          name: merchantId
+          schema:
+            type: integer
+          description: The ID of the merchant
+        - in: query
+          name: dbaName
+          schema:
+            type: string
+          description: The trading name of the merchant
+        - in: query
+          name: registrationStatus
+          schema:
+            type: string
+            enum:
+              - Draft
+              - Review
+              - Waiting For Alias Generation
+              - Approved
+              - Rejected
+              - Reverted
+          description: The registration status of the merchant
+        - in: query
+          name: payintoId
+          schema:
+            type: string
+          description: The ID of the payment recipient for the merchant
+        - in: query
+          name: addedBy
+          schema:
+            type: integer
+          description: The ID of the user who added the merchant
+        - in: query
+          name: approvedBy
+          schema:
+            type: integer
+          description: The ID of the user who approved the merchant
+        - in: query
+          name: addedTime
+          schema:
+            type: string
+            format: date-time
+          description: The time the merchant was added
+        - in: query
+          name: updatedTime
+          schema:
+            type: string
+            format: date-time
+          description: The last time the merchant was updated
+      responses:
+        '200':
+          description: Merchants Exported
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  data:
+                    type: object
+  /merchants/export-with-ids:
+    get:
+      tags:
+        - Merchants
+        - Exports / Imports
+      security:
+        - Authorization: []
+      summary: Export Merchants as XLSX
+      parameters:
+        - in: query
+          name: ids
+          required: true
+          schema:
+            type: array
+            items:
+              type: number
+          description: IDs are either as a comma-separated string or an array of numbers.
+          example:
+            - 1
+            - 2
+            - 3
+      responses:
+        '200':
+          description: Merchants Exported
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  data:
+                    type: object
+  /merchants/{id}/locations:
+    get:
+      tags:
+        - Merchants
+        - Merchant Locations
+      security:
+        - Authorization: []
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: number
+          required: true
+          description: Numeric ID of the Merchant Record
+      summary: GET Merchant Location List
+      responses:
+        '200':
+          description: GET Merchant Location List
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: The response message
+                    example: OK
+                  data:
+                    type: array
+                    description: The list of merchants
+                    items:
+                      type: object
+    post:
+      tags:
+        - Merchants
+        - Merchant Locations
+      security:
+        - Authorization: []
+      summary: Create a new location for a Merchant
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: number
+          required: true
+          description: Numeric ID of the Merchant Record
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                location_type:
+                  type: string
+                  example: Physical
+                web_url:
+                  type: string
+                  example: http://www.example.com
+                address_type:
+                  type: string
+                  example: Office
+                department:
+                  type: string
+                  example: Sales
+                sub_department:
+                  type: string
+                  example: Support
+                street_name:
+                  type: string
+                  example: Main Street
+                building_number:
+                  type: string
+                  example: '123'
+                building_name:
+                  type: string
+                  example: Big Building
+                floor_number:
+                  type: string
+                  example: '4'
+                room_number:
+                  type: string
+                  example: '101'
+                post_box:
+                  type: string
+                  example: PO Box 123
+                postal_code:
+                  type: string
+                  example: '12345'
+                town_name:
+                  type: string
+                  example: Townsville
+                district_name:
+                  type: string
+                  example: District 1
+                country_subdivision:
+                  type: string
+                  example: State
+                country:
+                  type: string
+                  example: United States of America
+                address_line:
+                  type: string
+                  example: 123 Main Street, Townsville
+                latitude:
+                  type: string
+                  example: '40.7128'
+                longitude:
+                  type: string
+                  example: '74.0060'
+      responses:
+        '201':
+          description: Merchant location created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  data:
+                    type: object
+  /merchants:
+    get:
+      tags:
+        - Merchants
+      security:
+        - Authorization: []
+      summary: GET Merchants List
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+          description: The page number
+          minimum: 1
+          example: 1
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            minimum: 1
+          description: The number of items per page
+        - in: query
+          name: merchantId
+          schema:
+            type: integer
+          description: The ID of the merchant
+        - in: query
+          name: dbaName
+          schema:
+            type: string
+          description: The trading name of the merchant
+        - in: query
+          name: registrationStatus
+          schema:
+            type: string
+            enum:
+              - Draft
+              - Review
+              - Waiting For Alias Generation
+              - Approved
+              - Rejected
+              - Reverted
+          description: The registration status of the merchant
+        - in: query
+          name: payintoId
+          schema:
+            type: string
+          description: The ID of the payment recipient for the merchant
+        - in: query
+          name: addedBy
+          schema:
+            type: integer
+          description: The ID of the user who added the merchant
+        - in: query
+          name: approvedBy
+          schema:
+            type: integer
+          description: The ID of the user who approved the merchant
+        - in: query
+          name: addedTime
+          schema:
+            type: string
+            format: date-time
+          description: The time the merchant was added
+        - in: query
+          name: updatedTime
+          schema:
+            type: string
+            format: date-time
+          description: The last time the merchant was updated
+      responses:
+        '200':
+          description: GET Merchants List
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: The response message
+                    example: OK
+                  data:
+                    type: array
+                    description: The list of merchants
+                    items:
+                      type: object
+  /merchants/{id}/contact-persons:
+    post:
+      tags:
+        - Merchants
+        - Contact Persons
+      security:
+        - Authorization: []
+      summary: Create a new contact person for a Merchant
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: number
+          required: true
+          description: Numeric ID of the Merchant Record
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                is_same_as_business_owner:
+                  type: boolean
+                  example: false
+                name:
+                  type: string
+                  example: John Doe
+                email:
+                  type: string
+                  example: john.doe@example.com
+                phone_number:
+                  type: string
+                  example: 123-456-7890
+      responses:
+        '201':
+          description: Contact Person Saved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  data:
+                    type: object
+  /merchants/draft:
+    post:
+      tags:
+        - Merchants
+      security:
+        - Authorization: []
+      summary: Create a new Merchant Draft
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                dba_trading_name:
+                  type: string
+                  example: Merchant 1
+                registered_name:
+                  type: string
+                  example: Merchant 1
+                employees_num:
+                  type: string
+                  example: 1 - 5
+                monthly_turnover:
+                  type: number
+                  example: 0.5
+                currency_code:
+                  type: string
+                  example: PHP
+                category_code:
+                  type: string
+                  example: '10410'
+                merchant_type:
+                  type: string
+                  example: Individual
+                payinto_alias:
+                  type: string
+                  example: merchant1
+                  required: false
+                license_number:
+                  type: string
+                  example: '123456789'
+                  required: true
+                license_document:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: The merchant draft has been created successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Drafting Merchant Successful.
+                  data:
+                    type: object
+        '422':
+          description: Validation error
+        '500':
+          description: Server error
+  /merchants/{id}/business-owners:
+    post:
+      tags:
+        - Merchants
+        - Business Owners
+      security:
+        - Authorization: []
+      summary: Create a new business owner for a Merchant
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: number
+          required: true
+          description: Numeric ID of the Merchant Record
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: John Doe
+                email:
+                  type: string
+                  example: john.doe@example.com
+                phone_number:
+                  type: string
+                  example: '1234567890'
+                identificaton_type:
+                  type: string
+                  example: National ID
+                identification_number:
+                  type: string
+                  example: '123456789'
+                country:
+                  type: string
+                  example: Australia
+                country_subdivision:
+                  type: string
+                  example: State
+                address_line:
+                  type: string
+                  example: 123 Main Street, Townsville
+                latitude:
+                  type: string
+                  example: '40.7128'
+                longitude:
+                  type: string
+                  example: '74.0060'
+      responses:
+        '201':
+          description: Business Owner Saved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  data:
+                    type: object
+  /merchants/{id}/approve:
+    put:
+      tags:
+        - Merchants
+        - Merchant Status
+      summary: Updates the status of a Merchant to 'Waiting For Alias Generation'
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: The ID of the merchant to update
+      security:
+        - Authorization: []
+      responses:
+        '200':
+          description: Merchant status successfully updated to Review
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: The response message
+                    example: Status Updated to Review
+                  data:
+                    type: object
+                    description: The updated merchant data
+        '401':
+          description: Unauthorized request
+        '404':
+          description: Merchant not found
+        '422':
+          description: Invalid merchant ID
+        '500':
+          description: Server error
+  /merchants/bulk-approve:
+    put:
+      tags:
+        - Merchants
+        - Merchant Status
+      security:
+        - Authorization: []
+      summary: Bulk Approve the registration status of multiple Merchant Records
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                ids:
+                  type: array
+                  items:
+                    type: number
+                  description: List of Merchant Record IDs to be updated
+                  example:
+                    - 1
+                    - 2
+                    - 3
+      responses:
+        '200':
+          description: Status Updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+  /merchants/{merchantId}/contact-persons/{contactPersonId}:
+    put:
+      tags:
+        - Merchants
+        - Contact Persons
+      security:
+        - Authorization: []
+      summary: Update contact person of Merchant
+      parameters:
+        - in: path
+          name: merchantId
+          schema:
+            type: number
+          required: true
+          description: Numeric ID of the Merchant Record
+        - in: path
+          name: contactPersonId
+          schema:
+            type: number
+          required: true
+          description: Numeric ID of the Contact Person
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                is_same_as_business_owner:
+                  type: boolean
+                  example: false
+                name:
+                  type: string
+                  example: John Doe Updated 2
+                email:
+                  type: string
+                  example: john.doe.updated.2@example.com
+                phone_number:
+                  type: string
+                  example: 123-456-7890-333
+      responses:
+        '201':
+          description: Contact Person Updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  data:
+                    type: object
+  /merchants/{id}/draft:
+    put:
+      tags:
+        - Merchants
+      security:
+        - Authorization: []
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: number
+          required: true
+          description: Numeric ID of the Merchant Record
+      summary: Update Merchant Draft
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                dba_trading_name:
+                  type: string
+                  example: Merchant 1
+                registered_name:
+                  type: string
+                  example: Merchant 1
+                employees_num:
+                  type: string
+                  example: 1 - 5
+                monthly_turnover:
+                  type: number
+                  example: 0.5
+                currency_code:
+                  type: string
+                  example: PHP
+                category_code:
+                  type: string
+                  example: '10410'
+                merchant_type:
+                  type: string
+                  example: Individual
+                payinto_alias:
+                  type: string
+                  example: merchant1
+                  required: false
+                license_number:
+                  type: string
+                  example: '123456789'
+                  required: true
+                license_document:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: The merchant draft has been created successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Drafting Merchant Successful.
+                  data:
+                    type: object
+        '422':
+          description: Validation error
+        '500':
+          description: Server error
+  /merchants/{merchantId}/locations/{locationId}:
+    put:
+      tags:
+        - Merchants
+        - Merchant Locations
+      security:
+        - Authorization: []
+      summary: Update old location for a Merchant
+      parameters:
+        - in: path
+          name: merchantId
+          schema:
+            type: number
+          required: true
+          description: Numeric ID of the Merchant Record
+        - in: path
+          name: locationId
+          schema:
+            type: number
+          required: true
+          description: Numeric ID of the Location
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                location_type:
+                  type: string
+                  example: Physical
+                web_url:
+                  type: string
+                  example: http://www.example.com
+                address_type:
+                  type: string
+                  example: Office
+                department:
+                  type: string
+                  example: Sales
+                sub_department:
+                  type: string
+                  example: Support
+                street_name:
+                  type: string
+                  example: Main Street
+                building_number:
+                  type: string
+                  example: '123'
+                building_name:
+                  type: string
+                  example: Big Building
+                floor_number:
+                  type: string
+                  example: '4'
+                room_number:
+                  type: string
+                  example: '101'
+                post_box:
+                  type: string
+                  example: PO Box 123
+                postal_code:
+                  type: string
+                  example: '12345'
+                town_name:
+                  type: string
+                  example: Townsville
+                district_name:
+                  type: string
+                  example: District 1
+                country_subdivision:
+                  type: string
+                  example: State
+                country:
+                  type: string
+                  example: United States of America
+                address_line:
+                  type: string
+                  example: 123 Main Street, Townsville
+                latitude:
+                  type: string
+                  example: '40.7128'
+                longitude:
+                  type: string
+                  example: '74.0060'
+      responses:
+        '200':
+          description: Merchant Location Updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  data:
+                    type: object
+  /merchants/{merchantId}/business-owners/{ownerId}:
+    put:
+      tags:
+        - Merchants
+        - Business Owners
+      security:
+        - Authorization: []
+      summary: Update a business owner of Merchant
+      parameters:
+        - in: path
+          name: merchantId
+          schema:
+            type: number
+          required: true
+          description: Numeric ID of the Merchant Record
+        - in: path
+          name: ownerId
+          schema:
+            type: number
+          required: true
+          description: Numeric ID of the Business Owner Record
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: John Doe Updated
+                email:
+                  type: string
+                  example: john.doe.updated@example.com
+                phone_number:
+                  type: string
+                  example: '1234567890222'
+                identificaton_type:
+                  type: string
+                  example: National ID
+                identification_number:
+                  type: string
+                  example: '1234567892222'
+                country:
+                  type: string
+                  example: Argentina
+                country_subdivision:
+                  type: string
+                  example: State Updated
+                address_line:
+                  type: string
+                  example: 123 Main Street, Townsville Updated
+                latitude:
+                  type: string
+                  example: '99.7128'
+                longitude:
+                  type: string
+                  example: '99.0060'
+      responses:
+        '201':
+          description: Business Owner Updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  data:
+                    type: object
+  /merchants/{id}/ready-to-review:
+    put:
+      tags:
+        - Merchants
+        - Merchant Status
+      summary: Updates the status of a Merchant to 'Review'
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: The ID of the merchant to update
+      security:
+        - Authorization: []
+      responses:
+        '200':
+          description: Merchant status successfully updated to Review
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: The response message
+                    example: Status Updated to Review
+                  data:
+                    type: object
+                    description: The updated merchant data
+        '401':
+          description: Unauthorized request
+        '404':
+          description: Merchant not found
+        '422':
+          description: Invalid merchant ID
+        '500':
+          description: Server error
+  /merchants/{id}/reject:
+    put:
+      tags:
+        - Merchants
+        - Merchant Status
+      summary: Updates the status of a Merchant to 'Reject'
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: The ID of the merchant to update
+      security:
+        - Authorization: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                reason:
+                  type: string
+                  description: Reason for rejecting the merchant
+                  example: Information provided is not sufficient
+      responses:
+        '200':
+          description: Merchant status successfully updated to Review
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: The response message
+                    example: Status Updated to Review
+                  data:
+                    type: object
+                    description: The updated merchant data
+        '401':
+          description: Unauthorized request
+        '404':
+          description: Merchant not found
+        '422':
+          description: Invalid merchant ID
+        '500':
+          description: Server error
+  /merchants/bulk-reject:
+    put:
+      tags:
+        - Merchants
+        - Merchant Status
+      security:
+        - Authorization: []
+      summary: Bulk Rejected the registration status of multiple Merchant Records
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                ids:
+                  type: array
+                  items:
+                    type: number
+                  description: List of Merchant Record IDs to be updated
+                  example:
+                    - 1
+                    - 2
+                    - 3
+                reason:
+                  type: string
+                  description: Reason for rejecting the merchant
+                  example: Information provided is not sufficient
+      responses:
+        '200':
+          description: Status Updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+  /merchants/bulk-revert:
+    put:
+      tags:
+        - Merchants
+        - Merchant Status
+      security:
+        - Authorization: []
+      summary: Bulk Revert the registration status of multiple Merchant Records
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                ids:
+                  type: array
+                  items:
+                    type: number
+                  description: List of Merchant Record IDs to be updated
+                  example:
+                    - 1
+                    - 2
+                    - 3
+                reason:
+                  type: string
+                  description: Reason for reverting the merchant
+                  example: Information need to be updated
+      responses:
+        '200':
+          description: Status Updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+  /roles:
+    get:
+      tags:
+        - Roles
+      security:
+        - Authorization: []
+      summary: GET Roles
+      responses:
+        '200':
+          description: GET Roles
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: The response message
+                    example: OK
+                  data:
+                    type: array
+                    description: The list of roles with their permissions and users
+                    items:
+                      type: object
+    post:
+      tags:
+        - Roles
+      security:
+        - Authorization: []
+      summary: POST Role
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: DFSP Operator
+                  description: The name of the role
+                description:
+                  type: string
+                  example: DFSP Operator
+                  description: The description of the role
+                permissions:
+                  type: array
+                  items:
+                    type: string
+                    example: View Merchants
+                    description: The permissions for the role
+      responses:
+        '200':
+          description: Create Role
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: The response message
+                    example: OK
+  /roles/{id}:
+    post:
+      tags:
+        - Roles
+      security:
+        - Authorization: []
+      summary: Update Permissions for Role
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                permissions:
+                  type: array
+                  items:
+                    type: string
+                    example:
+                      - VIEW_MERCHANTS
+                      - REJECT_MERCHANTS
+                    description: The permissions for the role
+      responses:
+        '200':
+          description: Role Updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: The response message
+                    example: OK
+  /users/add:
+    post:
+      tags:
+        - Portal Users
+      summary: Add a user by Admin
+      security:
+        - Authorization: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: Test User
+                  description: The name of the user
+                email:
+                  type: string
+                  example: test1@email.com
+                  description: The email for login
+                role:
+                  type: string
+                  example: Auditor
+                  description: The role of the user
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Login successful
+        '400':
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: Invalid credentials
+        '422':
+          description: Validation error
+  /users/profile:
+    get:
+      tags:
+        - Portal Users
+      security:
+        - Authorization: []
+      summary: GET Portal User Profile
+      responses:
+        '200':
+          description: GET Portal User Profile
+  /users:
+    get:
+      tags:
+        - Portal Users
+      security:
+        - Authorization: []
+      summary: GET Portal Users List
+      responses:
+        '200':
+          description: GET Portal Users List
+  /users/login:
+    post:
+      tags:
+        - Portal Users
+      summary: Authenticate a user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: d1superadmin1@email.com
+                  description: The email for login
+                password:
+                  type: string
+                  example: password
+                  description: The password for login in clear text
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Login successful
+        '400':
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: Invalid credentials
+        '422':
+          description: Validation error
+  /users/reset-password:
+    put:
+      tags:
+        - Portal Users
+      summary: Reset Password
+      security:
+        - Authorization: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                password:
+                  type: string
+                  example: password
+      responses:
+        '200':
+          description: Reset Password Successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Reset Password Successful
+        '400':
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: Invalid credentials
+  /users/refresh:
+    post:
+      tags:
+        - Portal Users
+      security:
+        - Authorization: []
+      summary: Refresh User Token
+      responses:
+        '200':
+          description: Refresh Token
+  /users/verify:
+    get:
+      tags:
+        - Portal Users
+      security:
+        - Authorization: []
+      parameters:
+        - in: query
+          name: token
+          schema:
+            type: string
+          description: The token to verify the user email
+      summary: Verify The Email Token and Redirect to Frontend To set password
+tags:
+  - name: Health Check
+  - name: Portal Users
+  - name: Merchants
+  - name: Merchant Status
+  - name: Merchant Locations
+  - name: Countries
+  - name: Business Owners
+  - name: Contact Persons
+  - name: Exports / Imports
+  - name: Roles
+  - name: Audits
+  - name: Server Configuration
+  - name: Checkout Counters
