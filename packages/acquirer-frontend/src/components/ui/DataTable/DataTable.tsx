@@ -110,7 +110,7 @@ const DataTable = <T,>({
                   return (
                     <Td
                       key={cell.id}
-                      // Sets max width and padding only if the column is accessor type
+                      // Set max width and padding only if the column is accessor type
                       px={cell.column.accessorFn ? '2' : '0'}
                       maxW={cell.column.accessorFn ? '28' : undefined}
                       textAlign='center'

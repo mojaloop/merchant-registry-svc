@@ -147,6 +147,10 @@ const PendingMerchantRecords = () => {
         cell: info => info.getValue(),
         header: 'Registered DFSP Name',
       }),
+      columnHelper.accessor('makerUsername', {
+        cell: info => info.getValue(),
+        header: 'Maker Username',
+      }),
       columnHelper.accessor('registrationStatus', {
         cell: info => (
           <HStack justify='center' spacing='1.5'>

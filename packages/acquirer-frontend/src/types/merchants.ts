@@ -11,4 +11,5 @@ export interface MerchantInfo {
   counterDescription: string
   registeredDfspName: string
   registrationStatus: MerchantRegistrationStatus
+  makerUsername: string
 }
