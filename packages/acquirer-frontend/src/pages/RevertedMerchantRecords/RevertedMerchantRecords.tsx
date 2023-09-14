@@ -106,7 +106,7 @@ const RevertedMerchantRecords = () => {
         cell: info => info.getValue(),
         header: 'Registered DFSP Name',
       }),
-      columnHelper.accessor('makerUsername', {
+      columnHelper.accessor('maker.name', {
         cell: info => info.getValue(),
         header: 'Maker Username',
       }),

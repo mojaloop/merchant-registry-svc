@@ -22,6 +22,7 @@ import {
 } from '@chakra-ui/react'
 
 import type { MerchantInfo } from '@/types/merchants'
+import { useUserProfile } from '@/api/hooks/users'
 import { CustomButton } from '@/components/ui'
 import { MobileTable, PaginationControl } from '@/components/ui/DataTable'
 
@@ -71,6 +72,8 @@ const PendingMerchantsDataTable = ({
   })
 
   const { getHeaderGroups, getRowModel, getSelectedRowModel } = table
+
+  const userProfile = useUserProfile()
 
   const getSelectedMerchantIds = (): number[] => {
     const selectedRows = getSelectedRowModel().rows.map(row => row.original)
@@ -170,12 +173,17 @@ const PendingMerchantsDataTable = ({
 
           <Tbody>
             {getRowModel().rows.map(row => (
-              <Tr key={row.id} bg='white' {...rowStyle}>
+              <Tr
+                key={row.id}
+                bg='white'
+                opacity={userProfile.data?.id === row.original.maker.id ? '0.7' : ''}
+                {...rowStyle}
+              >
                 {row.getVisibleCells().map(cell => {
                   return (
                     <Td
                       key={cell.id}
-                      // Sets max width and padding only if the column is accessor type
+                      // Set max width and padding only if the column is accessor type
                       px={cell.column.accessorFn ? '2' : '0'}
                       maxW={cell.column.accessorFn ? '28' : undefined}
                       textAlign='center'

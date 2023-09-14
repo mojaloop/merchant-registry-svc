@@ -1,5 +1,7 @@
 import type { MerchantRegistrationStatus, MerchantType } from 'shared-lib'
 
+import type { CreatedBy } from './merchantDetails'
+
 export interface MerchantInfo {
   no: number
   dbaName: string
@@ -11,5 +13,5 @@ export interface MerchantInfo {
   counterDescription: string
   registeredDfspName: string
   registrationStatus: MerchantRegistrationStatus
-  makerUsername: string
+  maker: CreatedBy
 }

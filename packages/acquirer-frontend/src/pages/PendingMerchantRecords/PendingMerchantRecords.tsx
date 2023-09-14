@@ -27,7 +27,7 @@ import {
   useRejectMerchants,
   useRevertMerchants,
 } from '@/api/hooks/merchants'
-import { useUsers } from '@/api/hooks/users'
+import { useUserProfile, useUsers } from '@/api/hooks/users'
 import {
   REGISTRATION_STATUS_COLORS,
   type RegistrationStatus,
@@ -87,6 +87,8 @@ const PendingMerchantRecords = () => {
     onClose: onRevertAlertClose,
   } = useDisclosure()
 
+  const userProfile = useUserProfile()
+
   const columns = useMemo(() => {
     const columnHelper = createColumnHelper<MerchantInfo>()
 
@@ -103,6 +105,7 @@ const PendingMerchantRecords = () => {
         ),
         cell: ({ row }) => (
           <Checkbox
+            isDisabled={userProfile.data?.id === row.original.maker.id}
             isChecked={row.getIsSelected()}
             onChange={e => row.toggleSelected(!!e.target.checked)}
             aria-label='Select row'
@@ -147,7 +150,7 @@ const PendingMerchantRecords = () => {
         cell: info => info.getValue(),
         header: 'Registered DFSP Name',
       }),
-      columnHelper.accessor('makerUsername', {
+      columnHelper.accessor('maker.name', {
         cell: info => info.getValue(),
         header: 'Maker Username',
       }),
@@ -185,7 +188,7 @@ const PendingMerchantRecords = () => {
         enableSorting: false,
       }),
     ]
-  }, [onInfoModalOpen])
+  }, [onInfoModalOpen, userProfile.data?.id])
 
   const {
     register,

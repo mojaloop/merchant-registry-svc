@@ -31,7 +31,7 @@ export function transformIntoTableData(merchantData: MerchantDetails): MerchantI
     counterDescription: merchantData.checkout_counters[0]?.description || 'N/A',
     registeredDfspName: merchantData.default_dfsp.name,
     registrationStatus: merchantData.registration_status,
-    makerUsername: merchantData.created_by.name,
+    maker: merchantData.created_by,
   }
 }
 
