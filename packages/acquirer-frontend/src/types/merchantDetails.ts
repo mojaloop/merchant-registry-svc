@@ -72,7 +72,7 @@ interface BusinessLicense {
   updated_at: string
 }
 
-interface CreatedBy {
+export interface CreatedBy {
   id: number
   name: string
   email: string

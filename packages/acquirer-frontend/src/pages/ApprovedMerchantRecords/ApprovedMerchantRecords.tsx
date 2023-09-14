@@ -105,6 +105,10 @@ const ApprovedMerchantRecords = () => {
         cell: info => info.getValue(),
         header: 'Registered DFSP Name',
       }),
+      columnHelper.accessor('maker.name', {
+        cell: info => info.getValue(),
+        header: 'Maker Username',
+      }),
       columnHelper.accessor('registrationStatus', {
         cell: info => (
           <HStack justify='center' spacing='1.5'>

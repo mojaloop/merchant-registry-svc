@@ -138,6 +138,7 @@ const ContactPersonForm = ({ setActiveStep }: ContactPersonProps) => {
                   isChecked={value}
                   onChange={e => {
                     onChange(e)
+                    // reset field states such as the error state of name and phone number
                     resetField('name')
                     resetField('phone_number')
                   }}
