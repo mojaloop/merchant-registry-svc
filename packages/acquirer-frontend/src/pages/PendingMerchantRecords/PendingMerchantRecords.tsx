@@ -106,7 +106,10 @@ const PendingMerchantRecords = () => {
         cell: ({ row }) => (
           <Checkbox
             isDisabled={userProfile.data?.id === row.original.maker.id}
-            isChecked={row.getIsSelected()}
+            // Always uncheck this when the user is the same with the maker
+            isChecked={
+              userProfile.data?.id === row.original.maker.id ? false : row.getIsSelected()
+            }
             onChange={e => row.toggleSelected(!!e.target.checked)}
             aria-label='Select row'
             borderColor='blackAlpha.400'
@@ -134,9 +137,9 @@ const PendingMerchantRecords = () => {
         cell: info => info.getValue(),
         header: 'Merchant Type',
       }),
-      columnHelper.accessor('state', {
+      columnHelper.accessor('town', {
         cell: info => info.getValue(),
-        header: 'State',
+        header: 'Town',
       }),
       columnHelper.accessor('countrySubdivision', {
         cell: info => info.getValue(),

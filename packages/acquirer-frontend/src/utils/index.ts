@@ -24,8 +24,8 @@ export function transformIntoTableData(merchantData: MerchantDetails): MerchantI
     merchantType: merchantData.merchant_type,
 
     // Assuming the first location's country subdivision is the state
-    state: merchantData.locations[0]?.country_subdivision || 'N/A',
-    countrySubdivision: merchantData.locations[0]?.town_name || 'N/A',
+    town: merchantData.locations[0]?.town_name || 'N/A',
+    countrySubdivision: merchantData.locations[0]?.country_subdivision || 'N/A',
 
     // Assuming the first checkout counter's description is the counterDescription
     counterDescription: merchantData.checkout_counters[0]?.description || 'N/A',
