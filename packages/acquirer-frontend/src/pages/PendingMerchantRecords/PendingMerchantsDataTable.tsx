@@ -76,7 +76,10 @@ const PendingMerchantsDataTable = ({
   const userProfile = useUserProfile()
 
   const getSelectedMerchantIds = (): number[] => {
-    const selectedRows = getSelectedRowModel().rows.map(row => row.original)
+    const selectedRows = getSelectedRowModel()
+      .rows.map(row => row.original)
+      // Filter merchant records that are made by the user
+      .filter(merchant => merchant.maker.id !== userProfile.data?.id)
 
     return selectedRows.map(selectedRow => selectedRow.no)
   }
