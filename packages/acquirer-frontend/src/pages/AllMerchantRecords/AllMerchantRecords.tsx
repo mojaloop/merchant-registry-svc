@@ -90,9 +90,9 @@ const AllMerchantRecords = () => {
         cell: info => info.getValue(),
         header: 'Merchant Type',
       }),
-      columnHelper.accessor('state', {
+      columnHelper.accessor('town', {
         cell: info => info.getValue(),
-        header: 'State',
+        header: 'Town',
       }),
       columnHelper.accessor('countrySubdivision', {
         cell: info => info.getValue(),
