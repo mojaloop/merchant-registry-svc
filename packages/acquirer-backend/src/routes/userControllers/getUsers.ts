@@ -35,7 +35,10 @@ export async function getUsers (req: AuthRequest, res: Response) {
 
   // DFSPs can only see their own users
   if (portalUser.user_type === PortalUserType.DFSP) {
-    users = users.filter(user => user.dfsp.id === portalUser.dfsp.id)
+    users = users.filter(user =>
+      user.dfsp != null &&
+      portalUser.dfsp != null &&
+      user.dfsp.id === portalUser.dfsp.id)
   }
 
   const flattenedUsers = users.map(user => {
