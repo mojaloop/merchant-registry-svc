@@ -25,8 +25,8 @@ RUN npm ci
 #  Copy all even although will not be using frontend in this container
 COPY . .
 
-# Make port 5172 available to the world outside this container
-EXPOSE 5172 
+# Make port 5173 available to the world outside this container
+EXPOSE 5173
 
 # Run the app when the container launches
 CMD [ "npm", "run", "dev", "-w", "acquirer-frontend", "--", "--host"]

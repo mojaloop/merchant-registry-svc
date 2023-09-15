@@ -34,9 +34,9 @@ services:
       dockerfile: Dockerfile-acquirer-frontend
     environment:
       - VITE_HOST=0.0.0.0
-      - VITE_PORT=5172
+      - VITE_PORT=5173
     ports:
-      - "5172:5172"
+      - "5173:5173"
 
   # TODO: To do this
   # registry-backend:
