@@ -2,7 +2,6 @@ import { useMemo, useState } from 'react'
 import { createColumnHelper } from '@tanstack/react-table'
 import {
   Box,
-  Checkbox,
   HStack,
   Heading,
   SimpleGrid,
@@ -50,26 +49,6 @@ const AllMerchantRecords = () => {
     const columnHelper = createColumnHelper<MerchantInfo>()
 
     return [
-      columnHelper.display({
-        id: 'select',
-        header: ({ table }) => (
-          <Checkbox
-            isChecked={table.getIsAllPageRowsSelected()}
-            onChange={e => table.toggleAllPageRowsSelected(!!e.target.checked)}
-            aria-label='Select all'
-            borderColor='blackAlpha.400'
-          />
-        ),
-        cell: ({ row }) => (
-          <Checkbox
-            isChecked={row.getIsSelected()}
-            onChange={e => row.toggleSelected(!!e.target.checked)}
-            aria-label='Select row'
-            borderColor='blackAlpha.400'
-          />
-        ),
-        enableSorting: false,
-      }),
       columnHelper.accessor('no', {
         cell: info => info.getValue(),
         header: 'No',
