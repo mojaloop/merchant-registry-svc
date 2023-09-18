@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom'
+import { useQueryClient } from '@tanstack/react-query'
 import { HStack, IconButton, Image, Tooltip } from '@chakra-ui/react'
 import { FiMenu } from 'react-icons/fi'
 import { TbLogout } from 'react-icons/tb'
@@ -9,6 +10,7 @@ import { Drawer } from '@/components/layout'
 
 const Header = () => {
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
   const { onOpen } = useDrawerDisclosure()
 
   return (
@@ -64,6 +66,7 @@ const Header = () => {
             onClick={() => {
               sessionStorage.removeItem('token')
               navigate('/login')
+              queryClient.removeQueries()
             }}
           />
         </Tooltip>
