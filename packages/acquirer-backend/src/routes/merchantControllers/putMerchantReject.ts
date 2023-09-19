@@ -73,7 +73,7 @@ export async function putMerchantReject (req: AuthRequest, res: Response) {
     await audit(
       AuditActionType.UPDATE,
       AuditTrasactionStatus.FAILURE,
-      'putBulkReject',
+      'putMerchantReject',
       'Reason is required',
       'Merchant',
       {}, {}, portalUser
@@ -192,7 +192,7 @@ trying to access unauthorized(different DFSP) merchant ${merchant.id}`,
     await audit(
       AuditActionType.UPDATE,
       AuditTrasactionStatus.SUCCESS,
-      'putWaitingAliasGeneration',
+      'putMerchantReject',
       'Updating Merchant Status to Rejected Successful',
       'Merchant',
       { registration_status: MerchantRegistrationStatus.REVIEW },
