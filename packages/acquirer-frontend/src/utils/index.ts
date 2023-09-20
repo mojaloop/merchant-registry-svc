@@ -1,3 +1,6 @@
+import jwt_decode from 'jwt-decode'
+
+import type { Decoded } from '@/types/auth'
 import type { MerchantInfo } from '@/types/merchants'
 import type { MerchantDetails } from '@/types/merchantDetails'
 
@@ -45,4 +48,10 @@ export function downloadMerchantsBlobAsXlsx(blobData: Blob) {
   document.body.removeChild(link)
   // Revoke the Object URL when it's no longer needed
   URL.revokeObjectURL(url)
+}
+
+export function isTokenExpired(token: string) {
+  const decoded: Decoded = jwt_decode(token)
+  const expirationTimestamp = decoded.exp * 1000
+  return expirationTimestamp <= Date.now()
 }
