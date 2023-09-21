@@ -1,5 +1,5 @@
 {
-  "name": "acquirer-backend",
+  "name": "registry-oracle",
   "version": "0.1.0",
   "description": "Merchant Acquirer Backend",
   "main": "src/index.ts",
@@ -16,6 +16,7 @@
   "dependencies": {
     "@sendgrid/mail": "^7.7.0",
     "amqplib": "^0.10.3",
+    "base64url": "^3.0.1",
     "bcrypt": "^5.1.0",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",

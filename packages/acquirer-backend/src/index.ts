@@ -8,6 +8,7 @@ import setupServer from './setup/serverSetup'
 import { readEnv } from './setup/readEnv'
 import { tryInitializeDatabase, tryInitializeS3 } from './setup/serviceInitializersSetup'
 import { sendGridSetup } from './setup/checkSendgridEmailService'
+import './services/messageQueue'
 import ms from 'ms'
 import logger from './services/logger'
 

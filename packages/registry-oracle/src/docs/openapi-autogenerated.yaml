@@ -1,0 +1,25 @@
+openapi: 3.0.0
+info:
+  title: Merchant Registry Oracle API
+  version: 0.1.0
+  description: Merchant Registry Oracle API
+servers:
+  - url: /api/v1
+components:
+  securitySchemes:
+    Authorization:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      value: Bearer <JWT token here>
+paths:
+  /health-check:
+    get:
+      tags:
+        - Health Check
+      summary: Health Check
+      responses:
+        '200':
+          description: Health Check
+tags:
+  - name: Health Check
