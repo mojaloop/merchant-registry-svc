@@ -1,5 +1,5 @@
 import { createContext, useContext, useState } from 'react'
-
+import { AiOutlineAudit } from 'react-icons/ai'
 import { MdAssignmentAdd } from 'react-icons/md'
 import { TbFileText, TbUserSearch } from 'react-icons/tb'
 
@@ -50,7 +50,6 @@ export const NAV_ITEMS = [
       {
         name: 'Role Management',
         shortName: 'Role',
-
         to: '/portal-user-management/role-management',
       },
       {
@@ -59,6 +58,12 @@ export const NAV_ITEMS = [
         to: '/portal-user-management/user-management',
       },
     ],
+  },
+  {
+    name: 'Audit Log',
+    to: '/audit-log',
+    label: 'Go to audit log page',
+    icon: AiOutlineAudit,
   },
 ]
 

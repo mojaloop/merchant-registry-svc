@@ -91,7 +91,7 @@ const AllMerchantRecords = () => {
       }),
       columnHelper.accessor('registrationStatus', {
         cell: info => (
-          <HStack justify='center' spacing='1.5'>
+          <HStack justify='center' spacing='1'>
             <Box
               as='span'
               minW='2'
