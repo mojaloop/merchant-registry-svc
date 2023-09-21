@@ -355,6 +355,7 @@ export function useChangeStatusToReview(closeReviewModal: () => void) {
       sessionStorage.removeItem('merchantId')
       closeReviewModal()
       queryClient.invalidateQueries(['draft-count'])
+      queryClient.invalidateQueries(['drafts'])
       queryClient.invalidateQueries(['pending-merchants'])
       queryClient.invalidateQueries(['all-merchants'])
       navigate('/registry')
