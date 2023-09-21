@@ -5,6 +5,7 @@ import {
   AddNewUser,
   AllMerchantRecords,
   ApprovedMerchantRecords,
+  AuditLog,
   DraftApplications,
   Login,
   PendingMerchantRecords,
@@ -80,6 +81,11 @@ const Routes = () => {
         {
           path: 'portal-user-management/user-management/add-new-user',
           element: <AddNewUser />,
+          caseSensitive: true,
+        },
+        {
+          path: 'audit-log',
+          element: <AuditLog />,
           caseSensitive: true,
         },
       ],

@@ -9,6 +9,7 @@ import ApprovedMerchantRecords from './ApprovedMerchantRecords/ApprovedMerchantR
 import RoleManagement from './RoleManagement/RoleManagement'
 import UserManagement from './UserManagement/UserManagement'
 import AddNewUser from './AddNewUser/AddNewUser'
+import AuditLog from './AuditLog/AuditLog'
 import Login from './Login/Login'
 import SetPassword from './SetPassword/SetPassword'
 
@@ -24,6 +25,7 @@ export {
   RoleManagement,
   UserManagement,
   AddNewUser,
+  AuditLog,
   Login,
   SetPassword,
 }
