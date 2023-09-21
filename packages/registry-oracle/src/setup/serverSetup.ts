@@ -9,7 +9,7 @@ export default function setupServer (
   tryInitializeDatabase: () => Promise<void>
 ): void {
   app.listen(PORT, HOSTNAME, async () => {
-    logger.info(`API is running on http://${HOSTNAME}:${PORT}/api/v1`)
+    logger.info(`API is running on http://${HOSTNAME}:${PORT}/`)
     logger.info(`Swagger API Documentation UI is running on http://${HOSTNAME}:${PORT}/docs`)
     await tryInitializeDatabase()
   })

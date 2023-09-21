@@ -9,16 +9,16 @@ export class RegistryEntity {
   @PrimaryGeneratedColumn()
     id!: number
 
-  @Column({ nullable: false })
+  @Column({ nullable: true })
     merchant_id!: number
 
   @Column({ nullable: false})
-    dfsp_id!: string
+    fspId!: string
 
-  @Column({ nullable: false })
+  @Column({ nullable: true })
     dfsp_name!: string
 
-  @Column({ nullable: false})
+  @Column({ nullable: true })
     checkout_counter_id!: number
 
   @Column({ nullable: false, default: 'PAYINTOID'})
@@ -28,7 +28,7 @@ export class RegistryEntity {
     alias_value!: string
 
   @Column({ nullable: false })
-    currency_code!: string
+    currency!: string
 
   @CreateDateColumn()
     created_at!: Date

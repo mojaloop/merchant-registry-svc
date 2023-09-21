@@ -47,11 +47,11 @@ export async function registerMerchant (merchants: MerchantData[]) {
 
     const registryRecord = registryRepository.create({
         merchant_id: merchant.merchant_id,
-        dfsp_id: merchant.dfsp_id,
+        fspId: merchant.dfsp_id,
         dfsp_name: merchant.dfsp_name,
         checkout_counter_id: merchant.checkout_counter_id,
         alias_value: paddedAliasValue,
-        currency_code: merchant.currency_code.iso_code
+        currency: merchant.currency_code.iso_code
     });
 
     bulkRegistryEntities.push(registryRecord);

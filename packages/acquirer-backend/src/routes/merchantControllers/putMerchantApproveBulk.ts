@@ -136,8 +136,8 @@ export async function putBulkWaitingAliasGeneration (req: AuthRequest, res: Resp
       .createQueryBuilder()
       .update(MerchantEntity)
       .set({
-        // registration_status: MerchantRegistrationStatus.WAITINGALIASGENERATION,
-        // registration_status_reason: 'Bulk Updated to "Waiting For Alias Generation"',
+        registration_status: MerchantRegistrationStatus.WAITINGALIASGENERATION,
+        registration_status_reason: 'Bulk Updated to "Waiting For Alias Generation"',
         checked_by: portalUser
       })
       .whereInIds(ids)
