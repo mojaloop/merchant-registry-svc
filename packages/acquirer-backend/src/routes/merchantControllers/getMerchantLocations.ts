@@ -4,7 +4,7 @@ import { AppDataSource } from '../../database/dataSource'
 import logger from '../../services/logger'
 import { MerchantEntity } from '../../entity/MerchantEntity'
 import { audit } from '../../utils/audit'
-import { AuditActionType, AuditTrasactionStatus } from 'shared-lib'
+import { AuditActionType, AuditTransactionStatus } from 'shared-lib'
 import { type AuthRequest } from 'src/types/express'
 /**
  * @openapi
@@ -55,7 +55,7 @@ export async function getMerchantLocations (req: AuthRequest, res: Response) {
   if (req.params.id == null || req.params.id === undefined) {
     await audit(
       AuditActionType.ACCESS,
-      AuditTrasactionStatus.FAILURE,
+      AuditTransactionStatus.FAILURE,
       'getMerchantLocations',
       'Missing merchant id',
       'Merchant',
@@ -69,7 +69,7 @@ export async function getMerchantLocations (req: AuthRequest, res: Response) {
   if (isNaN(Number(req.params.id)) || Number(req.params.id) < 1) {
     await audit(
       AuditActionType.ACCESS,
-      AuditTrasactionStatus.FAILURE,
+      AuditTransactionStatus.FAILURE,
       'getMerchantLocations',
       `Invalid merchant id: ${req.params.id} `,
       'Merchant',
@@ -93,7 +93,7 @@ export async function getMerchantLocations (req: AuthRequest, res: Response) {
     if (merchant == null) {
       await audit(
         AuditActionType.ACCESS,
-        AuditTrasactionStatus.FAILURE,
+        AuditTransactionStatus.FAILURE,
         'getMerchantLocations',
         `Merchant Not Found: ${req.params.id}`,
         'Merchant',
@@ -110,7 +110,7 @@ export async function getMerchantLocations (req: AuthRequest, res: Response) {
       logger.error('Accessing different DFSP\'s Merchant is not allowed.')
       await audit(
         AuditActionType.ACCESS,
-        AuditTrasactionStatus.FAILURE,
+        AuditTransactionStatus.FAILURE,
         'getMerchantLocations',
           `User ${portalUser.id} (${portalUser.email}) 
 trying to access unauthorized(different DFSP) merchant ${merchant.id}`,
@@ -124,7 +124,7 @@ trying to access unauthorized(different DFSP) merchant ${merchant.id}`,
 
     await audit(
       AuditActionType.ACCESS,
-      AuditTrasactionStatus.SUCCESS,
+      AuditTransactionStatus.SUCCESS,
       'getMerchantLocations',
       `User ${portalUser.id} with email ${portalUser.email} \
 retrieved locations for merchant ${merchant.id}`,
@@ -136,7 +136,7 @@ retrieved locations for merchant ${merchant.id}`,
   } catch (e) {
     await audit(
       AuditActionType.ACCESS,
-      AuditTrasactionStatus.FAILURE,
+      AuditTransactionStatus.FAILURE,
       'getMerchantLocations',
       `Error: ${JSON.stringify(e)}`,
       'Merchant',

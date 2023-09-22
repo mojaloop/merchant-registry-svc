@@ -9,7 +9,7 @@ import { type MerchantRegistrationStatus } from 'shared-lib'
 
 import { isValidDate } from '../../utils/utils'
 import { audit } from '../../utils/audit'
-import { AuditActionType, AuditTrasactionStatus } from 'shared-lib'
+import { AuditActionType, AuditTransactionStatus } from 'shared-lib'
 import { type AuthRequest } from '../../types/express'
 
 /**
@@ -242,7 +242,7 @@ export async function getMerchants (req: AuthRequest, res: Response) {
 
     await audit(
       AuditActionType.ACCESS,
-      AuditTrasactionStatus.SUCCESS,
+      AuditTransactionStatus.SUCCESS,
       'getMerchants',
       `User ${portalUser.id} with email ${portalUser.email} retrieved merchants`,
       'Merchants',
@@ -255,7 +255,7 @@ export async function getMerchants (req: AuthRequest, res: Response) {
 
     await audit(
       AuditActionType.ACCESS,
-      AuditTrasactionStatus.FAILURE,
+      AuditTransactionStatus.FAILURE,
       'getMerchants',
       `Error: ${JSON.stringify(e)}`,
       'Merchants',

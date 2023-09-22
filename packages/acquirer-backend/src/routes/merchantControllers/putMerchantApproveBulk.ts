@@ -3,7 +3,7 @@ import { type Response } from 'express'
 import { AppDataSource } from '../../database/dataSource'
 import { MerchantEntity } from '../../entity/MerchantEntity'
 import logger from '../../services/logger'
-import { MerchantRegistrationStatus, AuditActionType, AuditTrasactionStatus } from 'shared-lib'
+import { MerchantRegistrationStatus, AuditActionType, AuditTransactionStatus } from 'shared-lib'
 import { In } from 'typeorm'
 import { audit } from '../../utils/audit'
 import { type AuthRequest } from 'src/types/express'
@@ -58,7 +58,7 @@ export async function putBulkWaitingAliasGeneration (req: AuthRequest, res: Resp
     if (isNaN(Number(id)) || Number(id) < 1) {
       await audit(
         AuditActionType.UPDATE,
-        AuditTrasactionStatus.FAILURE,
+        AuditTransactionStatus.FAILURE,
         'putBulkApprove',
         'ID must be a valid ID number',
         'Merchant',
@@ -80,7 +80,7 @@ export async function putBulkWaitingAliasGeneration (req: AuthRequest, res: Resp
     if (merchant.registration_status !== MerchantRegistrationStatus.REVIEW) {
       await audit(
         AuditActionType.UPDATE,
-        AuditTrasactionStatus.FAILURE,
+        AuditTransactionStatus.FAILURE,
         'putBulkApprove',
         'Merchant is not in Review Status',
         'Merchant',
@@ -95,7 +95,7 @@ export async function putBulkWaitingAliasGeneration (req: AuthRequest, res: Resp
     if (merchant.created_by?.id === portalUser.id) {
       await audit(
         AuditActionType.UPDATE,
-        AuditTrasactionStatus.FAILURE,
+        AuditTransactionStatus.FAILURE,
         'putBulkApprove',
         'Merchant cannot be approve by the same user who submitted it',
         'Merchant',
@@ -113,7 +113,7 @@ export async function putBulkWaitingAliasGeneration (req: AuthRequest, res: Resp
     if (!validMerchantForUser) {
       await audit(
         AuditActionType.UPDATE,
-        AuditTrasactionStatus.FAILURE,
+        AuditTransactionStatus.FAILURE,
         'putBulkApprove',
         'Merchant does not belong to the same DFSP as the user',
         'Merchant',
@@ -139,7 +139,7 @@ export async function putBulkWaitingAliasGeneration (req: AuthRequest, res: Resp
 
     await audit(
       AuditActionType.UPDATE,
-      AuditTrasactionStatus.SUCCESS,
+      AuditTransactionStatus.SUCCESS,
       'putBulkApprove',
       'Status Updated to "Waiting For Alias Generation"',
       'Merchant',
@@ -152,7 +152,7 @@ export async function putBulkWaitingAliasGeneration (req: AuthRequest, res: Resp
     logger.error(e)
     await audit(
       AuditActionType.UPDATE,
-      AuditTrasactionStatus.FAILURE,
+      AuditTransactionStatus.FAILURE,
       'putBulkApprove',
       'Status Update Failed',
       'Merchant',

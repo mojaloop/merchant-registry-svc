@@ -10,7 +10,7 @@ import { BusinessLicenseEntity } from '../../entity/BusinessLicenseEntity'
 import {
   MerchantAllowBlockStatus,
   MerchantRegistrationStatus
-  , AuditActionType, AuditTrasactionStatus
+  , AuditActionType, AuditTransactionStatus
 } from 'shared-lib'
 
 import {
@@ -139,7 +139,7 @@ export async function putMerchantDraft (req: AuthRequest, res: Response) {
     logger.error('Accessing different DFSP\'s Merchant is not allowed.')
     await audit(
       AuditActionType.ACCESS,
-      AuditTrasactionStatus.FAILURE,
+      AuditTransactionStatus.FAILURE,
       'putMerchantDraft',
           `User ${portalUser.id} (${portalUser.email}) 
 trying to access unauthorized(different DFSP) merchant ${merchant.id}`,
@@ -265,7 +265,7 @@ trying to access unauthorized(different DFSP) merchant ${merchant.id}`,
 
   await audit(
     AuditActionType.UPDATE,
-    AuditTrasactionStatus.SUCCESS,
+    AuditTransactionStatus.SUCCESS,
     'putMerchantDraft',
     'Updating Merchant Draft Successful',
     'Merchant',

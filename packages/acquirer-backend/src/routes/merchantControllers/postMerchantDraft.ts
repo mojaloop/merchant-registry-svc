@@ -9,7 +9,7 @@ import { CheckoutCounterEntity } from '../../entity/CheckoutCounterEntity'
 import { BusinessLicenseEntity } from '../../entity/BusinessLicenseEntity'
 import {
   MerchantAllowBlockStatus
-  , AuditActionType, AuditTrasactionStatus, MerchantRegistrationStatus
+  , AuditActionType, AuditTransactionStatus, MerchantRegistrationStatus
 } from 'shared-lib'
 
 import {
@@ -102,7 +102,7 @@ export async function postMerchantDraft (req: AuthRequest, res: Response) {
       logger.error('Validation error: %o', errors)
       await audit(
         AuditActionType.ADD,
-        AuditTrasactionStatus.FAILURE,
+        AuditTransactionStatus.FAILURE,
         'postMerchantDraft',
         'Validation error',
         'Merchant',
@@ -128,7 +128,7 @@ export async function postMerchantDraft (req: AuthRequest, res: Response) {
       logger.error('DB Query failed: %o', err.message)
       await audit(
         AuditActionType.ADD,
-        AuditTrasactionStatus.FAILURE,
+        AuditTransactionStatus.FAILURE,
         'postMerchantDraft',
         'DB Query failed',
         'Merchant',

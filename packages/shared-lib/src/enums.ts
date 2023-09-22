@@ -6,7 +6,7 @@ export enum AuditActionType {
   DELETE = 'Delete'
 }
 
-export enum AuditTrasactionStatus {
+export enum AuditTransactionStatus {
   SUCCESS = 'Success',
   FAILURE = 'Failure',
 }

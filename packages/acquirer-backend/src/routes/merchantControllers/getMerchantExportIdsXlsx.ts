@@ -4,7 +4,7 @@ import { AppDataSource } from '../../database/dataSource'
 import { MerchantEntity } from '../../entity/MerchantEntity'
 import logger from '../../services/logger'
 import { audit } from '../../utils/audit'
-import { AuditActionType, AuditTrasactionStatus } from 'shared-lib'
+import { AuditActionType, AuditTransactionStatus } from 'shared-lib'
 import { In } from 'typeorm'
 import { merchantsToXlsxWorkbook } from '../../utils/merchantsToXlsxWorkbook'
 import { type AuthRequest } from 'src/types/express'
@@ -68,7 +68,7 @@ export async function exportMerchantIdsXlsx (req: AuthRequest, res: Response) {
     if (isNaN(Number(id)) || Number(id) < 1) {
       await audit(
         AuditActionType.UPDATE,
-        AuditTrasactionStatus.FAILURE,
+        AuditTransactionStatus.FAILURE,
         'putBulkApprove',
         'ID must be a valid ID number',
         'Merchant',
@@ -106,7 +106,7 @@ export async function exportMerchantIdsXlsx (req: AuthRequest, res: Response) {
     logger.error('Error fetching merchant: %o', e)
     await audit(
       AuditActionType.ACCESS,
-      AuditTrasactionStatus.FAILURE,
+      AuditTransactionStatus.FAILURE,
       'exportMerchantIdsXlsx',
         `User ${portalUser.id} (${portalUser.email}) failed to fetch merchant ${ids.join(', ')}`,
         'MerchantEntity',
@@ -124,7 +124,7 @@ export async function exportMerchantIdsXlsx (req: AuthRequest, res: Response) {
       logger.error('Accessing different DFSP\'s Merchant is not allowed.')
       await audit(
         AuditActionType.ACCESS,
-        AuditTrasactionStatus.FAILURE,
+        AuditTransactionStatus.FAILURE,
         'exportMerchantIdsXlsx',
         `User ${portalUser.id} (${portalUser.email}) 
 trying to access unauthorized(different DFSP) merchant ${merchant.id}`,
@@ -147,7 +147,7 @@ trying to access unauthorized(different DFSP) merchant ${merchant.id}`,
 
   await audit(
     AuditActionType.ACCESS,
-    AuditTrasactionStatus.SUCCESS,
+    AuditTransactionStatus.SUCCESS,
     'exportMerchantIdsXlsx',
     `User ${portalUser.id} (${portalUser.email}) exported ${merchants.length} merchants`,
     'MerchantEntity',

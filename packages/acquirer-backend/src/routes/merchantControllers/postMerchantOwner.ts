@@ -11,7 +11,7 @@ import {
   BusinessOwnerSubmitDataSchema
 } from '../schemas'
 import { audit } from '../../utils/audit'
-import { AuditActionType, AuditTrasactionStatus } from 'shared-lib'
+import { AuditActionType, AuditTransactionStatus } from 'shared-lib'
 import { type AuthRequest } from 'src/types/express'
 
 /**
@@ -92,7 +92,7 @@ export async function postMerchantOwner (req: AuthRequest, res: Response) {
     logger.error('Invalid ID')
     await audit(
       AuditActionType.ADD,
-      AuditTrasactionStatus.FAILURE,
+      AuditTransactionStatus.FAILURE,
       'postMerchantOwner',
       `Invalid ID: ${req.params.id}`,
       'Merchant',
@@ -112,7 +112,7 @@ export async function postMerchantOwner (req: AuthRequest, res: Response) {
       logger.error('Business Owner Validation error: %o', err.issues.map(issue => issue.message))
       await audit(
         AuditActionType.ADD,
-        AuditTrasactionStatus.FAILURE,
+        AuditTransactionStatus.FAILURE,
         'postMerchantOwner',
         'Business Owner Validation error',
         'BusinessOwner',
@@ -137,7 +137,7 @@ export async function postMerchantOwner (req: AuthRequest, res: Response) {
     logger.error('Merchant not found')
     await audit(
       AuditActionType.ADD,
-      AuditTrasactionStatus.FAILURE,
+      AuditTransactionStatus.FAILURE,
       'postMerchantOwner',
       `Merchant not found: ${req.params.id}`,
       'Merchant',
@@ -153,7 +153,7 @@ export async function postMerchantOwner (req: AuthRequest, res: Response) {
     logger.error('Accessing different DFSP\'s Merchant is not allowed.')
     await audit(
       AuditActionType.ACCESS,
-      AuditTrasactionStatus.FAILURE,
+      AuditTransactionStatus.FAILURE,
       'postMerchantOwner',
           `User ${portalUser.id} (${portalUser.email}) 
 trying to access unauthorized(different DFSP) merchant ${merchant.id}`,
@@ -198,7 +198,7 @@ trying to access unauthorized(different DFSP) merchant ${merchant.id}`,
     logger.error('error creating business owner: %o', err)
     await audit(
       AuditActionType.ADD,
-      AuditTrasactionStatus.FAILURE,
+      AuditTransactionStatus.FAILURE,
       'postMerchantOwner',
       'Error creating business owner',
       'BusinessOwner',
@@ -218,7 +218,7 @@ trying to access unauthorized(different DFSP) merchant ${merchant.id}`,
     logger.error('error updating merchant with business owner: %o', err)
     await audit(
       AuditActionType.ADD,
-      AuditTrasactionStatus.FAILURE,
+      AuditTransactionStatus.FAILURE,
       'postMerchantOwner',
       'Error updating merchant with business owner',
       'Merchant',
@@ -229,7 +229,7 @@ trying to access unauthorized(different DFSP) merchant ${merchant.id}`,
 
   await audit(
     AuditActionType.ADD,
-    AuditTrasactionStatus.SUCCESS,
+    AuditTransactionStatus.SUCCESS,
     'postMerchantOwner',
     'Business Owner Saved',
     'BusinessOwner',

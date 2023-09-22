@@ -3,7 +3,7 @@ import { type Response } from 'express'
 import { type AuthRequest } from 'src/types/express'
 import path from 'path'
 import dotenv from 'dotenv'
-import { AuditActionType, AuditTrasactionStatus } from 'shared-lib'
+import { AuditActionType, AuditTransactionStatus } from 'shared-lib'
 import { audit } from '../../utils/audit'
 import jwt from 'jsonwebtoken'
 
@@ -40,7 +40,7 @@ export async function postUserRefresh (req: AuthRequest, res: Response) {
 
   await audit(
     AuditActionType.ACCESS,
-    AuditTrasactionStatus.SUCCESS,
+    AuditTransactionStatus.SUCCESS,
     'postUserRefresh',
     'Get Portal User Profile',
     'PortalUserEntity',

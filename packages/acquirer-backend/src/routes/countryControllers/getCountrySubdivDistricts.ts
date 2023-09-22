@@ -5,7 +5,7 @@ import logger from '../../services/logger'
 import { type AuthRequest } from 'src/types/express'
 import { CountryEntity } from '../../entity/CountryEntity'
 import { CountrySubdivisionEntity } from '../../entity/CountrySubdivisionEntity'
-import { AuditActionType, AuditTrasactionStatus } from 'shared-lib'
+import { AuditActionType, AuditTransactionStatus } from 'shared-lib'
 import { audit } from '../../utils/audit'
 import { DistrictEntity } from '../../entity/DistrictEntity'
 
@@ -73,7 +73,7 @@ export async function getDistricts (req: AuthRequest, res: Response) {
 
     await audit(
       AuditActionType.ACCESS,
-      AuditTrasactionStatus.SUCCESS,
+      AuditTransactionStatus.SUCCESS,
       'getDistricts',
       'GET Districts',
       'DistrictEntity',
@@ -84,7 +84,7 @@ export async function getDistricts (req: AuthRequest, res: Response) {
   } catch (e: any) {
     await audit(
       AuditActionType.ACCESS,
-      AuditTrasactionStatus.FAILURE,
+      AuditTransactionStatus.FAILURE,
       'getDistricts',
       `Error: ${e.message as string}`,
       'DistrictEntity',

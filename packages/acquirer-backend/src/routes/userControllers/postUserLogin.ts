@@ -8,7 +8,7 @@ import { PortalUserEntity } from '../../entity/PortalUserEntity'
 import logger from '../../services/logger'
 import jwt from 'jsonwebtoken'
 import { audit } from '../../utils/audit'
-import { AuditActionType, AuditTrasactionStatus, PortalUserStatus } from 'shared-lib'
+import { AuditActionType, AuditTransactionStatus, PortalUserStatus } from 'shared-lib'
 
 export const LoginFormSchema = z.object({
   email: z.string().email('Please enter a valid email'),
@@ -120,7 +120,7 @@ export async function postUserLogin (req: Request, res: Response) {
     logger.info('User %s logged in successfully.', user.email)
     await audit(
       AuditActionType.ACCESS,
-      AuditTrasactionStatus.SUCCESS,
+      AuditTransactionStatus.SUCCESS,
       'postUserLogin',
       'User login successful',
       'PortalUserEntity',
@@ -131,7 +131,7 @@ export async function postUserLogin (req: Request, res: Response) {
   } catch (error: any) {
     await audit(
       AuditActionType.ACCESS,
-      AuditTrasactionStatus.FAILURE,
+      AuditTransactionStatus.FAILURE,
       'postUserLogin',
       'User login failed',
       'PortalUserEntity',

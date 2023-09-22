@@ -3,7 +3,7 @@ import { type Response } from 'express'
 import { AppDataSource } from '../../database/dataSource'
 import { MerchantEntity } from '../../entity/MerchantEntity'
 import logger from '../../services/logger'
-import { MerchantRegistrationStatus, AuditActionType, AuditTrasactionStatus } from 'shared-lib'
+import { MerchantRegistrationStatus, AuditActionType, AuditTransactionStatus } from 'shared-lib'
 import { QueryFailedError } from 'typeorm'
 import { audit } from '../../utils/audit'
 import { type AuthRequest } from 'src/types/express'
@@ -72,7 +72,7 @@ export async function putMerchantReject (req: AuthRequest, res: Response) {
   if (req.body.reason === undefined || req.body.reason == null || req.body.reason === '') {
     await audit(
       AuditActionType.UPDATE,
-      AuditTrasactionStatus.FAILURE,
+      AuditTransactionStatus.FAILURE,
       'putMerchantReject',
       'Reason is required',
       'Merchant',
@@ -87,7 +87,7 @@ export async function putMerchantReject (req: AuthRequest, res: Response) {
       logger.error('Invalid Merchant ID')
       await audit(
         AuditActionType.UPDATE,
-        AuditTrasactionStatus.FAILURE,
+        AuditTransactionStatus.FAILURE,
         'putMerchantReject',
         'Invalid Merchant ID',
         'Merchant',
@@ -108,7 +108,7 @@ export async function putMerchantReject (req: AuthRequest, res: Response) {
     if (merchant == null) {
       await audit(
         AuditActionType.UPDATE,
-        AuditTrasactionStatus.FAILURE,
+        AuditTransactionStatus.FAILURE,
         'putMerchantReject',
         'Merchant not found',
         'Merchant',
@@ -124,7 +124,7 @@ export async function putMerchantReject (req: AuthRequest, res: Response) {
       logger.error('Accessing different DFSP\'s Merchant is not allowed.')
       await audit(
         AuditActionType.ACCESS,
-        AuditTrasactionStatus.FAILURE,
+        AuditTransactionStatus.FAILURE,
         'putMerchantReject',
           `User ${portalUser.id} (${portalUser.email}) 
 trying to access unauthorized(different DFSP) merchant ${merchant.id}`,
@@ -141,7 +141,7 @@ trying to access unauthorized(different DFSP) merchant ${merchant.id}`,
 
       await audit(
         AuditActionType.UPDATE,
-        AuditTrasactionStatus.FAILURE,
+        AuditTransactionStatus.FAILURE,
         'putMerchantReject',
         msg,
         'Merchant',
@@ -157,7 +157,7 @@ trying to access unauthorized(different DFSP) merchant ${merchant.id}`,
       const msg = 'Only Review Merchant can be approved with Rejected'
       await audit(
         AuditActionType.UPDATE,
-        AuditTrasactionStatus.FAILURE,
+        AuditTransactionStatus.FAILURE,
         'putMerchantReject',
         msg,
         'Merchant',
@@ -191,7 +191,7 @@ trying to access unauthorized(different DFSP) merchant ${merchant.id}`,
 
     await audit(
       AuditActionType.UPDATE,
-      AuditTrasactionStatus.SUCCESS,
+      AuditTransactionStatus.SUCCESS,
       'putMerchantReject',
       'Updating Merchant Status to Rejected Successful',
       'Merchant',

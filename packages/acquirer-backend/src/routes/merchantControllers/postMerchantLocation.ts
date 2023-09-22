@@ -12,7 +12,7 @@ import {
   MerchantLocationSubmitDataSchema
 } from '../schemas'
 import { audit } from '../../utils/audit'
-import { AuditActionType, AuditTrasactionStatus } from 'shared-lib'
+import { AuditActionType, AuditTransactionStatus } from 'shared-lib'
 import { type AuthRequest } from 'src/types/express'
 
 /**
@@ -120,7 +120,7 @@ export async function postMerchantLocation (req: AuthRequest, res: Response) {
     logger.error('Invalid ID')
     await audit(
       AuditActionType.ADD,
-      AuditTrasactionStatus.FAILURE,
+      AuditTransactionStatus.FAILURE,
       'postMerchantLocation',
       `Invalid ID: ${req.params.id}`,
       'Merchant',
@@ -140,7 +140,7 @@ export async function postMerchantLocation (req: AuthRequest, res: Response) {
       logger.error('Merchant Location Validation error: %o', err.issues.map(issue => issue.message))
       await audit(
         AuditActionType.ADD,
-        AuditTrasactionStatus.FAILURE,
+        AuditTransactionStatus.FAILURE,
         'postMerchantLocation',
         'Merchant Location Validation error',
         'Merchant',
@@ -165,7 +165,7 @@ export async function postMerchantLocation (req: AuthRequest, res: Response) {
     logger.error('Merchant not found')
     await audit(
       AuditActionType.ADD,
-      AuditTrasactionStatus.FAILURE,
+      AuditTransactionStatus.FAILURE,
       'postMerchantLocation',
       `Merchant not found: ${req.params.id}`,
       'Merchant',
@@ -181,7 +181,7 @@ export async function postMerchantLocation (req: AuthRequest, res: Response) {
     logger.error('Accessing different DFSP\'s Merchant is not allowed.')
     await audit(
       AuditActionType.ACCESS,
-      AuditTrasactionStatus.FAILURE,
+      AuditTransactionStatus.FAILURE,
       'postMerchantLocation',
           `User ${portalUser.id} (${portalUser.email}) 
 trying to access unauthorized(different DFSP) merchant ${merchant.id}`,
@@ -206,7 +206,7 @@ trying to access unauthorized(different DFSP) merchant ${merchant.id}`,
       logger.error('Query Failed: %o', err.message)
       await audit(
         AuditActionType.ADD,
-        AuditTrasactionStatus.FAILURE,
+        AuditTransactionStatus.FAILURE,
         'postMerchantLocation',
         'Query Failed',
         'Merchant',
@@ -235,7 +235,7 @@ trying to access unauthorized(different DFSP) merchant ${merchant.id}`,
         logger.error('Query Failed: %o', err.message)
         await audit(
           AuditActionType.ADD,
-          AuditTrasactionStatus.FAILURE,
+          AuditTransactionStatus.FAILURE,
           'postMerchantLocation',
           'Query Failed',
           'Merchant',
@@ -256,7 +256,7 @@ trying to access unauthorized(different DFSP) merchant ${merchant.id}`,
 
   await audit(
     AuditActionType.ADD,
-    AuditTrasactionStatus.SUCCESS,
+    AuditTransactionStatus.SUCCESS,
     'postMerchantLocation',
     'Merchant Location Saved',
     'Merchant',

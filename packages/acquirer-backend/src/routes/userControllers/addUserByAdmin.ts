@@ -8,7 +8,7 @@ import { PortalRoleEntity } from '../../entity/PortalRoleEntity'
 import * as z from 'zod'
 import {
   AuditActionType,
-  AuditTrasactionStatus,
+  AuditTransactionStatus,
   PortalUserStatus,
   PortalUserType
 } from 'shared-lib'
@@ -93,7 +93,7 @@ export async function addUser (req: Request, res: Response) {
   if (!result.success) {
     await audit(
       AuditActionType.ADD,
-      AuditTrasactionStatus.FAILURE,
+      AuditTransactionStatus.FAILURE,
       'addUser',
       'User Creation failed',
       'PortalUserEntity',
@@ -110,7 +110,7 @@ export async function addUser (req: Request, res: Response) {
     if (roleObj == null) {
       await audit(
         AuditActionType.ADD,
-        AuditTrasactionStatus.FAILURE,
+        AuditTransactionStatus.FAILURE,
         'addUser',
         'User Creation failed',
         'PortalUserEntity',
@@ -127,7 +127,7 @@ export async function addUser (req: Request, res: Response) {
     if (existsEmail) {
       await audit(
         AuditActionType.ADD,
-        AuditTrasactionStatus.FAILURE,
+        AuditTransactionStatus.FAILURE,
         'addUser',
         'User Creation failed',
         'PortalUserEntity',
@@ -147,7 +147,7 @@ export async function addUser (req: Request, res: Response) {
 
     await audit(
       AuditActionType.ADD,
-      AuditTrasactionStatus.SUCCESS,
+      AuditTransactionStatus.SUCCESS,
       'addUser',
       'User Created',
       'PortalUserEntity',
@@ -172,7 +172,7 @@ export async function addUser (req: Request, res: Response) {
   } catch (error) {
     await audit(
       AuditActionType.ACCESS,
-      AuditTrasactionStatus.FAILURE,
+      AuditTransactionStatus.FAILURE,
       'addUser',
       'User Creation failed',
       'PortalUserEntity',

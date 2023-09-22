@@ -6,7 +6,7 @@ import { MerchantEntity } from '../../entity/MerchantEntity'
 import logger from '../../services/logger'
 import {
   MerchantRegistrationStatus
-  , AuditActionType, AuditTrasactionStatus
+  , AuditActionType, AuditTransactionStatus
 } from 'shared-lib'
 import { audit } from '../../utils/audit'
 import { type AuthRequest } from 'src/types/express'
@@ -85,7 +85,7 @@ export async function putMerchantStatusReadyToReview (req: AuthRequest, res: Res
       logger.error('Accessing different DFSP\'s Merchant is not allowed.')
       await audit(
         AuditActionType.ACCESS,
-        AuditTrasactionStatus.FAILURE,
+        AuditTransactionStatus.FAILURE,
         'putMerchantStatusReadyToReview',
           `User ${portalUser.id} (${portalUser.email}) 
           trying to access unauthorized(different DFSP) merchant ${req.params.id}`,
@@ -131,7 +131,7 @@ export async function putMerchantStatusReadyToReview (req: AuthRequest, res: Res
 
     await audit(
       AuditActionType.UPDATE,
-      AuditTrasactionStatus.SUCCESS,
+      AuditTransactionStatus.SUCCESS,
       'putMerchantStatusReadyToReview',
       'Updating Merchant Status to \'Review\' Successful',
       'Merchant',

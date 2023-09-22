@@ -3,7 +3,7 @@ import { type Response } from 'express'
 import { AppDataSource } from '../../database/dataSource'
 import { MerchantEntity } from '../../entity/MerchantEntity'
 import logger from '../../services/logger'
-import { MerchantRegistrationStatus, AuditActionType, AuditTrasactionStatus } from 'shared-lib'
+import { MerchantRegistrationStatus, AuditActionType, AuditTransactionStatus } from 'shared-lib'
 import { In } from 'typeorm'
 import { audit } from '../../utils/audit'
 import { type AuthRequest } from 'src/types/express'
@@ -56,7 +56,7 @@ export async function putBulkRevert (req: AuthRequest, res: Response) {
   if (req.body.reason === undefined || req.body.reason == null || req.body.reason === '') {
     await audit(
       AuditActionType.UPDATE,
-      AuditTrasactionStatus.FAILURE,
+      AuditTransactionStatus.FAILURE,
       'putBulkRevert',
       'Reason is required',
       'Merchant',
@@ -74,7 +74,7 @@ export async function putBulkRevert (req: AuthRequest, res: Response) {
     if (isNaN(Number(id)) || Number(id) < 1) {
       await audit(
         AuditActionType.UPDATE,
-        AuditTrasactionStatus.FAILURE,
+        AuditTransactionStatus.FAILURE,
         'putBulkRevert',
         'ID must be a valid ID number',
         'Merchant',
@@ -88,7 +88,7 @@ export async function putBulkRevert (req: AuthRequest, res: Response) {
   if (req.body.reason === undefined || req.body.reason == null || req.body.reason === '') {
     await audit(
       AuditActionType.UPDATE,
-      AuditTrasactionStatus.FAILURE,
+      AuditTransactionStatus.FAILURE,
       'putBulkRevert',
       'Reason is required',
       'Merchant',
@@ -114,7 +114,7 @@ export async function putBulkRevert (req: AuthRequest, res: Response) {
       logger.error('Accessing different DFSP\'s Merchant is not allowed.')
       await audit(
         AuditActionType.ACCESS,
-        AuditTrasactionStatus.FAILURE,
+        AuditTransactionStatus.FAILURE,
         'putMerchantReject',
           `User ${portalUser.id} (${portalUser.email}) 
 trying to access unauthorized(different DFSP) merchant ${merchant.id}`,
@@ -129,7 +129,7 @@ trying to access unauthorized(different DFSP) merchant ${merchant.id}`,
     if (merchant.registration_status !== MerchantRegistrationStatus.REVIEW) {
       await audit(
         AuditActionType.UPDATE,
-        AuditTrasactionStatus.FAILURE,
+        AuditTransactionStatus.FAILURE,
         'putBulkRevert',
         'Merchant is not in Review Status',
         'Merchant',
@@ -144,7 +144,7 @@ trying to access unauthorized(different DFSP) merchant ${merchant.id}`,
     if (merchant.created_by?.id === portalUser.id) {
       await audit(
         AuditActionType.UPDATE,
-        AuditTrasactionStatus.FAILURE,
+        AuditTransactionStatus.FAILURE,
         'putBulkRevert',
         'Merchant cannot be reverted by the same user who submitted it',
         'Merchant',
@@ -170,7 +170,7 @@ trying to access unauthorized(different DFSP) merchant ${merchant.id}`,
 
     await audit(
       AuditActionType.UPDATE,
-      AuditTrasactionStatus.SUCCESS,
+      AuditTransactionStatus.SUCCESS,
       'putBulkReject',
       'Status Updated to Reverted Status',
       'Merchant',
@@ -183,7 +183,7 @@ trying to access unauthorized(different DFSP) merchant ${merchant.id}`,
     logger.error(e)
     await audit(
       AuditActionType.UPDATE,
-      AuditTrasactionStatus.FAILURE,
+      AuditTransactionStatus.FAILURE,
       'putBulkReject',
       'Status Update Failed',
       'Merchant',
