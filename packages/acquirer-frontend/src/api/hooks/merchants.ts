@@ -3,10 +3,11 @@ import { isAxiosError } from 'axios'
 import { useToast } from '@chakra-ui/react'
 import { MerchantRegistrationStatus } from 'shared-lib'
 
+import type { MerchantDetails } from '@/types/merchantDetails'
+import type { MerchantInfo } from '@/types/merchants'
 import type { AllMerchantsFilterForm } from '@/lib/validations/allMerchantsFilter'
 import type { MerchantsFilterForm } from '@/lib/validations/merchantsFilter'
 import { FALLBACK_ERROR_MESSAGE } from '@/constants/errorMessage'
-import { transformIntoTableData } from '@/utils'
 import {
   approveMerchants,
   exportMerchants,
@@ -19,6 +20,28 @@ import {
 interface ActionWithReasonParams {
   selectedMerchantIds: number[]
   reason: string
+}
+
+function transformIntoTableData(merchantData: MerchantDetails): MerchantInfo {
+  return {
+    no: merchantData.id, // Assuming 'no' is the id of the merchant
+    dbaName: merchantData.dba_trading_name,
+    registeredName: merchantData.registered_name || 'N/A',
+
+    // Assuming the first checkout counter's alias value is the payintoAccount
+    payintoAccount: merchantData.checkout_counters[0]?.alias_value || 'N/A',
+    merchantType: merchantData.merchant_type,
+
+    // Assuming the first location's country subdivision is the state
+    town: merchantData.locations[0]?.town_name || 'N/A',
+    countrySubdivision: merchantData.locations[0]?.country_subdivision || 'N/A',
+
+    // Assuming the first checkout counter's description is the counterDescription
+    counterDescription: merchantData.checkout_counters[0]?.description || 'N/A',
+    registeredDfspName: merchantData.default_dfsp.name,
+    registrationStatus: merchantData.registration_status,
+    maker: merchantData.created_by,
+  }
 }
 
 async function getDrafts(values: MerchantsFilterForm) {

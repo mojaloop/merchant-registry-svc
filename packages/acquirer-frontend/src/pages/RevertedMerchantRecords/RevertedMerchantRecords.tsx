@@ -155,14 +155,10 @@ const RevertedMerchantRecords = () => {
   const exportMerchants = useExportMerchants()
 
   const users = useUsers()
-  let userOptions
-
-  if (!users.isLoading && !users.isFetching && !users.isError) {
-    userOptions = users.data.map(({ id, name }) => ({
-      value: id,
-      label: name,
-    }))
-  }
+  const userOptions = users.data?.map(({ id, name }) => ({
+    value: id,
+    label: name,
+  }))
 
   const onSubmit = () => {
     revertedMerchants.refetch()
