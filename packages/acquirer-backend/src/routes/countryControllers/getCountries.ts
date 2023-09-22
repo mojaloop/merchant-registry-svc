@@ -5,7 +5,7 @@ import logger from '../../services/logger'
 import { type AuthRequest } from 'src/types/express'
 import { CountryEntity } from '../../entity/CountryEntity'
 import { audit } from '../../utils/audit'
-import { AuditActionType, AuditTransactionStatus } from 'shared-lib'
+import { AuditActionType, AuditTrasactionStatus } from 'shared-lib'
 
 /**
  * @openapi
@@ -48,7 +48,7 @@ export async function getCountries (req: AuthRequest, res: Response) {
 
     await audit(
       AuditActionType.ACCESS,
-      AuditTransactionStatus.SUCCESS,
+      AuditTrasactionStatus.SUCCESS,
       'getCountries',
       'GET Countries',
       'CountryEntity',
@@ -63,7 +63,7 @@ export async function getCountries (req: AuthRequest, res: Response) {
   } catch (e: any) {
     await audit(
       AuditActionType.ACCESS,
-      AuditTransactionStatus.FAILURE,
+      AuditTrasactionStatus.FAILURE,
       'getCountrySubdivisions',
       `Error: ${e.message as string}`,
       'CountrySubdivisionEntity',

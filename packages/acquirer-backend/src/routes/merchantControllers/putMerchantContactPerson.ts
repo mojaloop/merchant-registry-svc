@@ -12,7 +12,7 @@ import {
 } from '../schemas'
 
 import { audit } from '../../utils/audit'
-import { AuditActionType, AuditTransactionStatus } from 'shared-lib'
+import { AuditActionType, AuditTrasactionStatus } from 'shared-lib'
 import { type AuthRequest } from 'src/types/express'
 
 /**
@@ -121,7 +121,7 @@ export async function putMerchantContactPerson (req: AuthRequest, res: Response)
     logger.error('Accessing different DFSP\'s Merchant is not allowed.')
     await audit(
       AuditActionType.ACCESS,
-      AuditTransactionStatus.FAILURE,
+      AuditTrasactionStatus.FAILURE,
       'putWaitingAliasGeneration',
           `User ${portalUser.id} (${portalUser.email}) 
 trying to access unauthorized(different DFSP) merchant ${merchant.id}`,
@@ -201,7 +201,7 @@ trying to access unauthorized(different DFSP) merchant ${merchant.id}`,
 
   await audit(
     AuditActionType.UPDATE,
-    AuditTransactionStatus.SUCCESS,
+    AuditTrasactionStatus.SUCCESS,
     'putMerchantContactPerson',
     'Contact Person Updated',
     'ContactPerson',

@@ -3,7 +3,7 @@ import { type Response } from 'express'
 import { type AuthRequest } from 'src/types/express'
 import { AppDataSource } from '../../database/dataSource'
 import { PortalUserEntity } from '../../entity/PortalUserEntity'
-import { AuditActionType, AuditTransactionStatus, PortalUserType } from 'shared-lib'
+import { AuditActionType, AuditTrasactionStatus, PortalUserType } from 'shared-lib'
 import { audit } from '../../utils/audit'
 
 /**
@@ -56,7 +56,7 @@ export async function getUsers (req: AuthRequest, res: Response) {
 
   await audit(
     AuditActionType.ACCESS,
-    AuditTransactionStatus.SUCCESS,
+    AuditTrasactionStatus.SUCCESS,
     'getUsers',
     'Get a list of users',
     'PortalUserEntity',

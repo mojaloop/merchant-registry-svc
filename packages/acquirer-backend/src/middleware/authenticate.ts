@@ -5,7 +5,7 @@ import { type Request, type Response, type NextFunction } from 'express'
 import { audit } from '../utils/audit'
 import { AppDataSource } from '../database/dataSource'
 import { PortalUserEntity } from '../entity/PortalUserEntity'
-import { AuditActionType, AuditTransactionStatus } from 'shared-lib'
+import { AuditActionType, AuditTrasactionStatus } from 'shared-lib'
 import { type IJWTUser } from 'src/types/jwtUser'
 
 if (process.env.NODE_ENV === 'test') {
@@ -21,7 +21,7 @@ export async function authenticateJWT (req: Request, res: Response, next: NextFu
   if (authorization === undefined) {
     await audit(
       AuditActionType.UNAUTHORIZED_ACCESS,
-      AuditTransactionStatus.FAILURE,
+      AuditTrasactionStatus.FAILURE,
       'authenticateJWT',
       'Authorization header is undefined',
       'PortalUserEntity',
@@ -33,7 +33,7 @@ export async function authenticateJWT (req: Request, res: Response, next: NextFu
   if (authorization === null) {
     await audit(
       AuditActionType.UNAUTHORIZED_ACCESS,
-      AuditTransactionStatus.FAILURE,
+      AuditTrasactionStatus.FAILURE,
       'authenticateJWT',
       'Authorization header is null',
       'PortalUserEntity',
@@ -63,7 +63,7 @@ export async function authenticateJWT (req: Request, res: Response, next: NextFu
   } catch (err) {
     await audit(
       AuditActionType.UNAUTHORIZED_ACCESS,
-      AuditTransactionStatus.FAILURE,
+      AuditTrasactionStatus.FAILURE,
       'authenticateJWT',
       'Invalid token',
       'PortalUserEntity',

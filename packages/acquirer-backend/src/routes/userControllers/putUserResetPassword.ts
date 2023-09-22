@@ -4,7 +4,7 @@ import { audit } from '../../utils/audit'
 import { AppDataSource } from '../../database/dataSource'
 import {
   AuditActionType,
-  AuditTransactionStatus,
+  AuditTrasactionStatus,
   PortalUserStatus
 } from 'shared-lib'
 import { hashPassword } from '../../utils/utils'
@@ -73,7 +73,7 @@ export async function putUserResetPassword (req: Request, res: Response) {
 
     await audit(
       AuditActionType.ADD,
-      AuditTransactionStatus.SUCCESS,
+      AuditTrasactionStatus.SUCCESS,
       'putUserResetPassword',
       'Reset User Password Successful',
       'PortalUserEntity',
@@ -84,7 +84,7 @@ export async function putUserResetPassword (req: Request, res: Response) {
   } catch (error) {
     await audit(
       AuditActionType.ACCESS,
-      AuditTransactionStatus.FAILURE,
+      AuditTrasactionStatus.FAILURE,
       'putUserResetPassword',
       'Reset User Password Failed',
       'PortalUserEntity',

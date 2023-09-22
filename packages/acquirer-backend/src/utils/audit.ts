@@ -1,11 +1,11 @@
-import { type AuditTransactionStatus, type AuditActionType } from 'shared-lib'
+import { type AuditTrasactionStatus, type AuditActionType } from 'shared-lib'
 import { AppDataSource } from '../database/dataSource'
 import { AuditEntity } from '../entity/AuditEntity'
 import { type PortalUserEntity } from '../entity/PortalUserEntity'
 
 export async function audit (
   actionType: AuditActionType,
-  auditTrasactionStatus: AuditTransactionStatus,
+  auditTrasactionStatus: AuditTrasactionStatus,
   applicationModule: string,
   eventDescription: string,
   entityName: string,

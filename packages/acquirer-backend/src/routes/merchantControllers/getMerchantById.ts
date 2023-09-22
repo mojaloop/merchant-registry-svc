@@ -5,7 +5,7 @@ import { AppDataSource } from '../../database/dataSource'
 import { MerchantEntity } from '../../entity/MerchantEntity'
 import logger from '../../services/logger'
 import { audit } from '../../utils/audit'
-import { AuditActionType, AuditTransactionStatus } from 'shared-lib'
+import { AuditActionType, AuditTrasactionStatus } from 'shared-lib'
 import { type AuthRequest } from 'src/types/express'
 
 /**
@@ -50,7 +50,7 @@ export async function getMerchantById (req: AuthRequest, res: Response) {
       logger.error('Invalid ID')
       await audit(
         AuditActionType.ACCESS,
-        AuditTransactionStatus.FAILURE,
+        AuditTrasactionStatus.FAILURE,
         'getMerchantById',
         `Invalid ID: ${req.params.id}`,
         'Merchants',
@@ -84,7 +84,7 @@ export async function getMerchantById (req: AuthRequest, res: Response) {
         logger.error('Merchant not found')
         await audit(
           AuditActionType.ACCESS,
-          AuditTransactionStatus.FAILURE,
+          AuditTrasactionStatus.FAILURE,
           'getMerchantById',
         `User ${portalUser.id} (${portalUser.email}) failed to fetch merchant ${req.params.id}`,
         'MerchantEntity',
@@ -100,7 +100,7 @@ export async function getMerchantById (req: AuthRequest, res: Response) {
         logger.error('Accessing different DFSP\'s Merchant is not allowed.')
         await audit(
           AuditActionType.ACCESS,
-          AuditTransactionStatus.FAILURE,
+          AuditTrasactionStatus.FAILURE,
           'getMerchantById',
           `User ${portalUser.id} (${portalUser.email}) 
 trying to access unauthorized(different DFSP) merchant ${merchant.id}`,
@@ -115,7 +115,7 @@ trying to access unauthorized(different DFSP) merchant ${merchant.id}`,
       logger.error('Error fetching merchant: %o', e)
       await audit(
         AuditActionType.ACCESS,
-        AuditTransactionStatus.FAILURE,
+        AuditTrasactionStatus.FAILURE,
         'getMerchantById',
         `User ${portalUser.id} (${portalUser.email}) failed to fetch merchant ${req.params.id}`,
         'MerchantEntity',
@@ -161,7 +161,7 @@ trying to access unauthorized(different DFSP) merchant ${merchant.id}`,
 
     await audit(
       AuditActionType.ACCESS,
-      AuditTransactionStatus.SUCCESS,
+      AuditTrasactionStatus.SUCCESS,
       'getMerchantById',
       `User ${portalUser.id} (${portalUser.email}) fetched merchant ${merchant.id}`,
       'MerchantEntity',
@@ -172,7 +172,7 @@ trying to access unauthorized(different DFSP) merchant ${merchant.id}`,
     logger.error(e)
     await audit(
       AuditActionType.ACCESS,
-      AuditTransactionStatus.FAILURE,
+      AuditTrasactionStatus.FAILURE,
       'getMerchantById',
       `User ${portalUser.id} (${portalUser.email}) failed to fetch merchant ${req.params.id}`,
       'MerchantEntity',

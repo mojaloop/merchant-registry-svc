@@ -12,7 +12,7 @@ import {
 } from '../schemas'
 
 import { audit } from '../../utils/audit'
-import { AuditActionType, AuditTransactionStatus } from 'shared-lib'
+import { AuditActionType, AuditTrasactionStatus } from 'shared-lib'
 import { type AuthRequest } from 'src/types/express'
 
 /**
@@ -75,7 +75,7 @@ export async function postMerchantContactPerson (req: AuthRequest, res: Response
     logger.error('Invalid ID')
     await audit(
       AuditActionType.ADD,
-      AuditTransactionStatus.FAILURE,
+      AuditTrasactionStatus.FAILURE,
       'postMerchantContactPerson',
       `Invalid ID: ${req.params.id}`,
       'Merchant',
@@ -103,7 +103,7 @@ export async function postMerchantContactPerson (req: AuthRequest, res: Response
     logger.error('Merchant not found')
     await audit(
       AuditActionType.ADD,
-      AuditTransactionStatus.FAILURE,
+      AuditTrasactionStatus.FAILURE,
       'postMerchantContactPerson',
       `Merchant not found: ${req.params.id}`,
       'Merchant',
@@ -120,7 +120,7 @@ export async function postMerchantContactPerson (req: AuthRequest, res: Response
     logger.error('Accessing different DFSP\'s Merchant is not allowed.')
     await audit(
       AuditActionType.ACCESS,
-      AuditTransactionStatus.FAILURE,
+      AuditTrasactionStatus.FAILURE,
       'postMerchantContactPerson',
           `User ${portalUser.id} (${portalUser.email}) 
 trying to access unauthorized(different DFSP) merchant ${merchant.id}`,
@@ -150,7 +150,7 @@ trying to access unauthorized(different DFSP) merchant ${merchant.id}`,
       logger.error('Business Owner not found')
       await audit(
         AuditActionType.ADD,
-        AuditTransactionStatus.FAILURE,
+        AuditTrasactionStatus.FAILURE,
         'postMerchantContactPerson',
         `Business Owner not found: ${req.params.id}`,
         'Merchant',
@@ -176,7 +176,7 @@ trying to access unauthorized(different DFSP) merchant ${merchant.id}`,
         logger.error('Contact Person Validation error: %o', err.issues.map(issue => issue.message))
         await audit(
           AuditActionType.ADD,
-          AuditTransactionStatus.FAILURE,
+          AuditTrasactionStatus.FAILURE,
           'postMerchantContactPerson',
           'Contact Person Validation error',
           'Merchant',
@@ -200,7 +200,7 @@ trying to access unauthorized(different DFSP) merchant ${merchant.id}`,
       logger.error('Contact Person Server Query error: %o', err.message)
       await audit(
         AuditActionType.ADD,
-        AuditTransactionStatus.FAILURE,
+        AuditTrasactionStatus.FAILURE,
         'postMerchantContactPerson',
         'Contact Person Server Query error',
         'Merchant',
@@ -212,7 +212,7 @@ trying to access unauthorized(different DFSP) merchant ${merchant.id}`,
 
   await audit(
     AuditActionType.ADD,
-    AuditTransactionStatus.SUCCESS,
+    AuditTrasactionStatus.SUCCESS,
     'postMerchantContactPerson',
     'Contact Person Saved',
     'Merchant',

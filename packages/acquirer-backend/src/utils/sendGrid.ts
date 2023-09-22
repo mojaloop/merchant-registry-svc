@@ -1,7 +1,7 @@
 import sgMail, { type ResponseError } from '@sendgrid/mail'
 import dotenv from 'dotenv'
 import path from 'path'
-import { AuditActionType, AuditTransactionStatus } from 'shared-lib'
+import { AuditActionType, AuditTrasactionStatus } from 'shared-lib'
 import logger from '../services/logger'
 import { readEnv } from '../setup/readEnv'
 import { audit } from './audit'
@@ -43,7 +43,7 @@ in Merchant Acquirer System.<br/>
 
   await audit(
     AuditActionType.ACCESS,
-    AuditTransactionStatus.SUCCESS,
+    AuditTrasactionStatus.SUCCESS,
     'sendVerificationEmail',
     `Verification Email Sent: ${email} with token: ${token}`,
     'PortalUserEntity',

@@ -6,7 +6,7 @@ import { type AuthRequest } from 'src/types/express'
 import { PortalRoleEntity } from '../../entity/PortalRoleEntity'
 import { PortalPermissionEntity } from '../../entity/PortalPermissionEntity'
 import { In } from 'typeorm'
-import { AuditActionType, AuditTransactionStatus } from 'shared-lib'
+import { AuditActionType, AuditTrasactionStatus } from 'shared-lib'
 import { audit } from '../../utils/audit'
 /**
  * @openapi
@@ -59,7 +59,7 @@ export async function putRoleUpdatePermissions (req: AuthRequest, res: Response)
     logger.error('Invalid ID')
     await audit(
       AuditActionType.ACCESS,
-      AuditTransactionStatus.FAILURE,
+      AuditTrasactionStatus.FAILURE,
       'getMerchantById',
         `Invalid ID: ${req.params.id}`,
         'Merchants',

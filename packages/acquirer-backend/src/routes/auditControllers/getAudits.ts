@@ -2,7 +2,7 @@
 import { type Response } from 'express'
 import { AppDataSource } from '../../database/dataSource'
 import logger from '../../services/logger'
-import { type AuditTransactionStatus, type AuditActionType } from 'shared-lib'
+import { type AuditTrasactionStatus, type AuditActionType } from 'shared-lib'
 import { AuditEntity } from '../../entity/AuditEntity'
 import { type AuthRequest } from 'src/types/express'
 
@@ -91,7 +91,7 @@ export async function getAudits (req: AuthRequest, res: Response) {
     }
 
     if (typeof transactionStatus === 'string' && transactionStatus.length > 0) {
-      whereClause.transaction_status = transactionStatus as AuditTransactionStatus
+      whereClause.transaction_status = transactionStatus as AuditTrasactionStatus
     }
 
     const queryBuilder = AuditRepository.createQueryBuilder('audit')

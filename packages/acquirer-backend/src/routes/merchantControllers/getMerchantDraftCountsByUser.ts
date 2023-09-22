@@ -3,7 +3,7 @@ import { type Response } from 'express'
 import { AppDataSource } from '../../database/dataSource'
 import { MerchantEntity } from '../../entity/MerchantEntity'
 import logger from '../../services/logger'
-import { MerchantRegistrationStatus, AuditActionType, AuditTransactionStatus } from 'shared-lib'
+import { MerchantRegistrationStatus, AuditActionType, AuditTrasactionStatus } from 'shared-lib'
 import { audit } from '../../utils/audit'
 import { type AuthRequest } from 'src/types/express'
 import { In } from 'typeorm'
@@ -58,7 +58,7 @@ export async function getMerchantDraftCountsByUser (req: AuthRequest, res: Respo
 
     await audit(
       AuditActionType.ACCESS,
-      AuditTransactionStatus.SUCCESS,
+      AuditTrasactionStatus.SUCCESS,
       'getMerchantDraftCountsByUser',
       `User ${portalUser.email} successfully retrieved merchant draft counts`,
       'Merchants',
@@ -68,7 +68,7 @@ export async function getMerchantDraftCountsByUser (req: AuthRequest, res: Respo
   } catch (e: any) {
     await audit(
       AuditActionType.ACCESS,
-      AuditTransactionStatus.FAILURE,
+      AuditTrasactionStatus.FAILURE,
       'getMerchantDraftCountsByUser',
       `Error: ${JSON.stringify(e)}`,
       'Merchants',

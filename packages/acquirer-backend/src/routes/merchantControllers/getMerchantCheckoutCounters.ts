@@ -4,7 +4,7 @@ import { AppDataSource } from '../../database/dataSource'
 import logger from '../../services/logger'
 import { MerchantEntity } from '../../entity/MerchantEntity'
 import { audit } from '../../utils/audit'
-import { AuditActionType, AuditTransactionStatus } from 'shared-lib'
+import { AuditActionType, AuditTrasactionStatus } from 'shared-lib'
 import { type AuthRequest } from 'src/types/express'
 
 /**
@@ -56,7 +56,7 @@ export async function getMerchantCheckoutCounters (req: AuthRequest, res: Respon
   if (req.params.id === undefined || req.params.id === null) {
     await audit(
       AuditActionType.ACCESS,
-      AuditTransactionStatus.FAILURE,
+      AuditTrasactionStatus.FAILURE,
       'getMerchantCheckoutCounters',
       'Missing merchant id',
       'Merchants',
@@ -69,7 +69,7 @@ export async function getMerchantCheckoutCounters (req: AuthRequest, res: Respon
   if (isNaN(Number(req.params.id)) || Number(req.params.id) < 1) {
     await audit(
       AuditActionType.ACCESS,
-      AuditTransactionStatus.FAILURE,
+      AuditTrasactionStatus.FAILURE,
       'getMerchantCheckoutCounters',
       `Invalid merchant id: ${req.params.id}`,
       'Merchants',
@@ -93,7 +93,7 @@ export async function getMerchantCheckoutCounters (req: AuthRequest, res: Respon
     if (merchant == null) {
       await audit(
         AuditActionType.ACCESS,
-        AuditTransactionStatus.FAILURE,
+        AuditTrasactionStatus.FAILURE,
         'getMerchantCheckoutCounters',
         `Merchant not found: ${req.params.id}`,
         'Merchants',
@@ -110,7 +110,7 @@ export async function getMerchantCheckoutCounters (req: AuthRequest, res: Respon
       logger.error('Accessing different DFSP\'s Merchant is not allowed.')
       await audit(
         AuditActionType.ACCESS,
-        AuditTransactionStatus.FAILURE,
+        AuditTrasactionStatus.FAILURE,
         'getMerchantCheckoutCounters',
           `User ${portalUser.id} (${portalUser.email}) 
 trying to access unauthorized(different DFSP) merchant ${merchant.id}`,
@@ -125,7 +125,7 @@ trying to access unauthorized(different DFSP) merchant ${merchant.id}`,
     const checkoutCounters = merchant.checkout_counters
     await audit(
       AuditActionType.ACCESS,
-      AuditTransactionStatus.SUCCESS,
+      AuditTrasactionStatus.SUCCESS,
       'getMerchantCheckoutCounters',
       `User ${portalUser.id} with email ${portalUser.email} \
 successfully fetched checkout counters for merchant ${merchant.id}`,
@@ -136,7 +136,7 @@ successfully fetched checkout counters for merchant ${merchant.id}`,
   } catch (e) {
     await audit(
       AuditActionType.ACCESS,
-      AuditTransactionStatus.FAILURE,
+      AuditTrasactionStatus.FAILURE,
       'getMerchantCheckoutCounters',
       `User ${portalUser.id} with email ${portalUser.email} \
 failed to fetch checkout counters for merchant ${req.params.id}`,

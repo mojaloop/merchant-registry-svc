@@ -5,7 +5,7 @@ import {
 } from 'typeorm'
 import { PortalUserEntity } from './PortalUserEntity'
 
-import { AuditActionType, AuditTransactionStatus } from 'shared-lib'
+import { AuditActionType, AuditTrasactionStatus } from 'shared-lib'
 
 @Entity('audits')
 export class AuditEntity {
@@ -25,7 +25,7 @@ export class AuditEntity {
     entity_name!: string
 
   @Column({ nullable: true })
-    transaction_status!: AuditTransactionStatus
+    transaction_status!: AuditTrasactionStatus
 
   @Column({ nullable: true, length: 4096 })
     old_value!: string
