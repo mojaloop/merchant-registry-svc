@@ -29,7 +29,7 @@ function transformIntoTableData(merchantData: MerchantDetails): MerchantInfo {
     registeredName: merchantData.registered_name || 'N/A',
 
     // Assuming the first checkout counter's alias value is the payintoAccount
-    payintoAccount: merchantData.checkout_counters[0]?.alias_value || 'N/A',
+    payintoAccountId: merchantData.checkout_counters[0]?.alias_value || 'N/A',
     merchantType: merchantData.merchant_type,
 
     // Assuming the first location's country subdivision is the state

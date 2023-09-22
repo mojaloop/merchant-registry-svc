@@ -129,9 +129,9 @@ const PendingMerchantRecords = () => {
         cell: info => info.getValue(),
         header: 'Registered Name',
       }),
-      columnHelper.accessor('payintoAccount', {
+      columnHelper.accessor('payintoAccountId', {
         cell: info => info.getValue(),
-        header: 'Payinto Account',
+        header: 'Payinto Account ID',
       }),
       columnHelper.accessor('merchantType', {
         cell: info => info.getValue(),
