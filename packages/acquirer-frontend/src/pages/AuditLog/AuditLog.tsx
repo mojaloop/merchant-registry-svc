@@ -1,6 +1,6 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { createColumnHelper } from '@tanstack/react-table'
-import { Box, Flex, HStack, Heading, Stack } from '@chakra-ui/react'
+import { Box, Flex, HStack, Heading, Stack, useDisclosure } from '@chakra-ui/react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { AuditActionType } from 'shared-lib'
@@ -15,6 +15,7 @@ import { useUsers } from '@/api/hooks/users'
 import { CustomButton, DataTable, EmptyState, TableSkeleton } from '@/components/ui'
 import { FormSelect } from '@/components/form'
 import FilterFormSkeleton from './FilterFormSkeleton'
+import AuditLogDetailsModal from './AuditLogDetailsModal'
 
 const actionTypeOptions = Object.values(AuditActionType).map(actionType => ({
   value: actionType,
@@ -22,6 +23,10 @@ const actionTypeOptions = Object.values(AuditActionType).map(actionType => ({
 }))
 
 const AuditLog = () => {
+  const { isOpen, onOpen, onClose } = useDisclosure()
+
+  const [selectedAuditLog, setSelectedAuditLog] = useState<AuditLogType | null>(null)
+
   const columns = useMemo(() => {
     const columnHelper = createColumnHelper<AuditLogType>()
 
@@ -60,15 +65,22 @@ const AuditLog = () => {
       }),
       columnHelper.display({
         id: 'view-details',
-        cell: () => (
-          <CustomButton mt={{ base: '2', lg: '0' }} mr={{ base: '-2', lg: '3' }}>
+        cell: ({ row }) => (
+          <CustomButton
+            mt={{ base: '2', lg: '0' }}
+            mr={{ base: '-2', lg: '3' }}
+            onClick={() => {
+              setSelectedAuditLog(row.original)
+              onOpen()
+            }}
+          >
             View Details
           </CustomButton>
         ),
         enableSorting: false,
       }),
     ]
-  }, [])
+  }, [onOpen])
 
   const {
     register,
@@ -139,6 +151,14 @@ const AuditLog = () => {
             </CustomButton>
           </HStack>
         </Flex>
+      )}
+
+      {selectedAuditLog && (
+        <AuditLogDetailsModal
+          isOpen={isOpen}
+          onClose={onClose}
+          auditLog={selectedAuditLog}
+        />
       )}
 
       <Box
