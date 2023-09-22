@@ -191,7 +191,7 @@ const PendingMerchantsDataTable = ({
                       maxW={cell.column.accessorFn ? '28' : undefined}
                       textAlign='center'
                       whiteSpace='pre-line'
-                      lineHeight='shorter'
+                      lineHeight='base'
                       // This is a workaround to set border-radius to table rows
                       _first={{ borderLeftRadius: 'md' }}
                       _last={{ borderRightRadius: 'md' }}

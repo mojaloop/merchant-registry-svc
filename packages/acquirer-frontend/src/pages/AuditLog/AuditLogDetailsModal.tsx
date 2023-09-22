@@ -10,6 +10,7 @@ import {
   ModalOverlay,
   Stack,
 } from '@chakra-ui/react'
+import dayjs from 'dayjs'
 
 import type { AuditLogType } from '@/types/auditLogs'
 import { CustomButton } from '@/components/ui'
@@ -74,7 +75,10 @@ const AuditLogDetailsModal = ({
 
             <DetailsItem label='Transaction Status' value={transactionStatus} />
 
-            <DetailsItem label='Created At' value={createdAt} />
+            <DetailsItem
+              label='Created At'
+              value={dayjs(createdAt).format('DD/MM/YYYY hh:mm:ss A')}
+            />
           </Stack>
         </ModalBody>
 

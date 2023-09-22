@@ -3,6 +3,7 @@ import { createColumnHelper } from '@tanstack/react-table'
 import { Box, Flex, HStack, Heading, Stack, useDisclosure } from '@chakra-ui/react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import dayjs from 'dayjs'
 import { AuditActionType } from 'shared-lib'
 
 import type { AuditLogType } from '@/types/auditLogs'
@@ -64,7 +65,7 @@ const AuditLog = () => {
         header: 'Transaction Status',
       }),
       columnHelper.accessor('createdAt', {
-        cell: info => info.getValue(),
+        cell: info => dayjs(info.getValue()).format('DD/MM/YYYY hh:mm:ss A'),
         header: 'Created At',
       }),
       columnHelper.display({
