@@ -6,7 +6,7 @@ export interface MerchantInfo {
   no: number
   dbaName: string
   registeredName: string
-  payintoAccount: string
+  payintoAccountId: string
   merchantType: MerchantType
   town: string
   countrySubdivision: string
