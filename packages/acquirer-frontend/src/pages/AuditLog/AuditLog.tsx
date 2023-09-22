@@ -10,8 +10,9 @@ import {
   type AuditLogsFilterForm,
   auditLogsFilterSchema,
 } from '@/lib/validations/auditLogsFilter'
+import { useAuditLogs } from '@/api/hooks/auditLogs'
 import { useUsers } from '@/api/hooks/users'
-import { CustomButton, DataTable } from '@/components/ui'
+import { CustomButton, DataTable, EmptyState, TableSkeleton } from '@/components/ui'
 import { FormSelect } from '@/components/form'
 import FilterFormSkeleton from './FilterFormSkeleton'
 
@@ -19,17 +20,6 @@ const actionTypeOptions = Object.values(AuditActionType).map(actionType => ({
   value: actionType,
   label: actionType,
 }))
-
-const auditLog: AuditLogType = {
-  portalUserName: 'tester 1',
-  actionType: AuditActionType.ACCESS,
-  applicationModule: 'getMerchants',
-  eventDescription: 'User 1 with email d1superadmin1@gmail.com retrieved merchants',
-  entityName: 'Merchants',
-  oldValue: '',
-  newValue: '',
-  createdAt: '9/12/2023 9:59:17 AM',
-}
 
 const AuditLog = () => {
   const columns = useMemo(() => {
@@ -57,11 +47,11 @@ const AuditLog = () => {
         header: 'Entity Name',
       }),
       columnHelper.accessor('oldValue', {
-        cell: info => info.getValue() || '...',
+        cell: '...',
         header: 'Old Value',
       }),
       columnHelper.accessor('newValue', {
-        cell: info => info.getValue() || '...',
+        cell: '...',
         header: 'New Value',
       }),
       columnHelper.accessor('createdAt', {
@@ -83,17 +73,23 @@ const AuditLog = () => {
   const {
     register,
     formState: { errors },
+    getValues,
     handleSubmit,
     reset,
   } = useForm<AuditLogsFilterForm>({
     resolver: zodResolver(auditLogsFilterSchema),
   })
 
-  const users = useUsers()
-  const userOptions = users.data?.map(user => ({ value: user.name, label: user.name }))
+  const auditLogs = useAuditLogs(getValues())
 
-  const onSubmit = (values: AuditLogsFilterForm) => {
-    console.log(values)
+  const users = useUsers()
+  const userOptions = users.data?.map(({ id, name }) => ({
+    value: id,
+    label: name,
+  }))
+
+  const onSubmit = () => {
+    auditLogs.refetch()
   }
 
   return (
@@ -155,12 +151,24 @@ const AuditLog = () => {
         flexGrow='1'
         mb='-14'
       >
-        <DataTable
-          columns={columns}
-          data={new Array(10).fill(0).map(() => auditLog)}
-          breakpoint='xl'
-          alwaysVisibleColumns={[0]}
-        />
+        {auditLogs.isFetching && (
+          <TableSkeleton breakpoint='xl' mt={{ base: '3', xl: '4' }} />
+        )}
+
+        {!auditLogs.isLoading && !auditLogs.isFetching && !auditLogs.isError && (
+          <>
+            <DataTable
+              columns={columns}
+              data={auditLogs.data}
+              breakpoint='xl'
+              alwaysVisibleColumns={[0]}
+            />
+
+            {auditLogs.data.length === 0 && (
+              <EmptyState text='There are no audit logs.' mt='10' />
+            )}
+          </>
+        )}
       </Box>
     </Stack>
   )
