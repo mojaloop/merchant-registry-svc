@@ -34,6 +34,7 @@ const AuditLogDetailsModal = ({
     entityName,
     oldValue,
     newValue,
+    transactionStatus,
     createdAt,
   } = auditLog
 
@@ -70,6 +71,8 @@ const AuditLogDetailsModal = ({
               label='New Value'
               value={<Box as='pre'>{JSON.stringify(JSON.parse(newValue), null, 2)}</Box>}
             />
+
+            <DetailsItem label='Transaction Status' value={transactionStatus} />
 
             <DetailsItem label='Created At' value={createdAt} />
           </Stack>

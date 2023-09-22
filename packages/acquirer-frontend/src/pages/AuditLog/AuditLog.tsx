@@ -59,6 +59,10 @@ const AuditLog = () => {
         cell: '...',
         header: 'New Value',
       }),
+      columnHelper.accessor('transactionStatus', {
+        cell: info => info.getValue(),
+        header: 'Transaction Status',
+      }),
       columnHelper.accessor('createdAt', {
         cell: info => info.getValue(),
         header: 'Created At',
