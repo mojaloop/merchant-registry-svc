@@ -42,8 +42,8 @@ const FormSelect = <T extends FieldValues>({
         <option value='' disabled>
           {placeholder}
         </option>
-        {options.map(({ value, label }) => (
-          <option key={value} value={value}>
+        {options.map(({ value, label }, index) => (
+          <option key={`${value}-${index}`} value={value}>
             {label}
           </option>
         ))}

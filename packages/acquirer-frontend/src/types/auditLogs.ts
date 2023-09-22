@@ -1,6 +1,8 @@
+import { AuditActionType } from 'shared-lib'
+
 export interface AuditLogType {
   portalUserName: string
-  actionType: string
+  actionType: AuditActionType
   applicationModule: string
   eventDescription: string
   entityName: string

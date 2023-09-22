@@ -1,13 +1,28 @@
 import { useMemo } from 'react'
 import { createColumnHelper } from '@tanstack/react-table'
-import { Box, Heading, Stack } from '@chakra-ui/react'
+import { Box, Flex, HStack, Heading, Stack } from '@chakra-ui/react'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { AuditActionType } from 'shared-lib'
 
-import type { AuditLogType } from '@/types/auditLog'
+import type { AuditLogType } from '@/types/auditLogs'
+import {
+  type AuditLogsFilterForm,
+  auditLogsFilterSchema,
+} from '@/lib/validations/auditLogsFilter'
+import { useUsers } from '@/api/hooks/users'
 import { CustomButton, DataTable } from '@/components/ui'
+import { FormSelect } from '@/components/form'
+import FilterFormSkeleton from './FilterFormSkeleton'
+
+const actionTypeOptions = Object.values(AuditActionType).map(actionType => ({
+  value: actionType,
+  label: actionType,
+}))
 
 const auditLog: AuditLogType = {
   portalUserName: 'tester 1',
-  actionType: 'Access',
+  actionType: AuditActionType.ACCESS,
   applicationModule: 'getMerchants',
   eventDescription: 'User 1 with email d1superadmin1@gmail.com retrieved merchants',
   entityName: 'Merchants',
@@ -65,11 +80,70 @@ const AuditLog = () => {
     ]
   }, [])
 
+  const {
+    register,
+    formState: { errors },
+    handleSubmit,
+    reset,
+  } = useForm<AuditLogsFilterForm>({
+    resolver: zodResolver(auditLogsFilterSchema),
+  })
+
+  const users = useUsers()
+  const userOptions = users.data?.map(user => ({ value: user.name, label: user.name }))
+
+  const onSubmit = (values: AuditLogsFilterForm) => {
+    console.log(values)
+  }
+
   return (
     <Stack minH='full' px={{ base: '4', sm: '6', lg: '8' }} pt='6' pb='14'>
       <Heading size='md' mb='10'>
         Audit Log
       </Heading>
+
+      {users.isLoading ? (
+        <FilterFormSkeleton />
+      ) : (
+        <Flex
+          as='form'
+          flexDir={{ base: 'column', md: 'row' }}
+          gap='8'
+          onSubmit={handleSubmit(onSubmit)}
+        >
+          <FormSelect
+            name='actionType'
+            register={register}
+            errors={errors}
+            label='Action Type'
+            placeholder='Choose Action Type'
+            options={actionTypeOptions}
+            selectProps={{ bg: 'white' }}
+            maxW={{ base: 'full', md: '20rem' }}
+          />
+
+          <FormSelect
+            name='portalUsername'
+            register={register}
+            errors={errors}
+            label='Portal User Name'
+            placeholder='Choose Portal User Name'
+            options={userOptions || []}
+            selectProps={{ bg: 'white' }}
+            maxW={{ base: 'full', md: '20rem' }}
+          />
+
+          <HStack alignSelf='end' gap='3'>
+            <CustomButton colorVariant='accent-outline' mb='1' onClick={() => reset()}>
+              Clear Filter
+            </CustomButton>
+
+            <CustomButton type='submit' mb='1'>
+              Search
+            </CustomButton>
+          </HStack>
+        </Flex>
+      )}
 
       <Box
         bg='primaryBackground'
