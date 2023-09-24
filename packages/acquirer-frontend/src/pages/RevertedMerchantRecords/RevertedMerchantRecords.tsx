@@ -130,7 +130,7 @@ const RevertedMerchantRecords = () => {
             mt={{ base: '2', lg: '0' }}
             mr={{ base: '-2', lg: '3' }}
             onClick={() => {
-              sessionStorage.setItem('merchantId', row.original.no.toString())
+              localStorage.setItem('merchantId', row.original.no.toString())
             }}
           >
             Proceed

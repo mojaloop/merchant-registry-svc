@@ -18,7 +18,7 @@ export function useLogin() {
       return login(email, password)
     },
     onSuccess: async data => {
-      sessionStorage.setItem('token', data)
+      localStorage.setItem('token', data)
 
       // Remove portal user management from sidebar if the user is operator or auditor
       const userProfile = await getUserProfile()

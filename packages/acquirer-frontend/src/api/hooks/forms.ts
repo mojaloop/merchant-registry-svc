@@ -101,7 +101,7 @@ export function useCreateBusinessInfo(goToNextStep: () => void) {
   return useMutation({
     mutationFn: (params: BusinessInfoForm) => createBusinessInfo(params),
     onSuccess: data => {
-      sessionStorage.setItem('merchantId', data.data.id.toString())
+      localStorage.setItem('merchantId', data.data.id.toString())
       queryClient.invalidateQueries(['draft-count'])
       toast({
         title: data.message,
@@ -352,7 +352,7 @@ export function useChangeStatusToReview(closeReviewModal: () => void) {
   return useMutation({
     mutationFn: (merchantId: string) => changeStatusToReview(merchantId),
     onSuccess: () => {
-      sessionStorage.removeItem('merchantId')
+      localStorage.removeItem('merchantId')
       closeReviewModal()
       queryClient.invalidateQueries(['draft-count'])
       queryClient.invalidateQueries(['drafts'])

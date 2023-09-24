@@ -5,7 +5,7 @@ import { isTokenExpired } from '@/utils'
 import { Header, Sidebar } from '@/components/layout'
 
 const Layout = () => {
-  const token = sessionStorage.getItem('token')
+  const token = localStorage.getItem('token')
   if (!token) return <Navigate to='/login' replace />
 
   if (isTokenExpired(token)) return <Navigate to='/login' replace />
