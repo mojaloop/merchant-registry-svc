@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "target": "es6",
+    "module": "commonjs",
+    "rootDir": "./",
+    "outDir": "./build",
+    "strict": true,
+    "strictPropertyInitialization": true,
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "emitDecoratorMetadata": true,
+    "allowSyntheticDefaultImports": true,
+    "experimentalDecorators": true,
+    "baseUrl": ".",
+    "paths": {
+      "shared-lib": ["../shared-lib/src/*"]
+    }
+  },
+  "include": ["**/src/**/*.ts", "**/__tests__/**/*.ts"],
+  "exclude": ["node_modules"]
+}

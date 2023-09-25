@@ -17,7 +17,7 @@ export class CheckoutCounterEntity {
   @Column({ nullable: true, length: 255 })
     notification_number!: string
 
-  @Column({ nullable: false, length: 255, default: 'PAYINTO_ID' })
+  @Column({ nullable: false, length: 255, default: 'PAYINTOID' })
     alias_type!: string
 
   @Column({ nullable: true, length: 255 })

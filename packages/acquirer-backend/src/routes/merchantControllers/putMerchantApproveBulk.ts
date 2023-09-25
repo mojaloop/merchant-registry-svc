@@ -7,6 +7,7 @@ import { MerchantRegistrationStatus, AuditActionType, AuditTrasactionStatus } fr
 import { In } from 'typeorm'
 import { audit } from '../../utils/audit'
 import { type AuthRequest } from 'src/types/express'
+import { publishToQueue } from '../../services/messageQueue'
 
 /**
  * @openapi
@@ -73,7 +74,12 @@ export async function putBulkWaitingAliasGeneration (req: AuthRequest, res: Resp
     where: {
       id: In(ids)
     },
-    relations: ['created_by', 'dfsps']
+    relations: [
+      'created_by',
+      'dfsps',
+      'currency_code',
+      'checkout_counters'
+    ]
   })
 
   for (const merchant of merchants) {
@@ -145,6 +151,19 @@ export async function putBulkWaitingAliasGeneration (req: AuthRequest, res: Resp
       'Merchant',
       {}, {}, portalUser
     )
+
+    const registryMerchantData = merchants.map(merchant => {
+      return {
+        merchant_id: merchant.id,
+        dfsp_id: merchant.dfsps[0].id.toString(),
+        dfsp_name: merchant.dfsps[0].name,
+        checkout_counter_id: merchant.checkout_counters[0].id,
+        currency_code: merchant.currency_code
+      }
+    })
+
+    await publishToQueue({ command: 'bulkGenerateAlias', data: registryMerchantData })
+
     res.status(200).send({
       message: '"Waiting For Alias Generation" Status Updated for multiple merchants'
     })

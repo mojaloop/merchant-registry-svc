@@ -3,7 +3,8 @@ export enum AuditActionType {
   ACCESS = 'Access',
   ADD = 'Add',
   UPDATE = 'Update',
-  DELETE = 'Delete'
+  DELETE = 'Delete',
+  SEND = 'Send'
 }
 
 export enum AuditTrasactionStatus {

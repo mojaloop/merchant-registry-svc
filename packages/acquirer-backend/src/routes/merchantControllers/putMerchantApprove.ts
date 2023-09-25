@@ -7,6 +7,7 @@ import { MerchantRegistrationStatus, AuditActionType, AuditTrasactionStatus } fr
 import { QueryFailedError } from 'typeorm'
 import { audit } from '../../utils/audit'
 import { type AuthRequest } from 'src/types/express'
+import { publishToQueue } from '../../services/messageQueue'
 
 /**
  * @openapi
@@ -68,8 +69,9 @@ export async function putWaitingAliasGeneration (req: AuthRequest, res: Response
       where: { id },
       relations: [
         'created_by',
-        'checked_by',
-        'dfsps'
+        // 'checked_by',
+        'dfsps',
+        'checkout_counters' // For pushing to queue
       ]
     })
 
@@ -127,6 +129,8 @@ trying to access unauthorized(different DFSP) merchant ${merchant.id}`,
       ...merchant,
       created_by: undefined
     }
+
+    await publishToQueue({ command: 'generateAlias', data: merchantData })
 
     await audit(
       AuditActionType.UPDATE,
