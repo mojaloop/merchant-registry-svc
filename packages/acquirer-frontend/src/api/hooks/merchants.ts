@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { isAxiosError } from 'axios'
 import { useToast } from '@chakra-ui/react'
 import { MerchantRegistrationStatus } from 'shared-lib'
@@ -173,11 +173,14 @@ export function useMerchant(merchantId: number) {
 }
 
 export function useApproveMerchants() {
+  const queryClient = useQueryClient()
   const toast = useToast()
 
   return useMutation({
     mutationFn: (selectedMerchantIds: number[]) => approveMerchants(selectedMerchantIds),
     onSuccess: () => {
+      queryClient.invalidateQueries(['all-merchants'])
+      queryClient.invalidateQueries(['approved-merchants'])
       toast({
         title: 'Approving Merchants Successful!',
         status: 'success',
@@ -196,12 +199,15 @@ export function useApproveMerchants() {
 }
 
 export function useRejectMerchants() {
+  const queryClient = useQueryClient()
   const toast = useToast()
 
   return useMutation({
     mutationFn: ({ selectedMerchantIds, reason }: ActionWithReasonParams) =>
       rejectMerchants(selectedMerchantIds, reason),
     onSuccess: () => {
+      queryClient.invalidateQueries(['all-merchants'])
+      queryClient.invalidateQueries(['rejected-merchants'])
       toast({
         title: 'Rejecting Merchants Successful!',
         status: 'success',
@@ -220,12 +226,15 @@ export function useRejectMerchants() {
 }
 
 export function useRevertMerchants() {
+  const queryClient = useQueryClient()
   const toast = useToast()
 
   return useMutation({
     mutationFn: ({ selectedMerchantIds, reason }: ActionWithReasonParams) =>
       revertMerchants(selectedMerchantIds, reason),
     onSuccess: () => {
+      queryClient.invalidateQueries(['all-merchants'])
+      queryClient.invalidateQueries(['reverted-merchants'])
       toast({
         title: 'Reverting Merchants Successful!',
         status: 'success',
