@@ -75,12 +75,16 @@ const PendingMerchantsDataTable = ({
 
   const userProfile = useUserProfile()
 
-  const getSelectedMerchantIds = (): number[] => {
-    const selectedRows = getSelectedRowModel()
-      .rows.map(row => row.original)
-      // Filter merchant records that are made by the user
-      .filter(merchant => merchant.maker.id !== userProfile.data?.id)
+  const selectedRows = getSelectedRowModel()
+    .rows.map(row => row.original)
+    // Filter merchant records that are made by the user
+    .filter(merchant => merchant.maker.id !== userProfile.data?.id)
 
+  const isActionDisabled =
+    (!table.getIsSomeRowsSelected() && !table.getIsAllRowsSelected()) ||
+    selectedRows.length === 0
+
+  const getSelectedMerchantIds = (): number[] => {
     return selectedRows.map(selectedRow => selectedRow.no)
   }
 
@@ -106,30 +110,15 @@ const PendingMerchantsDataTable = ({
           Export
         </CustomButton>
 
-        <CustomButton
-          px='6'
-          mb='4'
-          isDisabled={!table.getIsSomeRowsSelected() && !table.getIsAllRowsSelected()}
-          onClick={handleReject}
-        >
+        <CustomButton px='6' mb='4' isDisabled={isActionDisabled} onClick={handleReject}>
           Reject
         </CustomButton>
 
-        <CustomButton
-          px='6'
-          mb='4'
-          isDisabled={!table.getIsSomeRowsSelected() && !table.getIsAllRowsSelected()}
-          onClick={handleApprove}
-        >
+        <CustomButton px='6' mb='4' isDisabled={isActionDisabled} onClick={handleApprove}>
           Approve
         </CustomButton>
 
-        <CustomButton
-          px='6'
-          mb='4'
-          isDisabled={!table.getIsSomeRowsSelected() && !table.getIsAllRowsSelected()}
-          onClick={handleRevert}
-        >
+        <CustomButton px='6' mb='4' isDisabled={isActionDisabled} onClick={handleRevert}>
           Revert
         </CustomButton>
       </HStack>
