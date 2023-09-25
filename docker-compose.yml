@@ -24,6 +24,13 @@ services:
       - S3_ACCESS_KEY=minioadmin
       - S3_SECRET_KEY=minioadmin
       - S3_MERCHANT_BUCKET_NAME=merchant-documents
+
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_PORT=5672
+      - RABBITMQ_USERNAME=guest # TODO: change this in production
+      - RABBITMQ_PASSWORD=guest # TODO: change this in production
+      - RABBITMQ_QUEUE=acquirer_to_registry
+      - RABBITMQ_REPLY_QUEUE=registry_reply_acquirer
     depends_on:
       - acquirer-db
       - minio
@@ -39,11 +46,33 @@ services:
     ports:
       - "5173:5173"
 
-  # TODO: To do this
-  # registry-backend:
-  #   build:
-  #     context: .
-  #     dockerfile: Dockerfile-registry-backend
+  registry-oracle:
+    build:
+      context: .
+      dockerfile: Dockerfile-registry-oracle
+    ports:
+      - 6666:6666
+    environment:
+      - APP_URL=http://0.0.0.0:6666
+      - HOST=0.0.0.0
+      - PORT=6666
+
+      - DB_HOST=oracle-db
+      - DB_PORT=3306
+      - DB_USERNAME=root
+      - DB_PASSWORD=password
+      - DB_DATABASE=registry-oracle
+
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_PORT=5672
+      - RABBITMQ_USERNAME=guest # TODO: change this in production
+      - RABBITMQ_PASSWORD=guest # TODO: change this in production
+      - RABBITMQ_QUEUE=acquirer_to_registry
+      - RABBITMQ_REPLY_QUEUE=registry_reply_acquirer
+
+    depends_on:
+      - oracle-db
+      - rabbitmq
 
 
   rabbitmq:
@@ -52,8 +81,8 @@ services:
       - 5673:5672 
       - 15673:15672
     environment:
-      - RABBITMQ_DEFAULT_USER=guest
-      - RABBITMQ_DEFAULT_PASS=guest
+      - RABBITMQ_DEFAULT_USER=guest # TODO: change this in production
+      - RABBITMQ_DEFAULT_PASS=guest # TODO: change this in production
 
   acquirer-db:
     image: mysql:8.0.33
