@@ -5,6 +5,7 @@ import logger from '../../services/logger'
 import { type AuditTrasactionStatus, type AuditActionType } from 'shared-lib'
 import { AuditEntity } from '../../entity/AuditEntity'
 import { type AuthRequest } from 'src/types/express'
+import { PortalUserEntity } from '../../entity/PortalUserEntity'
 
 /**
  * @openapi
@@ -19,11 +20,29 @@ import { type AuthRequest } from 'src/types/express'
  *     summary: GET Audit Logs
  *     parameters:
  *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *         description: The page number
+ *         minimum: 1
+ *         example: 1
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *         description: The number of items per page
+ *       - in: query
  *         name: actionType
  *         schema:
  *           type: string
  *           enum: [UnauthorizedAccess, Access, Add, Update, Delete]
  *         description: The action type
+ *       - in: query
+ *         name: portalUserId
+ *         schema:
+ *           type: integer
+ *         description: The ID of the user who did on the action
  *       - in: query
  *         name: transactionStatus
  *         schema:
@@ -67,16 +86,31 @@ export async function getAudits (req: AuthRequest, res: Response) {
   try {
     const {
       actionType,
+      portalUserId,
       applicationModule,
       entityName,
       transactionStatus
     } = req.query
 
+    // Pagination parameters
+    const { page = 1, limit = 10 } = req.query
+    const skip = (Number(page) - 1) * Number(limit)
+
     logger.debug('req.query: %o', req.query)
 
+    if (isNaN(skip) || isNaN(Number(limit)) || skip < 0 || Number(limit) < 1) {
+      return res.status(400).send({ message: 'Invalid pagination parameters' })
+    }
+
     const AuditRepository = AppDataSource.getRepository(AuditEntity)
+    const PortalUserRepository = AppDataSource.getRepository(PortalUserEntity)
 
     const whereClause: Partial<AuditEntity> = {}
+
+    if (!isNaN(Number(portalUserId)) && Number(portalUserId) > 0) {
+      const user = await PortalUserRepository.findOne({ where: { id: Number(portalUserId) } })
+      if (user != null) whereClause.portal_user = user
+    }
 
     if (typeof actionType === 'string' && actionType.length > 0) {
       whereClause.action_type = actionType as AuditActionType
@@ -99,10 +133,17 @@ export async function getAudits (req: AuthRequest, res: Response) {
       .where(whereClause)
       .orderBy('audit.created_at', 'DESC') // Sort by latest
 
+    const totalCount = await queryBuilder.getCount()
+    const totalPages = Math.ceil(totalCount / Number(limit))
+
+    // Add pagination
+    queryBuilder
+      .skip(skip)
+      .take(Number(limit))
     logger.debug('WhereClause: %o', whereClause)
 
     const audits = await queryBuilder.getMany()
-    res.send({ message: 'OK', data: audits })
+    res.send({ message: 'OK', data: audits, totalPages })
   } catch (e) {
     logger.error(e)
     res.status(500).send({ message: e })

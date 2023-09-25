@@ -22,6 +22,19 @@ paths:
       summary: GET Audit Logs
       parameters:
         - in: query
+          name: page
+          schema:
+            type: integer
+          description: The page number
+          minimum: 1
+          example: 1
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            minimum: 1
+          description: The number of items per page
+        - in: query
           name: actionType
           schema:
             type: string
@@ -32,6 +45,11 @@ paths:
               - Update
               - Delete
           description: The action type
+        - in: query
+          name: portalUserId
+          schema:
+            type: integer
+          description: The ID of the user who did on the action
         - in: query
           name: transactionStatus
           schema:
