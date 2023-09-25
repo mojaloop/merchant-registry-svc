@@ -11,9 +11,8 @@ export interface DFSPData {
   dfsp_api_endpoint: string;
 }
 
-export async function registerEndpointDFSP (dfspData: DFSPData): Promise<void> {
-  logger.info('Registering DFSP: %o', dfspData);
-
+export async function registerEndpointDFSP (dfspData: DFSPData): Promise<APIAccessEntity> {
+  logger.debug('Registering DFSP: %o', dfspData);
 
   const endpointDfsp = new EndpointDFSPEntity();
   endpointDfsp.dfsp_id = dfspData.dfsp_id;
@@ -27,6 +26,9 @@ export async function registerEndpointDFSP (dfspData: DFSPData): Promise<void> {
     await transactionalEntityManager.save(EndpointDFSPEntity, endpointDfsp);
     await transactionalEntityManager.save(APIAccessEntity, apiAccess);
   });
+
+  logger.debug('DFSP registered: %o', dfspData);
+  return apiAccess;
 }
 
 

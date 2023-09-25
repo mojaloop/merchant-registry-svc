@@ -18,7 +18,7 @@ export interface MerchantData {
   currency_code: CurrencyCode;
 }
 
-export async function registerMerchant (merchants: MerchantData[]) {
+export async function registerMerchants (merchants: MerchantData[]): Promise<RegistryEntity[]> {
   const registryRepository = AppDataSource.getRepository(RegistryEntity)
 
   // Fetch the maximum alias_value from the database
@@ -56,11 +56,11 @@ export async function registerMerchant (merchants: MerchantData[]) {
 
     bulkRegistryEntities.push(registryRecord);
   }
-  logger.info('Bulk inserting %d records', bulkRegistryEntities.length);
+  logger.debug('Bulk inserting %d records', bulkRegistryEntities.length);
 
   if (bulkRegistryEntities.length === 0) {
     logger.error("No valid merchant data found. Aborting transaction.");
-    return;
+    return [];
   }
 
   try{
@@ -70,5 +70,8 @@ export async function registerMerchant (merchants: MerchantData[]) {
     });
   }catch(err) {
     logger.error('Transaction failed: %o', err);
+    return []
   };
+
+  return bulkRegistryEntities
 }

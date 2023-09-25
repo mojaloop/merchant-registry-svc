@@ -1,9 +1,12 @@
+import {ifError} from 'assert'
 import express, { type Request, type Response } from 'express'
 import {AuditActionType, AuditTrasactionStatus} from 'shared-lib'
 import {AppDataSource} from '../database/dataSource'
 import {RegistryEntity} from '../entity/RegistryEntity'
+import {authenticateAPIAccess} from '../middleware/authenticate'
 import logger from '../services/logger'
 import {readEnv} from '../setup/readEnv'
+import {EndpointAuthRequest} from '../types/express'
 import {audit} from '../utils/audit'
 import {prepareError} from '../utils/error'
 
@@ -48,7 +51,21 @@ router.get('/participants/:type/:id', async (req: Request, res: Response) => {
   res.send()
 })
 
-router.post('/participants', async (req: Request, res: Response) => {
+router.post('/participants', authenticateAPIAccess, async (req: EndpointAuthRequest, res: Response) => {
+  const endpoint = req.endpoint
+  if(!endpoint) {
+    logger.error('Invalid Endpoint')
+    await audit(
+      AuditActionType.ADD,
+      AuditTrasactionStatus.FAILURE,
+      'postParticipants',
+      'POST Participants: Invalid Endpoint',
+      'RegistryEntity',
+      {}, {}, endpoint
+    )
+    return res.status(400).send(prepareError('Authentication Error'))
+  }
+
   const {fspId, currency } = req.body
 
   if(fspId == undefined || fspId == null) {
@@ -90,25 +107,6 @@ router.post('/participants', async (req: Request, res: Response) => {
   //   return res.status(400).send(prepareError('Invalid Alias Value'))
   // }
 
-
-  const registryRecord = await AppDataSource.manager.findOne(RegistryEntity, {
-    where: { fspId, currency },
-    select: ['fspId', 'currency']
-  })
-
-  if(registryRecord) {
-    logger.error('Participant already exists')
-    await audit(
-      AuditActionType.ACCESS,
-      AuditTrasactionStatus.FAILURE,
-      'postParticipants',
-      'POST Participants: Participant already exists',
-      'RegistryEntity',
-      {}, {fspId, currency}
-    )
-    return res.status(400).send(prepareError('Participant already exists'))
-  }
-
   // Fetch the maximum alias_value from the database
   const registryRepository = AppDataSource.getRepository(RegistryEntity)
   const maxAliasEntity = await registryRepository.find({
@@ -122,7 +120,8 @@ router.post('/participants', async (req: Request, res: Response) => {
   const paddedAliasValue = maxAliasValue.toString().padStart(ALIAS_CHECKOUT_MAX_DIGITS, "0");
 
   const newRegistryRecord = new RegistryEntity()
-  newRegistryRecord.fspId = fspId // TODO: Should be the FSP ID of registered API Accessed DFSP
+  newRegistryRecord.fspId = endpoint.dfsp_id // TODO: Should be the FSP ID of registered API Accessed DFSP
+  newRegistryRecord.dfsp_name = endpoint.dfsp_name
   newRegistryRecord.currency = currency
   newRegistryRecord.alias_value = paddedAliasValue
 

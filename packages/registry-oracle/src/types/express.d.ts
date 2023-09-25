@@ -1,14 +1,14 @@
 // express.d.ts
-import { type PortalUserEntity } from 'src/entity/PortalUserEntity'
 
 import { type Request } from 'express'
+import {EndpointDFSPEntity} from '../entity/EndpointDFSPEntity'
 
 declare module 'express' {
   export interface Request {
-    user?: PortalUserEntity
+    endpoint?: EndpointDFSPEntity
   }
 }
 
-export interface AuthRequest extends Request {
-  user?: PortalUserEntity
+export interface EndpointAuthRequest extends Request {
+  endpoint?: EndpointDFSPEntity
 }

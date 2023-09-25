@@ -32,6 +32,9 @@ export class AuditEntity {
   @Column({ nullable: true, length: 4096 })
     new_value!: string
 
+  @Column({ nullable: true })
+    endpoint_id!: number
+
   @CreateDateColumn()
     created_at!: Date
 }

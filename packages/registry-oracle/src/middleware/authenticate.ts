@@ -1,12 +1,11 @@
 import path from 'path'
-import jwt from 'jsonwebtoken'
 import dotenv from 'dotenv'
 import { type Request, type Response, type NextFunction } from 'express'
-import { audit } from '../utils/audit'
-import { AppDataSource } from '../database/dataSource'
-import { PortalUserEntity } from '../entity/PortalUserEntity'
-import { AuditActionType, AuditTrasactionStatus } from 'shared-lib'
-import { type IJWTUser } from 'src/types/jwtUser'
+import {APIAccessEntity} from '../entity/APIAccessEntity'
+import {AppDataSource} from '../database/dataSource'
+import {prepareError} from '../utils/error'
+import {audit} from '../utils/audit'
+import {AuditActionType, AuditTrasactionStatus} from 'shared-lib'
 
 if (process.env.NODE_ENV === 'test') {
   dotenv.config({ path: path.resolve(process.cwd(), '.env.test'), override: true })
@@ -14,61 +13,43 @@ if (process.env.NODE_ENV === 'test') {
 
 export const JWT_SECRET = process.env.JWT_SECRET ?? ''
 
-/* eslint-disable-next-line @typescript-eslint/explicit-function-return-type */
-export async function authenticateJWT (req: Request, res: Response, next: NextFunction) {
-  const authorization = req.header('Authorization')
+export async function authenticateAPIAccess (req: Request, res: Response, next: NextFunction) {
+  const apiKey = req.headers['x-api-key'] as string;
+  
+  if (apiKey == null || apiKey == undefined) {
+    await audit(
+      AuditActionType.UNAUTHORIZED_ACCESS,
+      AuditTrasactionStatus.FAILURE, 
+      'authenticateAPIAccess',
+      'Missing x-api-key header', 
+      'APIAccessEntity', {}, {}
+    )
+    return res.status(400).send(prepareError('Missing header: x-api-key'))
+  }
 
-  if (authorization === undefined) {
+  const apiAccess = await AppDataSource.manager.findOne(APIAccessEntity, { 
+    where: {client_secret: apiKey} ,
+    relations: ['endpoints']
+  }) 
+
+  if (apiAccess == null) {
     await audit(
       AuditActionType.UNAUTHORIZED_ACCESS,
       AuditTrasactionStatus.FAILURE,
-      'authenticateJWT',
-      'Authorization header is undefined',
-      'PortalUserEntity',
-      {}, {}, null
+      'authenticateAPIAccess',
+      'Invalid API Key',
+      'APIAccessEntity',
+      {}, {apiKey}
     )
-    return res.status(401).send({ message: 'Authorization Failed' })
+    return res.status(400).send(prepareError('Invalid API key'))
   }
 
-  if (authorization === null) {
-    await audit(
-      AuditActionType.UNAUTHORIZED_ACCESS,
-      AuditTrasactionStatus.FAILURE,
-      'authenticateJWT',
-      'Authorization header is null',
-      'PortalUserEntity',
-      {}, {}, null
-    )
-    return res.status(401).send({ message: 'Authorization Failed' })
+
+  if(apiAccess.endpoints.length == 0) {
+    return res.status(400).send(prepareError('No endpoints configured for this API key'))
   }
 
-  const token = authorization.replace('Bearer', '').trim()
-
-  try {
-    const jwtUser = jwt.verify(token, JWT_SECRET) as IJWTUser
-    const user = await AppDataSource.manager.findOne(
-      PortalUserEntity,
-      {
-        where: { email: jwtUser.email },
-        relations: ['role', 'role.permissions', 'dfsp']
-      }
-    )
-
-    if (user == null) {
-      throw new Error('JWT User\'s Email not found')
-    }
-
-    req.user = user
-    next()
-  } catch (err) {
-    await audit(
-      AuditActionType.UNAUTHORIZED_ACCESS,
-      AuditTrasactionStatus.FAILURE,
-      'authenticateJWT',
-      'Invalid token',
-      'PortalUserEntity',
-      {}, { token }, null
-    )
-    res.status(401).send({ message: 'Authorization Failed', error: err })
-  }
+  req.endpoint = apiAccess.endpoints[0]
+  next()
 }
+

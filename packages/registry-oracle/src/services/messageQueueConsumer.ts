@@ -2,8 +2,8 @@ import amqplib, { Channel, Message } from 'amqplib';
 import 'dotenv/config';
 import logger from '../services/logger';
 import { readEnv } from '../setup/readEnv';
-import {registerEndpointDFSP} from './registerEndpointDFSP';
-import {registerMerchant } from './registerMerchant';
+import { registerEndpointDFSP } from './registerEndpointDFSP';
+import { registerMerchants } from './registerMerchant';
 
 const RABBITMQ_HOST = readEnv('RABBITMQ_HOST', '127.0.0.1') as string;
 const RABBITMQ_PORT = readEnv('RABBITMQ_PORT', 5672) as number;
@@ -24,33 +24,51 @@ interface MessagePayload {
 amqplib.connect(connStr)
   .then(async (conn) => await conn.createChannel())
   .then(async (channel: Channel) => {
-    await channel.assertQueue(RABBITMQ_QUEUE, { durable: false });
+    await channel.assertQueue(RABBITMQ_QUEUE, { durable: true });
 
     logger.info(`Listening for messages in queue: ${RABBITMQ_QUEUE}`);
 
-    channel.consume(RABBITMQ_QUEUE, (message: Message | null) => {
+    channel.consume(RABBITMQ_QUEUE, async (message: Message | null) => {
+      logger.debug('Received message: %o', message);
       if (message) {
         const msgContent = message.content.toString();
         let msgJson: MessagePayload;
+        let result: any;
         try{
           msgJson = JSON.parse(msgContent);
           
           if(msgJson.command == 'bulkGenerateAlias') {
-            registerMerchant(msgJson.data);
+            result = await registerMerchants(msgJson.data);
+          } else if(msgJson.command == 'registerEndpointDFSP') {
+            result = await registerEndpointDFSP(msgJson.data);
+          }else{
+            logger.error('Invalid command: %s', msgJson.command);
+            channel.ack(message);
+            return
           }
 
-          if(msgJson.command == 'registerEndpointDFSP') {
-            registerEndpointDFSP(msgJson.data);
-          }
+          logger.debug('Sending reply: %o', result);
+          channel.sendToQueue(
+            message.properties.replyTo,
+            Buffer.from(JSON.stringify({
+              command: msgJson.command,
+              data: result
+            })), 
+            {
+              correlationId: message.properties.correlationId
+            }
+          );
+            
+          channel.ack(message);
 
         }catch(err){
           logger.error('Error while parsing message from queue: %o', err);
+          channel.ack(message);
           return
         }
         logger.info(`Received message: ${JSON.stringify(msgJson)}`);
 
         // Acknowledge the message
-        channel.ack(message);
       }
     });
   })
