@@ -20,7 +20,7 @@ const Registry = () => {
         to='/registry/registry-form'
         mr='4'
         onClick={() => {
-          sessionStorage.removeItem('merchantId')
+          localStorage.removeItem('merchantId')
         }}
       >
         Add new record

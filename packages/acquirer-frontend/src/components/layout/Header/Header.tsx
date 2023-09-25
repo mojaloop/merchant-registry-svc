@@ -64,7 +64,7 @@ const Header = () => {
             color='accent'
             fontSize='22px'
             onClick={() => {
-              sessionStorage.removeItem('token')
+              localStorage.removeItem('token')
               navigate('/login')
               queryClient.removeQueries()
             }}
