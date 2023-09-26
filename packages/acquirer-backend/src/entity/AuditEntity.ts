@@ -6,6 +6,7 @@ import {
 import { PortalUserEntity } from './PortalUserEntity'
 
 import { AuditActionType, AuditTrasactionStatus } from 'shared-lib'
+import { DFSPEntity } from './DFSPEntity'
 
 @Entity('audits')
 export class AuditEntity {
@@ -35,6 +36,9 @@ export class AuditEntity {
 
   @ManyToOne(() => PortalUserEntity, portalUser => portalUser.audits)
     portal_user!: PortalUserEntity
+
+  @ManyToOne(() => DFSPEntity, dfsp => dfsp.audits)
+    dfsp!: DFSPEntity
 
   @CreateDateColumn()
     created_at!: Date
