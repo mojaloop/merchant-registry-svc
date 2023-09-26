@@ -15,4 +15,9 @@ export default function setupRoutes (app: Application): void {
   app.use('/api/v1', audit_routes)
   app.use('/api/v1', role_routes)
   app.use('/api/v1', country_routes)
+
+  // Catch-all route to handle 404s
+  app.use('*', (req, res) => {
+    res.status(404).json({ message: 'Route not found' })
+  })
 }
