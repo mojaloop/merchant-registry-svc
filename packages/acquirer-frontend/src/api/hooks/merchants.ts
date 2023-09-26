@@ -5,6 +5,7 @@ import { MerchantRegistrationStatus } from 'shared-lib'
 
 import type { MerchantDetails } from '@/types/merchantDetails'
 import type { MerchantInfo } from '@/types/merchants'
+import type { PaginationParams } from '@/types/pagination'
 import type { AllMerchantsFilterForm } from '@/lib/validations/allMerchantsFilter'
 import type { MerchantsFilterForm } from '@/lib/validations/merchantsFilter'
 import { FALLBACK_ERROR_MESSAGE } from '@/constants/errorMessage'
@@ -21,6 +22,9 @@ interface ActionWithReasonParams {
   selectedMerchantIds: number[]
   reason: string
 }
+
+type AllMerchantsParams = AllMerchantsFilterForm & PaginationParams
+type MerchantsParams = MerchantsFilterForm & PaginationParams
 
 function transformIntoTableData(merchantData: MerchantDetails): MerchantInfo {
   return {
@@ -44,51 +48,69 @@ function transformIntoTableData(merchantData: MerchantDetails): MerchantInfo {
   }
 }
 
-async function getDrafts(values: MerchantsFilterForm) {
+async function getDrafts(values: MerchantsParams) {
   const params = { ...values, registrationStatus: MerchantRegistrationStatus.DRAFT }
   const drafts = await getMerchants(params)
 
-  return drafts.map(transformIntoTableData)
+  return {
+    data: drafts.data.map(transformIntoTableData),
+    totalPages: drafts.totalPages,
+  }
 }
 
-async function getAllMerchantRecords(values: AllMerchantsFilterForm) {
+async function getAllMerchantRecords(values: AllMerchantsParams) {
   const allMerchants = await getMerchants(values)
 
-  return allMerchants.map(transformIntoTableData)
+  return {
+    data: allMerchants.data.map(transformIntoTableData),
+    totalPages: allMerchants.totalPages,
+  }
 }
 
-async function getPendingMerchantRecords(values: MerchantsFilterForm) {
+async function getPendingMerchantRecords(values: MerchantsParams) {
   const params = { ...values, registrationStatus: MerchantRegistrationStatus.REVIEW }
   const pendingMerchants = await getMerchants(params)
 
-  return pendingMerchants.map(transformIntoTableData)
+  return {
+    data: pendingMerchants.data.map(transformIntoTableData),
+    totalPages: pendingMerchants.totalPages,
+  }
 }
 
-async function getRejectedMerchantRecords(values: MerchantsFilterForm) {
+async function getRejectedMerchantRecords(values: MerchantsParams) {
   const params = { ...values, registrationStatus: MerchantRegistrationStatus.REJECTED }
   const rejectedMerchants = await getMerchants(params)
 
-  return rejectedMerchants.map(transformIntoTableData)
+  return {
+    data: rejectedMerchants.data.map(transformIntoTableData),
+    totalPages: rejectedMerchants.totalPages,
+  }
 }
 
-async function getRevertedMerchantRecords(values: MerchantsFilterForm) {
+async function getRevertedMerchantRecords(values: MerchantsParams) {
   const params = { ...values, registrationStatus: MerchantRegistrationStatus.REVERTED }
   const revertedMerchants = await getMerchants(params)
 
-  return revertedMerchants.map(transformIntoTableData)
+  return {
+    data: revertedMerchants.data.map(transformIntoTableData),
+    totalPages: revertedMerchants.totalPages,
+  }
 }
 
-async function getApprovedMerchantRecords(values: MerchantsFilterForm) {
+async function getApprovedMerchantRecords(values: MerchantsParams) {
   const params = {
     ...values,
     registrationStatus: MerchantRegistrationStatus.WAITINGALIASGENERATION,
   }
   const approvedMerchants = await getMerchants(params)
 
-  return approvedMerchants.map(transformIntoTableData)
+  return {
+    data: approvedMerchants.data.map(transformIntoTableData),
+    totalPages: approvedMerchants.totalPages,
+  }
 }
 
-export function useDrafts(params: MerchantsFilterForm) {
+export function useDrafts(params: MerchantsParams) {
   return useQuery({
     queryKey: ['drafts', params],
     queryFn: () => getDrafts(params),
@@ -100,7 +122,7 @@ export function useDrafts(params: MerchantsFilterForm) {
   })
 }
 
-export function useAllMerchants(params: AllMerchantsFilterForm) {
+export function useAllMerchants(params: AllMerchantsParams) {
   return useQuery({
     queryKey: ['all-merchants', params],
     queryFn: () => getAllMerchantRecords(params),
@@ -112,7 +134,7 @@ export function useAllMerchants(params: AllMerchantsFilterForm) {
   })
 }
 
-export function usePendingMerchants(params: MerchantsFilterForm) {
+export function usePendingMerchants(params: MerchantsParams) {
   return useQuery({
     queryKey: ['pending-merchants', params],
     queryFn: () => getPendingMerchantRecords(params),
@@ -124,7 +146,7 @@ export function usePendingMerchants(params: MerchantsFilterForm) {
   })
 }
 
-export function useRejectedMerchants(params: MerchantsFilterForm) {
+export function useRejectedMerchants(params: MerchantsParams) {
   return useQuery({
     queryKey: ['rejected-merchants', params],
     queryFn: () => getRejectedMerchantRecords(params),
@@ -136,7 +158,7 @@ export function useRejectedMerchants(params: MerchantsFilterForm) {
   })
 }
 
-export function useRevertedMerchants(params: MerchantsFilterForm) {
+export function useRevertedMerchants(params: MerchantsParams) {
   return useQuery({
     queryKey: ['reverted-merchants', params],
     queryFn: () => getRevertedMerchantRecords(params),
@@ -148,7 +170,7 @@ export function useRevertedMerchants(params: MerchantsFilterForm) {
   })
 }
 
-export function useApprovedMerchants(params: MerchantsFilterForm) {
+export function useApprovedMerchants(params: MerchantsParams) {
   return useQuery({
     queryKey: ['approved-merchants', params],
     queryFn: () => getApprovedMerchantRecords(params),

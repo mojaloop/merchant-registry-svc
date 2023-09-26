@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
-import { createColumnHelper } from '@tanstack/react-table'
+import { createColumnHelper, type PaginationState } from '@tanstack/react-table'
 import {
   Box,
   Checkbox,
@@ -33,23 +33,27 @@ import {
   type RegistrationStatus,
 } from '@/constants/registrationStatus'
 import { downloadMerchantsBlobAsXlsx } from '@/utils'
+import { useTable } from '@/hooks'
 import {
   AlertDialog,
   CustomButton,
+  DataTable,
   EmptyState,
   FormSkeleton,
   MerchantInformationModal,
   TableSkeleton,
 } from '@/components/ui'
 import { FormInput, FormSelect } from '@/components/form'
-import PendingMerchantsDataTable from './PendingMerchantsDataTable'
 import ReasonModal from './ReasonModal'
 
 const PendingMerchantRecords = () => {
   const queryClient = useQueryClient()
 
   const [selectedMerchantId, setSelectedMerchantId] = useState<number | null>(null)
-  const [selectedMerchantIds, setSelectedMerchantIds] = useState<number[]>([])
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: 10,
+  })
 
   const {
     isOpen: isInfoModalOpen,
@@ -203,7 +207,11 @@ const PendingMerchantRecords = () => {
     resolver: zodResolver(merchantsFilterSchema),
   })
 
-  const pendingMerchants = usePendingMerchants(getValues())
+  const pendingMerchants = usePendingMerchants({
+    ...getValues(),
+    page: pagination.pageIndex + 1,
+    limit: pagination.pageSize,
+  })
   const exportMerchants = useExportMerchants()
   const approveMerchants = useApproveMerchants()
   const rejectMerchants = useRejectMerchants()
@@ -214,6 +222,25 @@ const PendingMerchantRecords = () => {
     value: id,
     label: name,
   }))
+
+  const table = useTable({
+    data: pendingMerchants.data?.data || [],
+    columns,
+    pagination,
+    setPagination,
+  })
+
+  const selectedRows = table
+    .getSelectedRowModel()
+    .rows.map(row => row.original)
+    // Filter merchant records that are made by the user
+    .filter(merchant => merchant.maker.id !== userProfile.data?.id)
+
+  const selectedMerchantIds = selectedRows.map(row => row.no)
+
+  const isActionDisabled =
+    (!table.getIsSomeRowsSelected() && !table.getIsAllRowsSelected()) ||
+    selectedRows.length === 0
 
   const onSubmit = () => {
     pendingMerchants.refetch()
@@ -342,6 +369,7 @@ const PendingMerchantRecords = () => {
         isOpen={isApproveAlertOpen}
         onClose={onApproveAlertClose}
         onConfirm={async () => {
+          table.setRowSelection({})
           onApproveAlertClose()
           await approveMerchants.mutateAsync(selectedMerchantIds)
           pendingMerchants.refetch()
@@ -367,6 +395,7 @@ const PendingMerchantRecords = () => {
         title='Rejecting Merchant Records'
         inputLabel='Enter the rejecting reason'
         onConfirm={async reason => {
+          table.setRowSelection({})
           await rejectMerchants.mutateAsync({ selectedMerchantIds, reason })
           pendingMerchants.refetch()
           queryClient.invalidateQueries(['rejected-merchants'])
@@ -380,6 +409,7 @@ const PendingMerchantRecords = () => {
         title='Reverting Merchant Records'
         inputLabel='Enter the reverting reason'
         onConfirm={async reason => {
+          table.setRowSelection({})
           await revertMerchants.mutateAsync({ selectedMerchantIds, reason })
           pendingMerchants.refetch()
           queryClient.invalidateQueries(['reverted-merchants'])
@@ -405,35 +435,66 @@ const PendingMerchantRecords = () => {
           !pendingMerchants.isFetching &&
           !pendingMerchants.isError && (
             <>
-              <PendingMerchantsDataTable
-                columns={columns}
-                data={pendingMerchants.data}
+              <HStack spacing='3' mb={{ base: '2', xl: '0' }}>
+                <CustomButton
+                  px='6'
+                  mb='4'
+                  isDisabled={pendingMerchants.data.data.length === 0}
+                  onClick={async () => {
+                    const blobData = await exportMerchants.mutateAsync({
+                      ...getValues(),
+                      registrationStatus: MerchantRegistrationStatus.REVIEW,
+                    })
+                    if (blobData) {
+                      downloadMerchantsBlobAsXlsx(blobData)
+                    }
+                  }}
+                >
+                  Export
+                </CustomButton>
+
+                <CustomButton
+                  px='6'
+                  mb='4'
+                  isDisabled={isActionDisabled}
+                  onClick={() => {
+                    onRejectAlertOpen()
+                  }}
+                >
+                  Reject
+                </CustomButton>
+
+                <CustomButton
+                  px='6'
+                  mb='4'
+                  isDisabled={isActionDisabled}
+                  onClick={() => {
+                    onApproveAlertOpen()
+                  }}
+                >
+                  Approve
+                </CustomButton>
+
+                <CustomButton
+                  px='6'
+                  mb='4'
+                  isDisabled={isActionDisabled}
+                  onClick={() => {
+                    onRevertAlertOpen()
+                  }}
+                >
+                  Revert
+                </CustomButton>
+              </HStack>
+
+              <DataTable
+                table={table}
+                totalPages={pendingMerchants.data.totalPages}
                 breakpoint='lg'
                 alwaysVisibleColumns={[0, 1]}
-                onExport={async () => {
-                  const blobData = await exportMerchants.mutateAsync({
-                    ...getValues(),
-                    registrationStatus: MerchantRegistrationStatus.REVIEW,
-                  })
-                  if (blobData) {
-                    downloadMerchantsBlobAsXlsx(blobData)
-                  }
-                }}
-                onReject={selectedMerchantIds => {
-                  setSelectedMerchantIds(selectedMerchantIds)
-                  onRejectAlertOpen()
-                }}
-                onApprove={async selectedMerchantIds => {
-                  setSelectedMerchantIds(selectedMerchantIds)
-                  onApproveAlertOpen()
-                }}
-                onRevert={selectedMerchantIds => {
-                  setSelectedMerchantIds(selectedMerchantIds)
-                  onRevertAlertOpen()
-                }}
               />
 
-              {pendingMerchants.data.length === 0 && (
+              {pendingMerchants.data.data.length === 0 && (
                 <EmptyState text='There are no pending merchant records.' mt='10' />
               )}
             </>

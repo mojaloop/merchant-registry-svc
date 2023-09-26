@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { createColumnHelper } from '@tanstack/react-table'
+import { createColumnHelper, type PaginationState } from '@tanstack/react-table'
 import {
   Box,
   HStack,
@@ -23,10 +23,12 @@ import {
   REGISTRATION_STATUS_COLORS,
   type RegistrationStatus,
 } from '@/constants/registrationStatus'
+import { useTable } from '@/hooks'
 import {
   CustomButton,
   CustomLink,
   DataTable,
+  EmptyState,
   FormSkeleton,
   MerchantInformationModal,
   TableSkeleton,
@@ -35,6 +37,10 @@ import { FormInput, FormSelect } from '@/components/form'
 
 const DraftApplications = () => {
   const [selectedMerchantId, setSelectedMerchantId] = useState<number | null>(null)
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: 10,
+  })
 
   const { isOpen, onOpen, onClose } = useDisclosure()
 
@@ -144,13 +150,24 @@ const DraftApplications = () => {
     resolver: zodResolver(merchantsFilterSchema),
   })
 
-  const drafts = useDrafts(getValues())
+  const drafts = useDrafts({
+    ...getValues(),
+    page: pagination.pageIndex + 1,
+    limit: pagination.pageSize,
+  })
 
   const users = useUsers()
   const userOptions = users.data?.map(({ id, name }) => ({
     value: id,
     label: name,
   }))
+
+  const table = useTable({
+    data: drafts.data?.data || [],
+    columns,
+    pagination,
+    setPagination,
+  })
 
   const onSubmit = () => {
     drafts.refetch()
@@ -280,12 +297,18 @@ const DraftApplications = () => {
         )}
 
         {!drafts.isLoading && !drafts.isFetching && !drafts.isError && (
-          <DataTable
-            data={drafts.data}
-            columns={columns}
-            breakpoint='lg'
-            alwaysVisibleColumns={[0]}
-          />
+          <>
+            <DataTable
+              table={table}
+              totalPages={drafts.data.totalPages}
+              breakpoint='lg'
+              alwaysVisibleColumns={[0]}
+            />
+
+            {drafts.data.data.length === 0 && (
+              <EmptyState text='There are no drafts.' mt='10' />
+            )}
+          </>
         )}
       </Box>
     </Stack>

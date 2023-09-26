@@ -1,13 +1,4 @@
-import { useState } from 'react'
-import {
-  type ColumnDef,
-  flexRender,
-  getCoreRowModel,
-  useReactTable,
-  getPaginationRowModel,
-  getSortedRowModel,
-  type SortingState,
-} from '@tanstack/react-table'
+import { flexRender, type Table as TableType } from '@tanstack/react-table'
 import {
   Table,
   TableContainer,
@@ -24,9 +15,8 @@ import MobileTable from './MobileTable'
 import PaginationControl from './PaginationControl'
 
 interface DataTableProps<T> extends TableContainerProps {
-  data: T[]
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  columns: ColumnDef<T, any>[]
+  table: TableType<T>
+  totalPages?: number
   alwaysVisibleColumns: number[]
   breakpoint: 'sm' | 'md' | 'lg' | 'xl' | '2xl'
   hidePerPage?: boolean
@@ -34,32 +24,14 @@ interface DataTableProps<T> extends TableContainerProps {
 }
 
 const DataTable = <T,>({
-  data,
-  columns,
+  table,
+  totalPages,
   alwaysVisibleColumns,
   breakpoint,
   hidePerPage,
   rowStyle,
   ...props
 }: DataTableProps<T>) => {
-  const [sorting, setSorting] = useState<SortingState>([])
-  const [rowSelection, setRowSelection] = useState({})
-
-  const table = useReactTable({
-    data,
-    columns,
-    state: {
-      sorting,
-      rowSelection,
-    },
-    enableRowSelection: true,
-    onSortingChange: setSorting,
-    onRowSelectionChange: setRowSelection,
-    getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-  })
-
   const { getHeaderGroups, getRowModel } = table
 
   return (
@@ -130,7 +102,13 @@ const DataTable = <T,>({
         </Table>
       </TableContainer>
 
-      {data.length > 10 && <PaginationControl table={table} hidePerPage={hidePerPage} />}
+      {getRowModel().rows.length > 0 && (
+        <PaginationControl
+          table={table}
+          totalPages={totalPages}
+          hidePerPage={hidePerPage}
+        />
+      )}
     </>
   )
 }

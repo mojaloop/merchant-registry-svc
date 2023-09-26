@@ -4,10 +4,13 @@ import type { MerchantsFilterForm } from '@/lib/validations/merchantsFilter'
 import type { AllMerchantsFilterForm } from '@/lib/validations/allMerchantsFilter'
 
 export async function getMerchants(params: AllMerchantsFilterForm | MerchantsFilterForm) {
-  const response = await instance.get<{ data: MerchantDetails[] }>('/merchants', {
-    params,
-  })
-  return response.data.data
+  const response = await instance.get<{ data: MerchantDetails[]; totalPages: number }>(
+    '/merchants',
+    {
+      params,
+    }
+  )
+  return response.data
 }
 
 export async function getMerchant(merchantId: number) {

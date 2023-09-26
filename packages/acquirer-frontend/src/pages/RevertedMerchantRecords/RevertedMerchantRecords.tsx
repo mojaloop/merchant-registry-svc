@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { createColumnHelper } from '@tanstack/react-table'
+import { createColumnHelper, type PaginationState } from '@tanstack/react-table'
 import {
   Box,
   HStack,
@@ -25,6 +25,7 @@ import {
   type RegistrationStatus,
 } from '@/constants/registrationStatus'
 import { downloadMerchantsBlobAsXlsx } from '@/utils'
+import { useTable } from '@/hooks'
 import {
   CustomButton,
   CustomLink,
@@ -38,6 +39,10 @@ import { FormInput, FormSelect } from '@/components/form'
 
 const RevertedMerchantRecords = () => {
   const [selectedMerchantId, setSelectedMerchantId] = useState<number | null>(null)
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: 10,
+  })
 
   const {
     isOpen: isInfoModalOpen,
@@ -151,7 +156,11 @@ const RevertedMerchantRecords = () => {
     resolver: zodResolver(merchantsFilterSchema),
   })
 
-  const revertedMerchants = useRevertedMerchants(getValues())
+  const revertedMerchants = useRevertedMerchants({
+    ...getValues(),
+    page: pagination.pageIndex + 1,
+    limit: pagination.pageSize,
+  })
   const exportMerchants = useExportMerchants()
 
   const users = useUsers()
@@ -159,6 +168,13 @@ const RevertedMerchantRecords = () => {
     value: id,
     label: name,
   }))
+
+  const table = useTable({
+    data: revertedMerchants.data?.data || [],
+    columns,
+    pagination,
+    setPagination,
+  })
 
   const onSubmit = () => {
     revertedMerchants.refetch()
@@ -304,20 +320,20 @@ const RevertedMerchantRecords = () => {
               <CustomButton
                 px='6'
                 mb={{ base: '6', lg: '3' }}
-                isDisabled={revertedMerchants.data.length === 0}
+                isDisabled={revertedMerchants.data.data.length === 0}
                 onClick={handleExport}
               >
                 Export
               </CustomButton>
 
               <DataTable
-                columns={columns}
-                data={revertedMerchants.data}
+                table={table}
+                totalPages={revertedMerchants.data.totalPages}
                 breakpoint='lg'
                 alwaysVisibleColumns={[0, 1]}
               />
 
-              {revertedMerchants.data.length === 0 && (
+              {revertedMerchants.data.data.length === 0 && (
                 <EmptyState text='There are no reverted merchant records.' mt='10' />
               )}
             </>

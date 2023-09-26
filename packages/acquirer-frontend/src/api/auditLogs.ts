@@ -1,4 +1,5 @@
 import type { AuditLogResponse, AuditLogType } from '@/types/auditLogs'
+import type { PaginationParams } from '@/types/pagination'
 import instance from '@/lib/axiosInstance'
 import type { AuditLogsFilterForm } from '@/lib/validations/auditLogsFilter'
 
@@ -16,7 +17,14 @@ export function transformIntoTableData(auditLogResponse: AuditLogResponse): Audi
   }
 }
 
-export async function getAuditLogs(params: AuditLogsFilterForm) {
-  const response = await instance.get<{ data: AuditLogResponse[] }>('/audits', { params })
-  return response.data.data.map(transformIntoTableData)
+export async function getAuditLogs(params: AuditLogsFilterForm & PaginationParams) {
+  const response = await instance.get<{ data: AuditLogResponse[]; totalPages: number }>(
+    '/audits',
+    { params }
+  )
+
+  return {
+    data: response.data.data.map(transformIntoTableData),
+    totalPages: response.data.totalPages,
+  }
 }

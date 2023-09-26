@@ -21,25 +21,20 @@ import {
 
 interface PaginationControlProps<T> {
   table: Table<T>
+  totalPages?: number
   hidePerPage?: boolean
 }
 
 const PaginationControl = <T,>({
   table,
+  totalPages = 1,
   hidePerPage = false,
 }: PaginationControlProps<T>) => {
   const id = useId()
 
-  const {
-    setPageIndex,
-    setPageSize,
-    getState,
-    getPageCount,
-    getCanPreviousPage,
-    getCanNextPage,
-    previousPage,
-    nextPage,
-  } = table
+  const { setPageIndex, setPageSize, getState, previousPage, nextPage } = table
+  const canPreviousPage = getState().pagination.pageIndex === 0
+  const canNextPage = getState().pagination.pageIndex === totalPages - 1
 
   return (
     <HStack
@@ -92,7 +87,7 @@ const PaginationControl = <T,>({
           bg='white'
           rounded='md'
           min={1}
-          max={getPageCount()}
+          max={totalPages}
           value={getState().pagination.pageIndex + 1}
           onChange={value => setPageIndex(Number(value) - 1)}
         >
@@ -106,14 +101,14 @@ const PaginationControl = <T,>({
 
       <HStack>
         <Box minW='100px' pr='2'>
-          Page {getState().pagination.pageIndex + 1} of {getPageCount()}
+          Page {getState().pagination.pageIndex + 1} of {totalPages}
         </Box>
 
         <IconButton
           aria-label='Go to the first page'
           icon={<FiChevronsLeft />}
           onClick={() => setPageIndex(0)}
-          isDisabled={!getCanPreviousPage()}
+          isDisabled={canPreviousPage}
           size='sm'
           bg='white'
           _hover={{ bg: 'gray.100' }}
@@ -122,7 +117,7 @@ const PaginationControl = <T,>({
           aria-label='Go to the previous page'
           icon={<FiChevronLeft />}
           onClick={() => previousPage()}
-          isDisabled={!getCanPreviousPage()}
+          isDisabled={canPreviousPage}
           size='sm'
           bg='white'
           _hover={{ bg: 'gray.100' }}
@@ -131,7 +126,7 @@ const PaginationControl = <T,>({
           aria-label='Go to the next page'
           icon={<FiChevronRight />}
           onClick={() => nextPage()}
-          isDisabled={!getCanNextPage()}
+          isDisabled={canNextPage}
           size='sm'
           bg='white'
           _hover={{ bg: 'gray.100' }}
@@ -139,8 +134,8 @@ const PaginationControl = <T,>({
         <IconButton
           aria-label='Go to the last page'
           icon={<FiChevronsRight />}
-          onClick={() => setPageIndex(getPageCount() - 1)}
-          isDisabled={!getCanNextPage()}
+          onClick={() => setPageIndex(totalPages - 1)}
+          isDisabled={canNextPage}
           size='sm'
           bg='white'
           _hover={{ bg: 'gray.100' }}
