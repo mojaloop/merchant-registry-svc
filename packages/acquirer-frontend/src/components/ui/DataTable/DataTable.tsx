@@ -16,7 +16,7 @@ import PaginationControl from './PaginationControl'
 
 interface DataTableProps<T> extends TableContainerProps {
   table: TableType<T>
-  totalPages: number
+  totalPages?: number
   alwaysVisibleColumns: number[]
   breakpoint: 'sm' | 'md' | 'lg' | 'xl' | '2xl'
   hidePerPage?: boolean

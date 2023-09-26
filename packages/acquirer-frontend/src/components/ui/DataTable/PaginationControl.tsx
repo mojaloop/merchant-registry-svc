@@ -21,13 +21,13 @@ import {
 
 interface PaginationControlProps<T> {
   table: Table<T>
-  totalPages: number
+  totalPages?: number
   hidePerPage?: boolean
 }
 
 const PaginationControl = <T,>({
   table,
-  totalPages,
+  totalPages = 1,
   hidePerPage = false,
 }: PaginationControlProps<T>) => {
   const id = useId()
