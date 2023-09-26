@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { createColumnHelper } from '@tanstack/react-table'
+import { createColumnHelper, type PaginationState } from '@tanstack/react-table'
 import {
   Box,
   HStack,
@@ -25,6 +25,7 @@ import {
   type RegistrationStatus,
 } from '@/constants/registrationStatus'
 import { downloadMerchantsBlobAsXlsx } from '@/utils'
+import { useTable } from '@/hooks'
 import {
   CustomButton,
   DataTable,
@@ -37,6 +38,10 @@ import { FormInput, FormSelect } from '@/components/form'
 
 const ApprovedMerchantRecords = () => {
   const [selectedMerchantId, setSelectedMerchantId] = useState<number | null>(null)
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: 10,
+  })
 
   const {
     isOpen: isInfoModalOpen,
@@ -134,7 +139,11 @@ const ApprovedMerchantRecords = () => {
     resolver: zodResolver(merchantsFilterSchema),
   })
 
-  const approvedMerchants = useApprovedMerchants(getValues())
+  const approvedMerchants = useApprovedMerchants({
+    ...getValues(),
+    page: pagination.pageIndex + 1,
+    limit: pagination.pageSize,
+  })
   const exportMerchants = useExportMerchants()
 
   const users = useUsers()
@@ -142,6 +151,13 @@ const ApprovedMerchantRecords = () => {
     value: id,
     label: name,
   }))
+
+  const table = useTable({
+    data: approvedMerchants.data?.data || [],
+    columns,
+    pagination,
+    setPagination,
+  })
 
   const onSubmit = () => {
     approvedMerchants.refetch()
@@ -287,20 +303,20 @@ const ApprovedMerchantRecords = () => {
               <CustomButton
                 px='6'
                 mb={{ base: '6', lg: '3' }}
-                isDisabled={approvedMerchants.data.length === 0}
+                isDisabled={approvedMerchants.data.data.length === 0}
                 onClick={handleExport}
               >
                 Export
               </CustomButton>
 
               <DataTable
-                columns={columns}
-                data={approvedMerchants.data}
+                table={table}
+                totalPages={approvedMerchants.data.totalPages}
                 breakpoint='lg'
                 alwaysVisibleColumns={[0, 1]}
               />
 
-              {approvedMerchants.data.length === 0 && (
+              {approvedMerchants.data.data.length === 0 && (
                 <EmptyState text='There are no approved merchant records.' mt='10' />
               )}
             </>
