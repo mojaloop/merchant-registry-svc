@@ -126,8 +126,8 @@ const Login = () => {
               )}
             </Box>
 
-            <HStack justify='space-between'>
-              <Checkbox size='sm'>Remember me</Checkbox>
+            <HStack justify='end'>
+              {/* <Checkbox size='sm'>Remember me</Checkbox> */}
               <Link as={NavLink} to='/forgot-password' color='primary' fontSize='sm'>
                 Forgot Password?
               </Link>
