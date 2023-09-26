@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { createColumnHelper } from '@tanstack/react-table'
+import { createColumnHelper, type PaginationState } from '@tanstack/react-table'
 import { Box, Flex, HStack, Heading, Stack, useDisclosure } from '@chakra-ui/react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -13,6 +13,7 @@ import {
 } from '@/lib/validations/auditLogsFilter'
 import { useAuditLogs } from '@/api/hooks/auditLogs'
 import { useUsers } from '@/api/hooks/users'
+import { useTable } from '@/hooks'
 import { CustomButton, DataTable, EmptyState, TableSkeleton } from '@/components/ui'
 import { FormSelect } from '@/components/form'
 import FilterFormSkeleton from './FilterFormSkeleton'
@@ -27,6 +28,10 @@ const AuditLog = () => {
   const { isOpen, onOpen, onClose } = useDisclosure()
 
   const [selectedAuditLog, setSelectedAuditLog] = useState<AuditLogType | null>(null)
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: 10,
+  })
 
   const columns = useMemo(() => {
     const columnHelper = createColumnHelper<AuditLogType>()
@@ -97,13 +102,24 @@ const AuditLog = () => {
     resolver: zodResolver(auditLogsFilterSchema),
   })
 
-  const auditLogs = useAuditLogs(getValues())
+  const auditLogs = useAuditLogs({
+    ...getValues(),
+    page: pagination.pageIndex + 1,
+    limit: pagination.pageSize,
+  })
 
   const users = useUsers()
   const userOptions = users.data?.map(({ id, name }) => ({
     value: id,
     label: name,
   }))
+
+  const table = useTable({
+    data: auditLogs.data?.data || [],
+    columns,
+    pagination,
+    setPagination,
+  })
 
   const onSubmit = () => {
     auditLogs.refetch()
@@ -183,13 +199,13 @@ const AuditLog = () => {
         {!auditLogs.isLoading && !auditLogs.isFetching && !auditLogs.isError && (
           <>
             <DataTable
-              columns={columns}
-              data={auditLogs.data}
+              table={table}
+              totalPages={auditLogs.data.totalPages}
               breakpoint='xl'
               alwaysVisibleColumns={[0]}
             />
 
-            {auditLogs.data.length === 0 && (
+            {auditLogs.data.data.length === 0 && (
               <EmptyState text='There are no audit logs.' mt='10' />
             )}
           </>

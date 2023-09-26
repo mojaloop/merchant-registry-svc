@@ -48,11 +48,14 @@ function transformIntoTableData(merchantData: MerchantDetails): MerchantInfo {
   }
 }
 
-async function getDrafts(values: MerchantsFilterForm) {
+async function getDrafts(values: MerchantsParams) {
   const params = { ...values, registrationStatus: MerchantRegistrationStatus.DRAFT }
   const drafts = await getMerchants(params)
 
-  return drafts.data.map(transformIntoTableData)
+  return {
+    data: drafts.data.map(transformIntoTableData),
+    totalPages: drafts.totalPages,
+  }
 }
 
 async function getAllMerchantRecords(values: AllMerchantsParams) {
@@ -107,7 +110,7 @@ async function getApprovedMerchantRecords(values: MerchantsParams) {
   }
 }
 
-export function useDrafts(params: MerchantsFilterForm) {
+export function useDrafts(params: MerchantsParams) {
   return useQuery({
     queryKey: ['drafts', params],
     queryFn: () => getDrafts(params),

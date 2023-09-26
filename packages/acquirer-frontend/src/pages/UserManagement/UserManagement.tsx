@@ -4,6 +4,7 @@ import { Flex, Heading, Stack, Switch } from '@chakra-ui/react'
 
 import type { User } from '@/types/users'
 import { useUsers } from '@/api/hooks/users'
+import { useTable } from '@/hooks'
 import { CustomLink, DataTable, EmptyState, TableSkeleton } from '@/components/ui'
 
 const UserManagement = () => {
@@ -47,6 +48,11 @@ const UserManagement = () => {
     }))
   }
 
+  const table = useTable({
+    data: data || [],
+    columns,
+  })
+
   return (
     <Stack
       minH='full'
@@ -68,12 +74,7 @@ const UserManagement = () => {
 
       {data && (
         <>
-          <DataTable
-            columns={columns}
-            data={data}
-            breakpoint='lg'
-            alwaysVisibleColumns={[0, 1]}
-          />
+          <DataTable table={table} breakpoint='lg' alwaysVisibleColumns={[0, 1]} />
 
           {data.length === 0 && (
             <EmptyState text='There are no users right now.' mt='14' />
