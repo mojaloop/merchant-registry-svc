@@ -1,4 +1,3 @@
-import {ifError} from 'assert'
 import express, { type Request, type Response } from 'express'
 import {AuditActionType, AuditTrasactionStatus} from 'shared-lib'
 import {AppDataSource} from '../database/dataSource'
@@ -16,7 +15,7 @@ const router = express.Router()
 router.get('/participants/:type/:id', async (req: Request, res: Response) => {
   const {type, id} = req.params 
 
-  if(type == undefined || type == null || type != 'PAYINTOID') {
+  if(type == undefined || type == null || type != 'MERCHANT_PAYINTOID') {
     logger.error('Invalid Type')
     await audit(
       AuditActionType.ACCESS, 

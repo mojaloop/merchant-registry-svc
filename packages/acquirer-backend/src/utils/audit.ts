@@ -47,6 +47,7 @@ export async function audit (
   auditObject.new_value = auditNewValuesStr
   if (portalUser != null) {
     auditObject.portal_user = portalUser
+    auditObject.dfsp = portalUser.dfsp
   }
 
   await AppDataSource.getRepository(AuditEntity).save(auditObject)

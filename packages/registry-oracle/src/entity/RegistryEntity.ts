@@ -21,7 +21,7 @@ export class RegistryEntity {
   @Column({ nullable: true })
     checkout_counter_id!: number
 
-  @Column({ nullable: false, default: 'PAYINTOID'})
+  @Column({ nullable: false, default: 'MERCHANT_PAYINTOID'})
     alias_type!: string
 
   @Column({ nullable: false })
