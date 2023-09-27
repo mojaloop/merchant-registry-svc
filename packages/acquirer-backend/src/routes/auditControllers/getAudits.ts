@@ -130,6 +130,13 @@ export async function getAudits (req: AuthRequest, res: Response) {
 
     const queryBuilder = AuditRepository.createQueryBuilder('audit')
     queryBuilder
+      .leftJoin('audit.portal_user', 'portal_user')
+      .addSelect([
+        'portal_user.name',
+        'portal_user.email',
+        'portal_user.phone_number',
+        'portal_user.id'
+      ])
       .where(whereClause)
       .orderBy('audit.created_at', 'DESC') // Sort by latest
 
