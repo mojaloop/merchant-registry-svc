@@ -175,7 +175,9 @@ export async function getMerchants (req: AuthRequest, res: Response) {
       .addSelect(['checked_by.id', 'checked_by.name'])
       .addSelect(['locations.country_subdivision', 'locations.town_name'])
       .addSelect(['checkout_counters.alias_value', 'checkout_counters.description'])
-      .where(whereClause)
+      .innerJoin('merchant.dfsps', 'dfsp')
+      .andWhere('dfsp.id = :dfspId', { dfspId: portalUser.dfsp.id })
+      .andWhere(whereClause)
       .orderBy('merchant.created_at', 'DESC') // Sort by latest
 
     logger.debug('WhereClause: %o', whereClause)
@@ -214,21 +216,15 @@ export async function getMerchants (req: AuthRequest, res: Response) {
       }
     }
 
-    const totalCount = await queryBuilder.getCount()
-    const totalPages = Math.ceil(totalCount / Number(limit))
-
     // Add pagination
     queryBuilder
       .skip(skip)
       .take(Number(limit))
-    let merchants = await queryBuilder.getMany()
 
-    // Now filter based on dfsps
-    merchants = merchants.filter(merchant =>
-      merchant.dfsps
-        .map(dfsp => dfsp.id)
-        .includes(portalUser.dfsp.id)
-    )
+    const totalCount = await queryBuilder.getCount()
+    const totalPages = Math.ceil(totalCount / Number(limit))
+
+    const merchants = await queryBuilder.getMany()
 
     merchants.forEach((merchant: any) => {
       delete merchant.created_by?.password
