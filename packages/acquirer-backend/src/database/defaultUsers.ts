@@ -43,7 +43,7 @@ export const DefaultUsers = [
 
   // DFSP 2
   {
-    email: 'd2superadmin2@email.com',
+    email: 'd2superadmin1@email.com',
     name: 'DFSP 2 Super Admin 2',
     password: 'password',
     phone_number: '0000000',
