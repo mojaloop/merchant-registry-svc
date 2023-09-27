@@ -29,9 +29,9 @@ amqplib.connect(connStr)
     logger.info(`Listening for messages in queue: ${RABBITMQ_QUEUE}`);
 
     channel.consume(RABBITMQ_QUEUE, async (message: Message | null) => {
-      logger.debug('Received message: %o', message);
       if (message) {
         const msgContent = message.content.toString();
+        logger.debug(`Received message: ${msgContent}`);
         let msgJson: MessagePayload;
         let result: any;
         try{
@@ -66,7 +66,6 @@ amqplib.connect(connStr)
           channel.ack(message);
           return
         }
-        logger.info(`Received message: ${JSON.stringify(msgJson)}`);
 
         // Acknowledge the message
       }
