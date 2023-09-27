@@ -33,11 +33,6 @@ amqplib.connect(connStr)
 
     logger.info('Connected to RabbitMQ %s: %o', RABBITMQ_QUEUE, result)
     logger.info('Connected to RabbitMQ %s: %o', RABBITMQ_REPLY_QUEUE, resplyResult)
-
-    await publishToQueue({
-      command: 'registerEndpointDFSP',
-      data: { dfsp_id: 'Hello World!', dfsp_name: 'Hello World!' }
-    })
   }).then(async () => {
     // Consume the reply queue for the response
     channel.consume(RABBITMQ_REPLY_QUEUE, (msg: Message | null) => {
