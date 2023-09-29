@@ -12,8 +12,16 @@ export interface AuditLogType {
   transactionStatus: AuditTrasactionStatus
 }
 
+export interface PortalUser {
+  id: number
+  name: string
+  email: string
+  phone_number: string
+}
+
 export interface AuditLogResponse {
   id: number
+  portal_user: PortalUser
   action_type: AuditActionType
   application_module: string
   event_description: string
