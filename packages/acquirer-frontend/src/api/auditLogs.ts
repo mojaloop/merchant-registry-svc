@@ -5,7 +5,7 @@ import type { AuditLogsFilterForm } from '@/lib/validations/auditLogsFilter'
 
 export function transformIntoTableData(auditLogResponse: AuditLogResponse): AuditLogType {
   return {
-    portalUserName: '',
+    portalUserName: auditLogResponse.portal_user.name,
     actionType: auditLogResponse.action_type,
     applicationModule: auditLogResponse.application_module,
     eventDescription: auditLogResponse.event_description,
