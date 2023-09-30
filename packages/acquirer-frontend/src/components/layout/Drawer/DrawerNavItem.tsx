@@ -31,7 +31,7 @@ const DrawerNavItem = ({ navItem: { name, to, icon }, ...props }: DrawerNavItemP
             <Icon as={icon} color='primary' fontSize='20px' />
           </Flex>
         )}
-        <Box as='span' fontSize='sm' fontWeight='medium'>
+        <Box as='span' fontSize='sm' fontWeight='medium' whiteSpace='nowrap'>
           {name}
         </Box>
       </HStack>

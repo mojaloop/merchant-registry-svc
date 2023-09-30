@@ -36,7 +36,7 @@ const Sidebar = () => {
       <Stack
         as='aside'
         spacing='6'
-        w={isExpanded ? 'auto' : '24'}
+        w={isExpanded ? '19rem' : '24'}
         h='full'
         px='7'
         py='2'
@@ -47,6 +47,9 @@ const Sidebar = () => {
         zIndex='overlay'
         borderRight={isExpanded ? '' : '1px'}
         borderColor={isExpanded ? '' : 'gray.100'}
+        transitionProperty='width'
+        transitionDuration='0.2s'
+        transitionTimingFunction='ease-out'
       >
         <IconButton
           aria-label={`${isExpanded ? 'Shrink' : 'Expand'} sidebar`}
@@ -67,7 +70,7 @@ const Sidebar = () => {
                 <DrawerNavAccordion
                   key={navItem.name}
                   navAccordion={navItem}
-                  buttonStyle={{ h: '10', pl: '0.6rem' }}
+                  buttonStyle={{ h: '10', pl: '0.61rem' }}
                 />
               ) : (
                 <DrawerNavItem key={navItem.name} navItem={navItem} h='10' px='2.5' />

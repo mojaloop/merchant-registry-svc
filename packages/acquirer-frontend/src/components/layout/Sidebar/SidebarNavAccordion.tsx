@@ -39,7 +39,7 @@ const SidebarNavAccordion = ({
         setActiveIndex(expandedIndex as number)
       }}
     >
-      <AccordionItem display='flex' flexDir='column' alignItems='center' border='0'>
+      <AccordionItem border='0'>
         <TooltipShell label={name}>
           <AccordionButton
             p='0'
