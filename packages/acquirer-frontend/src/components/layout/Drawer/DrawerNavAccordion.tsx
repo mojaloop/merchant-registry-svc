@@ -46,7 +46,14 @@ const DrawerNavAccordion = ({
               </Flex>
             )}
 
-            <Box as='span' flex='1' textAlign='left' fontSize='sm' fontWeight='medium'>
+            <Box
+              as='span'
+              flex='1'
+              textAlign='left'
+              fontSize='sm'
+              fontWeight='medium'
+              whiteSpace='nowrap'
+            >
               {name}
             </Box>
 
