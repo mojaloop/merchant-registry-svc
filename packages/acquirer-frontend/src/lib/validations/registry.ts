@@ -28,6 +28,7 @@ export const businessInfoSchema = z.object({
   currency_code: z.nativeEnum(CurrencyCodes, {
     errorMap: () => ({ message: 'Please select a currency' }),
   }),
+  account_number: z.string().optional(),
   have_business_license: z.union([z.literal('yes'), z.literal('no')]).or(z.undefined()),
   license_number: z.string().optional(),
   license_document: z.custom<File>(val => val instanceof File).or(z.null()),
