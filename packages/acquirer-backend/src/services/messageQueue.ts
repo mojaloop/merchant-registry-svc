@@ -36,7 +36,9 @@ amqplib.connect(connStr)
     logger.info('Connected to RabbitMQ %s: %o', RABBITMQ_REPLY_QUEUE, resplyResult)
 
     // Wait for database connection to be ready
-    await AppDataSource.initialize()
+    if (!AppDataSource.isInitialized) {
+      await AppDataSource.initialize()
+    }
   }).then(async () => {
     // Consume the reply queue for the response
     channel.consume(RABBITMQ_REPLY_QUEUE, (msg: Message | null) => {
