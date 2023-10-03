@@ -30,7 +30,8 @@ and proceed with the necessary steps in the payment transaction.
     - `docker` and `docker-compose`
     - [SendGrid](https://sendgrid.com/) API key is required for Email Verification 
         - Register at [SendGrid](https://sendgrid.com/) and create new API Key at https://app.sendgrid.com/settings/api_keys
-        - Open `.env` file inside `packages/acquirer-backend/` and update the `SENDGRID_API_KEY` with the new API Key obtained from https://app.sendgrid.com/settings/api_keys
+        - Create a `.env` file inside `packages/acquirer-backend/` and copy everything from `.env.example` into it
+        - Update the `SENDGRID_API_KEY` in the `.env` file with the new API Key obtained from https://app.sendgrid.com/settings/api_keys
 
 * Run 
     ```bash 
