@@ -12,6 +12,59 @@ import {prepareError} from '../utils/error'
 const ALIAS_CHECKOUT_MAX_DIGITS = readEnv('ALIAS_CHECKOUT_MAX_DIGITS', 10) as number;
 
 const router = express.Router()
+
+/**
+ * @openapi
+ * tags:
+ *   name: Participants
+ *
+ * /participants/{type}/{id}:
+ *   get:
+ *     tags:
+ *       - Participants
+ *     summary: Get Participants based on type and ID
+ *     parameters:
+ *       - name: type
+ *         in: path
+ *         required: true
+ *         description: Type of the participant
+ *         schema:
+ *           type: string
+ *           enum: [MERCHANT_PAYINTOID]
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         description: ID of the participant
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved participant(s)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 partyList:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       fspId:
+ *                         type: string
+ *                       currency:
+ *                         type: string
+ *       400:
+ *         description: Invalid Type or Invalid ID
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ * 
+ */
 router.get('/participants/:type/:id', async (req: Request, res: Response) => {
   const {type, id} = req.params 
 
@@ -46,10 +99,74 @@ router.get('/participants/:type/:id', async (req: Request, res: Response) => {
     select: ['fspId', 'currency'] 
   })
   
+  await audit(
+    AuditActionType.ACCESS,
+    AuditTrasactionStatus.SUCCESS,
+    'getParticipants',
+    'GET Participants: Participant retrieved',
+    'RegistryEntity',
+    {}, {partyList: registryRecord}
+  )
+
+  logger.debug('registryRecord Retrieved: %o', registryRecord)
   res.send({partyList: registryRecord ? [registryRecord] : []})
-  res.send()
 })
 
+/**
+ * @openapi
+ * tags:
+ *   name: Participants
+ *
+ * /participants:
+ *   post:
+ *     tags:
+ *       - Participants
+ *     summary: Create a new participant
+ *     parameters:
+ *       - name: x-api-key
+ *         in: header
+ *         required: true
+ *         description: API key for accessing the endpoint
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               fspId:
+ *                 type: string
+ *                 description: Financial Service Provider ID
+ *               currency:
+ *                 type: string
+ *                 description: Currency code
+ *     responses:
+ *       200:
+ *         description: Successfully created participant
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 fspId:
+ *                   type: string
+ *                 currency:
+ *                   type: string
+ *                 alias_value:
+ *                   type: string
+ *       400:
+ *         description: Invalid input, object invalid, or authentication error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ * 
+ */
 router.post('/participants', authenticateAPIAccess, async (req: EndpointAuthRequest, res: Response) => {
   const endpoint = req.endpoint
   if(!endpoint) {

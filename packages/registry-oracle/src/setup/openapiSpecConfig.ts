@@ -18,7 +18,7 @@ const options = {
     },
     servers: [
       {
-        url: '/api/v1'
+        url: '/'
       }
     ],
     components: {

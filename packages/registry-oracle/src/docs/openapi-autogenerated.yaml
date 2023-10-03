@@ -4,7 +4,7 @@ info:
   version: 0.1.0
   description: Merchant Registry Oracle API
 servers:
-  - url: /api/v1
+  - url: /
 components:
   securitySchemes:
     Authorization:
@@ -13,6 +13,73 @@ components:
       bearerFormat: JWT
       value: Bearer <JWT token here>
 paths:
+  /audits:
+    get:
+      tags:
+        - Audits
+      security:
+        - Authorization: []
+      summary: GET Audit Logs
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+          description: The page number
+          minimum: 1
+          example: 1
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            minimum: 1
+          description: The number of items per page
+        - in: query
+          name: actionType
+          schema:
+            type: string
+            enum:
+              - UnauthorizedAccess
+              - Access
+              - Add
+              - Update
+              - Delete
+          description: The action type
+        - in: query
+          name: transactionStatus
+          schema:
+            type: string
+            enum:
+              - Success
+              - Failure
+          description: The transaction status Success or Failure
+        - in: query
+          name: applicationModule
+          schema:
+            type: string
+          description: The application module
+        - in: query
+          name: entityName
+          schema:
+            type: string
+          description: The entity name
+      responses:
+        '200':
+          description: GET Audit Logs
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: The response message
+                    example: OK
+                  data:
+                    type: array
+                    description: The list of audit logs
+                    items:
+                      type: object
   /health-check:
     get:
       tags:
@@ -21,5 +88,101 @@ paths:
       responses:
         '200':
           description: Health Check
+  /participants/{type}/{id}:
+    get:
+      tags:
+        - Participants
+      summary: Get Participants based on type and ID
+      parameters:
+        - name: type
+          in: path
+          required: true
+          description: Type of the participant
+          schema:
+            type: string
+            enum:
+              - MERCHANT_PAYINTOID
+        - name: id
+          in: path
+          required: true
+          description: ID of the participant
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully retrieved participant(s)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  partyList:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        fspId:
+                          type: string
+                        currency:
+                          type: string
+        '400':
+          description: Invalid Type or Invalid ID
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+  /participants:
+    post:
+      tags:
+        - Participants
+      summary: Create a new participant
+      parameters:
+        - name: x-api-key
+          in: header
+          required: true
+          description: API key for accessing the endpoint
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                fspId:
+                  type: string
+                  description: Financial Service Provider ID
+                currency:
+                  type: string
+                  description: Currency code
+      responses:
+        '200':
+          description: Successfully created participant
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  fspId:
+                    type: string
+                  currency:
+                    type: string
+                  alias_value:
+                    type: string
+        '400':
+          description: Invalid input, object invalid, or authentication error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
 tags:
   - name: Health Check
+  - name: Audits
+  - name: Participants
