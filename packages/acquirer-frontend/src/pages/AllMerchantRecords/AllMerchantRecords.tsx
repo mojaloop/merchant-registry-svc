@@ -307,7 +307,7 @@ const AllMerchantRecords = () => {
           <TableSkeleton breakpoint='lg' mt={{ base: '3', lg: '6' }} />
         )}
 
-        {!allMerchants.isLoading && !allMerchants.isFetching && !allMerchants.isError && (
+        {allMerchants.isSuccess && !allMerchants.isFetching && (
           <>
             <CustomButton
               px='6'

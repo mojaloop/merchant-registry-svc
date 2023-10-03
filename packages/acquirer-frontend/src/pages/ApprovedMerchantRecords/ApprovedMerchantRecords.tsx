@@ -296,31 +296,29 @@ const ApprovedMerchantRecords = () => {
           <TableSkeleton breakpoint='lg' mt={{ base: '3', lg: '6' }} />
         )}
 
-        {!approvedMerchants.isLoading &&
-          !approvedMerchants.isFetching &&
-          !approvedMerchants.isError && (
-            <>
-              <CustomButton
-                px='6'
-                mb={{ base: '6', lg: '3' }}
-                isDisabled={approvedMerchants.data.data.length === 0}
-                onClick={handleExport}
-              >
-                Export
-              </CustomButton>
+        {approvedMerchants.isSuccess && !approvedMerchants.isFetching && (
+          <>
+            <CustomButton
+              px='6'
+              mb={{ base: '6', lg: '3' }}
+              isDisabled={approvedMerchants.data.data.length === 0}
+              onClick={handleExport}
+            >
+              Export
+            </CustomButton>
 
-              <DataTable
-                table={table}
-                totalPages={approvedMerchants.data.totalPages}
-                breakpoint='lg'
-                alwaysVisibleColumns={[0, 1]}
-              />
+            <DataTable
+              table={table}
+              totalPages={approvedMerchants.data.totalPages}
+              breakpoint='lg'
+              alwaysVisibleColumns={[0, 1]}
+            />
 
-              {approvedMerchants.data.data.length === 0 && (
-                <EmptyState text='There are no approved merchant records.' mt='10' />
-              )}
-            </>
-          )}
+            {approvedMerchants.data.data.length === 0 && (
+              <EmptyState text='There are no approved merchant records.' mt='10' />
+            )}
+          </>
+        )}
       </Box>
     </Stack>
   )

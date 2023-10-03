@@ -39,7 +39,7 @@ const UserManagement = () => {
   const users = useUsers()
   let data
 
-  if (!users.isLoading && !users.isFetching && !users.isError) {
+  if (users.isSuccess && !users.isFetching) {
     data = users.data.map(({ id, name, email, role }) => ({
       no: id,
       name,

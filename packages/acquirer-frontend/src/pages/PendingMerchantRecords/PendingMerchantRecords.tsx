@@ -431,74 +431,72 @@ const PendingMerchantRecords = () => {
           <TableSkeleton breakpoint='lg' mt={{ base: '3', lg: '6' }} />
         )}
 
-        {!pendingMerchants.isLoading &&
-          !pendingMerchants.isFetching &&
-          !pendingMerchants.isError && (
-            <>
-              <HStack spacing='3' mb={{ base: '2', xl: '0' }}>
-                <CustomButton
-                  px='6'
-                  mb='4'
-                  isDisabled={pendingMerchants.data.data.length === 0}
-                  onClick={async () => {
-                    const blobData = await exportMerchants.mutateAsync({
-                      ...getValues(),
-                      registrationStatus: MerchantRegistrationStatus.REVIEW,
-                    })
-                    if (blobData) {
-                      downloadMerchantsBlobAsXlsx(blobData)
-                    }
-                  }}
-                >
-                  Export
-                </CustomButton>
+        {pendingMerchants.isSuccess && !pendingMerchants.isFetching && (
+          <>
+            <HStack spacing='3' mb={{ base: '2', xl: '0' }}>
+              <CustomButton
+                px='6'
+                mb='4'
+                isDisabled={pendingMerchants.data.data.length === 0}
+                onClick={async () => {
+                  const blobData = await exportMerchants.mutateAsync({
+                    ...getValues(),
+                    registrationStatus: MerchantRegistrationStatus.REVIEW,
+                  })
+                  if (blobData) {
+                    downloadMerchantsBlobAsXlsx(blobData)
+                  }
+                }}
+              >
+                Export
+              </CustomButton>
 
-                <CustomButton
-                  px='6'
-                  mb='4'
-                  isDisabled={isActionDisabled}
-                  onClick={() => {
-                    onRejectAlertOpen()
-                  }}
-                >
-                  Reject
-                </CustomButton>
+              <CustomButton
+                px='6'
+                mb='4'
+                isDisabled={isActionDisabled}
+                onClick={() => {
+                  onRejectAlertOpen()
+                }}
+              >
+                Reject
+              </CustomButton>
 
-                <CustomButton
-                  px='6'
-                  mb='4'
-                  isDisabled={isActionDisabled}
-                  onClick={() => {
-                    onApproveAlertOpen()
-                  }}
-                >
-                  Approve
-                </CustomButton>
+              <CustomButton
+                px='6'
+                mb='4'
+                isDisabled={isActionDisabled}
+                onClick={() => {
+                  onApproveAlertOpen()
+                }}
+              >
+                Approve
+              </CustomButton>
 
-                <CustomButton
-                  px='6'
-                  mb='4'
-                  isDisabled={isActionDisabled}
-                  onClick={() => {
-                    onRevertAlertOpen()
-                  }}
-                >
-                  Revert
-                </CustomButton>
-              </HStack>
+              <CustomButton
+                px='6'
+                mb='4'
+                isDisabled={isActionDisabled}
+                onClick={() => {
+                  onRevertAlertOpen()
+                }}
+              >
+                Revert
+              </CustomButton>
+            </HStack>
 
-              <DataTable
-                table={table}
-                totalPages={pendingMerchants.data.totalPages}
-                breakpoint='lg'
-                alwaysVisibleColumns={[0, 1]}
-              />
+            <DataTable
+              table={table}
+              totalPages={pendingMerchants.data.totalPages}
+              breakpoint='lg'
+              alwaysVisibleColumns={[0, 1]}
+            />
 
-              {pendingMerchants.data.data.length === 0 && (
-                <EmptyState text='There are no pending merchant records.' mt='10' />
-              )}
-            </>
-          )}
+            {pendingMerchants.data.data.length === 0 && (
+              <EmptyState text='There are no pending merchant records.' mt='10' />
+            )}
+          </>
+        )}
       </Box>
     </Stack>
   )

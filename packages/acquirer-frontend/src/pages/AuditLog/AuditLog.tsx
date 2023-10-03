@@ -196,7 +196,7 @@ const AuditLog = () => {
           <TableSkeleton breakpoint='xl' mt={{ base: '3', xl: '4' }} />
         )}
 
-        {!auditLogs.isLoading && !auditLogs.isFetching && !auditLogs.isError && (
+        {auditLogs.isSuccess && !auditLogs.isFetching && (
           <>
             <DataTable
               table={table}

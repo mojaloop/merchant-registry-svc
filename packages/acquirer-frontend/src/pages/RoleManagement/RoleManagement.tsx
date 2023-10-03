@@ -21,7 +21,7 @@ const RoleManagement = () => {
 
   let data
 
-  if (!roles.isLoading && !roles.isFetching && !roles.isError) {
+  if (roles.isSuccess && !roles.isFetching) {
     roles.data.data.forEach(role =>
       columns.push(
         columnHelper.accessor(camelCase(role.name), {

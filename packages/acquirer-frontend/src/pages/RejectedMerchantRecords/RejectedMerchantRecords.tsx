@@ -296,31 +296,29 @@ const RejectedMerchantRecords = () => {
           <TableSkeleton breakpoint='lg' mt={{ base: '3', lg: '6' }} />
         )}
 
-        {!rejectedMerchants.isLoading &&
-          !rejectedMerchants.isFetching &&
-          !rejectedMerchants.isError && (
-            <>
-              <CustomButton
-                px='6'
-                mb={{ base: '6', lg: '3' }}
-                isDisabled={rejectedMerchants.data.data.length === 0}
-                onClick={handleExport}
-              >
-                Export
-              </CustomButton>
+        {rejectedMerchants.isSuccess && !rejectedMerchants.isFetching && (
+          <>
+            <CustomButton
+              px='6'
+              mb={{ base: '6', lg: '3' }}
+              isDisabled={rejectedMerchants.data.data.length === 0}
+              onClick={handleExport}
+            >
+              Export
+            </CustomButton>
 
-              <DataTable
-                table={table}
-                totalPages={rejectedMerchants.data.totalPages}
-                breakpoint='lg'
-                alwaysVisibleColumns={[0, 1]}
-              />
+            <DataTable
+              table={table}
+              totalPages={rejectedMerchants.data.totalPages}
+              breakpoint='lg'
+              alwaysVisibleColumns={[0, 1]}
+            />
 
-              {rejectedMerchants.data.data.length === 0 && (
-                <EmptyState text='There are no rejected merchant records.' mt='10' />
-              )}
-            </>
-          )}
+            {rejectedMerchants.data.data.length === 0 && (
+              <EmptyState text='There are no rejected merchant records.' mt='10' />
+            )}
+          </>
+        )}
       </Box>
     </Stack>
   )
