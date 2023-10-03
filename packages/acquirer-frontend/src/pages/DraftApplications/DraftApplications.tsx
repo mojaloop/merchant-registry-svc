@@ -296,7 +296,7 @@ const DraftApplications = () => {
           <TableSkeleton breakpoint='lg' mt={{ base: '3', lg: '6' }} />
         )}
 
-        {!drafts.isLoading && !drafts.isFetching && !drafts.isError && (
+        {drafts.isSuccess && !drafts.isFetching && (
           <>
             <DataTable
               table={table}

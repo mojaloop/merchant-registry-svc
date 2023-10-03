@@ -354,9 +354,7 @@ const MerchantInformationModal = ({
             </HStack>
           )}
 
-          {!merchant.isLoading && !merchant.isError && (
-            <MerchantInfo merchantDetails={merchant.data} />
-          )}
+          {merchant.isSuccess && <MerchantInfo merchantDetails={merchant.data} />}
         </ModalBody>
 
         <ModalFooter>

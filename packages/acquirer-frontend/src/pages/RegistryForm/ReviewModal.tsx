@@ -50,9 +50,7 @@ const ReviewModal = ({ isOpen, onClose, merchantId }: ReviewModalProps) => {
             </HStack>
           )}
 
-          {!draft.isLoading && !draft.isError && (
-            <MerchantInfo merchantDetails={draft.data} />
-          )}
+          {draft.isSuccess && <MerchantInfo merchantDetails={draft.data} />}
         </ModalBody>
 
         <ModalFooter>

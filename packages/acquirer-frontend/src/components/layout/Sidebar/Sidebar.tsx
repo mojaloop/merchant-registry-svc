@@ -70,7 +70,7 @@ const Sidebar = () => {
                 <DrawerNavAccordion
                   key={navItem.name}
                   navAccordion={navItem}
-                  buttonStyle={{ h: '10', pl: '0.61rem' }}
+                  buttonStyle={{ h: '10', pl: '0.6rem' }}
                 />
               ) : (
                 <DrawerNavItem key={navItem.name} navItem={navItem} h='10' px='2.5' />

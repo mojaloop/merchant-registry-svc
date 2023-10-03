@@ -313,31 +313,29 @@ const RevertedMerchantRecords = () => {
           <TableSkeleton breakpoint='lg' mt={{ base: '3', lg: '6' }} />
         )}
 
-        {!revertedMerchants.isLoading &&
-          !revertedMerchants.isFetching &&
-          !revertedMerchants.isError && (
-            <>
-              <CustomButton
-                px='6'
-                mb={{ base: '6', lg: '3' }}
-                isDisabled={revertedMerchants.data.data.length === 0}
-                onClick={handleExport}
-              >
-                Export
-              </CustomButton>
+        {revertedMerchants.isSuccess && !revertedMerchants.isFetching && (
+          <>
+            <CustomButton
+              px='6'
+              mb={{ base: '6', lg: '3' }}
+              isDisabled={revertedMerchants.data.data.length === 0}
+              onClick={handleExport}
+            >
+              Export
+            </CustomButton>
 
-              <DataTable
-                table={table}
-                totalPages={revertedMerchants.data.totalPages}
-                breakpoint='lg'
-                alwaysVisibleColumns={[0, 1]}
-              />
+            <DataTable
+              table={table}
+              totalPages={revertedMerchants.data.totalPages}
+              breakpoint='lg'
+              alwaysVisibleColumns={[0, 1]}
+            />
 
-              {revertedMerchants.data.data.length === 0 && (
-                <EmptyState text='There are no reverted merchant records.' mt='10' />
-              )}
-            </>
-          )}
+            {revertedMerchants.data.data.length === 0 && (
+              <EmptyState text='There are no reverted merchant records.' mt='10' />
+            )}
+          </>
+        )}
       </Box>
     </Stack>
   )

@@ -24,12 +24,7 @@ const AddNewUser = () => {
   const userProfile = useUserProfile()
 
   let roleOptions
-  if (
-    !roles.isLoading &&
-    !roles.isError &&
-    !userProfile.isLoading &&
-    !userProfile.isError
-  ) {
+  if (roles.isSuccess && userProfile.isSuccess) {
     const createAccesses: Role[] = []
     if (userProfile.data.role.permissions.includes('Assignable Admin Roles')) {
       createAccesses.push(roles.data.data.filter(role => role.name === 'DFSP Admin')[0])
