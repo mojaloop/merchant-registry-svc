@@ -2,6 +2,21 @@ import { PermissionsEnum } from '../types/permissions'
 
 export const DefaultRoles = [
   {
+    name: 'Hub Admin',
+    description: 'Hub Admin Role',
+    permissions: [
+      PermissionsEnum.VIEW_DFSPS,
+      PermissionsEnum.CREATE_DFSPS,
+      PermissionsEnum.EDIT_DFSPS,
+      PermissionsEnum.DELETE_DFSPS,
+
+      PermissionsEnum.CREATE_PORTAL_USERS,
+      PermissionsEnum.VIEW_PORTAL_USERS,
+      PermissionsEnum.EDIT_PORTAL_USERS,
+      PermissionsEnum.DELETE_PORTAL_USERS
+    ]
+  },
+  {
     name: 'DFSP Super Admin',
     description: 'DFSP Super Admin Role',
     permissions: [

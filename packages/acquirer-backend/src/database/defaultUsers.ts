@@ -1,4 +1,13 @@
-export const DefaultUsers = [
+export const DefaultHubUsers = [
+  {
+    email: 'hubuser1@email.com',
+    name: 'Hub User 1',
+    password: 'password',
+    phone_number: '0000000',
+    role: 'Hub Admin'
+  }
+]
+export const DefaultDFSPUsers = [
   // DFSP 1
   {
     email: 'd1superadmin1@email.com',

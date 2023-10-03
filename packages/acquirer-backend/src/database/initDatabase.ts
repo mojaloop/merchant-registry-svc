@@ -16,7 +16,7 @@ import { PermissionsEnum } from '../types/permissions'
 import { DefaultRoles } from './defaultRoles'
 import { PortalPermissionEntity } from '../entity/PortalPermissionEntity'
 import { PortalRoleEntity } from '../entity/PortalRoleEntity'
-import { DefaultUsers } from './defaultUsers'
+import { DefaultDFSPUsers, DefaultHubUsers } from './defaultUsers'
 import { DefaultDFSPs } from './defaultDfsps'
 import { DFSPEntity } from '../entity/DFSPEntity'
 import { CountryEntity } from '../entity/CountryEntity'
@@ -98,6 +98,7 @@ async function seedDFSPs (): Promise<void> {
     if (dfspEntity == null) {
       const newDFSP = new DFSPEntity()
       newDFSP.name = dfsp.name
+      newDFSP.fspId = dfsp.fspId
       newDFSP.dfsp_type = dfsp.dfsp_type
       newDFSP.joined_date = dfsp.joined_date
       newDFSP.activated = dfsp.activated
@@ -159,7 +160,7 @@ async function seedDefaultUsers (): Promise<void> {
 
   const dfsps = await AppDataSource.manager.find(DFSPEntity)
 
-  for (const user of DefaultUsers) {
+  for (const user of DefaultDFSPUsers) {
     const userEntity = await AppDataSource.manager.findOne(
       PortalUserEntity,
       { where: { email: user.email } }
@@ -190,6 +191,33 @@ async function seedDefaultUsers (): Promise<void> {
       logger.info(`User ${user.email} already seeded. Skipping...`)
     }
   }
+
+  for (const user of DefaultHubUsers) {
+    const userEntity = await AppDataSource.manager.findOne(
+      PortalUserEntity,
+      { where: { email: user.email } }
+    )
+
+    if (userEntity == null) {
+      const newUserRole = roles.find(role => user.role === role.name)
+      if (newUserRole == null) {
+        throw new Error(`Role '${user.role}' not found for seeding with '${user.email}'.`)
+      }
+
+      const newUser = new PortalUserEntity()
+      newUser.name = user.name
+      newUser.email = user.email
+      newUser.password = await hashPassword(user.password)
+      newUser.phone_number = user.phone_number
+      newUser.user_type = PortalUserType.HUB
+      newUser.status = PortalUserStatus.ACTIVE
+      newUser.role = newUserRole
+      await AppDataSource.manager.save(newUser)
+    } else {
+      logger.info(`User ${user.email} already seeded. Skipping...`)
+    }
+  }
+
   logger.info('Seeding Default Users... Done')
 }
 

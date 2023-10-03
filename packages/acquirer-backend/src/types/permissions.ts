@@ -34,4 +34,9 @@ export enum PermissionsEnum {
 
   EDIT_SERVER_LOG_LEVEL = 'Edit Server Log Level',
 
+  VIEW_DFSPS = 'View DFSPs',
+  CREATE_DFSPS = 'Create DFSPs',
+  EDIT_DFSPS = 'Edit DFSPs',
+  DELETE_DFSPS = 'Delete DFSPs',
+
 }

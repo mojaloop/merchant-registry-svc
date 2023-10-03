@@ -14,11 +14,13 @@ import {
 } from 'shared-lib'
 import { EmailVerificationTokenEntity } from '../../entity/EmailVerificationToken'
 import { sendVerificationEmail } from '../../utils/sendGrid'
+import { DFSPEntity } from '../../entity/DFSPEntity'
 
 const AddUserSchema = z.object({
   name: z.string(),
   email: z.string().email(),
-  role: z.string()
+  role: z.string(),
+  dfsp_id: z.number().optional()
 })
 
 const JWT_SECRET = process.env.JWT_SECRET ?? ''
@@ -51,6 +53,12 @@ const JWT_SECRET = process.env.JWT_SECRET ?? ''
  *                 type: string
  *                 example: "Auditor"
  *                 description: "The role of the user"
+ *               dfsp_id:
+ *                 type: number
+ *                 example: 5
+ *                 description: "The dfsp database id"
+ *                 required: false
+ *                 nullable: true
  *     responses:
  *       200:
  *         description: Login successful
@@ -103,7 +111,8 @@ export async function addUser (req: Request, res: Response) {
   }
 
   try {
-    const { name, email, role } = req.body
+    const { name, email, role, dfsp_id } = req.body
+    logger.debug('addUser req.body: %s', JSON.stringify(req.body))
     const roleRepository = AppDataSource.getRepository(PortalRoleEntity)
 
     const roleObj = await roleRepository.findOne({ where: { name: role } })
@@ -142,7 +151,25 @@ export async function addUser (req: Request, res: Response) {
     newUser.user_type = PortalUserType.DFSP
     newUser.status = PortalUserStatus.UNVERIFIED
     newUser.role = roleObj
-    newUser.dfsp = portalUser.dfsp
+    if (portalUser.user_type === PortalUserType.HUB) {
+      const dfsp = await AppDataSource.manager.findOne(DFSPEntity, {
+        where: { id: dfsp_id }
+      })
+      if (dfsp == null) {
+        await audit(
+          AuditActionType.ADD,
+          AuditTrasactionStatus.FAILURE,
+          'addUser',
+          'User Creation failed: Invalid DFSP dfsp_id Not found',
+          'PortalUserEntity',
+          {}, {}, null
+        )
+        return res.status(400).send({ message: 'Invalid dfsp_id: DFSP Not found' })
+      }
+      newUser.dfsp = dfsp
+    } else {
+      newUser.dfsp = portalUser.dfsp
+    }
     await AppDataSource.manager.save(newUser)
 
     await audit(
@@ -151,7 +178,7 @@ export async function addUser (req: Request, res: Response) {
       'addUser',
       'User Created',
       'PortalUserEntity',
-      {}, { ...newUser, dfsp: portalUser.dfsp.id }, null
+      {}, { ...newUser }, null
     )
 
     // Generate Token using jwt

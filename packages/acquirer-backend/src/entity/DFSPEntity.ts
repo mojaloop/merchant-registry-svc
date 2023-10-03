@@ -18,6 +18,9 @@ export class DFSPEntity {
   @Column({ nullable: false, length: 255 })
     name!: string
 
+  @Column({ nullable: false, length: 255 })
+    fspId!: string
+
   @Column({ type: 'enum', enum: DFSPType, nullable: false, default: DFSPType.BANK })
     dfsp_type!: DFSPType
 

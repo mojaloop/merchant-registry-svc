@@ -6,6 +6,7 @@ import config_routes from '../routes/configRoutes'
 import audit_routes from '../routes/auditRoutes'
 import role_routes from '../routes/rolesRoutes'
 import country_routes from '../routes/countriesRoutes'
+import dfsp_routes from '../routes/dfspRoutes'
 
 export default function setupRoutes (app: Application): void {
   app.use('/api/v1', health_check_route)
@@ -15,6 +16,7 @@ export default function setupRoutes (app: Application): void {
   app.use('/api/v1', audit_routes)
   app.use('/api/v1', role_routes)
   app.use('/api/v1', country_routes)
+  app.use('/api/v1', dfsp_routes)
 
   // Catch-all route to handle 404s
   app.use('*', (req, res) => {

@@ -3,6 +3,7 @@ import { DFSPType } from 'shared-lib'
 export const DefaultDFSPs = [
   {
     name: 'DFSP 1',
+    fspId: 'DFSP001',
     dfsp_type: DFSPType.BANK,
     joined_date: new Date(),
     activated: true,
@@ -10,6 +11,7 @@ export const DefaultDFSPs = [
   },
   {
     name: 'DFSP 2',
+    fspId: 'DFSP002',
     dfsp_type: DFSPType.BANK,
     joined_date: new Date(),
     activated: true,
@@ -17,6 +19,7 @@ export const DefaultDFSPs = [
   },
   {
     name: 'DFSP 3',
+    fspId: 'DFSP003',
     dfsp_type: DFSPType.BANK,
     joined_date: new Date(),
     activated: true,
