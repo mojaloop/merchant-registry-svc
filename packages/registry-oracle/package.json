@@ -35,7 +35,7 @@
     "swagger-ui-express": "^5.0.0",
     "typeorm": "^0.3.17",
     "winston": "^3.10.0",
-    "zod": "^3.21.4"
+    "zod": "^3.22.3"
   },
   "devDependencies": {
     "@types/amqplib": "^0.10.1",
