@@ -97,16 +97,16 @@ async function getRevertedMerchantRecords(values: MerchantsParams) {
   }
 }
 
-async function getApprovedMerchantRecords(values: MerchantsParams) {
+async function getAliasGeneratedMerchantRecords(values: MerchantsParams) {
   const params = {
     ...values,
     registrationStatus: MerchantRegistrationStatus.WAITINGALIASGENERATION,
   }
-  const approvedMerchants = await getMerchants(params)
+  const aliasGeneratedMerchants = await getMerchants(params)
 
   return {
-    data: approvedMerchants.data.map(transformIntoTableData),
-    totalPages: approvedMerchants.totalPages,
+    data: aliasGeneratedMerchants.data.map(transformIntoTableData),
+    totalPages: aliasGeneratedMerchants.totalPages,
   }
 }
 
@@ -170,13 +170,13 @@ export function useRevertedMerchants(params: MerchantsParams) {
   })
 }
 
-export function useApprovedMerchants(params: MerchantsParams) {
+export function useAliasGeneratedMerchants(params: MerchantsParams) {
   return useQuery({
-    queryKey: ['approved-merchants', params],
-    queryFn: () => getApprovedMerchantRecords(params),
+    queryKey: ['alias-generated-merchants', params],
+    queryFn: () => getAliasGeneratedMerchantRecords(params),
     meta: {
       toastStatus: 'error',
-      toastTitle: 'Fetching Approved Merchants Failed!',
+      toastTitle: 'Fetching Alias Generated Merchants Failed!',
       toastDescription: FALLBACK_ERROR_MESSAGE,
     },
   })
@@ -202,7 +202,7 @@ export function useApproveMerchants() {
     mutationFn: (selectedMerchantIds: number[]) => approveMerchants(selectedMerchantIds),
     onSuccess: () => {
       queryClient.invalidateQueries(['all-merchants'])
-      queryClient.invalidateQueries(['approved-merchants'])
+      queryClient.invalidateQueries(['alias-generated-merchants'])
       toast({
         title: 'Approving Merchants Successful!',
         status: 'success',

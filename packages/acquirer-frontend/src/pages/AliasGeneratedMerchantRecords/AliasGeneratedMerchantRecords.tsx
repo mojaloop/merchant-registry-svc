@@ -18,7 +18,7 @@ import {
   type MerchantsFilterForm,
   merchantsFilterSchema,
 } from '@/lib/validations/merchantsFilter'
-import { useApprovedMerchants, useExportMerchants } from '@/api/hooks/merchants'
+import { useAliasGeneratedMerchants, useExportMerchants } from '@/api/hooks/merchants'
 import { useUsers } from '@/api/hooks/users'
 import {
   REGISTRATION_STATUS_COLORS,
@@ -36,7 +36,7 @@ import {
 } from '@/components/ui'
 import { FormInput, FormSelect } from '@/components/form'
 
-const ApprovedMerchantRecords = () => {
+const AliasGeneratedMerchantRecords = () => {
   const [selectedMerchantId, setSelectedMerchantId] = useState<number | null>(null)
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
@@ -139,7 +139,7 @@ const ApprovedMerchantRecords = () => {
     resolver: zodResolver(merchantsFilterSchema),
   })
 
-  const approvedMerchants = useApprovedMerchants({
+  const aliasGeneratedMerchants = useAliasGeneratedMerchants({
     ...getValues(),
     page: pagination.pageIndex + 1,
     limit: pagination.pageSize,
@@ -153,14 +153,14 @@ const ApprovedMerchantRecords = () => {
   }))
 
   const table = useTable({
-    data: approvedMerchants.data?.data || [],
+    data: aliasGeneratedMerchants.data?.data || [],
     columns,
     pagination,
     setPagination,
   })
 
   const onSubmit = () => {
-    approvedMerchants.refetch()
+    aliasGeneratedMerchants.refetch()
   }
 
   const handleExport = async () => {
@@ -176,7 +176,7 @@ const ApprovedMerchantRecords = () => {
   return (
     <Stack minH='full' px={{ base: '4', sm: '6', lg: '8' }} pt='6' pb='14'>
       <Heading size='md' mb='10'>
-        Approved Merchant Report
+        Alias Generated Merchant Report
       </Heading>
 
       {users.isLoading ? (
@@ -261,7 +261,7 @@ const ApprovedMerchantRecords = () => {
               mr='4'
               onClick={() => {
                 reset()
-                approvedMerchants.refetch()
+                aliasGeneratedMerchants.refetch()
               }}
             >
               Clear Filter
@@ -292,16 +292,16 @@ const ApprovedMerchantRecords = () => {
         flexGrow='1'
         mb='-14'
       >
-        {approvedMerchants.isFetching && (
+        {aliasGeneratedMerchants.isFetching && (
           <TableSkeleton breakpoint='lg' mt={{ base: '3', lg: '6' }} />
         )}
 
-        {approvedMerchants.isSuccess && !approvedMerchants.isFetching && (
+        {aliasGeneratedMerchants.isSuccess && !aliasGeneratedMerchants.isFetching && (
           <>
             <CustomButton
               px='6'
               mb={{ base: '6', lg: '3' }}
-              isDisabled={approvedMerchants.data.data.length === 0}
+              isDisabled={aliasGeneratedMerchants.data.data.length === 0}
               onClick={handleExport}
             >
               Export
@@ -309,12 +309,12 @@ const ApprovedMerchantRecords = () => {
 
             <DataTable
               table={table}
-              totalPages={approvedMerchants.data.totalPages}
+              totalPages={aliasGeneratedMerchants.data.totalPages}
               breakpoint='lg'
               alwaysVisibleColumns={[0, 1]}
             />
 
-            {approvedMerchants.data.data.length === 0 && (
+            {aliasGeneratedMerchants.data.data.length === 0 && (
               <EmptyState text='There are no approved merchant records.' mt='10' />
             )}
           </>
@@ -324,4 +324,4 @@ const ApprovedMerchantRecords = () => {
   )
 }
 
-export default ApprovedMerchantRecords
+export default AliasGeneratedMerchantRecords

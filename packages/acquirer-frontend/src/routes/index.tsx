@@ -4,7 +4,7 @@ import { Layout } from '@/components/layout'
 import {
   AddNewUser,
   AllMerchantRecords,
-  ApprovedMerchantRecords,
+  AliasGeneratedMerchantRecords,
   AuditLog,
   DraftApplications,
   Login,
@@ -64,8 +64,8 @@ const Routes = () => {
           caseSensitive: true,
         },
         {
-          path: 'merchant-records/approved-merchant-records',
-          element: <ApprovedMerchantRecords />,
+          path: 'merchant-records/alias-generated-merchant-records',
+          element: <AliasGeneratedMerchantRecords />,
           caseSensitive: true,
         },
         {
