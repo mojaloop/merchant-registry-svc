@@ -36,7 +36,7 @@ const Sidebar = () => {
       <Stack
         as='aside'
         spacing='6'
-        w={isExpanded ? '19rem' : '24'}
+        w={isExpanded ? '20.5rem' : '24'}
         h='full'
         px='7'
         py='2'

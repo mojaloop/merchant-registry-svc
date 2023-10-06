@@ -5,7 +5,7 @@ import AllMerchantRecords from './AllMerchantRecords/AllMerchantRecords'
 import PendingMerchantRecords from './PendingMerchantRecords/PendingMerchantRecords'
 import RevertedMerchantRecords from './RevertedMerchantRecords/RevertedMerchantRecords'
 import RejectedMerchantRecords from './RejectedMerchantRecords/RejectedMerchantRecords'
-import ApprovedMerchantRecords from './ApprovedMerchantRecords/ApprovedMerchantRecords'
+import AliasGeneratedMerchantRecords from './AliasGeneratedMerchantRecords/AliasGeneratedMerchantRecords'
 import RoleManagement from './RoleManagement/RoleManagement'
 import UserManagement from './UserManagement/UserManagement'
 import AddNewUser from './AddNewUser/AddNewUser'
@@ -21,7 +21,7 @@ export {
   PendingMerchantRecords,
   RevertedMerchantRecords,
   RejectedMerchantRecords,
-  ApprovedMerchantRecords,
+  AliasGeneratedMerchantRecords,
   RoleManagement,
   UserManagement,
   AddNewUser,

@@ -36,9 +36,9 @@ export const NAV_ITEMS = [
         to: '/merchant-records/rejected-merchant-records',
       },
       {
-        name: 'Approved Merchant Records',
-        shortName: 'Approved',
-        to: '/merchant-records/approved-merchant-records',
+        name: 'Alias Generated Merchant Records',
+        shortName: 'Alias Generated',
+        to: '/merchant-records/alias-generated-merchant-records',
       },
     ],
   },
