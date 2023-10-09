@@ -17,50 +17,75 @@ const RABBITMQ_PASSWORD = readEnv('RABBITMQ_PASSWORD', 'guest') as string
 const RABBITMQ_QUEUE = readEnv('RABBITMQ_QUEUE', 'acquirer_to_registry') as string
 const RABBITMQ_REPLY_QUEUE = readEnv('RABBITMQ_REPLY_QUEUE', 'registry_reply_acquirer') as string
 
+// Retry parameters
+// const MAX_RETRIES = 5
+const RETRY_INTERVAL_MS = 5000 // in miliseconds
+// let retryCount = 0
+
 const connStr = `amqp://${RABBITMQ_USERNAME}:${RABBITMQ_PASSWORD}@${RABBITMQ_HOST}:${RABBITMQ_PORT}`
 let channel: Channel
 
 // Initialize a map to store callbacks for each correlation ID
 const correlationCallbacks = new Map<string, (msg: Message) => Promise<void>>()
 
-logger.info('Connecting to RabbitMQ: %s', connStr)
-amqplib.connect(connStr)
-  .then(async (conn) => await conn.createChannel())
-  .then(async (ch) => {
-    channel = ch
+const connectToRabbitMQ = async (delay: number): Promise<void> => {
+  try {
+    const conn = await amqplib.connect(connStr)
+    channel = await conn.createChannel()
+
     const result = await channel.assertQueue(RABBITMQ_QUEUE, { durable: true })
-    const resplyResult = await channel.assertQueue(RABBITMQ_REPLY_QUEUE, { durable: true })
+    const replyResult = await channel.assertQueue(RABBITMQ_REPLY_QUEUE, { durable: true })
 
-    logger.info('Connected to RabbitMQ %s: %o', RABBITMQ_QUEUE, result)
-    logger.info('Connected to RabbitMQ %s: %o', RABBITMQ_REPLY_QUEUE, resplyResult)
-  }).then(async () => {
+    logger.info(`Connected to RabbitMQ ${RABBITMQ_QUEUE}: ${JSON.stringify(result)}`)
+    logger.info(`Connected to RabbitMQ ${RABBITMQ_REPLY_QUEUE}: ${JSON.stringify(replyResult)}`)
+
+    // Reset retry count upon successful connection
+    // retryCount = 0
+
     // Consume the reply queue for the response
-    channel.consume(RABBITMQ_REPLY_QUEUE, (msg: Message | null) => {
-      if (msg != null) {
-        const correlationId = msg.properties.correlationId
+    await consumeReplyQueue()
+  } catch (err: any) {
+    logger.error(`Error while connecting to RabbitMQ: ${err as string}`)
 
-        // Call the stored callback for this correlation ID
-        const callbackProcessReply = correlationCallbacks.get(correlationId)
-        logger.debug('Callback Reply for %s: %o', correlationId, callbackProcessReply)
-        if (callbackProcessReply != null) {
-          callbackProcessReply(msg)
-            .catch((err) => {
-              logger.error('Error while processing reply queue', err)
-              console.error(err)
-            })
-          correlationCallbacks.delete(correlationId) // Remove the callback
-        }
+    // if (retryCount < MAX_RETRIES) {
+    // retryCount++
+    logger.info(`Reconnecting RabbitMQ Queue in ${RETRY_INTERVAL_MS / 1000} seconds...`)
 
-        channel.ack(msg)
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
+    setTimeout(async (): Promise<void> => {
+      await connectToRabbitMQ(RETRY_INTERVAL_MS)
+    }, RETRY_INTERVAL_MS)
+    // } else {
+    //   logger.error('Max retries reached. Could not connect to RabbitMQ.')
+    // }
+  }
+}
+
+const consumeReplyQueue = async (): Promise<void> => {
+  // Consume the reply queue for the response
+  channel.consume(RABBITMQ_REPLY_QUEUE, (msg: Message | null) => {
+    if (msg != null) {
+      const correlationId = msg.properties.correlationId
+
+      // Call the stored callback for this correlation ID
+      const callbackProcessReply = correlationCallbacks.get(correlationId)
+      logger.debug('Callback Reply for %s: %o', correlationId, callbackProcessReply)
+      if (callbackProcessReply != null) {
+        callbackProcessReply(msg)
+          .catch((err) => {
+            logger.error('Error while processing reply queue', err)
+            console.error(err)
+          })
+        correlationCallbacks.delete(correlationId) // Remove the callback
       }
-    }).catch((err) => {
-      logger.error('Error while consuming reply queue', err)
-      console.error(err)
-    })
-  }).catch((err) => {
-    logger.error('Error while connecting to RabbitMQ', err)
+
+      channel.ack(msg)
+    }
+  }).catch((err: any) => {
+    logger.error('Error while consuming reply queue', err)
     console.error(err)
   })
+}
 
 export async function publishToQueue (data: any): Promise<boolean> {
   const correlationId = uuidv4()
@@ -125,6 +150,9 @@ async function processReplyMessage (msg: Message): Promise<void> {
     logger.info('Updated alias value for %d checkout counters', response.data.length)
     logger.info('Updated registration status for %d merchants: Approved', response.data.length)
   }
-
-  // Perform other actions like resolving a Promise, etc.
 }
+
+logger.info('Connecting to RabbitMQ: %s', connStr)
+connectToRabbitMQ(RETRY_INTERVAL_MS)
+  .then(() => {})
+  .catch((_) => {})
