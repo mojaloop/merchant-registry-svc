@@ -13,6 +13,7 @@ interface CurrencyCode{
 export interface MerchantData {
   merchant_id: number;
   dfsp_id: string;
+  fspId: string;
   dfsp_name: string;
   checkout_counter_id: number;
   currency_code: CurrencyCode;
@@ -47,7 +48,7 @@ export async function registerMerchants (merchants: MerchantData[]): Promise<Reg
 
     const registryRecord = registryRepository.create({
         merchant_id: merchant.merchant_id,
-        fspId: merchant.dfsp_id,
+        fspId: merchant.fspId,
         dfsp_name: merchant.dfsp_name,
         checkout_counter_id: merchant.checkout_counter_id,
         alias_value: paddedAliasValue,
