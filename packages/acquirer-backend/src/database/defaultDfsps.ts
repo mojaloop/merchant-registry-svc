@@ -24,5 +24,13 @@ export const DefaultDFSPs = [
     joined_date: new Date(),
     activated: true,
     logo_uri: 'https://picsum.photos/200/300'
+  },
+  {
+    name: 'Green Bank',
+    fspId: 'greenbankfsp',
+    dfsp_type: DFSPType.BANK,
+    joined_date: new Date(),
+    activated: true,
+    logo_uri: 'https://lipsum.app/random/640x480'
   }
 ]
