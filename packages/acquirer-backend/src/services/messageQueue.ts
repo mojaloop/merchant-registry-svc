@@ -9,7 +9,6 @@ import { type MessagePayload } from './replyMessagePayload'
 import { AppDataSource } from '../database/dataSource'
 import { CheckoutCounterEntity } from '../entity/CheckoutCounterEntity'
 import { MerchantEntity } from '../entity/MerchantEntity'
-import { DFSPEntity } from '../entity/DFSPEntity'
 
 const RABBITMQ_HOST = readEnv('RABBITMQ_HOST', '127.0.0.1') as string
 const RABBITMQ_PORT = readEnv('RABBITMQ_PORT', 5672) as number
@@ -34,11 +33,6 @@ amqplib.connect(connStr)
 
     logger.info('Connected to RabbitMQ %s: %o', RABBITMQ_QUEUE, result)
     logger.info('Connected to RabbitMQ %s: %o', RABBITMQ_REPLY_QUEUE, resplyResult)
-
-    // Wait for database connection to be ready
-    if (!AppDataSource.isInitialized) {
-      await AppDataSource.initialize()
-    }
   }).then(async () => {
     // Consume the reply queue for the response
     channel.consume(RABBITMQ_REPLY_QUEUE, (msg: Message | null) => {
