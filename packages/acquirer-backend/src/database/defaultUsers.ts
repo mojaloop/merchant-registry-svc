@@ -8,6 +8,40 @@ export const DefaultHubUsers = [
   }
 ]
 export const DefaultDFSPUsers = [
+  // Green Bank
+  {
+    email: 'greenbanksuperadmin1@email.com',
+    name: 'Green Bank Super Admin 1',
+    password: 'password',
+    phone_number: '0000000',
+    role: 'DFSP Super Admin',
+    dfsp_name: 'Green Bank'
+  },
+  {
+    email: 'greenbanksuperadmin2@email.com',
+    name: 'Green Bank Super Admin 2',
+    password: 'password',
+    phone_number: '0000000',
+    role: 'DFSP Super Admin',
+    dfsp_name: 'Green Bank'
+  },
+  {
+    email: 'greenbankadmin1@email.com',
+    name: 'Green Bank Admin 1',
+    password: 'password',
+    phone_number: '0000000',
+    role: 'DFSP Admin',
+    dfsp_name: 'Green Bank'
+  },
+  {
+    email: 'greenbankadmin2@email.com',
+    name: 'Green Bank Admin 2',
+    password: 'password',
+    phone_number: '0000000',
+    role: 'DFSP Admin',
+    dfsp_name: 'Green Bank'
+  },
+
   // DFSP 1
   {
     email: 'd1superadmin1@email.com',
