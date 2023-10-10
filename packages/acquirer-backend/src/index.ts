@@ -20,6 +20,7 @@ app.use(express.json())
 app.use(cors())
 
 sendGridSetup()
+  .catch((_err) => {})
 
 setupMiddlewares(app)
 setupSwagger(app)
