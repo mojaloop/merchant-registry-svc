@@ -315,6 +315,14 @@ paths:
       responses:
         '200':
           description: Health Check
+  /health-check/sendgrid-email-service:
+    get:
+      tags:
+        - Health Check
+      summary: Health Check
+      responses:
+        '200':
+          description: Health Check for SendGrid Email Service
   /merchants/{id}:
     get:
       tags:
