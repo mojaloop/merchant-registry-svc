@@ -166,7 +166,7 @@ const AliasGeneratedMerchantRecords = () => {
   const handleExport = async () => {
     const blobData = await exportMerchants.mutateAsync({
       ...getValues(),
-      registrationStatus: MerchantRegistrationStatus.WAITINGALIASGENERATION,
+      registrationStatus: MerchantRegistrationStatus.APPROVED,
     })
     if (blobData) {
       downloadMerchantsBlobAsXlsx(blobData)
@@ -315,7 +315,7 @@ const AliasGeneratedMerchantRecords = () => {
             />
 
             {aliasGeneratedMerchants.data.data.length === 0 && (
-              <EmptyState text='There are no approved merchant records.' mt='10' />
+              <EmptyState text='There are no alias generated merchant records.' mt='10' />
             )}
           </>
         )}
