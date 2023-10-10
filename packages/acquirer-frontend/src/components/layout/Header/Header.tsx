@@ -87,16 +87,20 @@ const Header = () => {
             <PopoverBody display='flex' flexDir='column'>
               <HStack spacing='2' p='1.5'>
                 <Box w='6' h='6' display='flex' justifyItems='center' alignItems='center'>
-                  <Icon as={AiOutlineUser} w='full' />
+                  <Icon as={AiOutlineUser} w='6' />
                 </Box>
-                <Text fontSize='sm'>{userProfile.data?.name || ''}</Text>
+                <Text fontSize='sm' wordBreak='break-all'>
+                  {userProfile.data?.name || ''}
+                </Text>
               </HStack>
 
               <HStack spacing='2' p='1.5'>
                 <Box w='6' h='6' display='flex' justifyItems='center' alignItems='center'>
-                  <Icon as={AiOutlineMail} w='full' />
+                  <Icon as={AiOutlineMail} w='6' />
                 </Box>
-                <Text fontSize='sm'>{userProfile.data?.email || ''}</Text>
+                <Text fontSize='sm' wordBreak='break-all'>
+                  {userProfile.data?.email || ''}
+                </Text>
               </HStack>
 
               <Button variant='unstyled' h='auto' p='1.5' _hover={{ bg: 'gray.100' }}>
@@ -108,7 +112,7 @@ const Header = () => {
                     justifyItems='center'
                     alignItems='center'
                   >
-                    <Icon as={MdLockOutline} w='full' />
+                    <Icon as={MdLockOutline} w='6' />
                   </Box>
                   <Box as='span' fontSize='sm' fontWeight='normal'>
                     Change Password
@@ -135,7 +139,7 @@ const Header = () => {
                     justifyItems='center'
                     alignItems='center'
                   >
-                    <Icon as={TbLogout} w='full' />
+                    <Icon as={TbLogout} w='6' />
                   </Box>
                   <Box as='span' fontSize='sm' fontWeight='normal'>
                     Logout
