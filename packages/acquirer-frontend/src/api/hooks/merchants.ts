@@ -100,7 +100,7 @@ async function getRevertedMerchantRecords(values: MerchantsParams) {
 async function getAliasGeneratedMerchantRecords(values: MerchantsParams) {
   const params = {
     ...values,
-    registrationStatus: MerchantRegistrationStatus.WAITINGALIASGENERATION,
+    registrationStatus: MerchantRegistrationStatus.APPROVED,
   }
   const aliasGeneratedMerchants = await getMerchants(params)
 
