@@ -9,6 +9,9 @@ import { type MessagePayload } from './replyMessagePayload'
 import { AppDataSource } from '../database/dataSource'
 import { CheckoutCounterEntity } from '../entity/CheckoutCounterEntity'
 import { MerchantEntity } from '../entity/MerchantEntity'
+import { uploadCheckoutAliasQRImage } from './S3Client'
+import { generateQRImage } from './generateQRImage'
+import path from 'path'
 
 const RABBITMQ_HOST = readEnv('RABBITMQ_HOST', '127.0.0.1') as string
 const RABBITMQ_PORT = readEnv('RABBITMQ_PORT', 5672) as number
@@ -140,8 +143,33 @@ async function processReplyMessage (msg: Message): Promise<void> {
 
   if (response.command === 'bulkGenerateAlias') {
     for (const aliasData of response.data) {
+      // generate qr image and upload to s3
+      let qrImageBuffer = null
+      try {
+        const frameImagePath = path.join(__dirname, '../../assets/sample-qr-frame/frame.png')
+        qrImageBuffer = await generateQRImage(aliasData.alias_value, {}, frameImagePath)
+      } catch (e) {
+        logger.error('Error while generating QR image for alias value: %s', aliasData.alias_value)
+        continue
+      }
+
+      if (qrImageBuffer == null) {
+        logger.error('Error while generating QR image for alias value: %s', aliasData.alias_value)
+        continue
+      }
+      const qrImageS3Path = await uploadCheckoutAliasQRImage(aliasData.alias_value, qrImageBuffer)
+      if (qrImageS3Path == null) {
+        logger.error(
+          'Error while uploading QR image to S3 for alias value: %s',
+          aliasData.alias_value
+        )
+        continue
+      }
+      logger.info('Uploaded QR image to S3 for alias value: %s', aliasData.alias_value)
+
       await AppDataSource.manager.update(CheckoutCounterEntity, aliasData.checkout_counter_id, {
-        alias_value: aliasData.alias_value
+        alias_value: aliasData.alias_value,
+        qr_code_link: qrImageS3Path
       })
       await AppDataSource.manager.update(MerchantEntity, aliasData.merchant_id, {
         registration_status: MerchantRegistrationStatus.APPROVED

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { type Response } from 'express'
-import { getMerchantDocumentURL } from '../../services/S3Client'
+import { getMerchantDocumentURL, getQRImageUrl } from '../../services/S3Client'
 import { AppDataSource } from '../../database/dataSource'
 import { MerchantEntity } from '../../entity/MerchantEntity'
 import logger from '../../services/logger'
@@ -136,15 +136,20 @@ trying to access unauthorized(different DFSP) merchant ${merchant.id}`,
       }
     }
 
-    if (merchant.business_licenses?.length > 0) {
-      for (let i = 0; i < merchant.business_licenses.length; i++) {
-        if (merchant.business_licenses[i].license_document_link !== null &&
-            merchant.business_licenses[i].license_document_link !== undefined &&
-            merchant.business_licenses[i].license_document_link !== ''
-        ) {
-          merchant.business_licenses[i].license_document_link =
-            await getMerchantDocumentURL(merchant.business_licenses[i].license_document_link)
-        }
+    for (let i = 0; i < merchant.business_licenses?.length; i++) {
+      const licenseDocumentLink = merchant.business_licenses[i].license_document_link
+      if (licenseDocumentLink !== null &&
+            licenseDocumentLink !== ''
+      ) {
+        merchant.business_licenses[i].license_document_link =
+          await getMerchantDocumentURL(licenseDocumentLink)
+      }
+    }
+
+    for (let i = 0; i < merchant.checkout_counters?.length; i++) {
+      const qrCodeLink = merchant.checkout_counters[i].qr_code_link
+      if (qrCodeLink !== null) {
+        merchant.checkout_counters[i].qr_code_link = await getQRImageUrl(qrCodeLink)
       }
     }
 

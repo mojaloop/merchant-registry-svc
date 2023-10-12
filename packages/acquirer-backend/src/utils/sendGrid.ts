@@ -70,7 +70,7 @@ export async function checkSendGridAPIKeyValidity (apiKey: string): Promise<bool
 
     return response[0]?.statusCode === 200
   } catch (error: any) {
-    logger.error('Invalid SendGrid API Key: %o', error.response?.body?.errors?.[0]?.message)
+    logger.error('Invalid SendGrid API Key: %o', error.response?.body)
     return false
   }
 }

@@ -70,6 +70,38 @@ export async function removeMerchantDocument (documentPath: string): Promise<voi
   logger.info('Storage Server document removed: %s', documentPath)
 }
 
+export async function uploadCheckoutAliasQRImage (
+  aliasValue: string,
+  buffer: Buffer
+): Promise<string | null> {
+  const metaData = {
+    'Content-Type': 'image/png',
+    'X-Amz-Meta-Testing': 1234
+  }
+
+  const objectName = `qr_images/${aliasValue}.png`
+  let uploadedQRInfo: UploadedObjectInfo | null = null
+  try {
+    uploadedQRInfo = await minioClient.putObject(
+      merchantDocumentBucketName,
+      objectName,
+      buffer,
+      buffer.length,
+      metaData
+    )
+  } catch (e) {
+    logger.error('Storage Server QR image upload error: %s', e)
+    return null
+  }
+  if (uploadedQRInfo == null) {
+    logger.error('Storage Server QR image upload error: %s', 'uploadedQRInfo is null')
+    return null
+  }
+
+  logger.info('Storage Server QR image uploaded: %s', objectName)
+  return objectName
+}
+
 export async function uploadMerchantDocument (
   merchant: MerchantEntity,
   licenseNumber: string,
@@ -104,6 +136,21 @@ export async function uploadMerchantDocument (
 
   logger.info('Storage Server document uploaded: %s', objectName)
   return objectName
+}
+
+export async function getQRImageUrl (qrPath: string): Promise<string> {
+  // qrPath example.. qr_images/000001.png
+  if (qrPath == null || qrPath.length === 0) {
+    return ''
+  }
+  try {
+    const url = await minioClient.presignedGetObject(merchantDocumentBucketName, qrPath)
+    logger.info('Storage Server QR URL: %s', url)
+    return url
+  } catch (e) {
+    logger.error('Storage Server QR URL error: %s', e)
+    return ''
+  }
 }
 
 export async function getMerchantDocumentURL (documentPath: string): Promise<string> {

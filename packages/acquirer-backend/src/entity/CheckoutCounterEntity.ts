@@ -26,6 +26,9 @@ export class CheckoutCounterEntity {
   @Column({ nullable: true })
     merchant_registry_id!: number
 
+  @Column({ nullable: true })
+    qr_code_link!: string
+
   // merchant_id
   @ManyToOne(
     () => MerchantEntity, merchant => merchant.checkout_counters,
