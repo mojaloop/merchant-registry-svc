@@ -23,7 +23,7 @@ import type { MerchantDetails } from '@/types/merchantDetails'
 import { useMerchant } from '@/api/hooks/merchants'
 import { formatLatitudeLongitude } from '@/utils'
 import { CustomButton } from '@/components/ui'
-import { DetailsItem } from '.'
+import { DetailsQRImage, DetailsItem } from '.'
 
 interface MerchantInformationModalProps {
   selectedMerchantId: number
@@ -320,6 +320,7 @@ export const MerchantInfo = ({
               label='Counter Description'
               value={checkoutCounter?.description || 'N/A'}
             />
+            <DetailsQRImage label='QR Code' qrImageUrl={checkoutCounter?.qr_code_link} />
           </Stack>
         </GridItemShell>
       </Grid>
