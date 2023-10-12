@@ -5,7 +5,8 @@ import logger from '../../services/logger'
 import { type AuthRequest } from 'src/types/express'
 import { DFSPEntity } from '../../entity/DFSPEntity'
 import { z } from 'zod'
-import { DFSPType } from 'shared-lib'
+import { AuditActionType, AuditTrasactionStatus, DFSPType } from 'shared-lib'
+import { audit } from '../../utils/audit'
 
 // Define a Zod schema for the request body
 const createDFSPSchema = z.object({
@@ -74,8 +75,6 @@ const createDFSPSchema = z.object({
  *                   type: string
  *                   description: The response message
  *                   example: DFSP created successfully
- *                 data:
- *                   $ref: '#/components/schemas/DFSPEntity'
  *       400:
  *         description: Bad Request
  *       401:
@@ -112,10 +111,29 @@ export async function postCreateDFSP (req: AuthRequest, res: Response) {
     // Save to database
     await DFSPRepository.save(newDFSP)
 
+    await audit(
+      AuditActionType.ADD,
+      AuditTrasactionStatus.SUCCESS,
+      'postCreateDFSP',
+      'DFSP created successfully',
+      'DFSPEntity',
+      {}, {}, req.user
+    )
+
     logger.info(`DFSP created: ${newDFSP.id}`)
     res.status(201).send({ message: 'DFSP created successfully', data: newDFSP })
-  } catch (e) {
+  } catch (e: any) {
     logger.error(`Error creating DFSP: ${e as string}`)
+
+    await audit(
+      AuditActionType.ADD,
+      AuditTrasactionStatus.FAILURE,
+      'postCreateDFSP',
+      `Error creating DFSP: ${e as string}`,
+      'DFSPEntity',
+      {}, {}, req.user
+    )
+
     res.status(500).send({ message: 'Internal Server Error' })
   }
 }
