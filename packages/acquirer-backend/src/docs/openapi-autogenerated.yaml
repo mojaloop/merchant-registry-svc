@@ -224,6 +224,38 @@ paths:
                     description: The list of country subdivisions
                     items:
                       type: object
+  /dfsps/{id}/client-access-key:
+    post:
+      tags:
+        - DFSP
+      security:
+        - Authorization: []
+      summary: POST Create a new DFSP Client Access Key
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: number
+          required: true
+          description: Numeric ID of the dfsp
+      responses:
+        '201':
+          description: DFSP successfully created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: The response message
+                    example: DFSP created successfully
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal Server Error
   /dfsps:
     get:
       tags:
@@ -299,8 +331,6 @@ paths:
                     type: string
                     description: The response message
                     example: DFSP created successfully
-                  data:
-                    $ref: '#/components/schemas/DFSPEntity'
         '400':
           description: Bad Request
         '401':

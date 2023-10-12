@@ -3,23 +3,22 @@ import {EndpointDFSPEntity} from "../entity/EndpointDFSPEntity";
 import {APIAccessEntity} from "../entity/APIAccessEntity";
 
 import logger from "./logger";
-import {generateApiKey} from "../utils/utils";
 
 export interface DFSPData {
-  dfsp_id: string;
+  fspId: string;
   dfsp_name: string;
-  dfsp_api_endpoint: string;
+  client_secret: string;
 }
 
 export async function registerEndpointDFSP (dfspData: DFSPData): Promise<APIAccessEntity> {
   logger.debug('Registering DFSP: %o', dfspData);
 
   const endpointDfsp = new EndpointDFSPEntity();
-  endpointDfsp.dfsp_id = dfspData.dfsp_id;
+  endpointDfsp.fspId = dfspData.fspId;
   endpointDfsp.dfsp_name = dfspData.dfsp_name;
 
   const apiAccess = new APIAccessEntity();
-  apiAccess.client_secret = generateApiKey();
+  apiAccess.client_secret = dfspData.client_secret;
   apiAccess.endpoints = [endpointDfsp]
 
   await AppDataSource.manager.transaction(async transactionalEntityManager => {
