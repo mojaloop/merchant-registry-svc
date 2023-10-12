@@ -11,7 +11,7 @@ export class EndpointDFSPEntity {
     id!: number
 
   @Column({ nullable: false})
-    dfsp_id!: string
+    fspId!: string
 
   @Column({ nullable: false })
     dfsp_name!: string

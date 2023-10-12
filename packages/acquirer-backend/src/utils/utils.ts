@@ -3,13 +3,19 @@ import path from 'path'
 import jwt from 'jsonwebtoken'
 import dotenv from 'dotenv'
 import { type PortalUserEntity } from '../entity/PortalUserEntity'
+import base64url from 'base64url'
+import crypto from 'crypto'
+import { readEnv } from '../setup/readEnv'
 
 if (process.env.NODE_ENV === 'test') {
   dotenv.config({ path: path.resolve(process.cwd(), '.env.test'), override: true })
 }
 
-const JWT_SECRET = process.env.JWT_SECRET ?? ''
-const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN ?? '1d'
+const JWT_SECRET = readEnv('JWT_SECRET', '', true) as string
+const JWT_EXPIRES_IN = readEnv('JWT_EXPIRES_IN', '1d', true) as string
+
+const API_KEY_LENGTH = readEnv('API_KEY_LENGTH', 64, true) as number
+const API_KEY_PREFIX = readEnv('API_KEY_PREFIX', 'MR')
 
 const saltRounds = 10
 export async function hashPassword (password: string): Promise<string> {
@@ -35,4 +41,14 @@ export function generateJwtToken (user: PortalUserEntity): string {
     { expiresIn: JWT_EXPIRES_IN }
   )
   return token
+}
+
+export function generateApiKey (): string {
+  // Constant prefix
+
+  const randomPayload = base64url(crypto.randomBytes(API_KEY_LENGTH))
+
+  const apiKey = `${API_KEY_PREFIX}.${randomPayload}`
+
+  return apiKey
 }

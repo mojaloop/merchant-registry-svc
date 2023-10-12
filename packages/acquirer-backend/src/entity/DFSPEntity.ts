@@ -33,6 +33,9 @@ export class DFSPEntity {
   @Column({ nullable: false, length: 512 })
     logo_uri!: string
 
+  @Column({ nullable: true })
+    client_secret!: string
+
   @OneToMany(() => PortalUserEntity, user => user.dfsp)
     portal_users!: PortalUserEntity[]
 
