@@ -68,7 +68,7 @@ const Registry = () => {
         Import bulk record file
       </Heading>
 
-      <CustomButton>Choose a file</CustomButton>
+      <CustomButton isDisabled>Choose a file</CustomButton>
 
       <Box mt='6'>
         <Text mb='1.5' fontSize='sm'>
