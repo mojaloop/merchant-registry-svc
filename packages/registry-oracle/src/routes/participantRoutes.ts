@@ -236,7 +236,7 @@ router.post('/participants', authenticateAPIAccess, async (req: EndpointAuthRequ
   const paddedAliasValue = maxAliasValue.toString().padStart(ALIAS_CHECKOUT_MAX_DIGITS, "0");
 
   const newRegistryRecord = new RegistryEntity()
-  newRegistryRecord.fspId = endpoint.dfsp_id // TODO: Should be the FSP ID of registered API Accessed DFSP
+  newRegistryRecord.fspId = endpoint.fspId // TODO: Should be the FSP ID of registered API Accessed DFSP
   newRegistryRecord.dfsp_name = endpoint.dfsp_name
   newRegistryRecord.currency = currency
   newRegistryRecord.alias_value = paddedAliasValue
