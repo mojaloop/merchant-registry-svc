@@ -17,13 +17,15 @@ import {
   Text,
   Skeleton,
   HStack,
+  useDisclosure,
 } from '@chakra-ui/react'
 
 import type { MerchantDetails } from '@/types/merchantDetails'
 import { useMerchant } from '@/api/hooks/merchants'
 import { formatLatitudeLongitude } from '@/utils'
 import { CustomButton } from '@/components/ui'
-import { DetailsQRImage, DetailsItem } from '.'
+import QRCodeModal from './QRCodeModal'
+import { DetailsItem } from '.'
 
 interface MerchantInformationModalProps {
   selectedMerchantId: number
@@ -75,6 +77,8 @@ export const MerchantInfo = ({
   const location = locations?.[0]
   const businessOwner = business_owners?.[0]
   const contactPerson = contact_persons?.[0]
+
+  const { isOpen, onOpen, onClose } = useDisclosure()
 
   return (
     <>
@@ -320,7 +324,18 @@ export const MerchantInfo = ({
               label='Counter Description'
               value={checkoutCounter?.description || 'N/A'}
             />
-            <DetailsQRImage label='QR Code' qrImageUrl={checkoutCounter?.qr_code_link} />
+
+            {checkoutCounter.qr_code_link && (
+              <CustomButton alignSelf='start' colorVariant='info' onClick={onOpen}>
+                View QR Code
+              </CustomButton>
+            )}
+
+            <QRCodeModal
+              isOpen={isOpen}
+              onClose={onClose}
+              qrCodeUrl={checkoutCounter.qr_code_link}
+            />
           </Stack>
         </GridItemShell>
       </Grid>

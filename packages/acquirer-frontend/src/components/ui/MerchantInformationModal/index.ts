@@ -1,3 +1,3 @@
 export * from './MerchantInformationModal'
 export * from './DetailsItem'
-export * from './DetailsQRImage'
+export * from './QRCodeModal'
