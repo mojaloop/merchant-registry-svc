@@ -75,7 +75,7 @@ const Header = () => {
         <Popover offset={[-125, 0]}>
           <PopoverTrigger>
             <Button variant='unstyled'>
-              <Avatar name={userProfile.data?.name || ''} size='sm' />
+              <Avatar size='sm' />
             </Button>
           </PopoverTrigger>
 
