@@ -21,7 +21,7 @@ const QRCodeModal = ({ isOpen, onClose, qrCodeUrl }: QRCodeModalProps) => {
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalOverlay bg='hsl(0, 0%, 100%, 0.6)' backdropFilter='blur(4px)' />
 
-      <ModalContent w='90vw' maxW='26rem' my='10'>
+      <ModalContent w='90vw' maxW='26rem' mt='14'>
         <ModalHeader py='3' borderBottom='1px' borderColor='gray.100'>
           <Heading as='h3' size='md'>
             Scan QR Code
@@ -36,6 +36,7 @@ const QRCodeModal = ({ isOpen, onClose, qrCodeUrl }: QRCodeModalProps) => {
             alt='QR Code'
             h='490px'
             w='100%'
+            objectFit='contain'
           />
         </ModalBody>
       </ModalContent>
