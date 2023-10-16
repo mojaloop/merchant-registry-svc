@@ -31,3 +31,8 @@ export interface AuditLogResponse {
   created_at: string
   transaction_status: AuditTrasactionStatus
 }
+
+export interface AuditLogParams {
+  actionType: AuditActionType | ''
+  portalUserId: string
+}

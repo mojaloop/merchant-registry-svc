@@ -103,7 +103,8 @@ const AuditLog = () => {
   })
 
   const auditLogs = useAuditLogs({
-    ...getValues(),
+    actionType: getValues('actionType'),
+    portalUserId: getValues('portalUsername'),
     page: pagination.pageIndex + 1,
     limit: pagination.pageSize,
   })
