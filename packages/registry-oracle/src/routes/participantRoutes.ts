@@ -139,9 +139,15 @@ router.get('/participants/:type/:id', async (req: Request, res: Response) => {
  *               fspId:
  *                 type: string
  *                 description: Financial Service Provider ID
+ *                 example: greenbankfsp
  *               currency:
  *                 type: string
  *                 description: Currency code
+ *                 example: USD
+ *               alias_value:
+ *                 type: string
+ *                 description: Alias value
+ *                 required: false
  *     responses:
  *       200:
  *         description: Successfully created participant
@@ -182,12 +188,12 @@ router.post('/participants', authenticateAPIAccess, async (req: EndpointAuthRequ
     return res.status(400).send(prepareError('Authentication Error'))
   }
 
-  const {fspId, currency } = req.body
+  const {fspId, currency, alias_value } = req.body
 
   if(fspId == undefined || fspId == null) {
     logger.error('Invalid FSP ID')
     await audit(
-      AuditActionType.ACCESS,
+      AuditActionType.ADD,
       AuditTrasactionStatus.FAILURE,
       'postParticipants',
       'POST Participants: Invalid FSP ID',
@@ -200,7 +206,7 @@ router.post('/participants', authenticateAPIAccess, async (req: EndpointAuthRequ
   if(currency == undefined || currency == null) {
     logger.error('Invalid Currency')
     await audit(
-      AuditActionType.ACCESS,
+      AuditActionType.ADD,
       AuditTrasactionStatus.FAILURE,
       'postParticipants',
       'POST Participants: Invalid Currency',
@@ -225,15 +231,52 @@ router.post('/participants', authenticateAPIAccess, async (req: EndpointAuthRequ
 
   // Fetch the maximum alias_value from the database
   const registryRepository = AppDataSource.getRepository(RegistryEntity)
-  const maxAliasEntity = await registryRepository.find({
-    select: ["alias_value"],
-    order: { alias_value: "DESC" },
-    take: 1
-  });
 
-  // Initialize maxAliasValue
-  let maxAliasValue = maxAliasEntity.length > 0 ? parseInt(maxAliasEntity[0].alias_value, 10) + 1 : 1;
-  const paddedAliasValue = maxAliasValue.toString().padStart(ALIAS_CHECKOUT_MAX_DIGITS, "0");
+  let paddedAliasValue = alias_value;
+  if(alias_value == undefined || alias_value == null) {
+    const maxAliasEntity = await registryRepository.find({
+      select: ["alias_value"],
+      order: { alias_value: "DESC" },
+      take: 1
+    });
+
+    // Initialize maxAliasValue
+    paddedAliasValue = maxAliasEntity.length > 0 ? parseInt(maxAliasEntity[0].alias_value, 10) + 1 : 1;
+  }else{
+    // Check if the alias_value already exists
+    const existingAliasEntity = await registryRepository.findOne({
+      where: { alias_value: alias_value },
+      select: ["alias_value"]
+    });
+
+    if(existingAliasEntity) {
+      logger.error('Alias Value already exists')
+      await audit(
+        AuditActionType.ADD,
+        AuditTrasactionStatus.FAILURE,
+        'postParticipants',
+        'POST Participants: Alias Value already exists',
+        'RegistryEntity',
+        {}, {alias_value}
+      )
+      return res.status(400).send(prepareError('Alias Value already exists'))
+    }
+
+    // Check if the alias_value is a number
+    if(isNaN(alias_value)) {
+      logger.error('Invalid Alias Value')
+      await audit(
+        AuditActionType.ADD,
+        AuditTrasactionStatus.FAILURE,
+        'postParticipants',
+        'POST Participants: Invalid Alias Value - Alias Value should be a number',
+        'RegistryEntity',
+        {}, {alias_value}
+      )
+      return res.status(400).send(prepareError('Invalid Alias Value: Alias Value should be a number'))
+    }
+  }
+  paddedAliasValue = paddedAliasValue.toString().padStart(ALIAS_CHECKOUT_MAX_DIGITS, "0");
 
   const newRegistryRecord = new RegistryEntity()
   newRegistryRecord.fspId = endpoint.fspId // TODO: Should be the FSP ID of registered API Accessed DFSP
@@ -244,7 +287,7 @@ router.post('/participants', authenticateAPIAccess, async (req: EndpointAuthRequ
   await AppDataSource.manager.save(newRegistryRecord)
 
   await audit(
-    AuditActionType.ACCESS,
+    AuditActionType.ADD,
     AuditTrasactionStatus.SUCCESS,
     'postParticipants',
     'POST Participants: Participant created',
