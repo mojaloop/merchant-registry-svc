@@ -21,7 +21,7 @@ export interface PortalUser {
 
 export interface AuditLogResponse {
   id: number
-  portal_user: PortalUser
+  portal_user: PortalUser | null
   action_type: AuditActionType
   application_module: string
   event_description: string

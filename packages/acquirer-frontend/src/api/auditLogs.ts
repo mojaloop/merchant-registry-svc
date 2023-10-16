@@ -4,7 +4,7 @@ import instance from '@/lib/axiosInstance'
 
 export function transformIntoTableData(auditLogResponse: AuditLogResponse): AuditLogType {
   return {
-    portalUserName: auditLogResponse?.portal_user?.name,
+    portalUserName: auditLogResponse?.portal_user?.name || '',
     actionType: auditLogResponse.action_type,
     applicationModule: auditLogResponse.application_module,
     eventDescription: auditLogResponse.event_description,
