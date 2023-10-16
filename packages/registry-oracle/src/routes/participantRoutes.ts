@@ -8,6 +8,7 @@ import {readEnv} from '../setup/readEnv'
 import {EndpointAuthRequest} from '../types/express'
 import {audit} from '../utils/audit'
 import {prepareError} from '../utils/error'
+import {findIncrementAliasValue} from '../utils/utils'
 
 const ALIAS_CHECKOUT_MAX_DIGITS = readEnv('ALIAS_CHECKOUT_MAX_DIGITS', 10) as number;
 
@@ -216,36 +217,31 @@ router.post('/participants', authenticateAPIAccess, async (req: EndpointAuthRequ
     return res.status(400).send(prepareError('Invalid Currency'))
   }
 
-  // if(alias_value == undefined || alias_value == null) {
-  //   logger.error('Invalid Alias Value')
-  //   await audit(
-  //     AuditActionType.ACCESS,
-  //     AuditTrasactionStatus.FAILURE,
-  //     'postParticipants',
-  //     'POST Participants: Invalid Alias Value',
-  //     'RegistryEntity',
-  //     {}, {alias_value}
-  //   )
-  //   return res.status(400).send(prepareError('Invalid Alias Value'))
-  // }
-
-  // Fetch the maximum alias_value from the database
   const registryRepository = AppDataSource.getRepository(RegistryEntity)
 
   let paddedAliasValue = alias_value;
+  let headPointerAliasValue: RegistryEntity | null = null;
+
   if(alias_value == undefined || alias_value == null) {
-    const maxAliasEntity = await registryRepository.find({
-      select: ["alias_value"],
-      order: { alias_value: "DESC" },
-      take: 1
+    // find head pointer
+    headPointerAliasValue = await registryRepository.findOne({
+      where: { is_incremental_head: true },
+      select: ["alias_value"]
     });
 
-    // Initialize maxAliasValue
-    paddedAliasValue = maxAliasEntity.length > 0 ? parseInt(maxAliasEntity[0].alias_value, 10) + 1 : 1;
+    if(headPointerAliasValue) {
+      // If head pointer exists, just increment it
+      paddedAliasValue = findIncrementAliasValue(headPointerAliasValue.alias_value);
+    } else {
+        // If no record exists, start from 1
+        paddedAliasValue = findIncrementAliasValue('0');
+    }
+
   }else{
     // Check if the alias_value already exists
     const existingAliasEntity = await registryRepository.findOne({
       where: { alias_value: alias_value },
+
       select: ["alias_value"]
     });
 
@@ -276,13 +272,25 @@ router.post('/participants', authenticateAPIAccess, async (req: EndpointAuthRequ
       return res.status(400).send(prepareError('Invalid Alias Value: Alias Value should be a number'))
     }
   }
-  paddedAliasValue = paddedAliasValue.toString().padStart(ALIAS_CHECKOUT_MAX_DIGITS, "0");
 
   const newRegistryRecord = new RegistryEntity()
   newRegistryRecord.fspId = endpoint.fspId // TODO: Should be the FSP ID of registered API Accessed DFSP
   newRegistryRecord.dfsp_name = endpoint.dfsp_name
   newRegistryRecord.currency = currency
   newRegistryRecord.alias_value = paddedAliasValue
+
+  // If alias_value is not provided by external DFSP, Mark the new record as head pointer
+  if(alias_value == undefined || alias_value == null) {
+    // Update the head pointer
+    
+    if(headPointerAliasValue) {
+      // is_incremental_head false for the old head pointer
+      headPointerAliasValue.is_incremental_head = false;
+      await AppDataSource.manager.save(headPointerAliasValue);
+    }
+      
+    newRegistryRecord.is_incremental_head = true;
+  }
 
   await AppDataSource.manager.save(newRegistryRecord)
 

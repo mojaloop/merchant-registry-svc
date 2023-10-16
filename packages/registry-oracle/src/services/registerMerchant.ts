@@ -1,6 +1,7 @@
 import {AppDataSource} from '../database/dataSource';
 import {RegistryEntity} from '../entity/RegistryEntity';
 import {readEnv} from '../setup/readEnv';
+import {findIncrementAliasValue} from '../utils/utils';
 import logger from './logger';
 
 const ALIAS_CHECKOUT_MAX_DIGITS = readEnv('ALIAS_CHECKOUT_MAX_DIGITS', 10) as number;
@@ -23,35 +24,31 @@ export async function registerMerchants (merchants: MerchantData[]): Promise<Reg
   const registryRepository = AppDataSource.getRepository(RegistryEntity)
 
   // Fetch the maximum alias_value from the database
-  const maxAliasEntity = await registryRepository.find({
-    select: ["alias_value"],
-    order: { alias_value: "DESC" },
-    take: 1
+  const headPointerAlias = await registryRepository.findOne({
+    select: ["alias_value", "id"],
+    where: { is_incremental_head: true },
   });
 
-  // Initialize maxAliasValue
-  let maxAliasValue = maxAliasEntity.length > 0 ? parseInt(maxAliasEntity[0].alias_value, 10) : 0;
+  let currentAliasValue: string;
+  if(headPointerAlias) {
+    currentAliasValue = headPointerAlias.alias_value;
+  }else{
+    currentAliasValue = "0".repeat(ALIAS_CHECKOUT_MAX_DIGITS);
+  }
+
 
   const bulkRegistryEntities: RegistryEntity[] = [];
 
   for (const merchant of merchants) {
-    // Increment maxAliasValue
-    // NOTE: This is not a good way to do this.
-    //      If multiple instances of this service are running concurrently, 
-    //      We may run into concurrency issues with incrementing alias_value
-    //
 
-    maxAliasValue++;
-
-    // Zero-pad maxAliasValue to ALIAS_CHECKOUT_MAX_DIGITS length
-    const paddedAliasValue = maxAliasValue.toString().padStart(ALIAS_CHECKOUT_MAX_DIGITS, "0");
+    currentAliasValue = await findIncrementAliasValue(currentAliasValue);
 
     const registryRecord = registryRepository.create({
         merchant_id: merchant.merchant_id,
         fspId: merchant.fspId,
         dfsp_name: merchant.dfsp_name,
         checkout_counter_id: merchant.checkout_counter_id,
-        alias_value: paddedAliasValue,
+        alias_value: currentAliasValue,
         currency: merchant.currency_code.iso_code
     });
 
@@ -65,9 +62,21 @@ export async function registerMerchants (merchants: MerchantData[]): Promise<Reg
   }
 
   try{
+    // Save the last record as the head pointer
+    bulkRegistryEntities[bulkRegistryEntities.length - 1].is_incremental_head = true;
+
     // Insert in transaction to ensure atomicity
     await AppDataSource.manager.transaction(async transactionalEntityManager => {
       await transactionalEntityManager.save(RegistryEntity, bulkRegistryEntities);
+      if(headPointerAlias) {
+
+        await transactionalEntityManager.update(
+          RegistryEntity, 
+          headPointerAlias.id, 
+          { is_incremental_head: false }
+        )
+
+      }
     });
   }catch(err) {
     logger.error('Transaction failed: %o', err);

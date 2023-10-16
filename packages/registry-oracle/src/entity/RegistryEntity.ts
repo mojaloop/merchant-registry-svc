@@ -27,6 +27,9 @@ export class RegistryEntity {
   @Column({ nullable: false })
     alias_value!: string
 
+  @Column({ nullable: false, default: false })
+    is_incremental_head!: boolean
+
   @Column({ nullable: false })
     currency!: string
 
