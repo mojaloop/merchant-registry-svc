@@ -13,11 +13,11 @@ services:
       - HOST=0.0.0.0
       - PORT=5555
 
-      - DB_HOST=acquirer-db
+      - DB_HOST=merchant-db
       - DB_PORT=3306
       - DB_USERNAME=root
       - DB_PASSWORD=password
-      - DB_DATABASE=merchant_acquirer_db
+      - DB_DATABASE=acquirer_db
 
       - S3_ENDPOINT=minio
       - S3_PORT=9000
@@ -32,7 +32,7 @@ services:
       - RABBITMQ_QUEUE=acquirer_to_registry
       - RABBITMQ_REPLY_QUEUE=registry_reply_acquirer
     depends_on:
-      - acquirer-db
+      - merchant-db
       - minio
       - rabbitmq
 
@@ -58,11 +58,11 @@ services:
       - HOST=0.0.0.0
       - PORT=6666
 
-      - DB_HOST=oracle-db
+      - DB_HOST=merchant-db
       - DB_PORT=3306
       - DB_USERNAME=root
       - DB_PASSWORD=password
-      - DB_DATABASE=registry-oracle
+      - DB_DATABASE=registry_db
 
       - RABBITMQ_HOST=rabbitmq
       - RABBITMQ_PORT=5672
@@ -72,9 +72,8 @@ services:
       - RABBITMQ_REPLY_QUEUE=registry_reply_acquirer
 
     depends_on:
-      - oracle-db
+      - merchant-db
       - rabbitmq
-
 
   rabbitmq:
     image: rabbitmq:3.12.4-management-alpine
@@ -85,32 +84,17 @@ services:
       - RABBITMQ_DEFAULT_USER=guest # TODO: change this in production
       - RABBITMQ_DEFAULT_PASS=guest # TODO: change this in production
 
-  acquirer-db:
+  merchant-db:
+    container_name: mysql-db
     image: mysql:8.0.33
-
-    # NOTE: use of "mysql_native_password" is not recommended: https://dev.mysql.com/doc/refman/8.0/en/upgrading-from-previous-series.html#upgrade-caching-sha2-password
-    # (this is just an example, not intended to be a production configuration)
     command: --default-authentication-plugin=mysql_native_password
-
     restart: always
     environment:
       - MYSQL_ROOT_PASSWORD=password
-      - MYSQL_DATABASE=merchant_acquirer_db
     ports:
-      - 8808:3306
-
-  oracle-db:
-    image: mysql:8.0.33
-    # NOTE: use of "mysql_native_password" is not recommended: https://dev.mysql.com/doc/refman/8.0/en/upgrading-from-previous-series.html#upgrade-caching-sha2-password
-    # (this is just an example, not intended to be a production configuration)
-    command: --default-authentication-plugin=mysql_native_password
-
-    restart: always
-    environment:
-      - MYSQL_ROOT_PASSWORD=password
-      - MYSQL_DATABASE=registry-oracle
-    ports:
-      - 7707:3306
+      - 3306:3306
+    volumes:
+      - ./mysql-init-scripts:/docker-entrypoint-initdb.d
 
   minio:
     image: minio/minio:RELEASE.2023-07-21T21-12-44Z
