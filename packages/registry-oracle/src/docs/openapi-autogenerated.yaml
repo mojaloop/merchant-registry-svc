@@ -156,9 +156,15 @@ paths:
                 fspId:
                   type: string
                   description: Financial Service Provider ID
+                  example: greenbankfsp
                 currency:
                   type: string
                   description: Currency code
+                  example: USD
+                alias_value:
+                  type: string
+                  description: Alias value
+                  required: false
       responses:
         '200':
           description: Successfully created participant
