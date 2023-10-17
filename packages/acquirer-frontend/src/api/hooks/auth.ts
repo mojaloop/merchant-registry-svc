@@ -3,7 +3,11 @@ import { useMutation } from '@tanstack/react-query'
 import { isAxiosError } from 'axios'
 import { useToast } from '@chakra-ui/react'
 
-import { useNavItems } from '@/contexts/NavItemsContext'
+import {
+  NAV_ITEMS,
+  RESTRICTED_ROUTE_NAMES,
+  useNavItems,
+} from '@/contexts/NavItemsContext'
 import { FALLBACK_ERROR_MESSAGE } from '@/constants/errorMessage'
 import { login, setPassword } from '../auth'
 import { getUserProfile } from '../users'
@@ -26,10 +30,12 @@ export function useLogin() {
         userProfile.role.name === 'DFSP Operator' ||
         userProfile.role.name === 'DFSP Auditor'
       ) {
-        setNavItems(prevNavItems => {
-          const newNavItems = [...prevNavItems]
-          return newNavItems.filter(navItem => navItem.name !== 'Portal User Management')
-        })
+        const navItems = NAV_ITEMS.filter(
+          navItem => !RESTRICTED_ROUTE_NAMES.includes(navItem.name)
+        )
+        setNavItems(navItems)
+      } else {
+        setNavItems(NAV_ITEMS)
       }
 
       navigate('/')
