@@ -52,9 +52,8 @@ services:
       context: .
       dockerfile: Dockerfile-registry-oracle
     ports:
-      - 6666:6666
+      - 8888:6666
     environment:
-      - APP_URL=http://0.0.0.0:6666
       - HOST=0.0.0.0
       - PORT=6666
 

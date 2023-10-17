@@ -22,7 +22,7 @@ and proceed with the necessary steps in the payment transaction.
   * Backend Service for handling Merchants Informations.
 * [Merchant Acquirer Frontend](./packages/acquirer-frontend)
   * Portal for Hub Users, Makers, Checkers to manage and onboarding Merchants.
-* [Merchant Registry Backend](./packages/acquirer-backend)
+* [Merchant Registry Oracle](./packages/registry-oracle)
   * Will Serve as Oracle for Mojaloop ALS.
 
 ## Deploying on Docker
@@ -40,8 +40,19 @@ and proceed with the necessary steps in the payment transaction.
     * Acquirer Frontend should be running at: http://localhost:5173
     * Acquirer Backend should be running at: http://localhost:5555/api/v1/health-check
         * Swagger API Doc should be at: http://localhost:5555/docs
+    * Merchant Registry Backend should be running at: http://localhost:8888/health-check
+        * Swagger API Doc should be at: http://localhost:8888/docs
     * MinIO S3 Compatible Storage Server is running at http://minio:9000 (Service).
-        * To be able to download document file, add this line `127.0.0.1 minio` in the `/etc/hosts`, otherwise `minio:9000` link will be unreachable.
+        * To be able to access merchant license document file or QRCode Image, 
+            * For Linux/Mac, open `/etc/hosts` with root permission and add this line `127.0.0.1 minio`, otherwise `minio:9000` link will be unreachable.
+
+## Running E2E Testing
+Require `docker-compose up --build` to be running.
+Use two different test databases for `acquirer-backend` and `registry-oracle` services. See `./mysql-init-scripts/init.mysql` 
+* Run
+    ```bash
+    $ npm run acquirer-backend:test
+    ```
 
 ## ERD Design
 ![ERD Design](./images/Entity-Relations-Diagram.png)
