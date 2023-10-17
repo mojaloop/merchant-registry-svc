@@ -17,7 +17,6 @@ import { getMerchantDraftCountsByUser } from
   './merchantControllers/getMerchantDraftCountsByUser'
 import { putMerchantOwner } from './merchantControllers/putMerchantOwner'
 import { putMerchantContactPerson } from './merchantControllers/putMerchantContactPerson'
-import { putWaitingAliasGeneration } from './merchantControllers/putMerchantApprove'
 import { exportMerchantIdsXlsx } from './merchantControllers/getMerchantExportIdsXlsx'
 import { putBulkWaitingAliasGeneration } from './merchantControllers/putMerchantApproveBulk'
 import { putBulkReject } from './merchantControllers/putMerchantRejectBulk'
@@ -72,12 +71,6 @@ router.put('/merchants/:id/draft',
   checkPermissions(PermissionsEnum.EDIT_MERCHANTS),
   pdfUpload.single('license_document'),
   putMerchantDraft
-)
-
-router.put('/merchants/:id/approve',
-  authenticateJWT,
-  checkPermissions(PermissionsEnum.APPROVE_MERCHANTS),
-  putWaitingAliasGeneration
 )
 
 router.put('/merchants/bulk-approve',

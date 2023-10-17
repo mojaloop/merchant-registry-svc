@@ -919,44 +919,6 @@ paths:
                     type: string
                   data:
                     type: object
-  /merchants/{id}/approve:
-    put:
-      tags:
-        - Merchants
-        - Merchant Status
-      summary: Updates the status of a Merchant to 'Waiting For Alias Generation'
-      parameters:
-        - in: path
-          name: id
-          schema:
-            type: integer
-          required: true
-          description: The ID of the merchant to update
-      security:
-        - Authorization: []
-      responses:
-        '200':
-          description: Merchant status successfully updated to Review
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    description: The response message
-                    example: Status Updated to Review
-                  data:
-                    type: object
-                    description: The updated merchant data
-        '401':
-          description: Unauthorized request
-        '404':
-          description: Merchant not found
-        '422':
-          description: Invalid merchant ID
-        '500':
-          description: Server error
   /merchants/bulk-approve:
     put:
       tags:
@@ -1295,55 +1257,6 @@ paths:
           description: The ID of the merchant to update
       security:
         - Authorization: []
-      responses:
-        '200':
-          description: Merchant status successfully updated to Review
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    description: The response message
-                    example: Status Updated to Review
-                  data:
-                    type: object
-                    description: The updated merchant data
-        '401':
-          description: Unauthorized request
-        '404':
-          description: Merchant not found
-        '422':
-          description: Invalid merchant ID
-        '500':
-          description: Server error
-  /merchants/{id}/reject:
-    put:
-      tags:
-        - Merchants
-        - Merchant Status
-      summary: Updates the status of a Merchant to 'Reject'
-      parameters:
-        - in: path
-          name: id
-          schema:
-            type: integer
-          required: true
-          description: The ID of the merchant to update
-      security:
-        - Authorization: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                reason:
-                  type: string
-                  description: Reason for rejecting the merchant
-                  example: Information provided is not sufficient
       responses:
         '200':
           description: Merchant status successfully updated to Review
@@ -1738,7 +1651,6 @@ tags:
   - name: Health Check
   - name: Portal Users
   - name: Merchants
-  - name: Merchant Status
   - name: Merchant Locations
   - name: Countries
   - name: Business Owners
