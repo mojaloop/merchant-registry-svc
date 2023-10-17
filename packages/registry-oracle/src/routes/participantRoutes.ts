@@ -137,10 +137,6 @@ router.get('/participants/:type/:id', async (req: Request, res: Response) => {
  *           schema:
  *             type: object
  *             properties:
- *               fspId:
- *                 type: string
- *                 description: Financial Service Provider ID
- *                 example: greenbankfsp
  *               currency:
  *                 type: string
  *                 description: Currency code
@@ -189,20 +185,7 @@ router.post('/participants', authenticateAPIAccess, async (req: EndpointAuthRequ
     return res.status(400).send(prepareError('Authentication Error'))
   }
 
-  const {fspId, currency, alias_value } = req.body
-
-  if(fspId == undefined || fspId == null) {
-    logger.error('Invalid FSP ID')
-    await audit(
-      AuditActionType.ADD,
-      AuditTrasactionStatus.FAILURE,
-      'postParticipants',
-      'POST Participants: Invalid FSP ID',
-      'RegistryEntity',
-      {}, {fspId}
-    )
-    return res.status(400).send(prepareError('Invalid FSP ID'))
-  }
+  const { currency, alias_value } = req.body
 
   if(currency == undefined || currency == null) {
     logger.error('Invalid Currency')
@@ -300,10 +283,10 @@ router.post('/participants', authenticateAPIAccess, async (req: EndpointAuthRequ
     'postParticipants',
     'POST Participants: Participant created',
     'RegistryEntity',
-    {}, {fspId, currency}
+    {}, {fspId: endpoint.fspId, currency}
   )
 
-  res.status(200).send({fspId, currency, alias_value: paddedAliasValue})
+  res.status(200).send({fspId: endpoint.fspId, currency, alias_value: paddedAliasValue})
 })
 
 export default router
