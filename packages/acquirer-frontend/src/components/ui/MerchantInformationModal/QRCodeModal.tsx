@@ -7,8 +7,8 @@ import {
   ModalContent,
   ModalHeader,
   ModalOverlay,
-  Skeleton,
 } from '@chakra-ui/react'
+import { Skeleton } from '@/components/ui'
 
 interface QRCodeModalProps {
   isOpen: boolean
