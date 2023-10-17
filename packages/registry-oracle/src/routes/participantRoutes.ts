@@ -69,18 +69,19 @@ const router = express.Router()
 router.get('/participants/:type/:id', async (req: Request, res: Response) => {
   const {type, id} = req.params 
 
-  if(type == undefined || type == null || type != 'MERCHANT_PAYINTOID') {
-    logger.error('Invalid Type')
-    await audit(
-      AuditActionType.ACCESS, 
-      AuditTrasactionStatus.FAILURE, 
-      'getParticipants',
-      'GET Participants: Invalid Type', 
-      'RegistryEntity',
-      {}, {type}
-    )
-    return res.status(400).send(prepareError('Invalid Type'))
-  }
+  // Don't check for type for now
+  // if(type == undefined || type == null || type != 'MERCHANT_PAYINTOID') {
+  //   logger.error('Invalid Type')
+  //   await audit(
+  //     AuditActionType.ACCESS, 
+  //     AuditTrasactionStatus.FAILURE, 
+  //     'getParticipants',
+  //     'GET Participants: Invalid Type', 
+  //     'RegistryEntity',
+  //     {}, {type}
+  //   )
+  //   return res.status(400).send(prepareError('Invalid Type'))
+  // }
 
   if(id == undefined || id == null) {
     logger.error('Invalid ID')
