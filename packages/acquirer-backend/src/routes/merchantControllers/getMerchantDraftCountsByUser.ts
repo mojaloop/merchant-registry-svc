@@ -35,7 +35,6 @@ import { In } from 'typeorm'
  *                   example: 4
  *
  */
-// TODO: Protect the route
 export async function getMerchantDraftCountsByUser (req: AuthRequest, res: Response) {
   const portalUser = req.user
   if (portalUser == null) {

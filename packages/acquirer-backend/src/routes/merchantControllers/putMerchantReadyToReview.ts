@@ -98,9 +98,9 @@ export async function putMerchantStatusReadyToReview (req: AuthRequest, res: Res
     }
 
     if (portalUser == null || merchant.created_by.id !== portalUser.id) {
-      logger.error('Only the Hub User who submitted the Draft Merchant can mark it as Review')
+      logger.error('Only the DFSP User who submitted the Draft Merchant can mark it as Review')
       return res.status(401).send({
-        message: 'Only the Hub User who submitted the Draft Merchant can mark it as Review'
+        message: 'Only the DFSP User who submitted the Draft Merchant can mark it as Review'
       })
     }
 

@@ -37,7 +37,6 @@ import { type AuthRequest } from 'src/types/express'
  *                 data:
  *                   type: object
  */
-// TODO: Protect the route
 export async function getMerchantById (req: AuthRequest, res: Response) {
   const portalUser = req.user
   if (portalUser == null) {

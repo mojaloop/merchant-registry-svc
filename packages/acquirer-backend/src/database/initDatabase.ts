@@ -40,7 +40,11 @@ export const initializeDatabase = async (): Promise<void> => {
       await seedDefaultRoles()
       await seedDefaultUsers()
 
-      await seedCountriesSubdivisionsDistricts()
+      if (process.env.NODE_ENV !== 'test') {
+        // only seed countries, subdivisions, districts in non-test environment
+        // because it takes a long time to seed
+        await seedCountriesSubdivisionsDistricts()
+      }
     })
     .catch((error) => {
       throw error

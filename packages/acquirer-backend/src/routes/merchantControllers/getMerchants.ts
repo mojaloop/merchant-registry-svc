@@ -100,7 +100,6 @@ import { type AuthRequest } from '../../types/express'
  *                   items:
  *                     type: object
  */
-// TODO: Protect the route
 export async function getMerchants (req: AuthRequest, res: Response) {
   const portalUser = req.user
   if (portalUser == null) {

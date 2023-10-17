@@ -1,4 +1,4 @@
-import amqplib, { type Channel, type Message } from 'amqplib'
+import amqplib, { type Connection, type Channel, type Message } from 'amqplib'
 import 'dotenv/config'
 import { AuditActionType, AuditTrasactionStatus, MerchantRegistrationStatus } from 'shared-lib'
 import logger from '../services/logger'
@@ -27,13 +27,14 @@ const RETRY_INTERVAL_MS = 5000 // in miliseconds
 
 const connStr = `amqp://${RABBITMQ_USERNAME}:${RABBITMQ_PASSWORD}@${RABBITMQ_HOST}:${RABBITMQ_PORT}`
 let channel: Channel
+let conn: Connection
 
 // Initialize a map to store callbacks for each correlation ID
 const correlationCallbacks = new Map<string, (msg: Message) => Promise<void>>()
 
 const connectToRabbitMQ = async (delay: number): Promise<void> => {
   try {
-    const conn = await amqplib.connect(connStr)
+    conn = await amqplib.connect(connStr)
     channel = await conn.createChannel()
 
     const result = await channel.assertQueue(RABBITMQ_QUEUE, { durable: true })
@@ -131,6 +132,10 @@ export async function publishToQueue (data: any): Promise<boolean> {
   )
 
   return result
+}
+
+export async function disconnectMessageQueue (): Promise<void> {
+  await conn.close()
 }
 
 async function processReplyMessage (msg: Message): Promise<void> {

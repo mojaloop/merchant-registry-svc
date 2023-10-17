@@ -65,10 +65,23 @@ export async function createClientAccessKey (req: AuthRequest, res: Response) {
     return res.status(400).send({ message: 'DFSP ID not provided' })
   }
 
+  if (!Number.isInteger(Number(req.params.id))) {
+    await audit(
+      AuditActionType.UPDATE,
+      AuditTrasactionStatus.SUCCESS,
+      'createClientAccessKey',
+      'DFSP ID is not a number.',
+      'DFSPEntity',
+      {}, {}, req.user
+    )
+    return res.status(400).send({ message: 'DFSP ID is not a number' })
+  }
+
   try {
     const clientSecretKey = generateApiKey()
     const DFSPRepository = AppDataSource.manager.getRepository(DFSPEntity)
-    const dfsp = await DFSPRepository.findOneById(req.params.id)
+    const id = Number(req.params.id)
+    const dfsp = await DFSPRepository.findOneBy({ id })
     if (dfsp == null) {
       await audit(
         AuditActionType.UPDATE,
@@ -78,7 +91,7 @@ export async function createClientAccessKey (req: AuthRequest, res: Response) {
         'DFSPEntity',
         {}, {}, req.user
       )
-      return res.status(400).send({ message: 'DFSP not found' })
+      return res.status(404).send({ message: 'DFSP not found' })
     }
 
     dfsp.client_secret = clientSecretKey

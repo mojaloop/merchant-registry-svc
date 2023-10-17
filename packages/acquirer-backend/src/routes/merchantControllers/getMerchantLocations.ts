@@ -45,7 +45,6 @@ import { type AuthRequest } from 'src/types/express'
  *                   items:
  *                     type: object
  */
-// TODO: Protect the route
 export async function getMerchantLocations (req: AuthRequest, res: Response) {
   const portalUser = req.user
   if (portalUser == null) {
