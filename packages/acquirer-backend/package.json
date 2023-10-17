@@ -7,7 +7,7 @@
     "start": "nodemon --watch 'src/**/*.ts' --watch '.env*' --exec 'ts-node' src/index.ts",
     "build": "ts-node",
     "lint": "eslint . --ext .js,.ts",
-    "test": "jest",
+    "test": "jest --detectOpenHandles --forceExit",
     "type:check": "tsc --noEmit"
   },
   "keywords": [],

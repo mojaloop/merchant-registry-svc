@@ -82,7 +82,7 @@ export async function postUserLogin (req: Request, res: Response) {
   } catch (err) {
     if (err instanceof z.ZodError) {
       logger.debug('Validation error: %o', err)
-      return res.status(422).send({ message: 'Invalid credentials' })
+      return res.status(422).send({ message: 'Validation error' })
     }
   }
 
@@ -127,7 +127,7 @@ export async function postUserLogin (req: Request, res: Response) {
       {}, {}, null
     )
 
-    res.json({ success: true, mesaage: 'Login successful', token })
+    res.json({ success: true, message: 'Login successful', token })
   } catch (error: any) {
     await audit(
       AuditActionType.ACCESS,
