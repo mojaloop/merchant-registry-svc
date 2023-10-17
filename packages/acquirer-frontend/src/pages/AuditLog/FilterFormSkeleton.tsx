@@ -1,4 +1,6 @@
-import { Box, Flex, HStack, Skeleton, VStack } from '@chakra-ui/react'
+import { Box, Flex, HStack, VStack } from '@chakra-ui/react'
+
+import { Skeleton } from '@/components/ui'
 
 const FilterFormSkeleton = () => {
   return (

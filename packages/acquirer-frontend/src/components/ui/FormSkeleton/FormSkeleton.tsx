@@ -1,4 +1,6 @@
-import { Box, SimpleGrid, Skeleton, VStack } from '@chakra-ui/react'
+import { Box, SimpleGrid, VStack } from '@chakra-ui/react'
+
+import { Skeleton } from '@/components/ui'
 
 const FormSkeleton = () => {
   return (

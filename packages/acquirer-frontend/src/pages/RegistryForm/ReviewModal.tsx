@@ -8,11 +8,10 @@ import {
   ModalOverlay,
   Heading,
   HStack,
-  Skeleton,
 } from '@chakra-ui/react'
 
 import { useChangeStatusToReview, useDraft } from '@/api/hooks/forms'
-import { CustomButton } from '@/components/ui'
+import { CustomButton, Skeleton } from '@/components/ui'
 import { MerchantInfo } from '@/components/ui/MerchantInformationModal'
 
 interface ReviewModalProps {
