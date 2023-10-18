@@ -15,7 +15,6 @@ import {
   Link,
   Box,
   Text,
-  Skeleton,
   HStack,
   useDisclosure,
 } from '@chakra-ui/react'
@@ -23,7 +22,7 @@ import {
 import type { MerchantDetails } from '@/types/merchantDetails'
 import { useMerchant } from '@/api/hooks/merchants'
 import { formatLatitudeLongitude } from '@/utils'
-import { CustomButton } from '@/components/ui'
+import { CustomButton, Skeleton } from '@/components/ui'
 import QRCodeModal from './QRCodeModal'
 import { DetailsItem } from '.'
 

@@ -1,4 +1,6 @@
-import { Skeleton, type StackProps, VStack } from '@chakra-ui/react'
+import { type StackProps, VStack } from '@chakra-ui/react'
+
+import { Skeleton } from '@/components/ui'
 
 interface TableSkeletonProps extends StackProps {
   breakpoint: 'sm' | 'md' | 'lg' | 'xl' | '2xl'

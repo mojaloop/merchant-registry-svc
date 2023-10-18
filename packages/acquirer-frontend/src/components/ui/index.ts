@@ -7,6 +7,7 @@ import TableSkeleton from './TableSkeleton/TableSkeleton'
 import FormSkeleton from './FormSkeleton/FormSkeleton'
 import FloatingSpinner from './FloatingSpinner/FloatingSpinner'
 import EmptyState from './EmptyState/EmptyState'
+import Skeleton from './Skeleton/Skeleton'
 
 export {
   AlertDialog,
@@ -18,4 +19,5 @@ export {
   FormSkeleton,
   FloatingSpinner,
   EmptyState,
+  Skeleton,
 }

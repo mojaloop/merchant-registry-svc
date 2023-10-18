@@ -6,3 +6,9 @@
 .chakra-checkbox {
   font-size: 0.9375rem !important;
 }
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
