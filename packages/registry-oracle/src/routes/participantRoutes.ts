@@ -146,6 +146,7 @@ router.get('/participants/:type/:id', async (req: Request, res: Response) => {
  *                 type: string
  *                 description: Alias value
  *                 required: false
+ *                 example: "000001"
  *     responses:
  *       200:
  *         description: Successfully created participant
@@ -210,15 +211,14 @@ router.post('/participants', authenticateAPIAccess, async (req: EndpointAuthRequ
     // find head pointer
     headPointerAliasValue = await registryRepository.findOne({
       where: { is_incremental_head: true },
-      select: ["alias_value"]
     });
 
     if(headPointerAliasValue) {
       // If head pointer exists, just increment it
-      paddedAliasValue = findIncrementAliasValue(headPointerAliasValue.alias_value);
+      paddedAliasValue = await findIncrementAliasValue(headPointerAliasValue.alias_value);
     } else {
         // If no record exists, start from 1
-        paddedAliasValue = findIncrementAliasValue('0');
+        paddedAliasValue = await findIncrementAliasValue('0');
     }
 
   }else{
@@ -270,24 +270,51 @@ router.post('/participants', authenticateAPIAccess, async (req: EndpointAuthRequ
     if(headPointerAliasValue) {
       // is_incremental_head false for the old head pointer
       headPointerAliasValue.is_incremental_head = false;
-      await AppDataSource.manager.save(headPointerAliasValue);
+      try{
+        await AppDataSource.manager.save(headPointerAliasValue);
+      }catch(err){
+        logger.error('Error saving headPointerAliasValue: %o', err)
+        await audit(
+          AuditActionType.ADD,
+          AuditTrasactionStatus.FAILURE,
+          'postParticipants',
+          'POST Participants: Error saving headPointerAliasValue',
+          'RegistryEntity',
+          {}, {err}
+        )
+        return res.status(400).send(prepareError('Error saving headPointerAliasValue'))
+      }
     }
       
     newRegistryRecord.is_incremental_head = true;
   }
 
-  await AppDataSource.manager.save(newRegistryRecord)
 
-  await audit(
-    AuditActionType.ADD,
-    AuditTrasactionStatus.SUCCESS,
-    'postParticipants',
-    'POST Participants: Participant created',
-    'RegistryEntity',
-    {}, {fspId: endpoint.fspId, currency}
-  )
+  try{
+    await AppDataSource.manager.save(newRegistryRecord)
+    await audit(
+      AuditActionType.ADD,
+      AuditTrasactionStatus.SUCCESS,
+      'postParticipants',
+      'POST Participants: Participant created',
+      'RegistryEntity',
+      {}, {fspId: endpoint.fspId, currency}
+    )
 
-  res.status(200).send({fspId: endpoint.fspId, currency, alias_value: paddedAliasValue})
+    return res.status(200).send({fspId: endpoint.fspId, currency, alias_value: paddedAliasValue})
+  }catch(err){
+    logger.error('Error saving new record: %o', err)
+    await audit(
+      AuditActionType.ADD,
+      AuditTrasactionStatus.FAILURE,
+      'postParticipants',
+      'POST Participants: Error saving new record',
+      'RegistryEntity',
+      {}, {err}
+    )
+    return res.status(400).send(prepareError('Error saving new record'))
+  }
+
 })
 
 export default router
