@@ -45,17 +45,18 @@ export function testPutMerchantStatusReadyToReview (app: Application): void {
       if (user.dfsp_name !== makerDFSPName) {
         differentDFSPUserEmail = user.email
         differentDFSPUserPwd = user.password
+
+        const res3 = await request(app)
+          .post('/api/v1/users/login')
+          .send({
+            email: differentDFSPUserEmail,
+            password: differentDFSPUserPwd
+          })
+        differentDFSPUserToken = res3.body.token
+
         break
       }
     }
-
-    const res3 = await request(app)
-      .post('/api/v1/users/login')
-      .send({
-        email: differentDFSPUserEmail,
-        password: differentDFSPUserPwd
-      })
-    differentDFSPUserToken = res3.body.token
 
     const res4 = await request(app)
       .post('/api/v1/merchants/draft')
@@ -117,7 +118,6 @@ export function testPutMerchantStatusReadyToReview (app: Application): void {
     expect(res.body.message).toEqual('Only the DFSP User who submitted the Draft Merchant can mark it as Review')
   })
 
-  // res.status(200).send({ message: 'Status Updated to Review', data: merchantData })
   it('should respond with 200 with "Status Updated to Review" message when everything is valid.', async () => {
     const res = await request(app)
       .put(`/api/v1/merchants/${draftedMerchantId}/ready-to-review`)
