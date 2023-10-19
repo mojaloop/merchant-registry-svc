@@ -124,7 +124,7 @@ export async function postUserLogin (req: Request, res: Response) {
       'postUserLogin',
       'User login successful',
       'PortalUserEntity',
-      {}, {}, null
+      {}, {}, user
     )
 
     res.json({ success: true, message: 'Login successful', token })
