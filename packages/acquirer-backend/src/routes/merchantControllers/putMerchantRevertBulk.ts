@@ -69,7 +69,21 @@ export async function putBulkRevert (req: AuthRequest, res: Response) {
   const merchantRepository = AppDataSource.getRepository(MerchantEntity)
 
   // Validate IDs
-  if (!Array.isArray(ids)) throw new Error('IDs must be an array of numbers.')
+  logger.debug(`putBulkRevert ids: ${JSON.stringify(ids)}`)
+
+  // Validate IDs
+  if (!Array.isArray(ids) || ids.length === 0) {
+    await audit(
+      AuditActionType.UPDATE,
+      AuditTrasactionStatus.FAILURE,
+      'putBulkRevert',
+      'IDs must be an array of numbers',
+      'MerchantEntity',
+      {}, {}, portalUser
+    )
+    return res.status(422).send({ message: 'IDs must be an array of numbers.' })
+  }
+
   for (const id of ids) {
     if (isNaN(Number(id)) || Number(id) < 1) {
       await audit(
