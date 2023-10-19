@@ -138,7 +138,7 @@ paths:
     post:
       tags:
         - Participants
-      summary: Create a new participant
+      summary: Create new participants (Batch Operation)
       parameters:
         - name: x-api-key
           in: header
@@ -151,31 +151,48 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                currency:
-                  type: string
-                  description: Currency code
-                  example: USD
-                alias_value:
-                  type: string
-                  description: Alias value
-                  required: false
-                  example: '000001'
+              type: array
+              items:
+                type: object
+                properties:
+                  merchant_id:
+                    type: string
+                    description: DFSP's Merchant Identifier. Will not save in Oracle DB.
+                    example: '10002'
+                  currency:
+                    type: string
+                    description: Currency code
+                    example: USD
+                  alias_value:
+                    type: string
+                    description: Alias value
+                    required: false
+                    example: '000001'
+              example:
+                - merchant_id: '10002'
+                  currency: USD
+                  alias_value: '000001'
+                - merchant_id: '10003'
+                  currency: EUR
+                  alias_value: '000002'
+                - merchant_id: '10004'
+                  currency: JPY
       responses:
         '200':
-          description: Successfully created participant
+          description: Successfully created participants
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  fspId:
-                    type: string
-                  currency:
-                    type: string
-                  alias_value:
-                    type: string
+                type: array
+                items:
+                  type: object
+                  properties:
+                    merchant_id:
+                      type: string
+                    currency:
+                      type: string
+                    alias_value:
+                      type: string
         '400':
           description: Invalid input, object invalid, or authentication error
           content:
