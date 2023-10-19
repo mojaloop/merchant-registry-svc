@@ -53,8 +53,21 @@ export async function putBulkWaitingAliasGeneration (req: AuthRequest, res: Resp
   const ids: number[] = req.body.ids
   const merchantRepository = AppDataSource.getRepository(MerchantEntity)
 
+  logger.debug(`putBulkApprove ids: ${JSON.stringify(ids)}`)
+
   // Validate IDs
-  if (!Array.isArray(ids)) throw new Error('IDs must be an array of numbers.')
+  if (!Array.isArray(ids) || ids.length === 0) {
+    await audit(
+      AuditActionType.UPDATE,
+      AuditTrasactionStatus.FAILURE,
+      'putBulkApprove',
+      'IDs must be an array of numbers',
+      'MerchantEntity',
+      {}, {}, portalUser
+    )
+    return res.status(422).send({ message: 'IDs must be an array of numbers.' })
+  }
+
   for (const id of ids) {
     if (isNaN(Number(id)) || Number(id) < 1) {
       await audit(
