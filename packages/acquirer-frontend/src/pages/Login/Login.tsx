@@ -86,7 +86,12 @@ const Login = () => {
             Log in to your account
           </Heading>
 
-          <Stack as='form' onSubmit={handleSubmit(onSubmit)} w='full'>
+          <Stack
+            as='form'
+            onSubmit={handleSubmit(onSubmit)}
+            w='full'
+            data-testid='login-form'
+          >
             <FormInput
               name='email'
               register={register}

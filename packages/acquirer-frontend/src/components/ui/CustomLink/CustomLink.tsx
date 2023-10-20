@@ -68,6 +68,7 @@ const CustomLink = forwardRef<HTMLAnchorElement, CustomLinkProps>(
         whiteSpace='nowrap'
         userSelect='none'
         transition='all 0.3s ease-out'
+        aria-disabled={isDisabled}
         {...variants[colorVariant]}
         {...disabledProps}
         {...props}
