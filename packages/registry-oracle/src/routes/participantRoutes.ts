@@ -4,13 +4,10 @@ import {AppDataSource} from '../database/dataSource'
 import {RegistryEntity} from '../entity/RegistryEntity'
 import {authenticateAPIAccess} from '../middleware/authenticate'
 import logger from '../services/logger'
-import {readEnv} from '../setup/readEnv'
 import {EndpointAuthRequest} from '../types/express'
 import {audit} from '../utils/audit'
 import {prepareError} from '../utils/error'
 import {findIncrementAliasValue} from '../utils/utils'
-
-const ALIAS_CHECKOUT_MAX_DIGITS = readEnv('ALIAS_CHECKOUT_MAX_DIGITS', 10) as number;
 
 const router = express.Router()
 
@@ -123,7 +120,7 @@ router.get('/participants/:type/:id', async (req: Request, res: Response) => {
  *   post:
  *     tags:
  *       - Participants
- *     summary: Create a new participant
+ *     summary: Create new participants (Batch Operation)
  *     parameters:
  *       - name: x-api-key
  *         in: header
@@ -136,31 +133,49 @@ router.get('/participants/:type/:id', async (req: Request, res: Response) => {
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             properties:
- *               currency:
- *                 type: string
- *                 description: Currency code
- *                 example: USD
- *               alias_value:
- *                 type: string
- *                 description: Alias value
- *                 required: false
- *                 example: "000001"
+ *             type: array
+ *             items:
+ *               type: object
+ *               properties:
+ *                 merchant_id:
+ *                   type: string
+ *                   description: DFSP's Merchant Identifier. Will not save in Oracle DB.
+ *                   example: "10002"
+ *                 currency:
+ *                   type: string
+ *                   description: Currency code
+ *                   example: "USD"
+ *                 alias_value:
+ *                   type: string
+ *                   description: Alias value
+ *                   required: false
+ *                   example: "000001"
+ *             example:
+ *               - merchant_id: "10002"
+ *                 currency: "USD"
+ *                 alias_value: "000001"
+ *               - merchant_id: "10003"
+ *                 currency: "EUR"
+ *                 alias_value: "000002"
+ *               - merchant_id: "10004"
+ *                 currency: "JPY"
+ *                 
  *     responses:
  *       200:
- *         description: Successfully created participant
+ *         description: Successfully created participants
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 fspId:
- *                   type: string
- *                 currency:
- *                   type: string
- *                 alias_value:
- *                   type: string
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   merchant_id:
+ *                     type: string
+ *                   currency:
+ *                     type: string
+ *                   alias_value:
+ *                     type: string
  *       400:
  *         description: Invalid input, object invalid, or authentication error
  *         content:
@@ -187,134 +202,201 @@ router.post('/participants', authenticateAPIAccess, async (req: EndpointAuthRequ
     return res.status(400).send(prepareError('Authentication Error'))
   }
 
-  const { currency, alias_value } = req.body
+  const participants = req.body;
 
-  if(currency == undefined || currency == null) {
-    logger.error('Invalid Currency')
-    await audit(
-      AuditActionType.ADD,
-      AuditTrasactionStatus.FAILURE,
-      'postParticipants',
-      'POST Participants: Invalid Currency',
-      'RegistryEntity',
-      {}, {currency}
-    )
-    return res.status(400).send(prepareError('Invalid Currency'))
+  if(!Array.isArray(participants)) {
+    return res.status(400).send(prepareError('Invalid request body, array expected'));
   }
 
   const registryRepository = AppDataSource.getRepository(RegistryEntity)
 
-  let paddedAliasValue = alias_value;
-  let headPointerAliasValue: RegistryEntity | null = null;
+  const results = [];
 
-  if(alias_value == undefined || alias_value == null) {
-    // find head pointer
-    headPointerAliasValue = await registryRepository.findOne({
-      where: { is_incremental_head: true },
-    });
-
-    if(headPointerAliasValue) {
-      // If head pointer exists, just increment it
-      paddedAliasValue = await findIncrementAliasValue(headPointerAliasValue.alias_value);
-    } else {
-        // If no record exists, start from 1
-        paddedAliasValue = await findIncrementAliasValue('0');
-    }
-
-  }else{
-    // Check if the alias_value already exists
-    const existingAliasEntity = await registryRepository.findOne({
-      where: { alias_value: alias_value },
-
-      select: ["alias_value"]
-    });
-
-    if(existingAliasEntity) {
-      logger.error('Alias Value already exists')
-      await audit(
-        AuditActionType.ADD,
-        AuditTrasactionStatus.FAILURE,
-        'postParticipants',
-        'POST Participants: Alias Value already exists',
-        'RegistryEntity',
-        {}, {alias_value}
-      )
-      return res.status(400).send(prepareError('Alias Value already exists'))
-    }
-
-    // Check if the alias_value is a number
-    if(isNaN(alias_value)) {
-      logger.error('Invalid Alias Value')
-      await audit(
-        AuditActionType.ADD,
-        AuditTrasactionStatus.FAILURE,
-        'postParticipants',
-        'POST Participants: Invalid Alias Value - Alias Value should be a number',
-        'RegistryEntity',
-        {}, {alias_value}
-      )
-      return res.status(400).send(prepareError('Invalid Alias Value: Alias Value should be a number'))
-    }
-  }
-
-  const newRegistryRecord = new RegistryEntity()
-  newRegistryRecord.fspId = endpoint.fspId // TODO: Should be the FSP ID of registered API Accessed DFSP
-  newRegistryRecord.dfsp_name = endpoint.dfsp_name
-  newRegistryRecord.currency = currency
-  newRegistryRecord.alias_value = paddedAliasValue
-
-  // If alias_value is not provided by external DFSP, Mark the new record as head pointer
-  if(alias_value == undefined || alias_value == null) {
-    // Update the head pointer
+  for (const participant of participants) {
+    const {merchant_id, currency, alias_value } = participant;
     
-    if(headPointerAliasValue) {
-      // is_incremental_head false for the old head pointer
-      headPointerAliasValue.is_incremental_head = false;
-      try{
-        await AppDataSource.manager.save(headPointerAliasValue);
-      }catch(err){
-        logger.error('Error saving headPointerAliasValue: %o', err)
+    if(merchant_id == undefined || merchant_id == null) {
+      logger.error('Invalid Merchant ID')
+      await audit(
+        AuditActionType.ADD,
+        AuditTrasactionStatus.FAILURE,
+        'postParticipants',
+        'POST Participants: Merchant ID is required',
+        'RegistryEntity',
+        {}, {merchant_id}
+      )
+      results.push({
+        merchant_id: null,
+        success: false,
+        message: 'Merchant ID is required',
+        alias_value: null
+      })
+      continue
+    }
+
+    if(currency == undefined || currency == null) {
+      logger.error('Currency is required')
+      await audit(
+        AuditActionType.ADD,
+        AuditTrasactionStatus.FAILURE,
+        'postParticipants',
+        'POST Participants: Currency is required',
+        'RegistryEntity',
+        {}, {currency}
+      )
+      results.push({
+        merchant_id: participant.merchant_id,
+        success: false,
+        message: 'Currency is required',
+        alias_value: null
+      })
+      continue
+    }
+
+
+    let paddedAliasValue = alias_value;
+    let headPointerAliasValue: RegistryEntity | null = null;
+
+    if(alias_value == undefined || alias_value == null) {
+      // find head pointer
+      headPointerAliasValue = await registryRepository.findOne({
+        where: { is_incremental_head: true },
+      });
+
+      if(headPointerAliasValue) {
+        // If head pointer exists, just increment it
+        paddedAliasValue = await findIncrementAliasValue(headPointerAliasValue.alias_value);
+      } else {
+          // If no record exists, start from 1
+          paddedAliasValue = await findIncrementAliasValue('0');
+      }
+
+    }else{
+      // Check if the alias_value already exists
+      const existingAliasEntity = await registryRepository.findOne({
+        where: { alias_value: alias_value },
+
+        select: ["alias_value"]
+      });
+
+      if(existingAliasEntity) {
+        logger.error('Alias Value already exists')
         await audit(
           AuditActionType.ADD,
           AuditTrasactionStatus.FAILURE,
           'postParticipants',
-          'POST Participants: Error saving headPointerAliasValue',
+          'POST Participants: Alias Value already exists',
           'RegistryEntity',
-          {}, {err}
+          {}, {alias_value}
         )
-        return res.status(400).send(prepareError('Error saving headPointerAliasValue'))
+        results.push({
+          merchant_id: participant.merchant_id,
+          success: false,
+          message: 'Alias Value already exists',
+          alias_value: null
+        })
+        continue
+      }
+
+      // Check if the alias_value is a number
+      if(isNaN(alias_value)) {
+        logger.error('Invalid Alias Value')
+        await audit(
+          AuditActionType.ADD,
+          AuditTrasactionStatus.FAILURE,
+          'postParticipants',
+          'POST Participants: Invalid Alias Value - Alias Value should be a number',
+          'RegistryEntity',
+          {}, {alias_value}
+        )
+        results.push({
+          merchant_id: participant.merchant_id,
+          success: false,
+          message: 'Invalid Alias Value - Alias Value should be a number',
+          alias_value: null
+        })
+        continue
       }
     }
+
+    const newRegistryRecord = new RegistryEntity()
+    newRegistryRecord.fspId = endpoint.fspId // TODO: Should be the FSP ID of registered API Accessed DFSP
+    newRegistryRecord.dfsp_name = endpoint.dfsp_name
+    newRegistryRecord.currency = currency
+    newRegistryRecord.alias_value = paddedAliasValue
+
+    // If alias_value is not provided by external DFSP, Mark the new record as head pointer
+    if(alias_value == undefined || alias_value == null) {
+      // Update the head pointer
       
-    newRegistryRecord.is_incremental_head = true;
-  }
+      if(headPointerAliasValue) {
+        // is_incremental_head false for the old head pointer
+        headPointerAliasValue.is_incremental_head = false;
+        try{
+          await AppDataSource.manager.save(headPointerAliasValue);
+        }catch(err){
+          logger.error('Error saving headPointerAliasValue: %o', err)
+          await audit(
+            AuditActionType.ADD,
+            AuditTrasactionStatus.FAILURE,
+            'postParticipants',
+            'POST Participants: Error Updating Incremental Head Pointer',
+            'RegistryEntity',
+            {}, {err}
+          )
+          results.push({
+            merchant_id: participant.merchant_id,
+            success: false,
+            message: 'Error Updating Incremental Head Pointer',
+            alias_value: null
+          })
+          continue
+        }
+      }
+        
+      newRegistryRecord.is_incremental_head = true;
+    }
 
 
-  try{
-    await AppDataSource.manager.save(newRegistryRecord)
-    await audit(
-      AuditActionType.ADD,
-      AuditTrasactionStatus.SUCCESS,
-      'postParticipants',
-      'POST Participants: Participant created',
-      'RegistryEntity',
-      {}, {fspId: endpoint.fspId, currency}
-    )
+    try{
+      await AppDataSource.manager.save(newRegistryRecord)
+      await audit(
+        AuditActionType.ADD,
+        AuditTrasactionStatus.SUCCESS,
+        'postParticipants',
+        'POST Participants: Participant created',
+        'RegistryEntity',
+        {}, {fspId: endpoint.fspId, currency}
+      )
+      results.push({
+        merchant_id: participant.merchant_id,
+        success: true,
+        message: 'Participant created',
+        alias_value: paddedAliasValue
+      })
+      continue
+    }catch(err){
+      logger.error('Error saving new record: %o', err)
+      await audit(
+        AuditActionType.ADD,
+        AuditTrasactionStatus.FAILURE,
+        'postParticipants',
+        'POST Participants: Error saving new record',
+        'RegistryEntity',
+        {}, {err}
+      )
+      results.push({
+        merchant_id: participant.merchant_id,
+        success: false,
+        message: 'Error saving new record',
+        alias_value: null
+      })
+      continue
+    }
 
-    return res.status(200).send({fspId: endpoint.fspId, currency, alias_value: paddedAliasValue})
-  }catch(err){
-    logger.error('Error saving new record: %o', err)
-    await audit(
-      AuditActionType.ADD,
-      AuditTrasactionStatus.FAILURE,
-      'postParticipants',
-      'POST Participants: Error saving new record',
-      'RegistryEntity',
-      {}, {err}
-    )
-    return res.status(400).send(prepareError('Error saving new record'))
-  }
+  } // end of for loop for participants
 
+  res.send(results)
 })
 
 export default router

@@ -17,7 +17,10 @@ import { testPostMerchantDraft } from './testPostMerchantDraft'
 import { testPostDFSP } from './testPostDFSP'
 import { testPostExternalDFSPClientAcess } from './testPostExternalDFSPClientAccess'
 import { testGetDFSPs } from './testGetDFSP'
-import { testPutMerchantStatusReadyToReview } from './testPutMerchantStatus'
+import { testPutMerchantStatusReadyToReview } from './testPutMerchantReadyStatus'
+import { testPutMerchantStatusApprove } from './testPutMerchantApproveStatus'
+import { testPutMerchantRejectStatus } from './testPutMerchantRejectStatus'
+import { testPutMerchantRevertStatus } from './testPutMerchantRevertStatus'
 
 logger.silent = true
 
@@ -48,6 +51,18 @@ describe('E2E Tests', () => {
 
   describe('PUT Merchant Status ReadyToReview API Tests', () => {
     testPutMerchantStatusReadyToReview(app)
+  })
+
+  describe('PUT Merchant Status Approve API Tests', () => {
+    testPutMerchantStatusApprove(app)
+  })
+
+  describe('PUT Merchant Status Reject API Tests', () => {
+    testPutMerchantRejectStatus(app)
+  })
+
+  describe('PUT Merchant Status Revert API Tests', () => {
+    testPutMerchantRevertStatus(app)
   })
 
   describe('POST Create DFSP API Tests', () => {

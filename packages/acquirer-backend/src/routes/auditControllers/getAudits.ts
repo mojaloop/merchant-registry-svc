@@ -2,7 +2,7 @@
 import { type Response } from 'express'
 import { AppDataSource } from '../../database/dataSource'
 import logger from '../../services/logger'
-import { type AuditTrasactionStatus, type AuditActionType } from 'shared-lib'
+import { type AuditTrasactionStatus, type AuditActionType, PortalUserType } from 'shared-lib'
 import { AuditEntity } from '../../entity/AuditEntity'
 import { type AuthRequest } from 'src/types/express'
 import { PortalUserEntity } from '../../entity/PortalUserEntity'
@@ -138,6 +138,15 @@ export async function getAudits (req: AuthRequest, res: Response) {
         'portal_user.id'
       ])
       .where(whereClause)
+
+    if (portalUser.user_type === PortalUserType.DFSP) {
+      queryBuilder
+        .leftJoin('audit.dfsp', 'dfsp')
+        .addSelect(['dfsp.id'])
+        .andWhere('dfsp.id = :dfspId', { dfspId: portalUser.dfsp.id })
+    }
+
+    queryBuilder
       .orderBy('audit.created_at', 'DESC') // Sort by latest
 
     const totalCount = await queryBuilder.getCount()
