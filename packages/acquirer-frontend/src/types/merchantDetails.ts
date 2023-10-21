@@ -15,8 +15,8 @@ interface CheckoutCounter {
   alias_value: string
   merchant_registry_id: number
   qr_code_link: string
-  created_at: Date
-  updated_at: Date
+  created_at: string
+  updated_at: string
 }
 
 type BusinessOwner = {

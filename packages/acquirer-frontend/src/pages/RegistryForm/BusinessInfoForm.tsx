@@ -191,7 +191,12 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
     <>
       {draft.isFetching && <FloatingSpinner />}
 
-      <Stack as='form' onSubmit={handleSubmit(onSubmit)} noValidate>
+      <Stack
+        as='form'
+        onSubmit={handleSubmit(onSubmit)}
+        noValidate
+        data-testid='business-info-form'
+      >
         <GridShell justifyItems='center'>
           <FormInput
             isRequired
