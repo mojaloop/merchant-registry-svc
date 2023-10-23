@@ -1,4 +1,4 @@
-import { type Request, type Response } from 'express'
+import { type Response } from 'express'
 import logger from '../../services/logger'
 import { audit } from '../../utils/audit'
 import jwt from 'jsonwebtoken'
@@ -15,6 +15,7 @@ import {
 import { EmailVerificationTokenEntity } from '../../entity/EmailVerificationToken'
 import { sendVerificationEmail } from '../../utils/sendGrid'
 import { DFSPEntity } from '../../entity/DFSPEntity'
+import { type AuthRequest } from '../../types/express'
 
 const AddUserSchema = z.object({
   name: z.string(),
@@ -61,37 +62,14 @@ const JWT_SECRET = process.env.JWT_SECRET ?? ''
  *                 nullable: true
  *     responses:
  *       200:
- *         description: Login successful
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: true
- *                 message:
- *                   type: string
- *                   example: "Login successful"
+ *         description: User created. And Verification Email Sent
  *       422:
  *         description: Validation error
  *       400:
  *         description: Invalid credentials
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: false
- *                 message:
- *                   type: string
- *                   example: "Invalid credentials"
- *
  */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
-export async function addUser (req: Request, res: Response) {
+export async function addUser (req: AuthRequest, res: Response) {
   const portalUser = req.user
   if (portalUser == null) {
     return res.status(401).send({ message: 'Unauthorized' })

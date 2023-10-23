@@ -8,7 +8,7 @@ import { PersonEntity } from './PersonEntity'
 @Entity('business_owners')
 export class BusinessOwnerEntity extends PersonEntity {
   @Column({
-    type: 'enum',
+    type: 'simple-enum',
     enum: BusinessOwnerIDType,
     nullable: true,
     default: BusinessOwnerIDType.NATIONAL_ID

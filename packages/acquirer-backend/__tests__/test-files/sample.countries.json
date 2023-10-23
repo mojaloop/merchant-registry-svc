@@ -1,0 +1,86 @@
+[
+    {
+      "name": "Some Country",
+      "country_subdivisions": [
+        {
+          "name": "Some State",
+          "districts": [
+            "Some District",
+            "Some Other District"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Some Country With No Districts",
+      "country_subdivisions": [
+        {
+          "name": "Some State",
+          "districts": [
+          ]
+        }
+      ]
+    },
+    {
+        "name": "Afghanistan",
+        "country_subdivisions": [
+            {
+                "name": "Badakhshan",
+                "districts": [
+                    "Baharak",
+                    "Darwaz",
+                    "Fayz abad",
+                    "Ishkashim",
+                    "Jurm",
+                    "Khwahan",
+                    "Kishim",
+                    "Kuran Wa Munjan",
+                    "Ragh",
+                    "Shahri Buzurg",
+                    "Shighnan",
+                    "Wakhan",
+                    "Zebak"
+                ]
+            },
+            {
+                "name": "Hilmand",
+                "districts": [
+                    "Bughran",
+                    "Disho",
+                    "Garmser",
+                    "Kajaki",
+                    "Lashkargah",
+                    "Musa Qala",
+                    "Nad Ali",
+                    "Nahri Sarraj",
+                    "Naw Zad",
+                    "Nawa-i-Barak Zayi",
+                    "Reg",
+                    "Sangin",
+                    "Washer"
+                ]
+            },
+            {
+                "name": "Hirat",
+                "districts": [
+                    "Adraskan",
+                    "Chishti Sharif",
+                    "Farsi",
+                    "Ghoryan",
+                    "Gulran",
+                    "Guzara",
+                    "Hirat City",
+                    "Injil",
+                    "Karukh",
+                    "Kuhsan",
+                    "Kushki Kuhna",
+                    "Kushk",
+                    "Obe",
+                    "Pashtun Zarghun",
+                    "Shindand",
+                    "Zinda Jan"
+                ]
+            }
+        ]
+    }
+]

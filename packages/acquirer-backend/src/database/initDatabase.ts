@@ -22,6 +22,7 @@ import { DFSPEntity } from '../entity/DFSPEntity'
 import { CountryEntity } from '../entity/CountryEntity'
 import { CountrySubdivisionEntity } from '../entity/CountrySubdivisionEntity'
 import { DistrictEntity } from '../entity/DistrictEntity'
+import { type DataSource } from 'typeorm'
 
 export const initializeDatabase = async (): Promise<void> => {
   logger.info('Connecting MySQL database...')
@@ -30,20 +31,21 @@ export const initializeDatabase = async (): Promise<void> => {
     .then(async () => {
       logger.info('MySQL Database Connection success.')
 
-      await seedCategoryCode()
+      await seedCategoryCode(AppDataSource)
 
-      await seedCurrency()
+      await seedCurrency(AppDataSource)
 
-      await seedDFSPs()
+      await seedDFSPs(AppDataSource)
 
-      await seedDefaultPermissions()
-      await seedDefaultRoles()
-      await seedDefaultUsers()
+      await seedDefaultPermissions(AppDataSource)
+      await seedDefaultRoles(AppDataSource)
+      await seedDefaultUsers(AppDataSource)
 
       if (process.env.NODE_ENV !== 'test') {
         // only seed countries, subdivisions, districts in non-test environment
         // because it takes a long time to seed
-        await seedCountriesSubdivisionsDistricts()
+        const filePath = path.join(__dirname, 'countries.json')
+        await seedCountriesSubdivisionsDistricts(AppDataSource, filePath)
       }
     })
     .catch((error) => {
@@ -51,7 +53,7 @@ export const initializeDatabase = async (): Promise<void> => {
     })
 }
 
-async function seedCategoryCode (): Promise<void> {
+export async function seedCategoryCode (AppDataSource: DataSource): Promise<void> {
   // skip if already seeded by checking size
   // TODO: Is there a better way?
   logger.info('Seeding Merchant Category Codes...')
@@ -72,7 +74,7 @@ async function seedCategoryCode (): Promise<void> {
   logger.info('Seeding Merchant Category Codes... Done')
 }
 
-async function seedCurrency (): Promise<void> {
+export async function seedCurrency (AppDataSource: DataSource): Promise<void> {
   // skip if already seeded by checking size
   // TODO: Is there a better way?
   logger.info('Seeding Currency Codes...')
@@ -91,7 +93,7 @@ async function seedCurrency (): Promise<void> {
   logger.info('Seeding Currency Codes... Done')
 }
 
-async function seedDFSPs (): Promise<void> {
+export async function seedDFSPs (AppDataSource: DataSource): Promise<void> {
   logger.info('Seeding Default DFSPs...')
   for (const dfsp of DefaultDFSPs) {
     const dfspEntity = await AppDataSource.manager.findOne(
@@ -113,7 +115,7 @@ async function seedDFSPs (): Promise<void> {
   logger.info('Seeding Default DFSPs... Done')
 }
 
-async function seedDefaultPermissions (): Promise<void> {
+export async function seedDefaultPermissions (AppDataSource: DataSource): Promise<void> {
   logger.info('Seeding Default Permissions...')
   for (const key of Object.keys(PermissionsEnum)) {
     const permission = PermissionsEnum[key as keyof typeof PermissionsEnum]
@@ -132,7 +134,7 @@ async function seedDefaultPermissions (): Promise<void> {
   logger.info('Seeding Default Permissions... Done')
 }
 
-async function seedDefaultRoles (): Promise<void> {
+export async function seedDefaultRoles (AppDataSource: DataSource): Promise<void> {
   logger.info('Seeding Default Roles...')
   const permissions = await AppDataSource.manager.find(PortalPermissionEntity)
 
@@ -157,7 +159,7 @@ async function seedDefaultRoles (): Promise<void> {
   logger.info('Seeding Default Roles... Done')
 }
 
-async function seedDefaultUsers (): Promise<void> {
+export async function seedDefaultUsers (AppDataSource: DataSource): Promise<void> {
   logger.info('Seeding Default Users...')
 
   const roles = await AppDataSource.manager.find(PortalRoleEntity)
@@ -225,20 +227,21 @@ async function seedDefaultUsers (): Promise<void> {
   logger.info('Seeding Default Users... Done')
 }
 
-interface SubdivisionData {
+export interface SubdivisionData {
   name: string
   districts: string[]
 }
 
-interface CountryData {
+export interface CountryData {
   name: string
   country_subdivisions: SubdivisionData[]
 }
 
-export async function seedCountriesSubdivisionsDistricts (): Promise<void> {
+export async function seedCountriesSubdivisionsDistricts (
+  AppDataSource: DataSource,
+  filePath: string): Promise<void> {
   logger.warn('Seeding Countries, Subdivisions, Districts... please wait...')
 
-  const filePath = path.join(__dirname, 'countries.json')
   const rawData = fs.readFileSync(filePath, 'utf-8')
   const seedData: CountryData[] = JSON.parse(rawData)
 
