@@ -68,7 +68,6 @@ export function testPutMerchantStatusReadyToReview (app: Application): void {
       .field('currency_code', 'PHP')
       .field('category_code', '10410')
       .field('merchant_type', 'Individual')
-      .field('payinto_alias', '000001')
       .field('license_number', '123456789')
     draftedMerchantId = res4.body.data.id
   })

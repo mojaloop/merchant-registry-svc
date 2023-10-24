@@ -14,14 +14,14 @@ export class PortalUserEntity extends PersonEntity {
     password!: string
 
   @Column({
-    type: 'enum',
+    type: 'simple-enum',
     enum: PortalUserType,
     nullable: false
   })
     user_type!: PortalUserType
 
   @Column({
-    type: 'enum',
+    type: 'simple-enum',
     enum: PortalUserStatus,
     nullable: false,
     default: PortalUserStatus.FRESH

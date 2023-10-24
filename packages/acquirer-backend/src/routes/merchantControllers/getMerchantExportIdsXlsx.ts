@@ -59,7 +59,17 @@ export async function exportMerchantIdsXlsx (req: AuthRequest, res: Response) {
   } else if (Array.isArray(idsParam)) {
     ids = idsParam.map(Number)
   } else {
-    throw new Error('IDs must be provided as a comma-separated string or an array of numbers.')
+    await audit(
+      AuditActionType.ACCESS,
+      AuditTrasactionStatus.FAILURE,
+      'exportMerchantIdsXlsx',
+      'ID must be provided as a comma-separated string or an array of numbers',
+      'MerchantEntity',
+      {}, {}, portalUser
+    )
+    return res.status(422).send({
+      message: 'IDs must be provided as a comma-separated string or an array of numbers.'
+    })
   }
 
   // Validate IDs
@@ -96,7 +106,8 @@ export async function exportMerchantIdsXlsx (req: AuthRequest, res: Response) {
         'created_by',
         'business_owners',
         'business_owners.businessPersonLocation',
-        'checked_by'
+        'checked_by',
+        'dfsps'
       ],
       order: {
         created_at: 'DESC' // Sorting by the created_at field in descending order
@@ -112,7 +123,7 @@ export async function exportMerchantIdsXlsx (req: AuthRequest, res: Response) {
         'MerchantEntity',
         {}, {}, portalUser
     )
-    res.status(500).send({ message: e })
+    return res.status(500).send({ message: e })
   }
 
   // check if merchant is in the same dfsp if not return 400

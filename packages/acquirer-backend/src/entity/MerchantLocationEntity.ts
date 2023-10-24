@@ -7,7 +7,7 @@ import { CheckoutCounterEntity } from './CheckoutCounterEntity'
 @Entity('merchant_locations')
 export class MerchantLocationEntity extends LocationEntity {
   @Column({
-    type: 'enum',
+    type: 'simple-enum',
     enum: MerchantLocationType,
     nullable: false,
     default: MerchantLocationType.PHYSICAL

@@ -3,7 +3,7 @@
     "target": "es6",
     "module": "commonjs",
     "rootDir": "./",
-    "outDir": "./build",
+    "outDir": "./dist",
     "strict": true,
     "strictPropertyInitialization": true,
     "moduleResolution": "node",
@@ -11,6 +11,8 @@
     "emitDecoratorMetadata": true,
     "allowSyntheticDefaultImports": true,
     "experimentalDecorators": true,
+    "removeComments": true,
+    "declaration": false,
     "baseUrl": ".",
     "paths": {
       "shared-lib": ["../shared-lib/src/*"]

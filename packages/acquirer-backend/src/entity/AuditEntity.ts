@@ -13,7 +13,7 @@ export class AuditEntity {
   @PrimaryGeneratedColumn()
     id!: number
 
-  @Column({ type: 'enum', enum: AuditActionType, nullable: false })
+  @Column({ type: 'simple-enum', enum: AuditActionType, nullable: false })
     action_type!: AuditActionType
 
   @Column({ nullable: false, length: 512 })

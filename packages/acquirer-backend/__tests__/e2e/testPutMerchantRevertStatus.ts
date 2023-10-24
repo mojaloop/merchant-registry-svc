@@ -75,7 +75,6 @@ export function testPutMerchantRevertStatus (app: Application): void {
       .field('currency_code', 'PHP')
       .field('category_code', '10410')
       .field('merchant_type', 'Individual')
-      .field('payinto_alias', '000001')
       .field('license_number', '123456789')
     merchantId = res4.body.data.id
 
@@ -94,7 +93,6 @@ export function testPutMerchantRevertStatus (app: Application): void {
       .field('currency_code', 'PHP')
       .field('category_code', '10410')
       .field('merchant_type', 'Individual')
-      .field('payinto_alias', '000001')
       .field('license_number', '123456789')
     nonReadyMerchantId = res5.body.data.id
   })
@@ -102,6 +100,7 @@ export function testPutMerchantRevertStatus (app: Application): void {
   afterAll(async () => {
     // Clean up
     await AppDataSource.manager.delete(MerchantEntity, merchantId)
+    await AppDataSource.manager.delete(MerchantEntity, nonReadyMerchantId)
   })
 
   it('should respond with 401 when Authorization header is missing', async () => {

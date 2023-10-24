@@ -33,7 +33,7 @@ export class MerchantEntity {
     registered_name!: string
 
   @Column({
-    type: 'enum',
+    type: 'simple-enum',
     enum: NumberOfEmployees,
     nullable: true,
     default: NumberOfEmployees.ONE_TO_FIVE
@@ -46,7 +46,7 @@ export class MerchantEntity {
     monthly_turnover!: string
 
   @Column({
-    type: 'enum',
+    type: 'simple-enum',
     enum: MerchantType,
     nullable: true,
     default: MerchantType.INDIVIDUAL
@@ -54,7 +54,7 @@ export class MerchantEntity {
     merchant_type!: MerchantType
 
   @Column({
-    type: 'enum',
+    type: 'simple-enum',
     enum: MerchantAllowBlockStatus,
     nullable: true,
     default: MerchantAllowBlockStatus.PENDING
@@ -62,7 +62,7 @@ export class MerchantEntity {
     allow_block_status!: MerchantAllowBlockStatus
 
   @Column({
-    type: 'enum',
+    type: 'simple-enum',
     enum: MerchantRegistrationStatus,
     nullable: true,
     default: MerchantRegistrationStatus.DRAFT

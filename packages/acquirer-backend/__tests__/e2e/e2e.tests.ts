@@ -21,6 +21,9 @@ import { testPutMerchantStatusReadyToReview } from './testPutMerchantReadyStatus
 import { testPutMerchantStatusApprove } from './testPutMerchantApproveStatus'
 import { testPutMerchantRejectStatus } from './testPutMerchantRejectStatus'
 import { testPutMerchantRevertStatus } from './testPutMerchantRevertStatus'
+import { testGetUserProfile } from './testGetUserProfile'
+import { testGetAudits } from './testGetAudits'
+import { testGETMerchantXlsxWorkbook } from './testMerchantXlsxWorkbook'
 
 logger.silent = true
 
@@ -28,11 +31,11 @@ const app = express()
 app.use(express.json())
 setupRoutes(app)
 
-describe('E2E Tests', () => {
+describe('E2E API Tests', () => {
   beforeAll(async () => {
     await initializeDatabase()
     await createMerchantDocumentBucket()
-  }, 20000) // wait for 20secs for db to initialize
+  }, 60000) // wait for 60secs for db to initialize
 
   afterAll(async () => {
     await AppDataSource.destroy()
@@ -79,7 +82,19 @@ describe('E2E Tests', () => {
     testUserLoginSucceed(app)
   })
 
+  describe('GET Users Profile API Tests', () => {
+    testGetUserProfile(app)
+  })
+
   describe('Health Check API Tests', () => {
     testSucceedHealthCheck(app)
+  })
+
+  describe('GET Audits API Tests', () => {
+    testGetAudits(app)
+  })
+
+  describe('GET Merchants XLSX Export With IDs API Tests', () => {
+    testGETMerchantXlsxWorkbook(app)
   })
 })
