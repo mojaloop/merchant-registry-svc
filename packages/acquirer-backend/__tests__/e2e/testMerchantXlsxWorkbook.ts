@@ -6,16 +6,11 @@ import { AppDataSource } from '../../src/database/dataSource'
 import { MerchantEntity } from '../../src/entity/MerchantEntity'
 import { NumberOfEmployees } from 'shared-lib'
 
-export function testPutMerchantStatusApprove (app: Application): void {
-  let makerToken = ''
-  const dfspMakerUserEmail = DefaultDFSPUsers[0].email
-  const dfspMakerUserPwd = DefaultDFSPUsers[0].password
-  const makerDFSPName = DefaultDFSPUsers[0].dfsp_name
-
-  let checkerToken = ''
-  const dfspCheckerUserEmail = DefaultDFSPUsers[1].email
-  const dfspCheckerUserPwd = DefaultDFSPUsers[1].password
-  // const checkerDFSPName = DefaultDFSPUsers[1].dfsp_name
+export function testGETMerchantXlsxWorkbook (app: Application): void {
+  let dfspUserToken = ''
+  const dfspUserEmail = DefaultDFSPUsers[0].email
+  const dfspUserPwd = DefaultDFSPUsers[0].password
+  const dfspName = DefaultDFSPUsers[0].dfsp_name
 
   let differentDFSPUserToken = ''
   let differentDFSPUserEmail = ''
@@ -28,22 +23,14 @@ export function testPutMerchantStatusApprove (app: Application): void {
     const res = await request(app)
       .post('/api/v1/users/login')
       .send({
-        email: dfspMakerUserEmail,
-        password: dfspMakerUserPwd
+        email: dfspUserEmail,
+        password: dfspUserPwd
       })
-    makerToken = res.body.token
-
-    const res2 = await request(app)
-      .post('/api/v1/users/login')
-      .send({
-        email: dfspCheckerUserEmail,
-        password: dfspCheckerUserPwd
-      })
-    checkerToken = res2.body.token
+    dfspUserToken = res.body.token
 
     // find different dfsp user
     for (const user of DefaultDFSPUsers) {
-      if (user.dfsp_name !== makerDFSPName) {
+      if (user.dfsp_name !== dfspName) {
         differentDFSPUserEmail = user.email
         differentDFSPUserPwd = user.password
         const res3 = await request(app)
@@ -57,17 +44,9 @@ export function testPutMerchantStatusApprove (app: Application): void {
       }
     }
 
-    const res3 = await request(app)
-      .post('/api/v1/users/login')
-      .send({
-        email: differentDFSPUserEmail,
-        password: differentDFSPUserPwd
-      })
-    differentDFSPUserToken = res3.body.token
-
     const res4 = await request(app)
       .post('/api/v1/merchants/draft')
-      .set('Authorization', `Bearer ${makerToken}`)
+      .set('Authorization', `Bearer ${dfspUserToken}`)
       .field('dba_trading_name', 'Merchat55')
       .field('registered_name', 'Registered Merchant 55')
       .field('employees_num', NumberOfEmployees.ONE_TO_FIVE)
@@ -80,12 +59,12 @@ export function testPutMerchantStatusApprove (app: Application): void {
 
     await request(app)
       .put(`/api/v1/merchants/${merchantId}/ready-to-review`)
-      .set('Authorization', `Bearer ${makerToken}`)
+      .set('Authorization', `Bearer ${dfspUserToken}`)
 
     // Prepare non-ready merchant
     const res5 = await request(app)
       .post('/api/v1/merchants/draft')
-      .set('Authorization', `Bearer ${makerToken}`)
+      .set('Authorization', `Bearer ${dfspUserToken}`)
       .field('dba_trading_name', 'Merchat56')
       .field('registered_name', 'Registered Merchant 56')
       .field('employees_num', NumberOfEmployees.ONE_TO_FIVE)
@@ -105,69 +84,50 @@ export function testPutMerchantStatusApprove (app: Application): void {
 
   it('should respond with 401 when Authorization header is missing', async () => {
     const res = await request(app)
-      .put('/api/v1/merchants/bulk-approve')
-      .send({
-        ids: [merchantId]
-      })
-
+      .get(`/api/v1/merchants/export-with-ids?ids=${merchantId},${nonReadyMerchantId}`)
     expect(res.statusCode).toEqual(401)
   })
 
   it('should respond with 401 when Authorization token is invalid', async () => {
     const res = await request(app)
-      .put('/api/v1/merchants/bulk-approve')
+      .get(`/api/v1/merchants/export-with-ids?ids=${merchantId},${nonReadyMerchantId}`)
       .set('Authorization', 'Bearer invalid_token')
-      .send({
-        ids: [merchantId]
-      })
     expect(res.statusCode).toEqual(401)
   })
 
-  it('should respond 422 with same user cannot approve message when maker trying to approve', async () => {
+  it('should respond with 422 when ids is not provided', async () => {
     const res = await request(app)
-      .put('/api/v1/merchants/bulk-approve')
-      .set('Authorization', `Bearer ${makerToken}`)
-      .send({
-        ids: [merchantId]
-      })
+      .get('/api/v1/merchants/export-with-ids')
+      .set('Authorization', `Bearer ${dfspUserToken}`)
     expect(res.statusCode).toEqual(422)
-    expect(res.body).toHaveProperty('message')
-    expect(res.body.message).toContain('cannot be approved by the same user who submitted it.')
   })
 
-  it('should respond 422 with not in review status message when merchant is not in review status', async () => {
+  it('should respond with 422 when ids is not array of numbers', async () => {
     const res = await request(app)
-      .put('/api/v1/merchants/bulk-approve')
-      .set('Authorization', `Bearer ${checkerToken}`)
-      .send({
-        ids: [nonReadyMerchantId]
-      })
+      .get('/api/v1/merchants/export-with-ids?ids=1ab,asdf,3cc')
+      .set('Authorization', `Bearer ${dfspUserToken}`)
     expect(res.statusCode).toEqual(422)
     expect(res.body).toHaveProperty('message')
-    expect(res.body.message).toContain('is not in Review Status')
+    expect(res.body.message).toContain('Each ID in the array must be a valid ID number.')
   })
 
-  it('should respond 422 with not same dfsp message when merchant is not in review status', async () => {
+  it('should respond with 400 when user is trying to access different DFSP\'s Merchant', async () => {
     const res = await request(app)
-      .put('/api/v1/merchants/bulk-approve')
+      .get(`/api/v1/merchants/export-with-ids?ids=${merchantId},${nonReadyMerchantId}`)
       .set('Authorization', `Bearer ${differentDFSPUserToken}`)
-      .send({
-        ids: [merchantId]
-      })
-    expect(res.statusCode).toEqual(422)
+    expect(res.statusCode).toEqual(400)
     expect(res.body).toHaveProperty('message')
-    expect(res.body.message).toContain('does not belong to the same DFSP as the user.')
+    expect(res.body.message).toContain('Accessing different DFSP\'s Merchant is not allowed.')
   })
 
-  it('should respond 200 with "Waiting For Alias Generation" Status Updated for multiple merchants message when everything is valid.', async () => {
+  it('should respond with 200 with xlsx file', async () => {
     const res = await request(app)
-      .put('/api/v1/merchants/bulk-approve')
-      .set('Authorization', `Bearer ${checkerToken}`)
-      .send({
-        ids: [merchantId]
-      })
+      .get(`/api/v1/merchants/export-with-ids?ids=${merchantId},${nonReadyMerchantId}`)
+      .set('Authorization', `Bearer ${dfspUserToken}`)
+
     expect(res.statusCode).toEqual(200)
-    expect(res.body).toHaveProperty('message')
-    expect(res.body.message).toEqual('"Waiting For Alias Generation" Status Updated for multiple merchants')
+    expect(res.headers['content-type']).toEqual('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    expect(res.headers['content-disposition']).toEqual('attachment; filename=merchants.xlsx')
+    expect(res.body).toBeDefined()
   })
 }
