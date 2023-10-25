@@ -5,7 +5,6 @@ import * as z from 'zod'
 import { AppDataSource } from '../../database/dataSource'
 import { MerchantEntity } from '../../entity/MerchantEntity'
 import logger from '../../services/logger'
-import { CheckoutCounterEntity } from '../../entity/CheckoutCounterEntity'
 import { BusinessLicenseEntity } from '../../entity/BusinessLicenseEntity'
 import {
   MerchantAllowBlockStatus,
@@ -125,7 +124,7 @@ export async function putMerchantDraft (req: AuthRequest, res: Response) {
   const merchantRepository = AppDataSource.getRepository(MerchantEntity)
   const merchant = await merchantRepository.findOne({
     where: { id },
-    relations: ['checkout_counters', 'business_licenses', 'dfsps']
+    relations: ['business_licenses', 'dfsps']
   })
 
   if (merchant === null) {
@@ -160,34 +159,7 @@ trying to access unauthorized(different DFSP) merchant ${merchant.id}`,
 
   logger.debug('Updating Merchant: %o', merchant.id)
   const oldMerchant = { ...merchant } // Clone the merchant object for audit logging
-  oldMerchant.checkout_counters = []
   oldMerchant.business_licenses = []
-
-  // Checkout Counter Update
-  const alias: string = req.body.payinto_alias
-  let checkoutCounter = null
-  if (merchant?.checkout_counters?.length === 1) {
-    checkoutCounter = merchant.checkout_counters[0]
-    logger.debug('Updating checkout counter: %o', checkoutCounter)
-  }
-
-  if (checkoutCounter === null) {
-    checkoutCounter = new CheckoutCounterEntity()
-    logger.debug('Creating new checkout counter: %o', checkoutCounter)
-  }
-
-  if (checkoutCounter?.alias_value !== alias) {
-    // Update PayInto Alias Value
-    checkoutCounter.alias_value = alias
-    try {
-      await AppDataSource.manager.save(checkoutCounter)
-    } catch (err) {
-      if (err instanceof QueryFailedError) {
-        logger.error('Query failed: %o', err.message)
-        return res.status(500).send({ message: err.message })
-      }
-    }
-  }
 
   merchant.dba_trading_name = req.body.dba_trading_name
   merchant.registered_name = req.body.registered_name // TODO: check if already registered
@@ -202,10 +174,6 @@ trying to access unauthorized(different DFSP) merchant ${merchant.id}`,
   if (portalUser !== null) { // Should never be null.. but just in case
     merchant.created_by = portalUser
   }
-  if (checkoutCounter !== null) {
-    merchant.checkout_counters = [checkoutCounter]
-  }
-
   try {
     await merchantRepository.save(merchant)
 
@@ -238,11 +206,6 @@ trying to access unauthorized(different DFSP) merchant ${merchant.id}`,
       logger.debug('No PDF file submitted for the merchant')
     }
   } catch (err) {
-    // Revert the checkout counter creation
-    if (checkoutCounter !== null) {
-      await AppDataSource.manager.delete(CheckoutCounterEntity, checkoutCounter.id)
-    }
-
     if (err instanceof QueryFailedError) {
       logger.error('Query Failed: %o', err.message)
       return res.status(500).send({ message: err.message })

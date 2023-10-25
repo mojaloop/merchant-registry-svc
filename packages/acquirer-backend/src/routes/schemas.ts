@@ -18,7 +18,6 @@ export const MerchantSubmitDataSchema = z.object({
   currency_code: z.nativeEnum(CurrencyCodes).optional(),
   category_code: z.string().optional(),
   merchant_type: z.nativeEnum(MerchantType).optional(),
-  payinto_alias: z.string().optional(),
   license_number: z.string().optional().optional()
 })
 

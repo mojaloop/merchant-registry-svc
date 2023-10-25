@@ -116,29 +116,6 @@ export async function postMerchantDraft (req: AuthRequest, res: Response) {
   const merchantRepository = AppDataSource.getRepository(MerchantEntity)
   const merchant = merchantRepository.create()
 
-  const alias: string = req.body.payinto_alias
-  // Update PayInto Alias Value
-  const checkoutCounter = new CheckoutCounterEntity()
-  checkoutCounter.alias_value = alias
-
-  try {
-    await AppDataSource.manager.save(checkoutCounter)
-  } catch (err) {
-    if (err instanceof QueryFailedError) {
-      logger.error('DB Query failed: %o', err.message)
-      await audit(
-        AuditActionType.ADD,
-        AuditTrasactionStatus.FAILURE,
-        'postMerchantDraft',
-        'DB Query failed',
-        'Merchant',
-        {}, req.body, portalUser
-      )
-
-      return res.status(500).send({ message: err.message })
-    }
-  }
-
   merchant.dba_trading_name = req.body.dba_trading_name
   merchant.registered_name = req.body.registered_name // TODO: check if already registered
   merchant.employees_num = req.body.employees_num
@@ -154,9 +131,6 @@ export async function postMerchantDraft (req: AuthRequest, res: Response) {
 
   if (portalUser !== null) { // Should never be null.. but just in case
     merchant.created_by = portalUser
-  }
-  if (checkoutCounter !== null) {
-    merchant.checkout_counters = [checkoutCounter]
   }
 
   try {
@@ -187,11 +161,6 @@ export async function postMerchantDraft (req: AuthRequest, res: Response) {
     merchant.business_licenses = [license]
     await merchantRepository.save(merchant)
   } catch (err) {
-    // Revert the checkout counter creation
-    if (checkoutCounter !== null) {
-      await AppDataSource.manager.delete(CheckoutCounterEntity, checkoutCounter.id)
-    }
-
     if (err instanceof QueryFailedError) {
       logger.error('Query Failed: %o', err.message)
       return res.status(500).send({ message: err.message })
