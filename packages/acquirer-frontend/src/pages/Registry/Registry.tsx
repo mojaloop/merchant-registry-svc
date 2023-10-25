@@ -33,7 +33,7 @@ const Registry = () => {
           w='12.5rem'
         >
           {draftCount.isLoading ? (
-            <Spinner color='white' size='xs' />
+            <Spinner data-testid='spinner' color='white' size='xs' />
           ) : (
             'Continue with saved draft'
           )}
@@ -58,6 +58,7 @@ const Registry = () => {
             borderWidth='0.8px'
             borderColor='secondary'
             shadow='md'
+            data-testid='draft-count'
           >
             {draftCount.data}
           </Box>
