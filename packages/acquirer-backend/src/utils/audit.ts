@@ -12,7 +12,7 @@ export async function audit (
   oldValue: Record<string, any>,
   newValue: Record<string, any>,
   portalUser: PortalUserEntity | null,
-  deepObjectCompare: boolean = false
+  deepObjectCompare = false
 ): Promise<void> {
   const auditNewValues: Record<string, any> = {}
   const auditOldValues: Record<string, any> = {}

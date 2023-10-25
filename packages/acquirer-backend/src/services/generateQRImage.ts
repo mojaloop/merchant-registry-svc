@@ -5,7 +5,7 @@ import fs from 'fs'
 export const generateQRImage = async (
   text: string,
   options?: QRCodeOptions,
-  frameImagePath: string = ''
+  frameImagePath = ''
 ): Promise<Buffer> => {
   const qrCodeBuffer = await QRCode.toBuffer(
     text,

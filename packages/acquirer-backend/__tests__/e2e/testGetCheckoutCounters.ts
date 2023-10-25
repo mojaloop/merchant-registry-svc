@@ -5,7 +5,7 @@ import { AppDataSource } from '../../src/database/dataSource'
 import { MerchantEntity } from '../../src/entity/MerchantEntity'
 import { NumberOfEmployees } from 'shared-lib'
 
-export function testGetMerchantById (app: Application): void {
+export function testGetCheckoutCounters (app: Application): void {
   let token = ''
   let validMerchantId = 0
   const nonExistingMerchantId = 99999
@@ -126,10 +126,26 @@ export function testGetMerchantById (app: Application): void {
       .get(`/api/v1/merchants/${nonExistingMerchantId}`)
       .set('Authorization', `Bearer ${token}`)
     expect(res.statusCode).toEqual(404)
-    expect(res.body).toHaveProperty('message')
-    expect(res.body.message).toEqual('Merchant not found')
   })
 
+  //       const validMerchantForUser = merchant.dfsps
+  //         .map(dfsp => dfsp.id)
+  //         .includes(portalUser.dfsp.id)
+  //       if (!validMerchantForUser) {
+  //         logger.error('Accessing different DFSP\'s Merchant is not allowed.')
+  //         await audit(
+  //           AuditActionType.ACCESS,
+  //           AuditTrasactionStatus.FAILURE,
+  //           'getMerchantById',
+  //           `User ${portalUser.id} (${portalUser.email})
+  // trying to access unauthorized(different DFSP) merchant ${merchant.id}`,
+  //           'MerchantEntity',
+  //           {}, {}, portalUser
+  //         )
+  //         return res.status(400).send({
+  //           message: 'Accessing different DFSP\'s Merchant is not allowed.'
+  //         })
+  //       }
   it('should respond with 400 status when user is not authorized to access the merchant', async () => {
     // You need to setup a merchant ID that the test user should not have access to.
     const res = await request(app)
@@ -138,6 +154,15 @@ export function testGetMerchantById (app: Application): void {
     expect(res.statusCode).toEqual(400)
     expect(res.body).toHaveProperty('message')
     expect(res.body.message).toEqual('Accessing different DFSP\'s Merchant is not allowed.')
+  })
+
+  it('should respond with 500 status when server error occurs', async () => {
+    // To simulate a server error, you may have to mock the service layer to throw an exception.
+    const res = await request(app)
+      .get(`/api/v1/merchants/${validMerchantId}`)
+      .set('Authorization', `Bearer ${token}`)
+    // Mock the service layer to throw an exception here
+    expect(res.statusCode).toEqual(500)
   })
 
   it('should respond with 200 status and valid merchant data when everything is valid', async () => {

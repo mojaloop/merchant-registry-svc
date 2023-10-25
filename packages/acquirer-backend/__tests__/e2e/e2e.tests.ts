@@ -24,6 +24,14 @@ import { testPutMerchantRevertStatus } from './testPutMerchantRevertStatus'
 import { testGetUserProfile } from './testGetUserProfile'
 import { testGetAudits } from './testGetAudits'
 import { testGETMerchantXlsxWorkbook } from './testMerchantXlsxWorkbook'
+import { testPutConfigTraceLevel } from './testPutConfigTraceLevel'
+import { testGetCountries } from './testGetCountries'
+import { testGetSubDivisions } from './testGetSubDivisions'
+import { testGetDistricts } from './testGetDistricts'
+import { testGetMerchantById } from './testGetMerchantById'
+import { testPostMerchantLocations } from './testPostMerchantLocation'
+import { testGetMerchantLocations } from './testGetMerchantLocations'
+import { testGetUsers } from './testGetUsers'
 
 logger.silent = true
 
@@ -48,8 +56,23 @@ describe('E2E API Tests', () => {
     testGetMerchantsSucceed(app)
   })
 
+  describe('GET Merchant By Id API Tests', () => {
+    testGetMerchantById(app)
+  })
+
+  // describe('GET Merchant Checkout Counters API Tests', () => {
+  // })
+  //
   describe('POST Merchant Draft API Tests', () => {
     testPostMerchantDraft(app)
+  })
+
+  describe('GET Merchant Locations API Tests', () => {
+    testGetMerchantLocations(app)
+  })
+
+  describe('POST Merchant Location API Tests', () => {
+    testPostMerchantLocations(app)
   })
 
   describe('PUT Merchant Status ReadyToReview API Tests', () => {
@@ -94,7 +117,21 @@ describe('E2E API Tests', () => {
     testGetAudits(app)
   })
 
+  describe('GET Users List API Tests', () => {
+    testGetUsers(app)
+  })
+
   describe('GET Merchants XLSX Export With IDs API Tests', () => {
     testGETMerchantXlsxWorkbook(app)
+  })
+
+  describe('PUT Config Trace Level API Tests', () => {
+    testPutConfigTraceLevel(app)
+  })
+
+  describe('GET Countries, SubDivision, Districts API Tests', () => {
+    testGetCountries(app)
+    testGetSubDivisions(app)
+    testGetDistricts(app)
   })
 })
