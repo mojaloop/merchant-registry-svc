@@ -10,7 +10,7 @@ const TableSkeleton = ({ breakpoint, ...props }: TableSkeletonProps) => {
   const arr = new Array(10).fill(0)
 
   return (
-    <VStack {...props}>
+    <VStack {...props} data-testid='table-skeleton'>
       {arr.map((_, index) => (
         <Skeleton
           key={`row-${index}`}
