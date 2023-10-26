@@ -52,17 +52,15 @@ vi.mock('@/api/hooks/forms', () => {
   }
 })
 
+const mockSetActiveStep = vi.fn()
+
 describe('ContactPersonForm', () => {
   it('should focus the first input which has an error when the validation fails', async () => {
     mockDraft.mockReturnValue({ data: null })
 
     render(
       <TestWrapper>
-        <LocationInfoForm
-          setActiveStep={() => {
-            // empty function
-          }}
-        />
+        <LocationInfoForm setActiveStep={mockSetActiveStep} />
       </TestWrapper>
     )
 
@@ -77,11 +75,7 @@ describe('ContactPersonForm', () => {
 
     render(
       <TestWrapper>
-        <LocationInfoForm
-          setActiveStep={() => {
-            // empty function
-          }}
-        />
+        <LocationInfoForm setActiveStep={mockSetActiveStep} />
       </TestWrapper>
     )
 
@@ -133,11 +127,7 @@ describe('ContactPersonForm', () => {
 
     render(
       <TestWrapper>
-        <LocationInfoForm
-          setActiveStep={() => {
-            // empty function
-          }}
-        />
+        <LocationInfoForm setActiveStep={mockSetActiveStep} />
       </TestWrapper>
     )
 
@@ -158,11 +148,7 @@ describe('ContactPersonForm', () => {
 
     render(
       <TestWrapper>
-        <LocationInfoForm
-          setActiveStep={() => {
-            // empty function
-          }}
-        />
+        <LocationInfoForm setActiveStep={mockSetActiveStep} />
       </TestWrapper>
     )
 
@@ -181,11 +167,7 @@ describe('ContactPersonForm', () => {
 
     render(
       <TestWrapper>
-        <LocationInfoForm
-          setActiveStep={() => {
-            // empty function
-          }}
-        />
+        <LocationInfoForm setActiveStep={mockSetActiveStep} />
       </TestWrapper>
     )
 

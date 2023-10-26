@@ -38,18 +38,15 @@ const hoistedValues = vi.hoisted(() => ({
 }))
 
 const mockDraft = vi.fn()
-
 vi.mock('@/api/hooks/forms', () => {
   return {
     useDraft: () => mockDraft(),
-    useCreateBusinessInfo: () => ({
-      isLoading: false,
-    }),
-    useUpdateBusinessInfo: () => ({
-      isLoading: false,
-    }),
+    useCreateBusinessInfo: () => ({}),
+    useUpdateBusinessInfo: () => ({}),
   }
 })
+
+const mockSetActiveStep = vi.fn()
 
 describe('BusinessInfoForm', () => {
   it('should render "Document is already uploaded." text when license document exists', () => {
@@ -57,11 +54,7 @@ describe('BusinessInfoForm', () => {
 
     render(
       <TestWrapper>
-        <BusinessInfoForm
-          setActiveStep={() => {
-            // empty function
-          }}
-        />
+        <BusinessInfoForm setActiveStep={mockSetActiveStep} />
       </TestWrapper>
     )
 
@@ -73,11 +66,7 @@ describe('BusinessInfoForm', () => {
 
     render(
       <TestWrapper>
-        <BusinessInfoForm
-          setActiveStep={() => {
-            // empty function
-          }}
-        />
+        <BusinessInfoForm setActiveStep={mockSetActiveStep} />
       </TestWrapper>
     )
 
@@ -89,11 +78,7 @@ describe('BusinessInfoForm', () => {
 
     render(
       <TestWrapper>
-        <BusinessInfoForm
-          setActiveStep={() => {
-            // empty function
-          }}
-        />
+        <BusinessInfoForm setActiveStep={mockSetActiveStep} />
       </TestWrapper>
     )
 
@@ -110,11 +95,7 @@ describe('BusinessInfoForm', () => {
 
     render(
       <TestWrapper>
-        <BusinessInfoForm
-          setActiveStep={() => {
-            // empty function
-          }}
-        />
+        <BusinessInfoForm setActiveStep={mockSetActiveStep} />
       </TestWrapper>
     )
 
@@ -130,11 +111,7 @@ describe('BusinessInfoForm', () => {
 
     render(
       <TestWrapper>
-        <BusinessInfoForm
-          setActiveStep={() => {
-            // empty function
-          }}
-        />
+        <BusinessInfoForm setActiveStep={mockSetActiveStep} />
       </TestWrapper>
     )
 
@@ -171,11 +148,7 @@ describe('BusinessInfoForm', () => {
 
     render(
       <TestWrapper>
-        <BusinessInfoForm
-          setActiveStep={() => {
-            // empty function
-          }}
-        />
+        <BusinessInfoForm setActiveStep={mockSetActiveStep} />
       </TestWrapper>
     )
 
@@ -193,11 +166,7 @@ describe('BusinessInfoForm', () => {
 
     render(
       <TestWrapper>
-        <BusinessInfoForm
-          setActiveStep={() => {
-            // empty function
-          }}
-        />
+        <BusinessInfoForm setActiveStep={mockSetActiveStep} />
       </TestWrapper>
     )
 
@@ -212,11 +181,7 @@ describe('BusinessInfoForm', () => {
 
     render(
       <TestWrapper>
-        <BusinessInfoForm
-          setActiveStep={() => {
-            // empty function
-          }}
-        />
+        <BusinessInfoForm setActiveStep={mockSetActiveStep} />
       </TestWrapper>
     )
 

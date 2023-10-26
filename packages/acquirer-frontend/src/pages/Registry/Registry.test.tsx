@@ -4,16 +4,16 @@ import { fireEvent, render, screen } from '@testing-library/react'
 import TestWrapper from '@/__tests__/TestWrapper'
 import { Registry } from '..'
 
-const mock = vi.fn()
+const mockDraftCount = vi.fn()
 vi.mock('@/api/hooks/forms', () => {
   return {
-    useDraftCount: () => mock(),
+    useDraftCount: () => mockDraftCount(),
   }
 })
 
 describe('Registry', () => {
   it('should show loading spinner when draft count is loading', () => {
-    mock.mockReturnValue({ data: null, isLoading: true })
+    mockDraftCount.mockReturnValue({ data: null, isLoading: true })
 
     render(
       <TestWrapper>
@@ -25,7 +25,7 @@ describe('Registry', () => {
   })
 
   it('should disable continue with saved draft button when draft count is 0', () => {
-    mock.mockReturnValue({ data: 0, isLoading: false })
+    mockDraftCount.mockReturnValue({ data: 0, isLoading: false })
 
     render(
       <TestWrapper>
@@ -39,7 +39,7 @@ describe('Registry', () => {
   })
 
   it('should render draft count when it is greater than 0', () => {
-    mock.mockReturnValue({ data: 3, isLoading: false })
+    mockDraftCount.mockReturnValue({ data: 3, isLoading: false })
 
     render(
       <TestWrapper>
