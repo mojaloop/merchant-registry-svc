@@ -216,39 +216,42 @@ trying to access unauthorized(different DFSP) merchant ${merchant.id}`,
     }
   }
 
-  if (merchant.checkout_counters.length > 0) {
-    if (req.body.checkout_description !== undefined) {
-      merchant.checkout_counters[0].description = req.body.checkout_description
-    }
-    if (savedLocation instanceof MerchantLocationEntity) {
-      logger.debug('Saved Location for checkoutcoutner: %o', savedLocation)
-      merchant.checkout_counters[0].checkout_location = savedLocation
-    }
+  if (merchant.checkout_counters.length === 0) {
+    const checkoutCounter = new CheckoutCounterEntity()
 
-    try {
-      await AppDataSource.getRepository(CheckoutCounterEntity).update(
-        merchant.checkout_counters[0].id,
-        merchant.checkout_counters[0]
-      )
-    } catch (err) {
-      if (err instanceof QueryFailedError) {
-        logger.error('Query Failed: %o', err.message)
-        await audit(
-          AuditActionType.ADD,
-          AuditTrasactionStatus.FAILURE,
-          'postMerchantLocation',
-          'Query Failed',
-          'Merchant',
-          {}, locationData, portalUser
-        )
-        return res.status(500).send({ message: err.message })
-      }
-    }
-  } else {
-    logger.error('Merchant Checkout Counter not found')
-    return res.status(404).json({ message: 'Merchant Checkout Counter not found' })
+    const savedCheckoutCounter = await AppDataSource.manager.save(checkoutCounter)
+    merchant.checkout_counters.push(savedCheckoutCounter)
+    await AppDataSource.manager.save(merchant)
   }
 
+  if (req.body.checkout_description !== undefined) {
+    merchant.checkout_counters[0].description = req.body.checkout_description
+  }
+
+  if (savedLocation instanceof MerchantLocationEntity) {
+    logger.debug('Saved Location for checkoutcoutner: %o', savedLocation)
+    merchant.checkout_counters[0].checkout_location = savedLocation
+  }
+
+  try {
+    await AppDataSource.getRepository(CheckoutCounterEntity).update(
+      merchant.checkout_counters[0].id,
+      merchant.checkout_counters[0]
+    )
+  } catch (err) {
+    if (err instanceof QueryFailedError) {
+      logger.error('Query Failed: %o', err.message)
+      await audit(
+        AuditActionType.ADD,
+        AuditTrasactionStatus.FAILURE,
+        'postMerchantLocation',
+        'Query Failed',
+        'Merchant',
+        {}, locationData, portalUser
+      )
+      return res.status(500).send({ message: err.message })
+    }
+  }
   savedLocation = {
     ...savedLocation,
     merchant: { id: merchant.id }
