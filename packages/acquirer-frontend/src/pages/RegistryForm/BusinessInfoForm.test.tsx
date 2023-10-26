@@ -38,13 +38,11 @@ const hoistedValues = vi.hoisted(() => ({
 }))
 
 const mockDraft = vi.fn()
-vi.mock('@/api/hooks/forms', () => {
-  return {
-    useDraft: () => mockDraft(),
-    useCreateBusinessInfo: () => ({}),
-    useUpdateBusinessInfo: () => ({}),
-  }
-})
+vi.mock('@/api/hooks/forms', () => ({
+  useDraft: () => mockDraft(),
+  useCreateBusinessInfo: () => ({}),
+  useUpdateBusinessInfo: () => ({}),
+}))
 
 const mockSetActiveStep = vi.fn()
 

@@ -41,16 +41,14 @@ const hoistedValues = vi.hoisted(() => ({
 }))
 
 const mockDraft = vi.fn()
-vi.mock('@/api/hooks/forms', () => {
-  return {
-    useCountries: () => ({ data: ['Australia'] }),
-    useSubdivisions: () => ({ data: ['Western Australia'] }),
-    useDistricts: () => ({ data: ['Perth'] }),
-    useDraft: () => mockDraft(),
-    useCreateLocationInfo: () => ({}),
-    useUpdateLocationInfo: () => ({}),
-  }
-})
+vi.mock('@/api/hooks/forms', () => ({
+  useCountries: () => ({ data: ['Australia'] }),
+  useSubdivisions: () => ({ data: ['Western Australia'] }),
+  useDistricts: () => ({ data: ['Perth'] }),
+  useDraft: () => mockDraft(),
+  useCreateLocationInfo: () => ({}),
+  useUpdateLocationInfo: () => ({}),
+}))
 
 const mockSetActiveStep = vi.fn()
 

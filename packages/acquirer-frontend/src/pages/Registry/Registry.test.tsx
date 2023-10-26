@@ -5,11 +5,9 @@ import TestWrapper from '@/__tests__/TestWrapper'
 import { Registry } from '..'
 
 const mockDraftCount = vi.fn()
-vi.mock('@/api/hooks/forms', () => {
-  return {
-    useDraftCount: () => mockDraftCount(),
-  }
-})
+vi.mock('@/api/hooks/forms', () => ({
+  useDraftCount: () => mockDraftCount(),
+}))
 
 describe('Registry', () => {
   it('should show loading spinner when draft count is loading', () => {

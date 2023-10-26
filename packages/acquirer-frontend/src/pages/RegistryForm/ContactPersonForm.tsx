@@ -122,7 +122,12 @@ const ContactPersonForm = ({ setActiveStep }: ContactPersonProps) => {
         <ReviewModal merchantId={merchantId} isOpen={isOpen} onClose={onClose} />
       )}
 
-      <Stack as='form' onSubmit={handleSubmit(onSubmit)} noValidate>
+      <Stack
+        as='form'
+        onSubmit={handleSubmit(onSubmit)}
+        noValidate
+        data-testid='contact-person-form'
+      >
         <GridShell>
           <Box w='20rem' justifySelf={{ md: 'center' }}>
             <Heading size='sm' as='h3'>
