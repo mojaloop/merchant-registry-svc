@@ -2,74 +2,73 @@ import { vi } from 'vitest'
 import { fireEvent, render, screen } from '@testing-library/react'
 
 import TestWrapper from '@/__tests__/TestWrapper'
-import LocationInfoForm, { removePropFromObj } from './LocationInfoForm'
+import OwnerInfoForm from './OwnerInfoForm'
 
 const hoistedValues = vi.hoisted(() => ({
   draft: {
-    checkout_counters: [
+    business_owners: [
       {
-        description: '-',
-      },
-    ],
-    locations: [
-      {
-        address_line: '',
-        address_type: '',
-        building_name: 'Big Building',
-        building_number: '123',
-        country: 'Australia',
-        country_subdivision: 'Western Australia',
-        created_at: '2023-10-25T15:39:03.173Z',
-        department: 'Sale',
-        district_name: 'Perth',
-        floor_number: '4',
+        businessPersonLocation: {
+          address_line: '',
+          address_type: '',
+          building_name: 'Big Building',
+          building_number: '123',
+          country: 'Australia',
+          country_subdivision: 'Western Australia',
+          created_at: '2023-10-26T04:24:14.046Z',
+          department: 'Sales',
+          district_name: 'Perth',
+          floor_number: '4',
+          id: 1,
+          latitude: '331',
+          longitude: '99',
+          post_box: 'PO Box 123',
+          postal_code: '12345',
+          room_number: '101',
+          street_name: 'Main Street',
+          sub_department: 'Support',
+          town_name: 'Townsville',
+          updated_at: '2023-10-26T04:24:14.046Z',
+        },
+        created_at: '2023-10-26T04:24:14.056Z',
+        email: 'johndoe@gmail.com',
         id: 1,
-        latitude: '331',
-        location_type: 'Virtual',
-        longitude: '99',
-        post_box: 'PO Box 123',
-        postal_code: '12345',
-        room_number: '101',
-        street_name: 'Main Street',
-        sub_department: 'Support',
-        town_name: 'Townsville',
-        updated_at: '2023-10-25T17:42:24.000Z',
-        web_url: 'http://www.example.com',
+        identification_number: '30291',
+        identificaton_type: 'Passport',
+        name: 'John Doe',
+        phone_number: '932-888-4213',
+        updated_at: '2023-10-26T04:24:14.056Z',
       },
     ],
   },
 }))
 
 const mockDraft = vi.fn()
-vi.mock('@/api/hooks/forms', () => {
-  return {
-    useCountries: () => ({ data: ['Australia'] }),
-    useSubdivisions: () => ({ data: ['Western Australia'] }),
-    useDistricts: () => ({ data: ['Perth'] }),
-    useDraft: () => mockDraft(),
-    useCreateLocationInfo: () => ({}),
-    useUpdateLocationInfo: () => ({}),
-  }
-})
+vi.mock('@/api/hooks/forms', () => ({
+  useCountries: () => ({ data: ['Australia'] }),
+  useSubdivisions: () => ({ data: ['Western Australia'] }),
+  useDistricts: () => ({ data: ['Perth'] }),
+  useDraft: () => mockDraft(),
+  useCreateOwnerInfo: () => ({}),
+  useUpdateOwnerInfo: () => ({}),
+}))
 
-describe('ContactPersonForm', () => {
+const mockSetActiveStep = vi.fn()
+
+describe('OwnerInfoForm', () => {
   it('should focus the first input which has an error when the validation fails', async () => {
     mockDraft.mockReturnValue({ data: null })
 
     render(
       <TestWrapper>
-        <LocationInfoForm
-          setActiveStep={() => {
-            // empty function
-          }}
-        />
+        <OwnerInfoForm setActiveStep={mockSetActiveStep} />
       </TestWrapper>
     )
 
     const submitButton: HTMLButtonElement = screen.getByText('Save and Proceed')
     fireEvent.submit(submitButton)
 
-    expect(await screen.findByLabelText(/Location Type/)).toEqual(document.activeElement)
+    expect(await screen.findByLabelText('Name*')).toEqual(document.activeElement)
   })
 
   it('should fill with draft values when it is a draft', () => {
@@ -77,16 +76,16 @@ describe('ContactPersonForm', () => {
 
     render(
       <TestWrapper>
-        <LocationInfoForm
-          setActiveStep={() => {
-            // empty function
-          }}
-        />
+        <OwnerInfoForm setActiveStep={mockSetActiveStep} />
       </TestWrapper>
     )
 
-    const locationTypeInput: HTMLSelectElement = screen.getByLabelText(/Location Type/)
-    const websiteUrlInput: HTMLInputElement = screen.getByLabelText('Website URL')
+    const nameInput: HTMLInputElement = screen.getByLabelText('Name*')
+    const idTypeInput: HTMLInputElement = screen.getByLabelText(/ID Type/)
+    const identificationNumberInput: HTMLInputElement =
+      screen.getByLabelText(/Identification Number/)
+    const phoneNumberInput: HTMLInputElement = screen.getByLabelText(/Phone Number/)
+    const emailInput: HTMLInputElement = screen.getByLabelText('Email')
     const departmentInput: HTMLInputElement = screen.getByLabelText('Department')
     const subDepartmentInput: HTMLInputElement = screen.getByLabelText('Sub Department')
     const streetNameInput: HTMLInputElement = screen.getByLabelText('Street Name')
@@ -104,13 +103,13 @@ describe('ContactPersonForm', () => {
     const townshipInput: HTMLInputElement = screen.getByLabelText('Township')
     const longitudeInput: HTMLInputElement = screen.getByLabelText('Longitude')
     const latitudeInput: HTMLInputElement = screen.getByLabelText('Latitude')
-    const checkoutCounterDescriptionInput: HTMLInputElement = screen.getByLabelText(
-      'Checkout Counter Description'
-    )
 
-    expect(locationTypeInput.value).toEqual('Virtual')
-    expect(websiteUrlInput.value).toEqual('http://www.example.com')
-    expect(departmentInput.value).toEqual('Sale')
+    expect(nameInput.value).toEqual('John Doe')
+    expect(idTypeInput.value).toEqual('Passport')
+    expect(identificationNumberInput.value).toEqual('30291')
+    expect(phoneNumberInput.value).toEqual('932-888-4213')
+    expect(emailInput.value).toEqual('johndoe@gmail.com')
+    expect(departmentInput.value).toEqual('Sales')
     expect(subDepartmentInput.value).toEqual('Support')
     expect(streetNameInput.value).toEqual('Main Street')
     expect(buildingNumberInput.value).toEqual('123')
@@ -125,7 +124,6 @@ describe('ContactPersonForm', () => {
     expect(townshipInput.value).toEqual('Townsville')
     expect(longitudeInput.value).toEqual('99')
     expect(latitudeInput.value).toEqual('331')
-    expect(checkoutCounterDescriptionInput.value).toEqual('-')
   })
 
   it('should reset the values of "Country Subdivision" and "District" when the value of "Country" is changed', () => {
@@ -133,11 +131,7 @@ describe('ContactPersonForm', () => {
 
     render(
       <TestWrapper>
-        <LocationInfoForm
-          setActiveStep={() => {
-            // empty function
-          }}
-        />
+        <OwnerInfoForm setActiveStep={mockSetActiveStep} />
       </TestWrapper>
     )
 
@@ -158,11 +152,7 @@ describe('ContactPersonForm', () => {
 
     render(
       <TestWrapper>
-        <LocationInfoForm
-          setActiveStep={() => {
-            // empty function
-          }}
-        />
+        <OwnerInfoForm setActiveStep={mockSetActiveStep} />
       </TestWrapper>
     )
 
@@ -181,16 +171,16 @@ describe('ContactPersonForm', () => {
 
     render(
       <TestWrapper>
-        <LocationInfoForm
-          setActiveStep={() => {
-            // empty function
-          }}
-        />
+        <OwnerInfoForm setActiveStep={mockSetActiveStep} />
       </TestWrapper>
     )
 
-    const locationTypeInput: HTMLSelectElement = screen.getByLabelText(/Location Type/)
-    const websiteUrlInput: HTMLInputElement = screen.getByLabelText('Website URL')
+    const nameInput: HTMLInputElement = screen.getByLabelText('Name*')
+    const idTypeInput: HTMLInputElement = screen.getByLabelText(/ID Type/)
+    const identificationNumberInput: HTMLInputElement =
+      screen.getByLabelText(/Identification Number/)
+    const phoneNumberInput: HTMLInputElement = screen.getByLabelText(/Phone Number/)
+    const emailInput: HTMLInputElement = screen.getByLabelText('Email')
     const departmentInput: HTMLInputElement = screen.getByLabelText('Department')
     const subDepartmentInput: HTMLInputElement = screen.getByLabelText('Sub Department')
     const streetNameInput: HTMLInputElement = screen.getByLabelText('Street Name')
@@ -208,18 +198,18 @@ describe('ContactPersonForm', () => {
     const townshipInput: HTMLInputElement = screen.getByLabelText('Township')
     const longitudeInput: HTMLInputElement = screen.getByLabelText('Longitude')
     const latitudeInput: HTMLInputElement = screen.getByLabelText('Latitude')
-    const checkoutCounterDescriptionInput: HTMLInputElement = screen.getByLabelText(
-      'Checkout Counter Description'
-    )
     const submitButton: HTMLButtonElement = screen.getByText('Save and Proceed')
-    const locationInfoForm: HTMLFormElement = screen.getByTestId('location-info-form')
+    const locationInfoForm: HTMLFormElement = screen.getByTestId('owner-info-form')
 
     fireEvent.submit(submitButton)
 
     const formData = new FormData(locationInfoForm)
     const [
-      locationType,
-      websiteUrl,
+      name,
+      idType,
+      identificationNumber,
+      phoneNumber,
+      email,
       department,
       subDepartment,
       streetName,
@@ -235,11 +225,13 @@ describe('ContactPersonForm', () => {
       township,
       longitude,
       latitude,
-      checkoutCounterDescription,
     ] = formData.entries()
 
-    expect(locationTypeInput.value).toEqual(locationType[1])
-    expect(websiteUrlInput.value).toEqual(websiteUrl[1])
+    expect(nameInput.value).toEqual(name[1])
+    expect(idTypeInput.value).toEqual(idType[1])
+    expect(identificationNumberInput.value).toEqual(identificationNumber[1])
+    expect(phoneNumberInput.value).toEqual(phoneNumber[1])
+    expect(emailInput.value).toEqual(email[1])
     expect(departmentInput.value).toEqual(department[1])
     expect(subDepartmentInput.value).toEqual(subDepartment[1])
     expect(streetNameInput.value).toEqual(streetName[1])
@@ -255,14 +247,5 @@ describe('ContactPersonForm', () => {
     expect(townshipInput.value).toEqual(township[1])
     expect(longitudeInput.value).toEqual(longitude[1])
     expect(latitudeInput.value).toEqual(latitude[1])
-    expect(checkoutCounterDescriptionInput.value).toEqual(checkoutCounterDescription[1])
-  })
-})
-
-describe('removePropFromObj', () => {
-  it('should remove the given property from the object', () => {
-    const result = removePropFromObj({ a: 'a', b: 'b', c: 'c' }, 'b')
-
-    expect(result).toEqual({ a: 'a', c: 'c' })
   })
 })
