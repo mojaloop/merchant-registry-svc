@@ -166,7 +166,12 @@ const OwnerInfoForm = ({ setActiveStep }: OwnerInfoFormProps) => {
         subdivisions.isFetching ||
         districts.isFetching) && <FloatingSpinner />}
 
-      <Stack as='form' onSubmit={handleSubmit(onSubmit)} noValidate>
+      <Stack
+        as='form'
+        onSubmit={handleSubmit(onSubmit)}
+        noValidate
+        data-testid='owner-info-form'
+      >
         <GridShell justifyItems='center'>
           <FormInput
             isRequired
