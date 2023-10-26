@@ -18,7 +18,7 @@ import { CustomButton, FloatingSpinner } from '@/components/ui'
 import { FormInput, FormSelect } from '@/components/form'
 import GridShell from './GridShell'
 
-function removePropFromObj<TObj extends object, TKey extends keyof TObj>(
+export function removePropFromObj<TObj extends object, TKey extends keyof TObj>(
   obj: TObj,
   key: TKey
 ) {
@@ -171,7 +171,12 @@ const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
         subdivisions.isFetching ||
         districts.isFetching) && <FloatingSpinner />}
 
-      <Stack as='form' onSubmit={handleSubmit(onSubmit)} noValidate>
+      <Stack
+        as='form'
+        onSubmit={handleSubmit(onSubmit)}
+        noValidate
+        data-testid='location-info-form'
+      >
         <GridShell justifyItems='center'>
           <FormSelect
             isRequired
