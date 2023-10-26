@@ -43,7 +43,7 @@ const ReviewModal = ({ isOpen, onClose, merchantId }: ReviewModalProps) => {
 
         <ModalBody py='5' px={{ base: '4', md: '6' }}>
           {draft.isLoading && (
-            <HStack>
+            <HStack data-testid='skeleton'>
               <Skeleton w='50%' h='500px' rounded='md' />
               <Skeleton w='50%' h='500px' rounded='md' />
             </HStack>
