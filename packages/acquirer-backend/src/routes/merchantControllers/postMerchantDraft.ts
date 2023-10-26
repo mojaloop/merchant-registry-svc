@@ -56,15 +56,9 @@ import { type AuthRequest } from 'src/types/express'
  *               merchant_type:
  *                 type: string
  *                 example: "Individual"
- *               payinto_alias:
- *                 type: string
- *                 example: "merchant1"
- *                 required: false
  *               license_number:
  *                 type: string
  *                 example: "123456789"
- *                 required: true
- *
  *               license_document:
  *                 type: string
  *                 format: binary
