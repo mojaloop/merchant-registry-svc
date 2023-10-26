@@ -168,10 +168,10 @@ export async function putBulkWaitingAliasGeneration (req: AuthRequest, res: Resp
     const registryMerchantData = merchants.map(merchant => {
       return {
         merchant_id: merchant.id,
-        dfsp_id: merchant.dfsps[0].id.toString(),
-        dfsp_name: merchant.dfsps[0].name,
-        fspId: merchant.dfsps[0].fspId,
-        checkout_counter_id: merchant.checkout_counters[0].id,
+        dfsp_id: merchant.dfsps[0]?.id.toString(),
+        dfsp_name: merchant.dfsps[0]?.name,
+        fspId: merchant.dfsps[0]?.fspId,
+        checkout_counter_id: merchant.checkout_counters[0]?.id,
         currency_code: merchant.currency_code
       }
     })
