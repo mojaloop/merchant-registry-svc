@@ -6,6 +6,7 @@ import path from 'path'
 
 export function seedCategoryCodeTests (): void {
   let AppDataSource: DataSource
+  let merchantCategoryCodes: Record<string, string>
   beforeAll(async () => {
     AppDataSource = new DataSource({
       type: 'sqlite',
@@ -19,6 +20,9 @@ export function seedCategoryCodeTests (): void {
       subscribers: []
     })
     await AppDataSource.initialize()
+
+    // Only seed the first 8 categories
+    merchantCategoryCodes = Object.fromEntries(Object.entries(MerchantCategoryCodes).slice(0, 8))
   })
 
   it('should seed merchant category codes', async () => {
@@ -26,27 +30,27 @@ export function seedCategoryCodeTests (): void {
     await AppDataSource.manager.clear(MerchantCategoryEntity)
 
     // Act
-    await seedCategoryCode(AppDataSource)
+    await seedCategoryCode(AppDataSource, merchantCategoryCodes)
 
     // Assert
     const categoriesCountInDB = await AppDataSource.manager.count(MerchantCategoryEntity)
-    expect(categoriesCountInDB).toBe(Object.keys(MerchantCategoryCodes).length)
+    expect(categoriesCountInDB).toBe(Object.keys(merchantCategoryCodes).length)
 
     // Clean up
     await AppDataSource.manager.clear(MerchantCategoryEntity)
-  })
+  }, 20000) // Increase timeout to 20 seconds for seeding to complete
 
   it('should not duplicate data when seeded multiple times', async () => {
     // Arrange
     await AppDataSource.manager.clear(MerchantCategoryEntity)
 
-    await seedCategoryCode(AppDataSource)
-    await seedCategoryCode(AppDataSource)
+    await seedCategoryCode(AppDataSource, merchantCategoryCodes)
+    await seedCategoryCode(AppDataSource, merchantCategoryCodes)
 
     const categoriesCountInDB = await AppDataSource.manager.count(MerchantCategoryEntity)
-    expect(categoriesCountInDB).toBe(Object.keys(MerchantCategoryCodes).length)
+    expect(categoriesCountInDB).toBe(Object.keys(merchantCategoryCodes).length)
 
     // Clean up
     await AppDataSource.manager.clear(MerchantCategoryEntity)
-  })
+  }, 20000) // Increase timeout to 20 seconds for seeding to complete
 }

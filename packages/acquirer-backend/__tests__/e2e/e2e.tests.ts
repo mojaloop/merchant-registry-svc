@@ -24,6 +24,23 @@ import { testPutMerchantRevertStatus } from './testPutMerchantRevertStatus'
 import { testGetUserProfile } from './testGetUserProfile'
 import { testGetAudits } from './testGetAudits'
 import { testGETMerchantXlsxWorkbook } from './testMerchantXlsxWorkbook'
+import { testPutConfigTraceLevel } from './testPutConfigTraceLevel'
+import { testGetCountries } from './testGetCountries'
+import { testGetSubDivisions } from './testGetSubDivisions'
+import { testGetDistricts } from './testGetDistricts'
+import { testGetMerchantById } from './testGetMerchantById'
+import { testPostMerchantLocations } from './testPostMerchantLocation'
+import { testGetMerchantLocations } from './testGetMerchantLocations'
+import { testGetUsers } from './testGetUsers'
+import { testGetCheckoutCounters } from './testGetCheckoutCounters'
+import { testGetRoles } from './testGetRoles'
+import { testGetMerchantDraftCounts } from './testGetMerchantDraftCounts'
+import { testPostCreateUser } from './testPostCreateUser'
+import { testPutUserResetPassword } from './testPutUserResetPassword'
+import { testGETMerchantXlsxWorkbookFilter } from './testMerchantXlsxWorkbookFilter'
+import { testPostUserRefreshToken } from './testPutUserRefreshToken'
+import { testPostMerchantContactPerson } from './testPostMerchantContactPerson'
+import { testPostMerchantOwner } from './testPostMerchantOwner'
 
 logger.silent = true
 
@@ -48,8 +65,32 @@ describe('E2E API Tests', () => {
     testGetMerchantsSucceed(app)
   })
 
+  describe('GET Merchant By Id API Tests', () => {
+    testGetMerchantById(app)
+  })
+
+  describe('GET Merchant Checkout Counters API Tests', () => {
+    testGetCheckoutCounters(app)
+  })
+
   describe('POST Merchant Draft API Tests', () => {
     testPostMerchantDraft(app)
+  })
+
+  describe('GET Merchant Locations API Tests', () => {
+    testGetMerchantLocations(app)
+  })
+
+  describe('POST Merchant Location API Tests', () => {
+    testPostMerchantLocations(app)
+  })
+
+  describe('POST Merchant Business Owner API Tests', () => {
+    testPostMerchantOwner(app)
+  })
+
+  describe('POST Merchant Contact Person API Tests', () => {
+    testPostMerchantContactPerson(app)
   })
 
   describe('PUT Merchant Status ReadyToReview API Tests', () => {
@@ -66,6 +107,10 @@ describe('E2E API Tests', () => {
 
   describe('PUT Merchant Status Revert API Tests', () => {
     testPutMerchantRevertStatus(app)
+  })
+
+  describe('GET Merchant Draft Counts API Tests', () => {
+    testGetMerchantDraftCounts(app)
   })
 
   describe('POST Create DFSP API Tests', () => {
@@ -94,7 +139,38 @@ describe('E2E API Tests', () => {
     testGetAudits(app)
   })
 
+  describe('GET Users List API Tests', () => {
+    testGetUsers(app)
+  })
+
+  describe('POST Create Portal User API Tests', () => {
+    testPostCreateUser(app)
+  })
+
+  describe('PUT Reset User Password API Tests', () => {
+    testPutUserResetPassword(app)
+  })
+
+  describe('PUT Refresh User Token API Tests', () => {
+    testPostUserRefreshToken(app)
+  })
+
   describe('GET Merchants XLSX Export With IDs API Tests', () => {
     testGETMerchantXlsxWorkbook(app)
+    testGETMerchantXlsxWorkbookFilter(app)
+  })
+
+  describe('PUT Config Trace Level API Tests', () => {
+    testPutConfigTraceLevel(app)
+  })
+
+  describe('GET Countries, SubDivision, Districts API Tests', () => {
+    testGetCountries(app)
+    testGetSubDivisions(app)
+    testGetDistricts(app)
+  })
+
+  describe('GET Roles API Tests', () => {
+    testGetRoles(app)
   })
 })

@@ -5,6 +5,7 @@ import { DefaultDFSPUsers } from '../../src/database/defaultUsers'
 import { AppDataSource } from '../../src/database/dataSource'
 import { MerchantEntity } from '../../src/entity/MerchantEntity'
 import { NumberOfEmployees } from 'shared-lib'
+import logger from '../../src/services/logger'
 
 export function testPutMerchantStatusApprove (app: Application): void {
   let makerToken = ''
@@ -160,12 +161,14 @@ export function testPutMerchantStatusApprove (app: Application): void {
   })
 
   it('should respond 200 with "Waiting For Alias Generation" Status Updated for multiple merchants message when everything is valid.', async () => {
+    logger.silent = false
     const res = await request(app)
       .put('/api/v1/merchants/bulk-approve')
       .set('Authorization', `Bearer ${checkerToken}`)
       .send({
         ids: [merchantId]
       })
+    logger.silent = true
     expect(res.statusCode).toEqual(200)
     expect(res.body).toHaveProperty('message')
     expect(res.body.message).toEqual('"Waiting For Alias Generation" Status Updated for multiple merchants')

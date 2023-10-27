@@ -61,7 +61,7 @@ export async function getMerchantLocations (req: AuthRequest, res: Response) {
       {}, {}, portalUser
     )
 
-    res.status(400).send({ message: 'Missing merchant id' })
+    res.status(400).send({ message: 'Invalid ID' })
     return
   }
 
@@ -74,7 +74,7 @@ export async function getMerchantLocations (req: AuthRequest, res: Response) {
       'Merchant',
       {}, {}, portalUser
     )
-    res.status(400).send({ message: 'Invalid merchant id' })
+    res.status(400).send({ message: 'Invalid ID' })
     return
   }
 

@@ -63,6 +63,15 @@ export function testPostExternalDFSPClientAcess (app: Application): void {
     expect(res.body.message).toEqual('DFSP not found')
   })
 
+  it('should respond with 400 when DFSP ID is not a number', async () => {
+    const res = await request(app)
+      .post('/api/v1/dfsps/abc/client-access-key')
+      .set('Authorization', `Bearer ${hubUserToken}`)
+    expect(res.statusCode).toEqual(400)
+    expect(res.body).toHaveProperty('message')
+    expect(res.body.message).toEqual('DFSP ID is not a number')
+  })
+
   it('should respond with 403 with `Forbidden` when users other than HUB User Type is not allowed to generate DFSP', async () => {
     // Arrange
     const dfspUserEmail = DefaultDFSPUsers[0].email

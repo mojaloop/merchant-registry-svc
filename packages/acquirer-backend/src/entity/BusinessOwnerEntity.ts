@@ -18,6 +18,9 @@ export class BusinessOwnerEntity extends PersonEntity {
   @Column({ nullable: true, length: 255 })
     identification_number!: string
 
-  @ManyToMany(() => MerchantEntity, merchant => merchant.business_owners)
+  @ManyToMany(
+    () => MerchantEntity,
+    merchant => merchant.business_owners
+  )
     merchants!: MerchantEntity[]
 }

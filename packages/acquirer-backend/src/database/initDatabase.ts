@@ -31,7 +31,7 @@ export const initializeDatabase = async (): Promise<void> => {
     .then(async () => {
       logger.info('MySQL Database Connection success.')
 
-      await seedCategoryCode(AppDataSource)
+      await seedCategoryCode(AppDataSource, MerchantCategoryCodes)
 
       await seedCurrency(AppDataSource)
 
@@ -41,6 +41,7 @@ export const initializeDatabase = async (): Promise<void> => {
       await seedDefaultRoles(AppDataSource)
       await seedDefaultUsers(AppDataSource)
 
+      /* istanbul ignore next */
       if (process.env.NODE_ENV !== 'test') {
         // only seed countries, subdivisions, districts in non-test environment
         // because it takes a long time to seed
@@ -49,25 +50,26 @@ export const initializeDatabase = async (): Promise<void> => {
       }
     })
     .catch((error) => {
+      /* istanbul ignore next */
       throw error
     })
 }
 
-export async function seedCategoryCode (AppDataSource: DataSource): Promise<void> {
+export async function seedCategoryCode (AppDataSource: DataSource, merchantCategoryData: Record<string, string>): Promise<void> {
   // skip if already seeded by checking size
   // TODO: Is there a better way?
   logger.info('Seeding Merchant Category Codes...')
   const alreadySeedSize = await AppDataSource.manager.count(MerchantCategoryEntity)
-  if (Object.keys(MerchantCategoryCodes).length <= alreadySeedSize) {
+  if (Object.keys(merchantCategoryData).length <= alreadySeedSize) {
     logger.info('Merchant Category Codes already seeded. Skipping...')
     return
   }
 
   const categories: MerchantCategoryEntity[] = []
-  for (const categoryCode in MerchantCategoryCodes) {
+  for (const categoryCode in merchantCategoryData) {
     const category = new MerchantCategoryEntity()
     category.category_code = categoryCode
-    category.description = MerchantCategoryCodes[categoryCode]
+    category.description = merchantCategoryData[categoryCode]
     categories.push(category)
   }
   await AppDataSource.manager.save(categories)

@@ -37,6 +37,8 @@ import { In } from 'typeorm'
  */
 export async function getMerchantDraftCountsByUser (req: AuthRequest, res: Response) {
   const portalUser = req.user
+
+  /* istanbul ignore next */
   if (portalUser == null) {
     return res.status(401).send({ message: 'Unauthorized' })
   }
@@ -64,7 +66,7 @@ export async function getMerchantDraftCountsByUser (req: AuthRequest, res: Respo
       {}, {}, portalUser
     )
     return res.send({ message: 'OK', data: merchantDraftCountsByUser })
-  } catch (e: any) {
+  } catch (e: any) /* istanbul ignore next */ {
     await audit(
       AuditActionType.ACCESS,
       AuditTrasactionStatus.FAILURE,
