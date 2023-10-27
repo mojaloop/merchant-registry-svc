@@ -123,7 +123,7 @@ describe('AllMerchantRecords', () => {
       data: { data: hoistedValues.allMerchants, totalPages: 1 },
       isFetching: false,
       isSuccess: true,
-      refetch: vi.fn,
+      refetch: () => vi.fn,
     })
 
     render(
@@ -183,7 +183,7 @@ describe('AllMerchantRecords', () => {
     const filterForm = screen.getByTestId('filter-form')
     fireEvent.submit(filterForm)
 
-    await waitFor(() => vi.fn())
+    await waitFor(() => Promise.resolve)
 
     expect(refetchSpy).toHaveBeenCalled()
   })
@@ -223,8 +223,8 @@ describe('AllMerchantRecords', () => {
       </TestWrapper>
     )
 
-    const table = within(screen.getByTestId('table'))
-    const viewDetailsButton = table.getByText('View Details')
+    const table = screen.getByTestId('table')
+    const viewDetailsButton = within(table).getByText('View Details')
     fireEvent.click(viewDetailsButton)
 
     expect(screen.getByRole('dialog')).toBeInTheDocument()
