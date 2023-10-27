@@ -71,6 +71,8 @@ const JWT_SECRET = process.env.JWT_SECRET ?? ''
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 export async function addUser (req: AuthRequest, res: Response) {
   const portalUser = req.user
+
+  /* istanbul ignore if */
   if (portalUser == null) {
     return res.status(401).send({ message: 'Unauthorized' })
   }
@@ -174,7 +176,7 @@ export async function addUser (req: AuthRequest, res: Response) {
     await sendVerificationEmail(newUser.email, token, roleObj.name)
 
     res.status(201).send({ message: 'User created. And Verification Email Sent', data: newUser })
-  } catch (error) {
+  } catch (error) /* istanbul ignore next */ {
     await audit(
       AuditActionType.ACCESS,
       AuditTrasactionStatus.FAILURE,

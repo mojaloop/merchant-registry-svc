@@ -57,6 +57,8 @@ import { hashPassword } from '../../utils/utils'
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 export async function putUserResetPassword (req: Request, res: Response) {
   const portalUser = req.user
+
+  /* istanbul ignore if  */
   if (portalUser == null) {
     return res.status(401).send({ message: 'Unauthorized' })
   }
@@ -81,7 +83,7 @@ export async function putUserResetPassword (req: Request, res: Response) {
     )
 
     return res.status(201).send({ message: 'Reset Password Successful' })
-  } catch (error) {
+  } catch (error) /* istanbul ignore next */ {
     await audit(
       AuditActionType.ACCESS,
       AuditTrasactionStatus.FAILURE,

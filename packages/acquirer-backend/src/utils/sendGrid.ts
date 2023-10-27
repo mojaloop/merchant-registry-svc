@@ -21,6 +21,11 @@ export async function sendVerificationEmail (
     to: email,
     from: 'sithu.myo@thitsaworks.com',
     subject: 'Email Verification For Merchant Acquirer System',
+    mail_settings: {
+      sandbox_mode: {
+        enable: process.env.node_env === 'test'
+      }
+    },
     html: `
       Dear User,<br/>
       <br/>

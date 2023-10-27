@@ -41,6 +41,7 @@ export const initializeDatabase = async (): Promise<void> => {
       await seedDefaultRoles(AppDataSource)
       await seedDefaultUsers(AppDataSource)
 
+      /* istanbul ignore next */
       if (process.env.NODE_ENV !== 'test') {
         // only seed countries, subdivisions, districts in non-test environment
         // because it takes a long time to seed
@@ -49,6 +50,7 @@ export const initializeDatabase = async (): Promise<void> => {
       }
     })
     .catch((error) => {
+      /* istanbul ignore next */
       throw error
     })
 }

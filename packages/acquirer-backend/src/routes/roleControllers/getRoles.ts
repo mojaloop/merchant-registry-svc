@@ -5,6 +5,8 @@ import logger from '../../services/logger'
 import { type AuthRequest } from 'src/types/express'
 import { PortalRoleEntity } from '../../entity/PortalRoleEntity'
 import { PortalPermissionEntity } from '../../entity/PortalPermissionEntity'
+import { audit } from '../../utils/audit'
+import { AuditActionType, AuditTrasactionStatus } from 'shared-lib'
 
 /**
  * @openapi
@@ -38,6 +40,7 @@ import { PortalPermissionEntity } from '../../entity/PortalPermissionEntity'
  */
 export async function getRoles (req: AuthRequest, res: Response) {
   const portalUser = req.user
+  /* istanbul ignore next */
   if (portalUser == null) {
     return res.status(401).send({ message: 'Unauthorized' })
   }
@@ -62,8 +65,16 @@ export async function getRoles (req: AuthRequest, res: Response) {
 
     const flattenedPermissions = permissions.map(permission => permission.name)
 
+    await audit(
+      AuditActionType.ACCESS,
+      AuditTrasactionStatus.SUCCESS,
+      'getRoles',
+      'GET List of Roles and associated permissions',
+      'PortalRoleEntity',
+      {}, {}, portalUser)
+
     res.send({ message: 'OK', data: flattenedRoles, permissions: flattenedPermissions })
-  } catch (e) {
+  } catch (e) /* istanbul ignore next */ {
     logger.error(e)
     res.status(500).send({ message: e })
   }

@@ -15,6 +15,16 @@ export const DefaultRoles = [
       PermissionsEnum.EDIT_PORTAL_USERS,
       PermissionsEnum.DELETE_PORTAL_USERS,
 
+      PermissionsEnum.ASSIGNABLE_ADMIN_ROLES,
+      PermissionsEnum.ASSIGNABLE_OPERATOR_ROLES,
+      PermissionsEnum.ASSIGNABLE_AUDITOR_ROLES,
+
+      PermissionsEnum.CREATE_ROLES,
+      PermissionsEnum.VIEW_ROLES,
+      PermissionsEnum.EDIT_ROLES,
+
+      PermissionsEnum.VIEW_AUDIT_LOGS,
+
       PermissionsEnum.EDIT_SERVER_LOG_LEVEL
     ]
   },
@@ -39,7 +49,6 @@ export const DefaultRoles = [
 
       PermissionsEnum.CREATE_ROLES, // TODO: Remove this permission when Hub User is ready.
       PermissionsEnum.VIEW_ROLES,
-      // PermissionsEnum.EDIT_ROLES,
 
       PermissionsEnum.ASSIGNABLE_ADMIN_ROLES,
       PermissionsEnum.ASSIGNABLE_OPERATOR_ROLES,

@@ -6,6 +6,8 @@ import { DefaultDFSPUsers } from '../../src/database/defaultUsers'
 import { MerchantEntity } from '../../src/entity/MerchantEntity'
 import { AppDataSource } from '../../src/database/dataSource'
 import { NumberOfEmployees } from 'shared-lib'
+import { PortalUserEntity } from '../../src/entity/PortalUserEntity'
+import { CheckoutCounterEntity } from '../../src/entity/CheckoutCounterEntity'
 
 export function testGetMerchantsSucceed (app: Application): void {
   // Arrange
@@ -135,7 +137,102 @@ export function testGetMerchantsSucceed (app: Application): void {
     expect(res.body.data[0].registration_status).toEqual('Draft')
   })
 
-  // Add similar test cases for payintoId, addedBy, approvedBy, addedTime, updatedTime
+  // Add similar test cases for addedBy, approvedBy, addedTime, updatedTime
+  it('should fetch merchants by addedBy', async () => {
+    // Arrange
+    const user = await AppDataSource.manager.findOne(PortalUserEntity, { where: { email: dfspUserEmail } })
+    const userId = user?.id
+
+    // Act
+    const res = await request(app)
+      .get(`/api/v1/merchants?addedBy=${userId as number}`)
+      .set('Authorization', `Bearer ${token}`)
+
+    // Assert
+    expect(res.statusCode).toEqual(200)
+    expect(res.body.data).toBeInstanceOf(Array)
+    expect(res.body.data.length).toBeGreaterThanOrEqual(1)
+    for (const merchant of res.body.data) {
+      expect(merchant.created_by.id).toEqual(userId)
+    }
+  })
+
+  it('should fetch merchants by approvedBy', async () => {
+    // Arrange
+    const user = await AppDataSource.manager.findOne(PortalUserEntity, { where: { email: dfspUserEmail } })
+    const userId = user?.id
+
+    // @ts-expect-error user should never be null
+    await AppDataSource.manager.update(MerchantEntity, merchants[0].id, { checked_by: user })
+
+    // Act
+    const res = await request(app)
+      .get(`/api/v1/merchants?approvedBy=${userId as number}`)
+      .set('Authorization', `Bearer ${token}`)
+
+    // Assert
+    expect(res.statusCode).toEqual(200)
+    expect(res.body.data).toBeInstanceOf(Array)
+    expect(res.body.data.length).toBeGreaterThanOrEqual(1)
+    for (const merchant of res.body.data) {
+      expect(merchant.checked_by.id).toEqual(userId)
+    }
+  })
+
+  it('should fetch merchants by addedTime', async () => {
+    // Arrange
+    await AppDataSource.manager.update(MerchantEntity, merchants[0].id, { created_at: new Date('2021-01-01') })
+
+    // Act
+    const res = await request(app)
+      .get('/api/v1/merchants?addedTime=2021-01-01')
+      .set('Authorization', `Bearer ${token}`)
+
+    // Assert
+    expect(res.statusCode).toEqual(200)
+    expect(res.body.data).toBeInstanceOf(Array)
+    expect(res.body.data.length).toBeGreaterThanOrEqual(1)
+    for (const merchant of res.body.data) {
+      expect(merchant.created_at).toEqual(new Date('2021-01-01').toISOString())
+    }
+  })
+
+  it('should fetch merchants by updatedTime', async () => {
+    // Arrange
+    await AppDataSource.manager.update(MerchantEntity, merchants[0].id, { updated_at: new Date('2021-01-01') })
+
+    // Act
+    const res = await request(app)
+      .get('/api/v1/merchants?updatedTime=2021-01-01')
+      .set('Authorization', `Bearer ${token}`)
+
+    // Assert
+    expect(res.statusCode).toEqual(200)
+    expect(res.body.data).toBeInstanceOf(Array)
+    expect(res.body.data.length).toBeGreaterThanOrEqual(1)
+    for (const merchant of res.body.data) {
+      expect(merchant.updated_at).toEqual(new Date('2021-01-01').toISOString())
+    }
+  })
+
+  it('should fetch merchants by payintoId', async () => {
+    // Arrange
+    await AppDataSource.manager.delete(CheckoutCounterEntity, { alias_value: '000551' })
+    const checkoutCounter = AppDataSource.manager.create(CheckoutCounterEntity, { alias_value: '000551', merchant: merchants[0] })
+    await AppDataSource.manager.save(checkoutCounter)
+
+    // Act
+    const res = await request(app)
+      .get('/api/v1/merchants?payintoId=000551')
+      .set('Authorization', `Bearer ${token}`)
+    // Assert
+    expect(res.statusCode).toEqual(200)
+    expect(res.body.data).toBeInstanceOf(Array)
+    expect(res.body.data.length).toEqual(1)
+
+    // Clean up
+    await AppDataSource.manager.delete(CheckoutCounterEntity, checkoutCounter.id)
+  })
 
   // Testing multiple valid queries
   it('should fetch merchants with multiple queries', async () => {

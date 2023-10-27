@@ -14,17 +14,13 @@ export function testGetCheckoutCounters (app: Application): void {
   const dfspUserPwd = DefaultDFSPUsers[0].password
   const dfspUserDFSPName = DefaultDFSPUsers[0].dfsp_name
 
-  let checkerToken = ''
-  const dfspCheckerUserEmail = DefaultDFSPUsers[1].email
-  const dfspCheckerUserPwd = DefaultDFSPUsers[1].password
-
   let differentDFSPUserToken = ''
   let differentDFSPUserEmail = ''
   let differentDFSPUserPwd = ''
   let unauthorizedMerchantId = 0
 
   beforeAll(async () => {
-    let res = await request(app)
+    const res = await request(app)
       .post('/api/v1/users/login')
       .send({
         email: dfspUserEmail,
@@ -32,19 +28,11 @@ export function testGetCheckoutCounters (app: Application): void {
       })
     token = res.body.token
 
-    res = await request(app)
-      .post('/api/v1/users/login')
-      .send({
-        email: dfspCheckerUserEmail,
-        password: dfspCheckerUserPwd
-      })
-    checkerToken = res.body.token
-
     const res2 = await request(app)
       .post('/api/v1/merchants/draft')
       .set('Authorization', `Bearer ${token}`)
-      .field('dba_trading_name', 'Merchat70')
-      .field('registered_name', 'Registered Merchant 55')
+      .field('dba_trading_name', 'Merchant170')
+      .field('registered_name', 'Registered Merchant 170')
       .field('employees_num', NumberOfEmployees.ONE_TO_FIVE)
       .field('monthly_turnover', 0.5)
       .field('currency_code', 'PHP')
@@ -53,21 +41,31 @@ export function testGetCheckoutCounters (app: Application): void {
       .field('license_number', '123456789')
     validMerchantId = res2.body.data.id
 
+    // Checkout Counter creation requires a merchant location
+    await request(app)
+      .post(`/api/v1/merchants/${validMerchantId}/locations`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        location_type: 'Physical',
+        web_url: 'http://www.example.com',
+        checkout_description: 'Checkout Description 44'
+      })
+
     // find different dfsp user
     for (const user of DefaultDFSPUsers) {
       if (user.dfsp_name !== dfspUserDFSPName) {
         differentDFSPUserEmail = user.email
         differentDFSPUserPwd = user.password
 
-        const res3 = await request(app)
+        const res4 = await request(app)
           .post('/api/v1/users/login')
           .send({
             email: differentDFSPUserEmail,
             password: differentDFSPUserPwd
           })
-        differentDFSPUserToken = res3.body.token
+        differentDFSPUserToken = res4.body.token
 
-        const res4 = await request(app)
+        const res5 = await request(app)
           .post('/api/v1/merchants/draft')
           .set('Authorization', `Bearer ${differentDFSPUserToken}`)
           .field('dba_trading_name', 'Merchat77')
@@ -78,7 +76,8 @@ export function testGetCheckoutCounters (app: Application): void {
           .field('category_code', '10410')
           .field('merchant_type', 'Individual')
           .field('license_number', '123456789')
-        unauthorizedMerchantId = res4.body.data.id
+          .field('checkout_description', 'Checkout Description 33')
+        unauthorizedMerchantId = res5.body.data.id
         break
       }
     }
@@ -87,92 +86,74 @@ export function testGetCheckoutCounters (app: Application): void {
   afterAll(async () => {
     // Clean up
     const merchantRepository = AppDataSource.getRepository(MerchantEntity)
+    await AppDataSource.query('SET FOREIGN_KEY_CHECKS = 0;')
     await merchantRepository.delete({ id: validMerchantId })
     await merchantRepository.delete({ id: unauthorizedMerchantId })
+    await AppDataSource.query('SET FOREIGN_KEY_CHECKS = 1;')
   })
 
   it('should respond with 401 status when Authorization header is missing', async () => {
-    const res = await request(app).get(`/api/v1/merchants/${validMerchantId}`)
+    const res = await request(app).get(`/api/v1/merchants/${validMerchantId}/`)
     expect(res.statusCode).toEqual(401)
   })
 
   it('should respond with 401 status when Authorization token is invalid', async () => {
     const res = await request(app)
-      .get(`/api/v1/merchants/${validMerchantId}`)
+      .get(`/api/v1/merchants/${validMerchantId}/locations`)
       .set('Authorization', 'Bearer invalid_token')
     expect(res.statusCode).toEqual(401)
   })
 
   it('should respond with 422 status when id is not a number', async () => {
     const res = await request(app)
-      .get('/api/v1/merchants/invalid')
+      .get('/api/v1/merchants/invalid/checkout-counters')
       .set('Authorization', `Bearer ${token}`)
-    expect(res.statusCode).toEqual(422)
+    expect(res.statusCode).toEqual(400)
     expect(res.body).toHaveProperty('message')
-    expect(res.body.message).toEqual('Invalid ID')
+    expect(res.body.message).toEqual('Invalid merchant id')
   })
 
   it('should respond with 422 status when id is less than 1', async () => {
     const res = await request(app)
-      .get('/api/v1/merchants/0')
+      .get('/api/v1/merchants/0/checkout-counters')
       .set('Authorization', `Bearer ${token}`)
-    expect(res.statusCode).toEqual(422)
+    expect(res.statusCode).toEqual(400)
     expect(res.body).toHaveProperty('message')
-    expect(res.body.message).toEqual('Invalid ID')
+    expect(res.body.message).toEqual('Invalid merchant id')
   })
 
   it('should respond with 404 status when merchant does not exist', async () => {
     const res = await request(app)
-      .get(`/api/v1/merchants/${nonExistingMerchantId}`)
+      .get(`/api/v1/merchants/${nonExistingMerchantId}/checkout-counters`)
       .set('Authorization', `Bearer ${token}`)
     expect(res.statusCode).toEqual(404)
+    expect(res.body).toHaveProperty('message')
+    expect(res.body.message).toEqual('Merchant not found')
   })
 
-  //       const validMerchantForUser = merchant.dfsps
-  //         .map(dfsp => dfsp.id)
-  //         .includes(portalUser.dfsp.id)
-  //       if (!validMerchantForUser) {
-  //         logger.error('Accessing different DFSP\'s Merchant is not allowed.')
-  //         await audit(
-  //           AuditActionType.ACCESS,
-  //           AuditTrasactionStatus.FAILURE,
-  //           'getMerchantById',
-  //           `User ${portalUser.id} (${portalUser.email})
-  // trying to access unauthorized(different DFSP) merchant ${merchant.id}`,
-  //           'MerchantEntity',
-  //           {}, {}, portalUser
-  //         )
-  //         return res.status(400).send({
-  //           message: 'Accessing different DFSP\'s Merchant is not allowed.'
-  //         })
-  //       }
   it('should respond with 400 status when user is not authorized to access the merchant', async () => {
     // You need to setup a merchant ID that the test user should not have access to.
     const res = await request(app)
-      .get(`/api/v1/merchants/${unauthorizedMerchantId}`)
+      .get(`/api/v1/merchants/${unauthorizedMerchantId}/checkout-counters`)
       .set('Authorization', `Bearer ${token}`)
     expect(res.statusCode).toEqual(400)
     expect(res.body).toHaveProperty('message')
     expect(res.body.message).toEqual('Accessing different DFSP\'s Merchant is not allowed.')
   })
 
-  it('should respond with 500 status when server error occurs', async () => {
-    // To simulate a server error, you may have to mock the service layer to throw an exception.
+  it('should respond with 200 status with Checkout Counter data with location', async () => {
     const res = await request(app)
-      .get(`/api/v1/merchants/${validMerchantId}`)
+      .get(`/api/v1/merchants/${validMerchantId}/checkout-counters`)
       .set('Authorization', `Bearer ${token}`)
-    // Mock the service layer to throw an exception here
-    expect(res.statusCode).toEqual(500)
-  })
-
-  it('should respond with 200 status and valid merchant data when everything is valid', async () => {
-    const res = await request(app)
-      .get(`/api/v1/merchants/${validMerchantId}`)
-      .set('Authorization', `Bearer ${token}`)
+    // Assert
     expect(res.statusCode).toEqual(200)
     expect(res.body).toHaveProperty('message')
     expect(res.body.message).toEqual('OK')
     expect(res.body).toHaveProperty('data')
-    expect(res.body.data).toBeInstanceOf(Object)
+    expect(res.body.data).toBeInstanceOf(Array)
+    expect(res.body.data.length).toEqual(1)
+    expect(res.body.data[0]).toHaveProperty('id')
+    expect(res.body.data[0]).toHaveProperty('description')
+    expect(res.body.data[0].description).toEqual('Checkout Description 44')
   })
 }

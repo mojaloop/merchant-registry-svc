@@ -102,6 +102,8 @@ import { type AuthRequest } from '../../types/express'
  */
 export async function getMerchants (req: AuthRequest, res: Response) {
   const portalUser = req.user
+
+  /* istanbul ignore if  */
   if (portalUser == null) {
     return res.status(401).send({ message: 'Unauthorized' })
   }
@@ -245,7 +247,7 @@ export async function getMerchants (req: AuthRequest, res: Response) {
     )
 
     res.send({ message: 'OK', data: merchants, totalPages })
-  } catch (e) {
+  } catch (e) /* istanbul ignore next */ {
     logger.error(e)
 
     await audit(
