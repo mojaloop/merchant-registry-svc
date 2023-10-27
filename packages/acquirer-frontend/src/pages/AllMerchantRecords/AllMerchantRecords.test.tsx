@@ -16,7 +16,7 @@ const hoistedValues = vi.hoisted(() => ({
       countrySubdivision: 'Western Australia',
       counterDescription: 'N/A',
       registeredDfspName: 'DFSP 1',
-      registrationStatus: 'DFSP 1 Super Admin 1',
+      registrationStatus: 'Pending',
       maker: {
         id: 5,
         name: 'DFSP 1 Super Admin 1',
@@ -209,7 +209,7 @@ describe('AllMerchantRecords', () => {
     expect(exportMerchantsSpy).toHaveBeenCalled()
   })
 
-  it('should render modal when "View Details" button is clicked', () => {
+  it('should render merchant info modal when "View Details" button is clicked', () => {
     mockUsers.mockReturnValue({ data: hoistedValues.users, isLoading: false })
     mockAllMerchants.mockReturnValue({
       data: { data: hoistedValues.allMerchants, totalPages: 1 },
