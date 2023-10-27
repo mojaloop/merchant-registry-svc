@@ -39,7 +39,7 @@ const ReasonModal = ({
   })
 
   const onSubmit = (values: ReasonForm) => {
-    onConfirm(values.reason || '')
+    onConfirm(values.reason)
     onClose()
   }
 

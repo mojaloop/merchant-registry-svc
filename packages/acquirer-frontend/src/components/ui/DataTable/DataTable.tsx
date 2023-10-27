@@ -47,6 +47,7 @@ const DataTable = <T,>({
           size='sm'
           variant='unstyled'
           style={{ borderCollapse: 'separate', borderSpacing: '0 .5rem' }}
+          data-testid='table'
         >
           <Thead>
             {getHeaderGroups()

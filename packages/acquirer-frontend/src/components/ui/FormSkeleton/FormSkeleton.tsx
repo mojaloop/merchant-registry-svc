@@ -15,6 +15,7 @@ const FormSkeleton = () => {
       rowGap={{ base: '4', sm: '6' }}
       justifyItems='center'
       w='full'
+      data-testid='form-skeleton'
     >
       {new Array(8).fill(0).map((_, index) => (
         <VStack key={index} w='full'>

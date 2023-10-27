@@ -147,10 +147,11 @@ const AliasGeneratedMerchantRecords = () => {
   const exportMerchants = useExportMerchants()
 
   const users = useUsers()
-  const userOptions = users.data?.map(({ id, name }) => ({
-    value: id,
-    label: name,
-  }))
+  const userOptions =
+    users.data?.map(({ id, name }) => ({
+      value: id,
+      label: name,
+    })) || []
 
   const table = useTable({
     data: aliasGeneratedMerchants.data?.data || [],
@@ -182,7 +183,12 @@ const AliasGeneratedMerchantRecords = () => {
       {users.isLoading ? (
         <FormSkeleton />
       ) : (
-        <Stack as='form' spacing='8' onSubmit={handleSubmit(onSubmit)}>
+        <Stack
+          as='form'
+          spacing='8'
+          onSubmit={handleSubmit(onSubmit)}
+          data-testid='filter-form'
+        >
           <SimpleGrid
             templateColumns={{
               base: 'repeat(1, 1fr)',
@@ -200,7 +206,7 @@ const AliasGeneratedMerchantRecords = () => {
               errors={errors}
               label='Added By'
               placeholder='Select Added User'
-              options={userOptions || []}
+              options={userOptions}
             />
 
             <FormSelect
@@ -209,7 +215,7 @@ const AliasGeneratedMerchantRecords = () => {
               errors={errors}
               label='Approved By'
               placeholder='Select Approved User'
-              options={userOptions || []}
+              options={userOptions}
             />
 
             <FormInput

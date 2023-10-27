@@ -36,7 +36,7 @@ describe('ReviewModal', () => {
     expect(screen.queryByTestId('skeleton')).not.toBeInTheDocument()
   })
 
-  it('should call "changeStatusToReview.mutate" function when submit button is clicked', () => {
+  it('should call "changeStatusToReview.mutate" function when "Submit" button is clicked', () => {
     const chageStatusSpy = vi.spyOn(vi, 'fn')
 
     render(
