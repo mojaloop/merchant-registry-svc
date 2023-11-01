@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "es6",
+    "target": "ES2020",
     "module": "commonjs",
     "rootDir": "./",
     "outDir": "./dist",
@@ -9,6 +9,8 @@
     "moduleResolution": "node",
     "esModuleInterop": true,
     "emitDecoratorMetadata": true,
+    "allowImportingTsExtensions": true,
+    "noEmit": true,
     "allowSyntheticDefaultImports": true,
     "experimentalDecorators": true,
     "removeComments": true,

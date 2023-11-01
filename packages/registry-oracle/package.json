@@ -5,7 +5,7 @@
   "main": "src/index.ts",
   "scripts": {
     "start": "nodemon --watch 'src/**/*.ts' --watch '.env*' --exec 'ts-node' src/index.ts",
-    "build": "ts-node",
+    "build": "tsc",
     "lint": "eslint . --ext .js,.ts",
     "test": "jest",
     "type:check": "tsc --noEmit"

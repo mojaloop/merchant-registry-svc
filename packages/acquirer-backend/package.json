@@ -6,6 +6,7 @@
   "scripts": {
     "start": "ts-node src/index.ts",
     "start:watch": "nodemon --watch 'src/**/*.ts' --watch '.env*' --exec 'ts-node' src/index.ts",
+    "build": "tsc",
     "lint": "eslint . --ext .js,.ts",
     "lint:fix": "npm run lint -- --fix",
     "type:check": "tsc --noEmit",
