@@ -46,6 +46,9 @@ and proceed with the necessary steps in the payment transaction.
         * To be able to access merchant license document file or QRCode Image, 
             * For Linux/Mac, open `/etc/hosts` with root permission and add this line `127.0.0.1 minio`, otherwise `minio:9000` link will be unreachable.
 
+## For Deploying manual without Docker
+* Check [Manual Deployment Guide](./docs/manual-deployment-guide.md)
+
 ## Running E2E Testing
 Require `docker-compose up --build` to be running.
 Use two different test databases for `acquirer-backend` and `registry-oracle` services. See `./mysql-init-scripts/init.mysql` 
