@@ -97,17 +97,22 @@ router.get('/participants/:type/:id', async (req: Request, res: Response) => {
     where: { alias_value: id },
     select: ['fspId', 'currency'] 
   })
+
+  let transaction_status = AuditTrasactionStatus.SUCCESS
+  if(!registryRecord) {
+    transaction_status = AuditTrasactionStatus.FAILURE
+  }
   
   await audit(
     AuditActionType.ACCESS,
-    AuditTrasactionStatus.SUCCESS,
+    transaction_status,
     'getParticipants',
     'GET Participants: Participant retrieved',
     'RegistryEntity',
-    {}, {partyList: registryRecord}
+    {}, {partyList: registryRecord, payinto_id: id}
   )
 
-  logger.debug('registryRecord Retrieved: %o', registryRecord)
+  logger.debug('registryRecord %s Retrieved: %o', id, registryRecord)
   res.send({partyList: registryRecord ? [registryRecord] : []})
 })
 
