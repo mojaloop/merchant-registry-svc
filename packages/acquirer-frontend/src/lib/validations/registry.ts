@@ -14,14 +14,17 @@ export type OwnerInfoForm = z.infer<typeof ownerInfoSchema>
 export type ContactPersonForm = z.infer<typeof contactPersonSchema>
 
 export const businessInfoSchema = z.object({
-  dba_trading_name: z.string().nonempty({ message: 'Business name is required' }),
+  dba_trading_name: z.string().trim().min(1, { message: 'Business name is required' }),
   registered_name: z.string().optional(),
-  // payinto_alias: z.string().nonempty({ message: 'Payinto account is required' }),
+  // payinto_alias: z.string().min(1, { message: 'Payinto account is required' }),
   employees_num: z.nativeEnum(NumberOfEmployees, {
     errorMap: () => ({ message: 'Please select an option' }),
   }),
   monthly_turnover: z.string().optional(),
-  category_code: z.string().nonempty({ message: 'Please select a merchant category' }),
+  category_code: z
+    .string()
+    .trim()
+    .min(1, { message: 'Please select a merchant category' }),
   merchant_type: z.nativeEnum(MerchantType, {
     errorMap: () => ({ message: 'Please select a merchant type' }),
   }),
@@ -60,17 +63,19 @@ export const locationInfoSchema = z.object({
 })
 
 export const ownerInfoSchema = z.object({
-  name: z.string().nonempty({ message: 'Name is required' }),
+  name: z.string().trim().min(1, { message: 'Name is required' }),
   identification_number: z
     .string()
-    .nonempty({ message: 'Identification number is required' }),
+    .trim()
+    .min(1, { message: 'Identification number is required' }),
   identificaton_type: z.nativeEnum(BusinessOwnerIDType, {
     errorMap: () => ({ message: 'Please select an ID type' }),
   }),
   phone_number: z
     .string()
+    .trim()
     .regex(/^[0-9+-]*$/, 'Please enter a valid phone number')
-    .nonempty({ message: 'Phone number is required' }),
+    .min(1, { message: 'Phone number is required' }),
   email: z.string().email().or(z.literal(null)).or(z.literal('')),
   department: z.string().optional(),
   sub_department: z.string().optional(),
@@ -91,10 +96,11 @@ export const ownerInfoSchema = z.object({
 
 export const contactPersonSchema = z.object({
   is_same_as_business_owner: z.boolean(),
-  name: z.string().nonempty({ message: 'Name is required' }),
+  name: z.string().trim().min(1, { message: 'Name is required' }),
   phone_number: z
     .string()
+    .trim()
     .regex(/^[0-9+-]*$/, 'Please enter a valid phone number')
-    .nonempty({ message: 'Phone number is required' }),
+    .min(1, { message: 'Phone number is required' }),
   email: z.string().email().or(z.literal(null)).or(z.literal('')),
 })
