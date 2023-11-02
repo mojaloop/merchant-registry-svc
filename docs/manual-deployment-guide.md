@@ -36,7 +36,7 @@ cd merchant-registry-svc
 
 ### Step 2: Install Global Dependencies
 
-1. **Node.js**: Install it from the official [Node.js website](https://nodejs.org/).
+1. **Node.js**: Install it using the NVM (Node Version Manager)
 ```bash
 # For Ubuntu
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.5/install.sh | bash
