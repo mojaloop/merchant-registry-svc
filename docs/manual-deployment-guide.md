@@ -15,9 +15,9 @@
 
 ### Components:
 
-1. **acquirer-frontend**: The frontend service for the acquirer.
-2. **acquirer-backend**: The backend service for the acquirer.
-3. **registry-oracle**: The oracle service for the registry.
+1. **acquirer-frontend**: Portal UI for Managing Merchants Informations.
+2. **acquirer-backend**: Backend Service for handling Merchants Informations.
+3. **registry-oracle**: Will Serve as Oracle for Mojaloop ALS.
 4. **MySQL**: The merchant database.
 5. **RabbitMQ**: The message broker.
 
