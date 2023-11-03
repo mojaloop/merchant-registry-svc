@@ -52,3 +52,7 @@ export function generateApiKey (): string {
 
   return apiKey
 }
+
+export function isUndefinedOrNull (value: any): boolean {
+  return value === undefined || value === null
+}
