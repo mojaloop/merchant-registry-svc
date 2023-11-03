@@ -72,20 +72,38 @@ export async function putRoleUpdatePermissions (req: AuthRequest, res: Response)
   // check if role exist
   const role = await RoleRepository.findOne({ where: { id } })
   if (role == null) {
+    await audit(AuditActionType.UPDATE, AuditTrasactionStatus.FAILURE,
+      'putRoleUpdatePermissions',
+      'Role does not exist',
+      'PortalRoleEntity',
+      {}, { id }, portalUser)
+
     return res.status(400).send({ message: 'Role does not exist' })
   }
 
   // check if permissions exist
   const perms = await PermsRepository.find({ where: { name: In(permissions) } })
   if (perms.length !== permissions.length) {
-    return res.status(400).send({ message: 'Invalid permissions' })
+    await audit(AuditActionType.UPDATE, AuditTrasactionStatus.FAILURE,
+      'putRoleUpdatePermissions',
+      'Invalid permissions. At least one of the permissions does not exist',
+      'PortalRoleEntity',
+      {}, { permissions }, portalUser)
+
+    return res.status(400).send({ message: 'Invalid permissions. At least one of the permissions does not exist' })
   }
 
   try {
     role.permissions = perms
     await RoleRepository.save(role)
 
-    res.send({ message: 'Role updated successfully' })
+    await audit(AuditActionType.UPDATE, AuditTrasactionStatus.SUCCESS,
+      'putRoleUpdatePermissions',
+      'Role updated successfully',
+      'PortalRoleEntity',
+      {}, { role }, portalUser)
+
+    return res.send({ message: 'Role updated successfully' })
   } catch (e) {
     logger.error(e)
     res.status(500).send({ message: e })
