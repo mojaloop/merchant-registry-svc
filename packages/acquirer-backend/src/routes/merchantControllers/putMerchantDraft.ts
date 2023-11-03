@@ -78,7 +78,7 @@ import { type AuthRequest } from 'src/types/express'
  *     responses:
  *       200:
  *         description:
- *          The merchant draft has been created successfully.
+ *          Updating Merchant Draft Successful
  *         content:
  *          application/json:
  *            schema:
@@ -86,7 +86,7 @@ import { type AuthRequest } from 'src/types/express'
  *              properties:
  *                message:
  *                  type: string
- *                  example: "Drafting Merchant Successful."
+ *                  example: "Updating Merchant Draft Successful"
  *                data:
  *                  type: object
  *
@@ -234,5 +234,5 @@ trying to access unauthorized(different DFSP) merchant ${merchant.id}`,
     'Merchant',
     oldMerchant, { ...merchantData, business_licenses: [] }, portalUser
   )
-  return res.status(201).send({ message: 'Updating Merchant Draft Successful', data: merchantData })
+  return res.status(200).send({ message: 'Updating Merchant Draft Successful', data: merchantData })
 }
