@@ -167,6 +167,32 @@ npm run dev -w acquirer-frontend -- --host
 npm run registry-oracle:start
 ```
 
+### Step 9: Add Oracle Endpoint to Mojaloop ALS
+Replace the `127.0.0.1:4001` with the ALS IP Address and Port.
+`registry-oracle:6666` should be reachable from ALS. (Trying pinging `registry-oracle` from ALS container)
+
+```bash
+curl -H "Content-Type: application/json" \
+  -H "Date: $(date -u +%a,\ %d\ %b\ %Y\ %H:%M:%S\ GMT)" \
+  -X POST http://127.0.0.1:4001/oracles \
+  -d '{
+  "oracleIdType": "ALIAS",
+  "endpoint": {
+    "value": "http://registry-oracle:6666",
+    "endpointType": "URL"
+  },
+  "currency": "USD",
+  "isDefault": true
+}'
+```
+
+Confirm that the oracle was added successfully by running the following command:
+(again, replace `127.0.0.1:4001` with the ALS IP Address and Port)
+
+```bash
+curl -H "Content-Type: application/json" -H "Date: $(date -u +%a,\ %d\ %b\ %Y\ %H:%M:%S\ GMT)" http://127.0.0.1:4001/oracles
+```
+
 ## Security Best Practices
 
 1. **MySQL**: Don't use `root` for application access. Create a specific user with restricted permissions.
