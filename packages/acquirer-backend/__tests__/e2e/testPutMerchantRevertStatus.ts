@@ -148,6 +148,45 @@ export function testPutMerchantRevertStatus (app: Application): void {
     expect(res.body.message).toContain('cannot be reverted by the same user who submitted it.')
   })
 
+  it('should respond 422 with IDs must be an array of numbers message when ids is not an array', async () => {
+    const res = await request(app)
+      .put('/api/v1/merchants/bulk-revert')
+      .set('Authorization', `Bearer ${makerToken}`)
+      .send({
+        reason: 'Reverted',
+        ids: 'invalid'
+      })
+    expect(res.statusCode).toEqual(422)
+    expect(res.body).toHaveProperty('message')
+    expect(res.body.message).toContain('IDs must be an array of numbers.')
+  })
+
+  it('should respond 422 with IDs must be an array of numbers message when ids is an empty array', async () => {
+    const res = await request(app)
+      .put('/api/v1/merchants/bulk-revert')
+      .set('Authorization', `Bearer ${makerToken}`)
+      .send({
+        reason: 'Reverted',
+        ids: []
+      })
+    expect(res.statusCode).toEqual(422)
+    expect(res.body).toHaveProperty('message')
+    expect(res.body.message).toContain('IDs must be an array of numbers.')
+  })
+
+  it('should respond 422 with Each ID in the array must be a valid ID number message when ids is an array of invalid ids', async () => {
+    const res = await request(app)
+      .put('/api/v1/merchants/bulk-revert')
+      .set('Authorization', `Bearer ${makerToken}`)
+      .send({
+        reason: 'Reverted',
+        ids: ['invalid']
+      })
+    expect(res.statusCode).toEqual(422)
+    expect(res.body).toHaveProperty('message')
+    expect(res.body.message).toContain('Each ID in the array must be a valid ID number.')
+  })
+
   it('should respond 422 with not in review status message when merchant is not in review status', async () => {
     const res = await request(app)
       .put('/api/v1/merchants/bulk-revert')

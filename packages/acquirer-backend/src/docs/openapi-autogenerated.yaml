@@ -827,14 +827,9 @@ paths:
                 merchant_type:
                   type: string
                   example: Individual
-                payinto_alias:
-                  type: string
-                  example: merchant1
-                  required: false
                 license_number:
                   type: string
                   example: '123456789'
-                  required: true
                 license_document:
                   type: string
                   format: binary
@@ -994,7 +989,7 @@ paths:
                   type: string
                   example: 123-456-7890-333
       responses:
-        '201':
+        '200':
           description: Contact Person Updated
           content:
             application/json:
@@ -1060,7 +1055,7 @@ paths:
                   format: binary
       responses:
         '200':
-          description: The merchant draft has been created successfully.
+          description: Updating Merchant Draft Successful
           content:
             application/json:
               schema:
@@ -1068,7 +1063,7 @@ paths:
                 properties:
                   message:
                     type: string
-                    example: Drafting Merchant Successful.
+                    example: Updating Merchant Draft Successful
                   data:
                     type: object
         '422':
@@ -1231,7 +1226,7 @@ paths:
                   type: string
                   example: '99.0060'
       responses:
-        '201':
+        '200':
           description: Business Owner Updated
           content:
             application/json:
@@ -1408,8 +1403,8 @@ paths:
                     example: View Merchants
                     description: The permissions for the role
       responses:
-        '200':
-          description: Create Role
+        '201':
+          description: Role created successfully
           content:
             application/json:
               schema:
@@ -1418,7 +1413,7 @@ paths:
                   message:
                     type: string
                     description: The response message
-                    example: OK
+                    example: Role created successfully
   /roles/{id}:
     post:
       tags:
@@ -1487,31 +1482,9 @@ paths:
                   nullable: true
       responses:
         '200':
-          description: Login successful
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                    example: true
-                  message:
-                    type: string
-                    example: Login successful
+          description: User created. And Verification Email Sent
         '400':
           description: Invalid credentials
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                    example: false
-                  message:
-                    type: string
-                    example: Invalid credentials
         '422':
           description: Validation error
   /users/profile:
@@ -1638,8 +1611,6 @@ paths:
     get:
       tags:
         - Portal Users
-      security:
-        - Authorization: []
       parameters:
         - in: query
           name: token

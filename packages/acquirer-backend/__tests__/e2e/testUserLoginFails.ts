@@ -8,6 +8,39 @@ import { AppDataSource } from '../../src/database/dataSource'
 import { PortalUserStatus, PortalUserType } from 'shared-lib'
 
 export function testUserLoginFails (app: Application): void {
+  it('should respond with 422 status with Validation error message when invalid email format', async () => {
+    // Arrange
+    // Act
+    const res = await request(app)
+      .post('/api/v1/users/login')
+      .send({
+        email: 'invalid-email-format',
+        password: 'password'
+      })
+
+    // Assert
+    expect(res.statusCode).toEqual(422)
+    expect(res.body).toHaveProperty('message')
+    expect(res.body.message).toEqual('Validation error')
+  })
+
+  it('should respond with 422 status with Validation error message when min password len is not 8', async () => {
+    // Arrange
+    // Act
+
+    const res = await request(app)
+      .post('/api/v1/users/login')
+      .send({
+        email: 'sample-user@email.com',
+        password: '1234567'
+      })
+
+    // Assert
+    expect(res.statusCode).toEqual(422)
+    expect(res.body).toHaveProperty('message')
+    expect(res.body.message).toEqual('Validation error')
+  })
+
   it('should respond with 422 status with Validation error message when empty email/password', async () => {
     // Arrange
     // Act

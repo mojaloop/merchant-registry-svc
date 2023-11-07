@@ -34,6 +34,29 @@ export function testPostDFSP (app: Application): void {
     expect(res.body.message).toEqual('Authorization Failed')
   })
 
+  it('should respond with 400 when request body is invalid', async () => {
+    const res = await request(app)
+      .post('/api/v1/dfsps')
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        name: 12345,
+        fspId: 555555,
+        dfspType: 'non-existing-type',
+        joinedDate: 66666,
+        activated: 'true',
+        logoURI: 77777
+      })
+
+    expect(res.statusCode).toEqual(400)
+    expect(res.body).toHaveProperty('message')
+    expect(res.body.message).toEqual('Invalid request body')
+    expect(res.body).toHaveProperty('errors')
+    expect(res.body.errors).toHaveProperty('name')
+    expect(res.body.errors).toHaveProperty('fspId')
+    expect(res.body.errors).toHaveProperty('dfspType')
+    expect(res.body.errors).toHaveProperty('joinedDate')
+  })
+
   it('should respond with 201 and DFSP data when everything is valid.', async () => {
     const res = await request(app)
       .post('/api/v1/dfsps')

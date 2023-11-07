@@ -7,7 +7,7 @@ import {
 import { initializeDatabase } from '../../src/database/initDatabase'
 import { AppDataSource } from '../../src/database/dataSource'
 import setupRoutes from '../../src/setup/routesSetup'
-import { testSucceedHealthCheck } from './healthCheck.tests'
+import { testSucceedHealthCheck, testSucceedHealthCheckSendGridService } from './healthCheck.tests'
 import { disconnectMessageQueue } from '../../src/services/messageQueue'
 import { testUserLoginFails } from './testUserLoginFails'
 import { testUserLoginSucceed } from './testUserLoginSucceed'
@@ -41,6 +41,23 @@ import { testGETMerchantXlsxWorkbookFilter } from './testMerchantXlsxWorkbookFil
 import { testPostUserRefreshToken } from './testPutUserRefreshToken'
 import { testPostMerchantContactPerson } from './testPostMerchantContactPerson'
 import { testPostMerchantOwner } from './testPostMerchantOwner'
+import { testPutMerchantDraft } from './testPutMerchantDraft'
+import { testPostRolecreate } from './testPostRoleCreate'
+import { testPutRoleUpdatePermissions } from './testPutRoleUpdatePermissions'
+import { testPutMerchantOwner } from './testPutMerchantOwner'
+import { testPutMerchantContactPerson } from './testPutMerchantContactPerson'
+import { testPutMerchantLocations } from './testPutMerchantLocation'
+
+jest.mock('@sendgrid/mail', () => ({
+  setApiKey: jest.fn(),
+  send: jest.fn().mockResolvedValue([
+    {
+      statusCode: 200,
+      body: '',
+      headers: {}
+    }
+  ])
+}))
 
 logger.silent = true
 
@@ -56,7 +73,7 @@ describe('E2E API Tests', () => {
 
   afterAll(async () => {
     await AppDataSource.destroy()
-    await removeMerchantDocumentBucket()
+    // await removeMerchantDocumentBucket()
     await disconnectMessageQueue()
   })
 
@@ -93,6 +110,14 @@ describe('E2E API Tests', () => {
     testPostMerchantContactPerson(app)
   })
 
+  describe('PUT Merchant Draft API Tests', () => {
+    testPutMerchantDraft(app)
+  })
+
+  describe('PUT Merchant Location API Tests', () => {
+    testPutMerchantLocations(app)
+  })
+
   describe('PUT Merchant Status ReadyToReview API Tests', () => {
     testPutMerchantStatusReadyToReview(app)
   })
@@ -107,6 +132,14 @@ describe('E2E API Tests', () => {
 
   describe('PUT Merchant Status Revert API Tests', () => {
     testPutMerchantRevertStatus(app)
+  })
+
+  describe('PUT Merchant Business Owner API Tests', () => {
+    testPutMerchantOwner(app)
+  })
+
+  describe('PUT Merchant Contact Person API Tests', () => {
+    testPutMerchantContactPerson(app)
   })
 
   describe('GET Merchant Draft Counts API Tests', () => {
@@ -133,6 +166,7 @@ describe('E2E API Tests', () => {
 
   describe('Health Check API Tests', () => {
     testSucceedHealthCheck(app)
+    testSucceedHealthCheckSendGridService(app)
   })
 
   describe('GET Audits API Tests', () => {
@@ -172,5 +206,13 @@ describe('E2E API Tests', () => {
 
   describe('GET Roles API Tests', () => {
     testGetRoles(app)
+  })
+
+  describe('POST Roles Create API Tests', () => {
+    testPostRolecreate(app)
+  })
+
+  describe('PUT Roles Update Permissions API Tests', () => {
+    testPutRoleUpdatePermissions(app)
   })
 })

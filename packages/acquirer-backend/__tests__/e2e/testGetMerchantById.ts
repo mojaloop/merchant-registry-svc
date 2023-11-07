@@ -4,6 +4,7 @@ import { DefaultDFSPUsers } from '../../src/database/defaultUsers'
 import { AppDataSource } from '../../src/database/dataSource'
 import { MerchantEntity } from '../../src/entity/MerchantEntity'
 import { NumberOfEmployees } from 'shared-lib'
+import { PortalUserEntity } from '../../src/entity/PortalUserEntity'
 
 export function testGetMerchantById (app: Application): void {
   let token = ''
@@ -14,9 +15,7 @@ export function testGetMerchantById (app: Application): void {
   const dfspUserPwd = DefaultDFSPUsers[0].password
   const dfspUserDFSPName = DefaultDFSPUsers[0].dfsp_name
 
-  let checkerToken = ''
   const dfspCheckerUserEmail = DefaultDFSPUsers[1].email
-  const dfspCheckerUserPwd = DefaultDFSPUsers[1].password
 
   let differentDFSPUserToken = ''
   let differentDFSPUserEmail = ''
@@ -24,21 +23,13 @@ export function testGetMerchantById (app: Application): void {
   let unauthorizedMerchantId = 0
 
   beforeAll(async () => {
-    let res = await request(app)
+    const res = await request(app)
       .post('/api/v1/users/login')
       .send({
         email: dfspUserEmail,
         password: dfspUserPwd
       })
     token = res.body.token
-
-    res = await request(app)
-      .post('/api/v1/users/login')
-      .send({
-        email: dfspCheckerUserEmail,
-        password: dfspCheckerUserPwd
-      })
-    checkerToken = res.body.token
 
     const res2 = await request(app)
       .post('/api/v1/merchants/draft')
@@ -141,13 +132,40 @@ export function testGetMerchantById (app: Application): void {
   })
 
   it('should respond with 200 status and valid merchant data when everything is valid', async () => {
+    // Act
     const res = await request(app)
       .get(`/api/v1/merchants/${validMerchantId}`)
       .set('Authorization', `Bearer ${token}`)
+
+    // Assert
     expect(res.statusCode).toEqual(200)
     expect(res.body).toHaveProperty('message')
     expect(res.body.message).toEqual('OK')
     expect(res.body).toHaveProperty('data')
     expect(res.body.data).toBeInstanceOf(Object)
+  })
+
+  it('should respond 200 status and valid merchant data with checked_by property when merchant is checked', async () => {
+    // Arrange
+    const checker = await AppDataSource.manager.findOne(PortalUserEntity, { where: { email: dfspCheckerUserEmail } }) as PortalUserEntity
+    await AppDataSource.manager.update(MerchantEntity, { id: validMerchantId }, { checked_by: checker })
+
+    // Act
+    const res = await request(app)
+      .get(`/api/v1/merchants/${validMerchantId}`)
+      .set('Authorization', `Bearer ${token}`)
+
+    // Assert
+    expect(res.statusCode).toEqual(200)
+    expect(res.body).toHaveProperty('message')
+    expect(res.body.message).toEqual('OK')
+    expect(res.body).toHaveProperty('data')
+    expect(res.body.data).toBeInstanceOf(Object)
+    expect(res.body.data).toHaveProperty('checked_by')
+    expect(res.body.data.checked_by).toBeInstanceOf(Object)
+    expect(res.body.data.checked_by).toHaveProperty('id')
+    expect(res.body.data.checked_by).toHaveProperty('email')
+    expect(res.body.data.checked_by.email).toEqual(dfspCheckerUserEmail)
+    expect(res.body.data.checked_by.password).toBeUndefined() // password should not be returned
   })
 }

@@ -86,10 +86,10 @@ export function testGetCheckoutCounters (app: Application): void {
   afterAll(async () => {
     // Clean up
     const merchantRepository = AppDataSource.getRepository(MerchantEntity)
-    await AppDataSource.query('SET FOREIGN_KEY_CHECKS = 0;')
+    await AppDataSource.query('PRAGMA foreign_keys = OFF;')
     await merchantRepository.delete({ id: validMerchantId })
     await merchantRepository.delete({ id: unauthorizedMerchantId })
-    await AppDataSource.query('SET FOREIGN_KEY_CHECKS = 1;')
+    await AppDataSource.query('PRAGMA foreign_keys = ON;')
   })
 
   it('should respond with 401 status when Authorization header is missing', async () => {

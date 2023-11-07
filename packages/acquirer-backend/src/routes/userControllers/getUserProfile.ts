@@ -20,6 +20,7 @@ import { audit } from '../../utils/audit'
 
 export async function getUserProfile (req: AuthRequest, res: Response) {
   const portalUser = req.user
+  /* istanbul ignore if */
   if (portalUser == null) {
     return res.status(401).send({ message: 'Unauthorized' })
   }

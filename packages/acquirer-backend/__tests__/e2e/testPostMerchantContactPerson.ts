@@ -132,6 +132,48 @@ export function testPostMerchantContactPerson (app: Application): void {
     expect(res.body.message).toEqual('Accessing different DFSP\'s Merchant is not allowed.')
   })
 
+  it('should respond with 404 status when business owner does not exist when is_same_as_business_owner=true', async () => {
+    // Arrange
+    const merchant = await AppDataSource.manager.findOneOrFail(MerchantEntity, { where: { id: validMerchantId } })
+    merchant.business_owners = []
+    await AppDataSource.manager.save(merchant)
+
+    // Act
+    const res = await request(app)
+      .post(`/api/v1/merchants/${validMerchantId}/contact-persons`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        is_same_as_business_owner: true
+      })
+
+    // Assert
+    expect(res.statusCode).toEqual(404)
+    expect(res.body).toHaveProperty('message')
+    expect(res.body.message).toEqual('Business Owner not found')
+  })
+
+  it('should respond with 422 status when submitted data is invalid', async () => {
+    // Act
+    const res = await request(app)
+      .post(`/api/v1/merchants/${validMerchantId}/contact-persons`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        // name and phone_number are required
+        email: 'invalid-email-format',
+        is_same_as_business_owner: 'yes' // should be boolean
+      })
+
+    // Assert
+    expect(res.statusCode).toEqual(422)
+    expect(res.body).toHaveProperty('message')
+    expect(res.body.message).toEqual([
+      'Required',
+      'Required',
+      'Invalid email',
+      'Expected boolean, received string'
+    ])
+  })
+
   it('should respond 201 with Contact Person Saved message', async () => {
     const res = await request(app)
       .post(`/api/v1/merchants/${validMerchantId}/contact-persons`)

@@ -131,6 +131,24 @@ export function testPostMerchantLocations (app: Application): void {
     expect(res.body.message).toEqual('Accessing different DFSP\'s Merchant is not allowed.')
   })
 
+  it('should respond 422 with Validation Error when Location Type is invalid', async () => {
+    const res = await request(app)
+      .post(`/api/v1/merchants/${validMerchantId}/locations`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        location_type: 'nonexistent-location-type',
+        web_url: 'http://www.example.com',
+        address_type: 'Office',
+        department: 'Sales'
+      })
+
+    expect(res.statusCode).toEqual(422)
+    expect(res.body).toHaveProperty('message')
+    expect(res.body.message).toEqual([
+      "Invalid enum value. Expected 'Physical' | 'Virtual', received 'nonexistent-location-type'"
+    ])
+  })
+
   it('should respond with 201 status and valid location data when everything is valid', async () => {
     const res = await request(app)
       .post(`/api/v1/merchants/${validMerchantId}/locations`)

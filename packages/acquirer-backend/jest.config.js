@@ -2,7 +2,7 @@ module.exports = {
   projects: [
     {
       displayName: 'Unit Tests',
-      testMatch: ['<rootDir>/__tests__/unit/**/*.[jt]s'],
+      testMatch: ['<rootDir>/__tests__/unit/unit.tests.ts'],
       preset: 'ts-jest',
       testEnvironment: 'node'
     },
@@ -19,7 +19,4 @@ module.exports = {
       testEnvironment: 'node'
     }
   ],
-  // collectCoverage: true,
-  // coverageDirectory: './coverage/',
-  // coverageReporters: ["lcov"]
 }

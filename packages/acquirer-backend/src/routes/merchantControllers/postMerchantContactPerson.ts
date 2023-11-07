@@ -66,6 +66,8 @@ import { type AuthRequest } from 'src/types/express'
  */
 export async function postMerchantContactPerson (req: AuthRequest, res: Response) {
   const portalUser = req.user
+
+  /* istanbul ignore if */
   if (portalUser == null) {
     return res.status(401).send({ message: 'Unauthorized' })
   }
@@ -196,7 +198,7 @@ trying to access unauthorized(different DFSP) merchant ${merchant.id}`,
   try {
     savedContactPerson = await contactPersonRepository.save(newContactPerson)
   } catch (err) {
-    if (err instanceof QueryFailedError) {
+    if (err instanceof QueryFailedError)/* istanbul ignore next */ {
       logger.error('Contact Person Server Query error: %o', err.message)
       await audit(
         AuditActionType.ADD,

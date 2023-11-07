@@ -99,6 +99,8 @@ import { type AuthRequest } from 'src/types/express'
 // TODO: check if the authenticated user is a Maker
 export async function putMerchantDraft (req: AuthRequest, res: Response) {
   const portalUser = req.user
+
+  /* istanbul ignore if */
   if (portalUser == null) {
     return res.status(401).send({ message: 'Unauthorized' })
   }

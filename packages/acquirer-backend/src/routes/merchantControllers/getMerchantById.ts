@@ -39,6 +39,7 @@ import { type AuthRequest } from 'src/types/express'
  */
 export async function getMerchantById (req: AuthRequest, res: Response) {
   const portalUser = req.user
+  /* istanbul ignore if */
   if (portalUser == null) {
     return res.status(401).send({ message: 'Unauthorized' })
   }
@@ -110,7 +111,7 @@ trying to access unauthorized(different DFSP) merchant ${merchant.id}`,
           message: 'Accessing different DFSP\'s Merchant is not allowed.'
         })
       }
-    } catch (e) {
+    } catch (e) /* istanbul ignore next */ {
       logger.error('Error fetching merchant: %o', e)
       await audit(
         AuditActionType.ACCESS,

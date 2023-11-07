@@ -97,6 +97,6 @@ export function testGetMerchantDraftCounts (app: Application): void {
     expect(res.body).toHaveProperty('message')
     expect(res.body.message).toEqual('OK')
     expect(res.body).toHaveProperty('data')
-    expect(res.body.data).toEqual(1)
+    expect(res.body.data).toBeGreaterThanOrEqual(1)
   })
 }

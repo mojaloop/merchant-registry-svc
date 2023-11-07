@@ -50,11 +50,11 @@ and proceed with the necessary steps in the payment transaction.
 * Check [Manual Deployment Guide](./docs/manual-deployment-guide.md)
 
 ## Running E2E Testing
-Require `docker-compose up --build` to be running.
-Use two different test databases for `acquirer-backend` and `registry-oracle` services. See `./mysql-init-scripts/init.mysql` 
+Require `docker-compose up minio rabbitmq` (MinIO and RabbitMQ) to be running.
+Use in-memory sqlite3 test databases for `acquirer-backend` and `registry-oracle` services. 
 * Run
     ```bash
-    $ npm run acquirer-backend:test
+    $ npm run acquirer-backend:test:coverage
     ```
 
 ## ERD Design
