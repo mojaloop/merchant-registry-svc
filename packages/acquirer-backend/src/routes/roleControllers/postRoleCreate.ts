@@ -40,8 +40,8 @@ import { AuditActionType, AuditTrasactionStatus } from 'shared-lib'
  *                   example: "View Merchants"
  *                   description: "The permissions for the role"
  *     responses:
- *       200:
- *         description: Create Role
+ *       201:
+ *         description: Role created successfully
  *         content:
  *           application/json:
  *             schema:
@@ -50,10 +50,12 @@ import { AuditActionType, AuditTrasactionStatus } from 'shared-lib'
  *                 message:
  *                   type: string
  *                   description: The response message
- *                   example: OK
+ *                   example: Role created successfully
+ *
  */
 export async function postCreateRole (req: AuthRequest, res: Response) {
   const portalUser = req.user
+  /* istanbul ignore if */
   if (portalUser == null) {
     return res.status(401).send({ message: 'Unauthorized' })
   }
@@ -129,8 +131,8 @@ export async function postCreateRole (req: AuthRequest, res: Response) {
       'PortalRoleEntity',
       {}, { role: newRole }, portalUser)
 
-    return res.send({ message: 'Role created successfully' })
-  } catch (e) {
+    return res.status(201).send({ message: 'Role created successfully' })
+  } catch (e) /* istanbul ignore next */ {
     logger.error(e)
     res.status(500).send({ message: e })
   }

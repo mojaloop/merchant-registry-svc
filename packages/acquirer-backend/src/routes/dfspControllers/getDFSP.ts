@@ -37,6 +37,8 @@ import { DFSPEntity } from '../../entity/DFSPEntity'
  */
 export async function getDFSPs (req: AuthRequest, res: Response) {
   const portalUser = req.user
+
+  /* istanbul ignore if */
   if (portalUser == null) {
     return res.status(401).send({ message: 'Unauthorized' })
   }
@@ -49,7 +51,7 @@ export async function getDFSPs (req: AuthRequest, res: Response) {
     const dfsps = await DFSPRepository.find()
 
     res.send({ message: 'OK', data: dfsps })
-  } catch (e) {
+  } catch (e) /* istanbul ignore next */ {
     logger.error(e)
     res.status(500).send({ message: e })
   }

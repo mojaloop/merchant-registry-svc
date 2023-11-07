@@ -1,13 +1,12 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
-import { type Response } from 'express'
-import { type AuthRequest } from 'src/types/express'
-import { type IJWTUser } from 'src/types/jwtUser'
+import { type Request, type Response } from 'express'
 import jwt from 'jsonwebtoken'
 import logger from '../../services/logger'
 import { EmailVerificationTokenEntity } from '../../entity/EmailVerificationToken'
 import { AppDataSource } from '../../database/dataSource'
 import { PortalUserEntity } from '../../entity/PortalUserEntity'
 import { PortalUserStatus } from 'shared-lib'
+import { type IJWTUser } from '../../types/jwtUser'
 
 const JWT_SECRET = process.env.JWT_SECRET ?? ''
 const FRONTEND_SET_PASSWORD_URL = process.env.FRONTEND_SET_PASSWORD_URL ?? ''
@@ -18,8 +17,6 @@ const FRONTEND_SET_PASSWORD_URL = process.env.FRONTEND_SET_PASSWORD_URL ?? ''
  *   get:
  *     tags:
  *       - Portal Users
- *     security:
- *       - Authorization: []
  *     parameters:
  *       - in: query
  *         name: token
@@ -29,7 +26,7 @@ const FRONTEND_SET_PASSWORD_URL = process.env.FRONTEND_SET_PASSWORD_URL ?? ''
  *     summary: Verify The Email Token and Redirect to Frontend To set password
  */
 
-export async function verifyUserEmail (req: AuthRequest, res: Response) {
+export async function verifyUserEmail (req: Request, res: Response) {
   const token = req.query.token as string | undefined
 
   if (token === undefined) {

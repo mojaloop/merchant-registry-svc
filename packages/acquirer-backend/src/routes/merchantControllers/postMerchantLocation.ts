@@ -111,6 +111,8 @@ import { type AuthRequest } from 'src/types/express'
  */
 export async function postMerchantLocation (req: AuthRequest, res: Response) {
   const portalUser = req.user
+
+  /* istanbul ignore if  */
   if (portalUser == null) {
     return res.status(401).send({ message: 'Unauthorized' })
   }

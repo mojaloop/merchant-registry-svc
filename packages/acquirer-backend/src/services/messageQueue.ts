@@ -32,7 +32,7 @@ let conn: Connection
 // Initialize a map to store callbacks for each correlation ID
 const correlationCallbacks = new Map<string, (msg: Message) => Promise<void>>()
 
-const connectToRabbitMQ = async (delay: number): Promise<void> => {
+export const connectToRabbitMQ = async (delay: number): Promise<void> => {
   try {
     conn = await amqplib.connect(connStr)
     channel = await conn.createChannel()

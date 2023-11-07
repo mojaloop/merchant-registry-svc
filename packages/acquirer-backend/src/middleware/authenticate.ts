@@ -7,6 +7,7 @@ import { AppDataSource } from '../database/dataSource'
 import { PortalUserEntity } from '../entity/PortalUserEntity'
 import { AuditActionType, AuditTrasactionStatus } from 'shared-lib'
 import { type IJWTUser } from 'src/types/jwtUser'
+import { isUndefinedOrNull } from '../utils/utils'
 
 if (process.env.NODE_ENV === 'test') {
   dotenv.config({ path: path.resolve(process.cwd(), '.env.test'), override: true })
@@ -18,7 +19,7 @@ export const JWT_SECRET = process.env.JWT_SECRET ?? ''
 export async function authenticateJWT (req: Request, res: Response, next: NextFunction) {
   const authorization = req.header('Authorization')
 
-  if (authorization === undefined) {
+  if (isUndefinedOrNull(authorization)) {
     await audit(
       AuditActionType.UNAUTHORIZED_ACCESS,
       AuditTrasactionStatus.FAILURE,
@@ -30,19 +31,8 @@ export async function authenticateJWT (req: Request, res: Response, next: NextFu
     return res.status(401).send({ message: 'Authorization Failed' })
   }
 
-  if (authorization === null) {
-    await audit(
-      AuditActionType.UNAUTHORIZED_ACCESS,
-      AuditTrasactionStatus.FAILURE,
-      'authenticateJWT',
-      'Authorization header is null',
-      'PortalUserEntity',
-      {}, {}, null
-    )
-    return res.status(401).send({ message: 'Authorization Failed' })
-  }
-
-  const token = authorization.replace('Bearer', '').trim()
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const token = authorization!.replace('Bearer', '').trim()
 
   try {
     const jwtUser = jwt.verify(token, JWT_SECRET) as IJWTUser

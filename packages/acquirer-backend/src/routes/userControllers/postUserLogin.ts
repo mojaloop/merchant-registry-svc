@@ -128,7 +128,7 @@ export async function postUserLogin (req: Request, res: Response) {
     )
 
     res.json({ success: true, message: 'Login successful', token })
-  } catch (error: any) {
+  } catch (error: any)/* istanbul ignore next */ {
     await audit(
       AuditActionType.ACCESS,
       AuditTrasactionStatus.FAILURE,

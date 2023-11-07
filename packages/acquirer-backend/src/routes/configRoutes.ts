@@ -58,6 +58,8 @@ router.put('/config/trace-level',
   checkPermissions(PermissionsEnum.EDIT_SERVER_LOG_LEVEL),
   async (req: AuthRequest, res: Response) => {
     const portalUser = req.user
+
+    /* istanbul ignore if */
     if (portalUser == null) {
       return res.status(401).send({ message: 'Unauthorized' })
     }

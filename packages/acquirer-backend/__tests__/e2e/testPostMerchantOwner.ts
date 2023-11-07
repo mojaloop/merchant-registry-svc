@@ -4,7 +4,6 @@ import { DefaultDFSPUsers } from '../../src/database/defaultUsers'
 import { AppDataSource } from '../../src/database/dataSource'
 import { MerchantEntity } from '../../src/entity/MerchantEntity'
 import { BusinessOwnerIDType, NumberOfEmployees } from 'shared-lib'
-import { ContactPersonEntity } from '../../src/entity/ContactPersonEntity'
 import { BusinessOwnerEntity } from '../../src/entity/BusinessOwnerEntity'
 
 export function testPostMerchantOwner (app: Application): void {
@@ -123,7 +122,6 @@ export function testPostMerchantOwner (app: Application): void {
   })
 
   it('should respond with 400 status when user is not authorized to access the merchant', async () => {
-    // You need to setup a merchant ID that the test user should not have access to.
     const res = await request(app)
       .post(`/api/v1/merchants/${unauthorizedMerchantId}/business-owners`)
       .set('Authorization', `Bearer ${token}`)
@@ -160,8 +158,8 @@ export function testPostMerchantOwner (app: Application): void {
     expect(res.body.data.email).toEqual('john.doe.owner@example.com')
 
     // Clean up
-    await AppDataSource.query('SET FOREIGN_KEY_CHECKS = 0;')
+    await AppDataSource.query('PRAGMA foreign_keys = OFF;') // Sqlite3 foreign key constraint
     await AppDataSource.manager.getRepository(BusinessOwnerEntity).delete({ id: res.body.data.id })
-    await AppDataSource.query('SET FOREIGN_KEY_CHECKS = 1;')
+    await AppDataSource.query('PRAGMA foreign_keys = ON;')
   })
 }

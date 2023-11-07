@@ -89,6 +89,7 @@
     "npm-check-updates": "^16.14.6",
     "nyc": "^15.1.0",
     "prettier": "^3.0.3",
+    "sqlite3": "^5.1.6",
     "supertest": "^6.3.3",
     "ts-jest": "^29.1.1",
     "ts-node": "^10.9.1",

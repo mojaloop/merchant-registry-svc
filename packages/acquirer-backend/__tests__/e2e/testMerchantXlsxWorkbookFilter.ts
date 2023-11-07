@@ -5,6 +5,7 @@ import { DefaultDFSPUsers } from '../../src/database/defaultUsers'
 import { AppDataSource } from '../../src/database/dataSource'
 import { MerchantEntity } from '../../src/entity/MerchantEntity'
 import { NumberOfEmployees } from 'shared-lib'
+import { CheckoutCounterEntity } from '../../src/entity/CheckoutCounterEntity'
 
 export function testGETMerchantXlsxWorkbookFilter (app: Application): void {
   let dfspUserToken = ''
@@ -59,6 +60,102 @@ export function testGETMerchantXlsxWorkbookFilter (app: Application): void {
   it('should respond with 200 with xlsx file', async () => {
     const res = await request(app)
       .get('/api/v1/merchants/export-with-filter')
+      .set('Authorization', `Bearer ${dfspUserToken}`)
+
+    expect(res.statusCode).toEqual(200)
+    expect(res.headers['content-type']).toEqual('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    expect(res.headers['content-disposition']).toEqual('attachment; filename=merchants.xlsx')
+    expect(res.body).toBeDefined()
+  })
+
+  it('should respond with 200 with xlsx file when addedBy is valid', async () => {
+    await AppDataSource.manager.findOneOrFail(MerchantEntity, { where: { id: merchantId } })
+    const res = await request(app)
+      .get('/api/v1/merchants/export-with-filter?addedBy=1')
+      .set('Authorization', `Bearer ${dfspUserToken}`)
+
+    expect(res.statusCode).toEqual(200)
+    expect(res.headers['content-type']).toEqual('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    expect(res.headers['content-disposition']).toEqual('attachment; filename=merchants.xlsx')
+    expect(res.body).toBeDefined()
+  })
+
+  it('should respond with 200 with xlsx file when approvedBy is valid', async () => {
+    const res = await request(app)
+      .get('/api/v1/merchants/export-with-filter?approvedBy=1')
+      .set('Authorization', `Bearer ${dfspUserToken}`)
+
+    expect(res.statusCode).toEqual(200)
+    expect(res.headers['content-type']).toEqual('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    expect(res.headers['content-disposition']).toEqual('attachment; filename=merchants.xlsx')
+    expect(res.body).toBeDefined()
+  })
+
+  it('should respond with 200 with xlsx file when addedTime is valid', async () => {
+    const res = await request(app)
+      .get('/api/v1/merchants/export-with-filter?addedTime=2020-01-01')
+      .set('Authorization', `Bearer ${dfspUserToken}`)
+
+    expect(res.statusCode).toEqual(200)
+    expect(res.headers['content-type']).toEqual('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    expect(res.headers['content-disposition']).toEqual('attachment; filename=merchants.xlsx')
+    expect(res.body).toBeDefined()
+  })
+
+  it('should respond with 200 with xlsx file when updatedTime is valid', async () => {
+    const res = await request(app)
+      .get('/api/v1/merchants/export-with-filter?updatedTime=2020-01-01')
+      .set('Authorization', `Bearer ${dfspUserToken}`)
+
+    expect(res.statusCode).toEqual(200)
+    expect(res.headers['content-type']).toEqual('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    expect(res.headers['content-disposition']).toEqual('attachment; filename=merchants.xlsx')
+    expect(res.body).toBeDefined()
+  })
+
+  it('should respond with 200 with xlsx file when dbaName is valid', async () => {
+    const res = await request(app)
+      .get('/api/v1/merchants/export-with-filter?dbaName=Merchat55')
+      .set('Authorization', `Bearer ${dfspUserToken}`)
+
+    expect(res.statusCode).toEqual(200)
+    expect(res.headers['content-type']).toEqual('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    expect(res.headers['content-disposition']).toEqual('attachment; filename=merchants.xlsx')
+    expect(res.body).toBeDefined()
+  })
+
+  it('should respond with 200 with xlsx file when merchantId is valid', async () => {
+    const res = await request(app)
+      .get(`/api/v1/merchants/export-with-filter?merchantId=${merchantId}`)
+      .set('Authorization', `Bearer ${dfspUserToken}`)
+
+    expect(res.statusCode).toEqual(200)
+    expect(res.headers['content-type']).toEqual('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    expect(res.headers['content-disposition']).toEqual('attachment; filename=merchants.xlsx')
+    expect(res.body).toBeDefined()
+  })
+
+  it('should respond with 200 with xlsx file when payintoId is valid', async () => {
+    // Arrange
+    const merchant = await AppDataSource.manager.findOneOrFail(MerchantEntity, { where: { id: merchantId } })
+    const checkoutCounter = AppDataSource.manager.create(CheckoutCounterEntity)
+    checkoutCounter.alias_value = '123456789'
+    checkoutCounter.merchant = merchant
+    await AppDataSource.manager.save(checkoutCounter)
+
+    const res = await request(app)
+      .get('/api/v1/merchants/export-with-filter?payintoId=123456789')
+      .set('Authorization', `Bearer ${dfspUserToken}`)
+
+    expect(res.statusCode).toEqual(200)
+    expect(res.headers['content-type']).toEqual('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    expect(res.headers['content-disposition']).toEqual('attachment; filename=merchants.xlsx')
+    expect(res.body).toBeDefined()
+  })
+
+  it('should respond with 200 with xlsx file when registrationStatus is valid', async () => {
+    const res = await request(app)
+      .get('/api/v1/merchants/export-with-filter?registrationStatus=Draft')
       .set('Authorization', `Bearer ${dfspUserToken}`)
 
     expect(res.statusCode).toEqual(200)

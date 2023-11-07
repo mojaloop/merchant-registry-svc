@@ -5,6 +5,8 @@ import { DefaultDFSPUsers } from '../../src/database/defaultUsers'
 import { AppDataSource } from '../../src/database/dataSource'
 import { MerchantEntity } from '../../src/entity/MerchantEntity'
 import { MerchantRegistrationStatus, NumberOfEmployees } from 'shared-lib'
+import { PortalUserEntity } from '../../src/entity/PortalUserEntity'
+import { DFSPEntity } from '../../src/entity/DFSPEntity'
 
 export function testPutMerchantStatusReadyToReview (app: Application): void {
   let makerToken = ''
@@ -89,6 +91,15 @@ export function testPutMerchantStatusReadyToReview (app: Application): void {
     expect(res.statusCode).toEqual(401)
   })
 
+  it('should respond with 422 when merchant id is not a number', async () => {
+    const res = await request(app)
+      .put('/api/v1/merchants/invalid-merhchant-id/ready-to-review')
+      .set('Authorization', `Bearer ${makerToken}`)
+    expect(res.statusCode).toEqual(422)
+    expect(res.body).toHaveProperty('message')
+    expect(res.body.message).toEqual('Invalid ID')
+  })
+
   it('should respond with 404 when Merchant is not found', async () => {
     const res = await request(app)
       .put('/api/v1/merchants/999999/ready-to-review')
@@ -115,6 +126,31 @@ export function testPutMerchantStatusReadyToReview (app: Application): void {
     expect(res.statusCode).toEqual(401)
     expect(res.body).toHaveProperty('message')
     expect(res.body.message).toEqual('Only the DFSP User who submitted the Draft Merchant can mark it as Review')
+  })
+
+  it('should respond with 401 with "Only Draft Merchant can be marked as Review"', async () => {
+    // Arrange
+    const maker = await AppDataSource.manager.findOneOrFail(PortalUserEntity, { where: { email: dfspMakerUserEmail } })
+    const dfsp = await AppDataSource.manager.findOneOrFail(DFSPEntity, { where: { name: makerDFSPName } })
+    const reviewMerchant = AppDataSource.manager.create(MerchantEntity, {
+      registration_status: MerchantRegistrationStatus.REVIEW,
+      created_by: maker,
+      dfsps: [dfsp]
+    })
+    await AppDataSource.manager.save(reviewMerchant)
+
+    // Act
+    const res = await request(app)
+      .put(`/api/v1/merchants/${reviewMerchant.id}/ready-to-review`)
+      .set('Authorization', `Bearer ${makerToken}`)
+
+    // Assert
+    expect(res.statusCode).toEqual(401)
+    expect(res.body).toHaveProperty('message')
+    expect(res.body.message).toEqual('Only Draft Merchant can be marked as Review')
+
+    // Clean up
+    await AppDataSource.manager.delete(MerchantEntity, reviewMerchant.id)
   })
 
   it('should respond with 200 with "Status Updated to Review" message when everything is valid.', async () => {
