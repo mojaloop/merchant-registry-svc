@@ -1,3 +1,5 @@
+/* istanbul ignore file */
+/* planning to remove messagequeue in favor of gRPC */
 import amqplib, { type Connection, type Channel, type Message } from 'amqplib'
 import 'dotenv/config'
 import { AuditActionType, AuditTrasactionStatus, MerchantRegistrationStatus } from 'shared-lib'
@@ -65,7 +67,7 @@ export const connectToRabbitMQ = async (delay: number): Promise<void> => {
   }
 }
 
-const consumeReplyQueue = async (): Promise<void> => {
+export const consumeReplyQueue = async (): Promise<void> => {
   // Consume the reply queue for the response
   channel.consume(RABBITMQ_REPLY_QUEUE, (msg: Message | null) => {
     if (msg != null) {

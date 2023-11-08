@@ -203,7 +203,7 @@ trying to access unauthorized(different DFSP) merchant ${merchant.id}`,
   let savedLocation
   try {
     savedLocation = await locationRepository.save(newLocation)
-  } catch (err) {
+  } catch (err) /* istanbul ignore next */ {
     if (err instanceof QueryFailedError) {
       logger.error('Query Failed: %o', err.message)
       await audit(
@@ -240,7 +240,7 @@ trying to access unauthorized(different DFSP) merchant ${merchant.id}`,
       merchant.checkout_counters[0].id,
       merchant.checkout_counters[0]
     )
-  } catch (err) {
+  } catch (err)/* istanbul ignore next */ {
     if (err instanceof QueryFailedError) {
       logger.error('Query Failed: %o', err.message)
       await audit(

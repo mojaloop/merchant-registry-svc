@@ -37,8 +37,5 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 logger.silent = process.env.LOG_DISABLED === 'true'
-if (logger.silent) {
-  console.log('Logger is disabled')
-}
 
 export default logger

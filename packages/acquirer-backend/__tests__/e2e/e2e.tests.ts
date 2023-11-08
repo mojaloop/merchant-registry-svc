@@ -47,6 +47,7 @@ import { testPutRoleUpdatePermissions } from './testPutRoleUpdatePermissions'
 import { testPutMerchantOwner } from './testPutMerchantOwner'
 import { testPutMerchantContactPerson } from './testPutMerchantContactPerson'
 import { testPutMerchantLocations } from './testPutMerchantLocation'
+import { testVerifyUser } from './testVerifyUser'
 
 jest.mock('@sendgrid/mail', () => ({
   setApiKey: jest.fn(),
@@ -214,5 +215,9 @@ describe('E2E API Tests', () => {
 
   describe('PUT Roles Update Permissions API Tests', () => {
     testPutRoleUpdatePermissions(app)
+  })
+
+  describe('Verify User API Tests', () => {
+    testVerifyUser(app)
   })
 })

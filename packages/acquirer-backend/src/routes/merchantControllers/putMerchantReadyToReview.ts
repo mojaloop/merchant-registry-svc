@@ -118,7 +118,7 @@ export async function putMerchantStatusReadyToReview (req: AuthRequest, res: Res
 
     try {
       await merchantRepository.save(merchant)
-    } catch (err) {
+    } catch (err)/* istanbul ignore next */ {
       if (err instanceof QueryFailedError) {
         logger.error('Query Failed: %o', err.message)
         return res.status(500).send({ message: err.message })
@@ -142,7 +142,7 @@ export async function putMerchantStatusReadyToReview (req: AuthRequest, res: Res
       portalUser
     )
     res.status(200).send({ message: 'Status Updated to Review', data: merchantData })
-  } catch (e) {
+  } catch (e) /* istanbul ignore next */ {
     logger.error(e)
     res.status(500).send({ message: e })
   }

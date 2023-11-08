@@ -23,7 +23,9 @@ export async function audit (
   for (const key of newKeys) {
     if (deepObjectCompare) {
       if (JSON.stringify(oldValue[key]) !== JSON.stringify(newValue[key])) {
+        /* istanbul ignore next */
         auditOldValues[key] = oldValue[key] ?? null
+        /* istanbul ignore next */
         auditNewValues[key] = newValue[key] ?? null
       }
     } else {

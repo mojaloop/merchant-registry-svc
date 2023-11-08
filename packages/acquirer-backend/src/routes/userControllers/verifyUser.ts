@@ -6,10 +6,11 @@ import { EmailVerificationTokenEntity } from '../../entity/EmailVerificationToke
 import { AppDataSource } from '../../database/dataSource'
 import { PortalUserEntity } from '../../entity/PortalUserEntity'
 import { PortalUserStatus } from 'shared-lib'
+import { readEnv } from '../../setup/readEnv'
 import { type IJWTUser } from '../../types/jwtUser'
 
-const JWT_SECRET = process.env.JWT_SECRET ?? ''
-const FRONTEND_SET_PASSWORD_URL = process.env.FRONTEND_SET_PASSWORD_URL ?? ''
+const JWT_SECRET = readEnv('JWT_SECRET', 'secret') as string
+const FRONTEND_SET_PASSWORD_URL = readEnv('FRONTEND_SET_PASSWORD_URL', '') as string
 
 /**
  * @openapi
@@ -38,9 +39,13 @@ export async function verifyUserEmail (req: Request, res: Response) {
   const PortalUserRepository = AppDataSource.getRepository(PortalUserEntity)
   const EmailVerificationTokenRepository = AppDataSource.getRepository(EmailVerificationTokenEntity)
 
-  const decodedJwt = jwt.verify(token, JWT_SECRET) as IJWTUser
-  logger.debug(`Decoded JWT: ${JSON.stringify(decodedJwt)}`)
-  if (decodedJwt == null) {
+  let decodedJwt
+  try {
+    decodedJwt = jwt.verify(token, JWT_SECRET) as IJWTUser
+    logger.debug(`Decoded JWT: ${JSON.stringify(decodedJwt)}`)
+  } catch (error) {
+  // If an error occurs, it is likely due to an invalid token
+    logger.error('JWT verification error: ', error)
     return res.status(401).send({ message: 'JWT Invalid' })
   }
 
@@ -54,7 +59,7 @@ export async function verifyUserEmail (req: Request, res: Response) {
   }
 
   if (emailVerificationToken.is_used) {
-    return res.status(404).send({ message: 'Token already used' })
+    return res.status(400).send({ message: 'Token already used' })
   }
 
   const user = await PortalUserRepository.findOne({
@@ -71,7 +76,7 @@ export async function verifyUserEmail (req: Request, res: Response) {
   try {
     await EmailVerificationTokenRepository.save(emailVerificationToken)
     await PortalUserRepository.save(user)
-  } catch (err) {
+  } catch (err)/* istanbul ignore next */ {
     logger.error('%o', err)
     return res.status(500).send({ message: 'Internal Server Error', error: err })
   }

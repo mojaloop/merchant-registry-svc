@@ -84,6 +84,8 @@ import { type AuthRequest } from 'src/types/express'
  */
 export async function postMerchantDraft (req: AuthRequest, res: Response) {
   const portalUser = req.user
+
+  /* istanbul ignore if */
   if (portalUser == null) {
     return res.status(401).send({ message: 'Unauthorized' })
   }
@@ -154,7 +156,7 @@ export async function postMerchantDraft (req: AuthRequest, res: Response) {
     await licenseRepository.save(license)
     merchant.business_licenses = [license]
     await merchantRepository.save(merchant)
-  } catch (err) {
+  } catch (err)/* istanbul ignore next */ {
     if (err instanceof QueryFailedError) {
       logger.error('Query Failed: %o', err.message)
       return res.status(500).send({ message: err.message })

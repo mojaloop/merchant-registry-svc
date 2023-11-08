@@ -92,7 +92,8 @@ export async function postCreateDFSP (req: AuthRequest, res: Response) {
   const { name, fspId, dfspType, joinedDate, activated, logoURI } = parsedBody.data
 
   // Check for authenticated user
-  if (req.user === null || req.user === undefined)/* istanbul ignore next */ {
+  /* istanbul ignore if */
+  if (req.user === null || req.user === undefined) {
     return res.status(401).send({ message: 'Unauthorized' })
   }
 

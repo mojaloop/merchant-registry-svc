@@ -1,6 +1,8 @@
 /* eslint-disable max-len */
 
 import request from 'supertest'
+import path from 'path'
+import fs from 'fs'
 import { type Application } from 'express'
 import { DefaultDFSPUsers } from '../../src/database/defaultUsers'
 import { MerchantEntity } from '../../src/entity/MerchantEntity'
@@ -15,6 +17,7 @@ export function testGetMerchantsSucceed (app: Application): void {
   const dfspUserPwd = DefaultDFSPUsers[0].password
   let token = ''
   const merchants: any = []
+  const filePath = path.resolve(__dirname, '../test-files/dummy.pdf')
 
   beforeAll(async () => {
     let res = await request(app)
@@ -37,6 +40,7 @@ export function testGetMerchantsSucceed (app: Application): void {
       .field('merchant_type', 'Individual')
       .field('payinto_alias', '000001')
       .field('license_number', '123456789')
+      .attach('license_document', fs.createReadStream(filePath), { filename: 'dummy.pdf' })
     merchants.push(res.body.data)
 
     res = await request(app)
@@ -51,6 +55,7 @@ export function testGetMerchantsSucceed (app: Application): void {
       .field('merchant_type', 'Individual')
       .field('payinto_alias', '000002')
       .field('license_number', '123456789')
+      .attach('license_document', fs.createReadStream(filePath), { filename: 'dummy.pdf' })
 
     merchants.push(res.body.data)
     res = await request(app)
@@ -65,6 +70,7 @@ export function testGetMerchantsSucceed (app: Application): void {
       .field('merchant_type', 'Individual')
       .field('payinto_alias', 'merchant1')
       .field('license_number', '123456789')
+      .attach('license_document', fs.createReadStream(filePath), { filename: 'dummy.pdf' })
 
     merchants.push(res.body.data)
   })

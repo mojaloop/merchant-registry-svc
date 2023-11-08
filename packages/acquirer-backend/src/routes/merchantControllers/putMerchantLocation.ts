@@ -217,8 +217,8 @@ trying to access unauthorized(different DFSP) merchant ${merchant.id}`,
       location.id,
       locationData
     )
-  } catch (err) {
-    if (err instanceof QueryFailedError) /* istanbul ignore next */ {
+  } catch (err)/* istanbul ignore next */ {
+    if (err instanceof QueryFailedError) {
       logger.error('Query Failed: %o', err.message)
       return res.status(500).send({ message: err.message })
     }

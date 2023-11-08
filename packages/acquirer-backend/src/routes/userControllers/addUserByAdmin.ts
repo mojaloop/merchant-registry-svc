@@ -16,6 +16,7 @@ import { EmailVerificationTokenEntity } from '../../entity/EmailVerificationToke
 import { sendVerificationEmail } from '../../utils/sendGrid'
 import { DFSPEntity } from '../../entity/DFSPEntity'
 import { type AuthRequest } from '../../types/express'
+import { readEnv } from '../../setup/readEnv'
 
 const AddUserSchema = z.object({
   name: z.string(),
@@ -24,7 +25,7 @@ const AddUserSchema = z.object({
   dfsp_id: z.number().optional()
 })
 
-const JWT_SECRET = process.env.JWT_SECRET ?? ''
+const JWT_SECRET = readEnv('JWT_SECRET', '') as string
 
 /**
  * @openapi

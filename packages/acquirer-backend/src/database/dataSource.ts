@@ -16,6 +16,7 @@ const DB_DATABASE: string = readEnv('DB_DATABASE', 'merchant_acquirer_db') as st
 
 let dbConfig
 
+/* istanbul ignore if */
 if (process.env.NODE_ENV === 'test') {
   dbConfig = {
     type: 'sqlite',

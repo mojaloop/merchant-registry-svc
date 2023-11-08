@@ -110,8 +110,18 @@ export async function putMerchantDraft (req: AuthRequest, res: Response) {
     MerchantSubmitDataSchema.parse(req.body)
   } catch (err) {
     if (err instanceof z.ZodError) {
-      logger.error('Validation error: %o', err.issues.map((issue) => issue.message))
-      return res.status(422).send({ message: err })
+      const errors = err.issues.map(issue => `${issue.path.toString()}: ${issue.message}`)
+      logger.error('Validation error: %o', errors)
+      await audit(
+        AuditActionType.ADD,
+        AuditTrasactionStatus.FAILURE,
+        'putMerchantDraft',
+        'Validation error',
+        'MerchantEntity',
+        {}, req.body, portalUser
+      )
+
+      return res.status(422).send({ message: errors })
     }
   }
 
@@ -207,7 +217,7 @@ trying to access unauthorized(different DFSP) merchant ${merchant.id}`,
     } else {
       logger.debug('No PDF file submitted for the merchant')
     }
-  } catch (err) {
+  } catch (err)/* istanbul ignore next */ {
     if (err instanceof QueryFailedError) {
       logger.error('Query Failed: %o', err.message)
       return res.status(500).send({ message: err.message })

@@ -2,7 +2,7 @@ module.exports = {
   projects: [
     {
       displayName: 'Unit Tests',
-      testMatch: ['<rootDir>/__tests__/unit/unit.tests.ts'],
+      testMatch: ['<rootDir>/__tests__/unit/**.tests.ts'],
       preset: 'ts-jest',
       testEnvironment: 'node'
     },
