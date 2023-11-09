@@ -39,6 +39,18 @@ export function testPostMerchantDraft (app: Application): void {
     expect(res.statusCode).toEqual(401)
   })
 
+  it('should respond 422 with Validation Errors', async () => {
+    const res = await request(app)
+      .post('/api/v1/merchants/draft')
+      .set('Authorization', `Bearer ${token}`)
+      .field('merchant_type', 'non-existing-merchant-type')
+
+    expect(res.statusCode).toEqual(422)
+    expect(res.body).toHaveProperty('message')
+    expect(res.body.message).toHaveLength(1)
+    expect(res.body.message[0]).toContain('merchant_type: Invalid enum value.')
+  })
+
   it('should respond with 201 and merchant data when everything is valid with Draft status', async () => {
     const res = await request(app)
       .post('/api/v1/merchants/draft')

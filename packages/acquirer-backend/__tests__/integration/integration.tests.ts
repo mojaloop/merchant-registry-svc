@@ -6,6 +6,7 @@ import { seedDefaultRolesTests } from './seedDefaultRoles.tests'
 import { seedDefaultPermissionsTests } from './seedDefaultPermissions.tests'
 import { seedDefaultUsersTests } from './seedDefaultUsers.tests'
 import { seedCountriesSubdivisionsDistrictsTests } from './seedCountriesSubDivDistricts.tests'
+import { s3ClientTests } from './uploadMerchantDocument.tests'
 
 logger.silent = true
 
@@ -36,5 +37,9 @@ describe('Integration Tests', () => {
 
   describe('seedCountriesSubdivisionsDistricts', () => {
     seedCountriesSubdivisionsDistrictsTests()
+  })
+
+  describe('S3Client Tests', () => {
+    s3ClientTests()
   })
 })

@@ -6,13 +6,15 @@ import dotenv from 'dotenv'
 import { AuditActionType, AuditTrasactionStatus } from 'shared-lib'
 import { audit } from '../../utils/audit'
 import jwt from 'jsonwebtoken'
+import { readEnv } from '../../setup/readEnv'
 
 if (process.env.NODE_ENV === 'test') {
   dotenv.config({ path: path.resolve(process.cwd(), '.env.test'), override: true })
 }
 
-const JWT_SECRET = process.env.JWT_SECRET ?? ''
-const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN ?? '1d'
+const JWT_SECRET = readEnv('JWT_SECRET', 'secret') as string
+const JWT_EXPIRES_IN = readEnv('JWT_EXPIRES_IN', '1d') as string
+
 /**
  * @openapi
  * /users/refresh:
@@ -29,6 +31,8 @@ const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN ?? '1d'
 
 export async function postUserRefresh (req: AuthRequest, res: Response) {
   const portalUser = req.user
+
+  /* istanbul ignore if */
   if (portalUser == null) {
     return res.status(401).send({ message: 'Unauthorized' })
   }

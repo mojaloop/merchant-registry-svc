@@ -29,9 +29,7 @@ export async function getUserProfile (req: AuthRequest, res: Response) {
        ...portalUser,
        role: {
          ...portalUser.role,
-         permissions: portalUser.role != null
-           ? portalUser.role.permissions.map(permission => permission.name)
-           : []
+         permissions: portalUser.role.permissions.map(permission => permission.name)
        },
        password: undefined
      }

@@ -9,6 +9,7 @@ import logger from '../../services/logger'
 import jwt from 'jsonwebtoken'
 import { audit } from '../../utils/audit'
 import { AuditActionType, AuditTrasactionStatus, PortalUserStatus } from 'shared-lib'
+import { readEnv } from '../../setup/readEnv'
 
 export const LoginFormSchema = z.object({
   email: z.string().email('Please enter a valid email'),
@@ -19,8 +20,8 @@ if (process.env.NODE_ENV === 'test') {
   dotenv.config({ path: path.resolve(process.cwd(), '.env.test'), override: true })
 }
 
-const JWT_SECRET = process.env.JWT_SECRET ?? ''
-const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN ?? '1d'
+const JWT_SECRET = readEnv('JWT_SECRET', 'secret') as string
+const JWT_EXPIRES_IN = readEnv('JWT_EXPIRES_IN', '1d') as string
 
 /**
  * @openapi

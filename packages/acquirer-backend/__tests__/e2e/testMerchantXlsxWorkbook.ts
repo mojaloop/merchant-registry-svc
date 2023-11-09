@@ -4,7 +4,10 @@ import { type Application } from 'express'
 import { DefaultDFSPUsers } from '../../src/database/defaultUsers'
 import { AppDataSource } from '../../src/database/dataSource'
 import { MerchantEntity } from '../../src/entity/MerchantEntity'
-import { NumberOfEmployees } from 'shared-lib'
+import { BusinessOwnerIDType, NumberOfEmployees } from 'shared-lib'
+import { MerchantLocationEntity } from '../../src/entity/MerchantLocationEntity'
+import { BusinessOwnerEntity } from '../../src/entity/BusinessOwnerEntity'
+import { ContactPersonEntity } from '../../src/entity/ContactPersonEntity'
 
 export function testGETMerchantXlsxWorkbook (app: Application): void {
   let dfspUserToken = ''
@@ -17,6 +20,10 @@ export function testGETMerchantXlsxWorkbook (app: Application): void {
   let differentDFSPUserPwd = ''
 
   let merchantId = 0
+  let locationId = 0
+  let businessOwnerId = 0
+  let contactPersonId = 0
+
   let nonReadyMerchantId = 0
   beforeAll(async () => {
     // Arrange
@@ -44,7 +51,7 @@ export function testGETMerchantXlsxWorkbook (app: Application): void {
       }
     }
 
-    const res4 = await request(app)
+    let res4 = await request(app)
       .post('/api/v1/merchants/draft')
       .set('Authorization', `Bearer ${dfspUserToken}`)
       .field('dba_trading_name', 'Merchat55')
@@ -56,6 +63,57 @@ export function testGETMerchantXlsxWorkbook (app: Application): void {
       .field('merchant_type', 'Individual')
       .field('license_number', '123456789')
     merchantId = res4.body.data.id
+
+    // This should export the location data
+    res4 = await request(app)
+      .post(`/api/v1/merchants/${merchantId}/locations`)
+      .set('Authorization', `Bearer ${dfspUserToken}`)
+      .send({
+        location_type: 'Physical',
+        web_url: 'http://www.example.com',
+        address_type: 'Office',
+        department: 'Sales',
+        sub_department: 'Support',
+        street_name: 'Main Street',
+        building_number: '123',
+        building_name: 'Big Building',
+        floor_number: '4',
+        room_number: '101',
+        post_box: 'PO Box 123',
+        postal_code: '12345',
+        town_name: 'Townsville',
+        district_name: 'District 1',
+        country_subdivision: 'State',
+        country: 'United States of America',
+        address_line: '123 Main Street, Townsville',
+        latitude: '40.7128',
+        longitude: '74.0060'
+      })
+    locationId = res4.body.data.id
+
+    // This should export the business owner data
+    res4 = await request(app)
+      .post(`/api/v1/merchants/${merchantId}/business-owners`)
+      .set('Authorization', `Bearer ${dfspUserToken}`)
+      .send({
+        identificaton_type: BusinessOwnerIDType.NATIONAL_ID,
+        identification_number: '123456789',
+        name: 'John Doe Owner',
+        email: 'john.doe.owner@example.com',
+        phone_number: '3333-3333-3333'
+      })
+    businessOwnerId = res4.body.data.id
+
+    // This should export the contact person data
+    res4 = await request(app)
+      .post(`/api/v1/merchants/${merchantId}/contact-persons`)
+      .set('Authorization', `Bearer ${dfspUserToken}`)
+      .send({
+        name: 'John Doe',
+        email: 'joe.doe-export.merchant@example.com',
+        phone_number: '3333-3333-3333'
+      })
+    contactPersonId = res4.body.data.id
 
     await request(app)
       .put(`/api/v1/merchants/${merchantId}/ready-to-review`)
@@ -78,8 +136,14 @@ export function testGETMerchantXlsxWorkbook (app: Application): void {
 
   afterAll(async () => {
     // Clean up
+    //
+    await AppDataSource.query('PRAGMA foreign_keys = OFF;')
     await AppDataSource.manager.delete(MerchantEntity, merchantId)
     await AppDataSource.manager.delete(MerchantEntity, nonReadyMerchantId)
+    await AppDataSource.manager.delete(MerchantLocationEntity, locationId)
+    await AppDataSource.manager.delete(BusinessOwnerEntity, businessOwnerId)
+    await AppDataSource.manager.delete(ContactPersonEntity, contactPersonId)
+    await AppDataSource.query('PRAGMA foreign_keys = ON;')
   })
 
   it('should respond with 401 when Authorization header is missing', async () => {
@@ -120,9 +184,20 @@ export function testGETMerchantXlsxWorkbook (app: Application): void {
     expect(res.body.message).toContain('Accessing different DFSP\'s Merchant is not allowed.')
   })
 
-  it('should respond with 200 with xlsx file', async () => {
+  it('should respond with 200 with xlsx file with comma separated ids string', async () => {
     const res = await request(app)
       .get(`/api/v1/merchants/export-with-ids?ids=${merchantId},${nonReadyMerchantId}`)
+      .set('Authorization', `Bearer ${dfspUserToken}`)
+
+    expect(res.statusCode).toEqual(200)
+    expect(res.headers['content-type']).toEqual('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    expect(res.headers['content-disposition']).toEqual('attachment; filename=merchants.xlsx')
+    expect(res.body).toBeDefined()
+  })
+
+  it('should respond with 200 with xlsx file with id array', async () => {
+    const res = await request(app)
+      .get(`/api/v1/merchants/export-with-ids?ids=${merchantId}&ids=${nonReadyMerchantId}`)
       .set('Authorization', `Bearer ${dfspUserToken}`)
 
     expect(res.statusCode).toEqual(200)

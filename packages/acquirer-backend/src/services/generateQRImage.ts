@@ -7,6 +7,16 @@ export const generateQRImage = async (
   options?: QRCodeOptions,
   frameImagePath = ''
 ): Promise<Buffer> => {
+  let frameImageBuffer: Buffer = Buffer.from('')
+  if (frameImagePath.length > 0) {
+    // Read the frame image into a buffer
+    try {
+      frameImageBuffer = await fs.promises.readFile(frameImagePath)
+    } catch (err) {
+      throw new Error(`Frame image not found: ${frameImagePath}`)
+    }
+  }
+
   const qrCodeBuffer = await QRCode.toBuffer(
     text,
     {
@@ -15,14 +25,6 @@ export const generateQRImage = async (
 
   if (frameImagePath === '') {
     return qrCodeBuffer
-  }
-
-  // Read the frame image into a buffer
-  let frameImageBuffer: Buffer
-  try {
-    frameImageBuffer = await fs.promises.readFile(frameImagePath)
-  } catch (err) {
-    throw new Error(`Frame image not found: ${frameImagePath}`)
   }
 
   // Overlay the QR code onto the frame image

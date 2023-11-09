@@ -95,6 +95,18 @@ export function testPutMerchantDraft (app: Application): void {
     expect(res.statusCode).toEqual(422)
   })
 
+  it('should respond 422 with Validation Errors', async () => {
+    const res = await request(app)
+      .put(`/api/v1/merchants/${merchantId}/draft`)
+      .set('Authorization', `Bearer ${token}`)
+      .field('merchant_type', 'non-existing-merchant-type')
+
+    expect(res.statusCode).toEqual(422)
+    expect(res.body).toHaveProperty('message')
+    expect(res.body.message).toHaveLength(1)
+    expect(res.body.message[0]).toContain('merchant_type: Invalid enum value.')
+  })
+
   it('should respond with 400 for different DFSP user', async () => {
     // Arrange
     const editPerm = await AppDataSource.manager.findOneOrFail(PortalPermissionEntity, { where: { name: PermissionsEnum.EDIT_MERCHANTS } })
@@ -116,20 +128,10 @@ export function testPutMerchantDraft (app: Application): void {
       .field('license_number', '987654321')
 
     // Assert
-    // expect(res.statusCode).toEqual(400)
+    expect(res.statusCode).toEqual(400)
     expect(res.body).toHaveProperty('message')
     expect(res.body.message).toEqual('Accessing different DFSP\'s Merchant is not allowed.')
   })
-  // export const MerchantSubmitDataSchema = z.object({
-  //   dba_trading_name: z.string().optional(),
-  //   registered_name: z.string().optional().nullable().default(null),
-  //   employees_num: z.nativeEnum(NumberOfEmployees).optional(),
-  //   monthly_turnover: z.string().nullable().default(null),
-  //   currency_code: z.nativeEnum(CurrencyCodes).optional(),
-  //   category_code: z.string().optional(),
-  //   merchant_type: z.nativeEnum(MerchantType).optional(),
-  //   license_number: z.string().optional().optional()
-  // })
 
   it('should respond with 422 for merchant not in draft status', async () => {
     // Arrange

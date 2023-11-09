@@ -79,6 +79,7 @@ import { PortalUserEntity } from '../../entity/PortalUserEntity'
  */
 export async function getAudits (req: AuthRequest, res: Response) {
   const portalUser = req.user
+  /* istanbul ignore if */
   if (portalUser == null) {
     return res.status(401).send({ message: 'Unauthorized' })
   }
@@ -160,7 +161,7 @@ export async function getAudits (req: AuthRequest, res: Response) {
 
     const audits = await queryBuilder.getMany()
     res.send({ message: 'OK', data: audits, totalPages })
-  } catch (e) {
+  } catch (e)/* istanbul ignore next */ {
     logger.error(e)
     res.status(500).send({ message: e })
   }

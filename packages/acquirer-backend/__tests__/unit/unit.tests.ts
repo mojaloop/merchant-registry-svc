@@ -2,7 +2,7 @@ import fs from 'fs'
 import path from 'path'
 import { generateQRImage } from '../../src/services/generateQRImage'
 import { type AuthRequest } from '../../src/types/express'
-import { PortalUserType } from 'shared-lib'
+import { AuditActionType, AuditTrasactionStatus, PortalUserType } from 'shared-lib'
 import { checkUserUserType } from '../../src/middleware/checkUserType'
 import { type Response, type NextFunction } from 'express'
 import { PortalUserEntity } from '../../src/entity/PortalUserEntity'
@@ -10,7 +10,14 @@ import { PermissionsEnum } from '../../src/types/permissions'
 import { checkPermissions, checkPermissionsOr } from '../../src/middleware/checkPermissions'
 import { PortalPermissionEntity } from '../../src/entity/PortalPermissionEntity'
 import { PortalRoleEntity } from '../../src/entity/PortalRoleEntity'
+import { audit } from '../../src/utils/audit'
+import { AppDataSource } from '../../src/database/dataSource'
+import { AuditEntity } from '../../src/entity/AuditEntity'
+import { DefaultHubUsers } from '../../src/database/defaultUsers'
+import { initializeDatabase } from '../../src/database/initDatabase'
+import logger from '../../src/services/logger'
 
+logger.silent = true
 describe('Unit Tests', () => {
   describe('generateQRImage', () => {
     const sampleText = 'Hello, QR!'
@@ -39,6 +46,63 @@ describe('Unit Tests', () => {
         .rejects
         .toThrow(`Frame image not found: ${invalidFrameImagePath}`)
     }, 30000)
+  })
+
+  describe('audit unit tests', () => {
+    const actionType = AuditActionType.UPDATE
+    const auditTrasactionStatus = AuditTrasactionStatus.SUCCESS
+    const applicationModule = 'AuditUnitTestModule'
+    const entityName = 'AuditEntity'
+
+    beforeAll(async () => {
+      await initializeDatabase()
+    }, 60000) // wait for 60secs for db to initialize
+
+    it('should audit differences when deepObjectCompare is false', async () => {
+      const mockUser = await AppDataSource.manager.findOneOrFail(PortalUserEntity, { where: { email: DefaultHubUsers[0].email } })
+      const oldValue = { a: 1, b: 2 }
+      const newValue = { a: 1, b: 3 }
+
+      await audit(
+        actionType,
+        auditTrasactionStatus,
+        applicationModule,
+        'AuditUnitTestEventDeepObjectCompareFalse',
+        entityName,
+        oldValue,
+        newValue,
+        mockUser,
+        false
+      )
+
+      const auditObj = await AppDataSource.manager.findOneOrFail(AuditEntity, { where: { event_description: 'AuditUnitTestEventDeepObjectCompareFalse' } })
+      expect(auditObj).toBeDefined()
+      expect(auditObj.old_value).toBe(JSON.stringify({ b: 2 }))
+      expect(auditObj.new_value).toBe(JSON.stringify({ b: 3 }))
+    })
+
+    it('should audit deep differences when deepObjectCompare is true', async () => {
+      const mockUser = await AppDataSource.manager.findOneOrFail(PortalUserEntity, { where: { email: DefaultHubUsers[0].email } })
+      const oldValue = { b: 2 }
+      const newValue = { a: { c: 4 } }
+
+      await audit(
+        actionType,
+        auditTrasactionStatus,
+        applicationModule,
+        'AuditUnitTestEventDeepObjectCompareTrue',
+        'AuditEntity',
+        oldValue,
+        newValue,
+        mockUser,
+        true
+      )
+
+      const auditObj = await AppDataSource.manager.findOneOrFail(AuditEntity, { where: { event_description: 'AuditUnitTestEventDeepObjectCompareTrue' } })
+      expect(auditObj).toBeDefined()
+      expect(auditObj.old_value).toBe(JSON.stringify({ a: null }))
+      expect(auditObj.new_value).toBe(JSON.stringify({ a: { c: 4 } }))
+    })
   })
 
   describe('checkUserUserType Middleware', () => {

@@ -124,6 +124,30 @@ export function testPutMerchantStatusApprove (app: Application): void {
     expect(res.statusCode).toEqual(401)
   })
 
+  it('should respond 422 with "IDs must be an array."', async () => {
+    const res = await request(app)
+      .put('/api/v1/merchants/bulk-approve')
+      .set('Authorization', `Bearer ${makerToken}`)
+      .send({
+        ids: 33
+      })
+    expect(res.statusCode).toEqual(422)
+    expect(res.body).toHaveProperty('message')
+    expect(res.body.message).toEqual('IDs must be an array.')
+  })
+
+  it('should respond 422 with "Each ID in the array must be a valid ID number."', async () => {
+    const res = await request(app)
+      .put('/api/v1/merchants/bulk-approve')
+      .set('Authorization', `Bearer ${makerToken}`)
+      .send({
+        ids: ['string', 11, 333, '11']
+      })
+    expect(res.statusCode).toEqual(422)
+    expect(res.body).toHaveProperty('message')
+    expect(res.body.message).toEqual('Each ID in the array must be a valid ID number.')
+  })
+
   it('should respond 422 with same user cannot approve message when maker trying to approve', async () => {
     const res = await request(app)
       .put('/api/v1/merchants/bulk-approve')
