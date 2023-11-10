@@ -1,4 +1,4 @@
-import sgMail, { type ResponseError } from '@sendgrid/mail'
+import sgMail from '@sendgrid/mail'
 import dotenv from 'dotenv'
 import path from 'path'
 import { AuditActionType, AuditTrasactionStatus } from 'shared-lib'

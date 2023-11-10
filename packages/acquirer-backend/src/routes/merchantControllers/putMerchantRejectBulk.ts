@@ -4,7 +4,7 @@ import { AppDataSource } from '../../database/dataSource'
 import { MerchantEntity } from '../../entity/MerchantEntity'
 import logger from '../../services/logger'
 import { MerchantRegistrationStatus, AuditActionType, AuditTrasactionStatus } from 'shared-lib'
-import { In, Not } from 'typeorm'
+import { In } from 'typeorm'
 import { audit } from '../../utils/audit'
 import { type AuthRequest } from 'src/types/express'
 

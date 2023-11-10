@@ -1,4 +1,3 @@
-
 import { type Response, type NextFunction } from 'express'
 import { type PortalUserType } from 'shared-lib'
 import { type PortalUserEntity } from 'src/entity/PortalUserEntity'

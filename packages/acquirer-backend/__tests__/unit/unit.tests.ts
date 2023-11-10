@@ -1,4 +1,4 @@
-import fs from 'fs'
+// import fs from 'fs'
 import path from 'path'
 import { generateQRImage } from '../../src/services/generateQRImage'
 import { type AuthRequest } from '../../src/types/express'
@@ -119,6 +119,7 @@ describe('Unit Tests', () => {
     it('should call next for allowed user type', () => {
       const userType = PortalUserType.HUB
       // ignore undefined
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       mockReq.user!.user_type = userType
       const middleware = checkUserUserType(userType)
 
@@ -130,6 +131,7 @@ describe('Unit Tests', () => {
     })
 
     it('should send 403 for forbidden user type', () => {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       mockReq.user!.user_type = PortalUserType.DFSP
       const requiredUserType = PortalUserType.HUB
       const middleware = checkUserUserType(requiredUserType)
@@ -153,6 +155,7 @@ describe('Unit Tests', () => {
       user.role = new PortalRoleEntity()
 
       // Mock the request object
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       mockReq = {
         user
       } as AuthRequest

@@ -1,7 +1,7 @@
 import {
   Entity,
   Column, PrimaryGeneratedColumn,
-  CreateDateColumn, 
+  CreateDateColumn
 } from 'typeorm'
 
 import { AuditActionType, AuditTrasactionStatus } from 'shared-lib'

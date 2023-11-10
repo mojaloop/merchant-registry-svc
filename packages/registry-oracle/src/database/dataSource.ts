@@ -13,7 +13,7 @@ const DB_USERNAME: string = readEnv('DB_USERNAME', 'registry_oracle_user') as st
 const DB_PASSWORD: string = readEnv('DB_PASSWORD', 'password') as string
 const DB_DATABASE: string = readEnv('DB_DATABASE', 'merchant_registry_oracle') as string
 
-let dbConfig;
+let dbConfig
 
 if (process.env.NODE_ENV === 'test') {
   dbConfig = {
@@ -26,7 +26,7 @@ if (process.env.NODE_ENV === 'test') {
     ],
     migrations: [],
     subscribers: []
-  };
+  }
 } else {
   dbConfig = {
     type: 'mysql',
@@ -42,9 +42,9 @@ if (process.env.NODE_ENV === 'test') {
     ],
     migrations: [],
     subscribers: []
-  };
+  }
 }
-export const AppDataSource = new DataSource(dbConfig as any);
+export const AppDataSource = new DataSource(dbConfig as any)
 
 //
 // export const AppDataSource = new DataSource({

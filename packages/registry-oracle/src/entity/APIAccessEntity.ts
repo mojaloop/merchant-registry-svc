@@ -15,7 +15,7 @@ export class APIAccessEntity {
 
   @OneToMany(
     () => EndpointDFSPEntity,
-    endpointDFSP => endpointDFSP.api_access,
+    endpointDFSP => endpointDFSP.api_access
   )
     endpoints!: EndpointDFSPEntity[]
 

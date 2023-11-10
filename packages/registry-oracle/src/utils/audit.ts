@@ -1,7 +1,7 @@
 import { type AuditTrasactionStatus, type AuditActionType } from 'shared-lib'
 import { AppDataSource } from '../database/dataSource'
 import { AuditEntity } from '../entity/AuditEntity'
-import { EndpointDFSPEntity } from '../entity/EndpointDFSPEntity'
+import { type EndpointDFSPEntity } from '../entity/EndpointDFSPEntity'
 
 export async function audit (
   actionType: AuditActionType,
@@ -45,7 +45,7 @@ export async function audit (
   auditObject.entity_name = entityName
   auditObject.old_value = auditOldValuesStr
   auditObject.new_value = auditNewValuesStr
-  if(endpoint) {
+  if (endpoint != null) {
     auditObject.endpoint_id = endpoint.id
   }
 

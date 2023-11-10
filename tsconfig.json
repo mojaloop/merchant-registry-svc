@@ -1,0 +1,9 @@
+{
+  "references": [
+    { "path": "./packages/acquirer-backend" },
+    { "path": "./packages/registry-oracle" },
+    { "path": "./packages/shared-lib" },
+    { "path": "./packages/acquirer-frontend" }
+    // Add references to other packages as needed
+  ],
+}
