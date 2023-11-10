@@ -123,5 +123,6 @@ export interface MerchantDetails {
   contact_persons: ContactPerson[]
   created_by: CreatedBy
   business_owners: BusinessOwner[]
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   checked_by: any
 }

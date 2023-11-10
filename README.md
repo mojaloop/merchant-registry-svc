@@ -35,7 +35,7 @@ and proceed with the necessary steps in the payment transaction.
 
 * Run 
     ```bash 
-    $ docker-compose up --build
+    docker-compose up --build
     ```
     * Acquirer Frontend should be running at: http://localhost:5173
     * Acquirer Backend should be running at: http://localhost:5555/api/v1/health-check
@@ -49,12 +49,12 @@ and proceed with the necessary steps in the payment transaction.
 ## For Deploying manual without Docker
 * Check [Manual Deployment Guide](./docs/manual-deployment-guide.md)
 
-## Running E2E Testing
+## Running Testing
 Require `docker-compose up minio rabbitmq` (MinIO and RabbitMQ) to be running.
-Use in-memory sqlite3 test databases for `acquirer-backend` and `registry-oracle` services. 
-* Run
+* Run at the root of the project
     ```bash
-    $ npm run acquirer-backend:test:coverage
+    npm install
+    npm run acquirer-backend:test:coverage
     ```
 
 ## ERD Design

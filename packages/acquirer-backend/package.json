@@ -7,11 +7,9 @@
     "start": "ts-node src/index.ts",
     "start:watch": "nodemon --watch 'src/**/*.ts' --watch '.env*' --exec 'ts-node' src/index.ts",
     "lint:fix": "npm run lint -- --fix",
-
     "lint:check": "eslint . --ext .js,.ts",
     "type:check": "tsc --noEmit",
     "dep:check": "npx ncu -e 2",
-
     "test": "jest --detectOpenHandles --forceExit --verbose",
     "test:verbose": "jest --detectOpenHandles --forceExit --verbose",
     "test:coverage": "jest --detectOpenHandles --forceExit --coverage --verbose",
