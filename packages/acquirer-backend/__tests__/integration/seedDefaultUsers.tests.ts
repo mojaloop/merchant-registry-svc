@@ -1,7 +1,6 @@
 /* eslint-disable max-len */
 import path from 'path'
 import { DataSource } from 'typeorm'
-import { DefaultRoles } from '../../src/database/defaultRoles'
 import { DefaultDFSPUsers, DefaultHubUsers } from '../../src/database/defaultUsers'
 import { seedDefaultRoles, seedDefaultUsers, seedDFSPs } from '../../src/database/initDatabase'
 import { DFSPEntity } from '../../src/entity/DFSPEntity'

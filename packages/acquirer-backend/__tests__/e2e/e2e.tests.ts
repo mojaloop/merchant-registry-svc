@@ -1,8 +1,7 @@
 import express from 'express'
 import logger from '../../src/services/logger'
 import {
-  createMerchantDocumentBucket,
-  removeMerchantDocumentBucket
+  createMerchantDocumentBucket
 } from '../../src/services/S3Client'
 import { initializeDatabase } from '../../src/database/initDatabase'
 import { AppDataSource } from '../../src/database/dataSource'

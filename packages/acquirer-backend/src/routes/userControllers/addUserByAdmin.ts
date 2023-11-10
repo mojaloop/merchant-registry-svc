@@ -92,6 +92,7 @@ export async function addUser (req: AuthRequest, res: Response) {
   }
 
   try {
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     const { name, email, role, dfsp_id } = req.body
     logger.debug('addUser req.body: %s', JSON.stringify(req.body))
     const roleRepository = AppDataSource.getRepository(PortalRoleEntity)

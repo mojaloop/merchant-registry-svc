@@ -5,7 +5,6 @@ import { AppDataSource } from '../../src/database/dataSource'
 import { PortalRoleEntity } from '../../src/entity/PortalRoleEntity'
 import { PortalPermissionEntity } from '../../src/entity/PortalPermissionEntity'
 import { PermissionsEnum } from '../../src/types/permissions'
-import { PortalUserEntity } from '../../src/entity/PortalUserEntity'
 
 export function testPutConfigTraceLevel (app: Application): void {
   let token = ''
@@ -13,7 +12,6 @@ export function testPutConfigTraceLevel (app: Application): void {
   const hubUserPwd = DefaultHubUsers[0].password
   const hubUserRole = DefaultHubUsers[0].role
 
-  const portalUserRepository = AppDataSource.getRepository(PortalUserEntity)
   const portalRoleRepository = AppDataSource.getRepository(PortalRoleEntity)
   const permissionRepository = AppDataSource.getRepository(PortalPermissionEntity)
 

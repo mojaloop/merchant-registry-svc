@@ -8,6 +8,8 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "type:check": "tsc --noEmit",
+    "dep:check": "npx ncu -e 2",
     "preview": "vite preview",
     "prepare": "cd ../../ && husky install ./packages/acquirer-frontend/.husky",
     "theme": "chakra-cli tokens ./src/theme/index.ts",
