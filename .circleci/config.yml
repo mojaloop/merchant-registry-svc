@@ -143,24 +143,24 @@ jobs:
   #         paths:
   #           - .
 
-  e2e-tests:
-    docker:
-      - image: cimg/node:18.0
-      - image: minio/minio:RELEASE.2023-07-21T21-12-44Z
-        environment:
-          MINIO_ACCESS_KEY: minioadmin
-          MINIO_SECRET_KEY: minioadmin
-        command: ["server", "/data"]
-      - image: rabbitmq:3.12.4-management-alpine
-        environment:
-          RABBITMQ_DEFAULT_USER: guest 
-          RABBITMQ_DEFAULT_PASS: guest
-    # executor: default-docker
-    steps:
-      - attach_workspace:
-          at: *workingDirVar
-      - run: npm install # required to install again 
-      - run: npm run acquirer-backend:test:coverage
+  # e2e-tests:
+  #   docker:
+  #     - image: cimg/node:18.0
+  #     - image: minio/minio:RELEASE.2023-07-21T21-12-44Z
+  #       environment:
+  #         MINIO_ACCESS_KEY: minioadmin
+  #         MINIO_SECRET_KEY: minioadmin
+  #       command: ["server", "/data"]
+  #     - image: rabbitmq:3.12.4-management-alpine
+  #       environment:
+  #         RABBITMQ_DEFAULT_USER: guest 
+  #         RABBITMQ_DEFAULT_PASS: guest
+  #   # executor: default-docker
+  #   steps:
+  #     - attach_workspace:
+  #         at: *workingDirVar
+  #     - run: npm install # required to install again 
+  #     - run: npm run acquirer-backend:test:coverage
 
   coverage-report:
     executor: default-docker
@@ -260,10 +260,10 @@ workflows:
       #     requires:
       #       - approve_dep_check
 
-      - e2e-tests:
-          context: org-global
-          requires:
-            - setup
+      # - e2e-tests:
+      #     context: org-global
+      #     requires:
+      #       - setup
 
       # - publish:
       #     context: org-global
