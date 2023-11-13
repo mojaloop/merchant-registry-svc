@@ -69,63 +69,63 @@ jobs:
     steps:
       - attach_workspace:
           at: *workingDirVar
-      - run: npm run lint:check:acquirer-backend
+      - run: npm run lint:check:backend
 
   lint-check-acquirer-frontend:
     executor: default-docker
     steps:
       - attach_workspace:
           at: *workingDirVar
-      - run: npm run lint:check:acquirer-frontend
+      - run: npm run lint:check:frontend
 
   lint-check-registry-oracle:
     executor: default-docker
     steps:
       - attach_workspace:
           at: *workingDirVar
-      - run: npm run lint:check:registry-oracle
+      - run: npm run lint:check:oracle
 
   type-check-acquirer-backend:
     executor: default-docker
     steps:
       - attach_workspace:
           at: *workingDirVar
-      - run: npm run type:check:acquirer-backend
+      - run: npm run type:check:backend
 
   type-check-acquirer-frontend:
     executor: default-docker
     steps:
       - attach_workspace:
           at: *workingDirVar
-      - run: npm run type:check:acquirer-frontend
+      - run: npm run type:check:frontend
 
   type-check-registry-oracle:
     executor: default-docker
     steps:
       - attach_workspace:
           at: *workingDirVar
-      - run: npm run type:check:registry-oracle
+      - run: npm run type:check:oracle
 
   dep-check-acquirer-backend:
     executor: default-docker
     steps:
       - attach_workspace:
           at: *workingDirVar
-      - run: npm run dep:check:acquirer-backend
+      - run: npm run dep:check:backend
 
   dep-check-acquirer-frontend:
     executor: default-docker
     steps:
       - attach_workspace:
           at: *workingDirVar
-      - run: npm run dep:check:acquirer-frontend
+      - run: npm run dep:check:frontend
 
   dep-check-registry-oracle:
     executor: default-docker
     steps:
       - attach_workspace:
           at: *workingDirVar
-      - run: npm run dep:check:registry-oracle
+      - run: npm run dep:check:oracle
 
 
   #
