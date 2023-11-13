@@ -106,27 +106,78 @@ jobs:
           at: *workingDirVar
       - run: npm run type:check:oracle
 
-  # dep-check-acquirer-backend:
+  dep-check-acquirer-backend:
+    executor: default-docker
+    steps:
+      - attach_workspace:
+          at: *workingDirVar
+      - run: npm run dep:check:backend
+  
+  dep-check-acquirer-frontend:
+    executor: default-docker
+    steps:
+      - attach_workspace:
+          at: *workingDirVar
+      - run: npm run dep:check:frontend
+  
+  dep-check-registry-oracle:
+    executor: default-docker
+    steps:
+      - attach_workspace:
+          at: *workingDirVar
+      - run: npm run dep:check:oracle
+  
+
+  
+  # test-unit:
   #   executor: default-docker
   #   steps:
   #     - attach_workspace:
   #         at: *workingDirVar
-  #     - run: npm run dep:check:backend
-  #
-  # dep-check-acquirer-frontend:
-  #   executor: default-docker
-  #   steps:
-  #     - attach_workspace:
-  #         at: *workingDirVar
-  #     - run: npm run dep:check:frontend
-  #
-  # dep-check-registry-oracle:
-  #   executor: default-docker
-  #   steps:
-  #     - attach_workspace:
-  #         at: *workingDirVar
-  #     - run: npm run dep:check:oracle
-  #
+  #     - run:
+  #         name: Execute unit tests
+  #         command: npm run test:unit
+  #     # store workspace for the coverage-report step
+  #     - persist_to_workspace:
+  #         root: *workingDirVar
+  #         paths:
+  #           - .
+
+  e2e-tests:
+    docker:
+      - image: cimg/node:18.0
+      - image: minio/minio:RELEASE.2023-07-21T21-12-44Z
+        environment:
+          MINIO_ACCESS_KEY: minioadmin
+          MINIO_SECRET_KEY: minioadmin
+        command: ["server", "/data"]
+      - image: rabbitmq:3.12.4-management-alpine
+        environment:
+          RABBITMQ_DEFAULT_USER: guest 
+          RABBITMQ_DEFAULT_PASS: guest
+    # executor: default-docker
+    steps:
+      - attach_workspace:
+          at: *workingDirVar
+      - run: npm install # required to install again 
+      - run: npm run acquirer-backend:test:coverage
+
+  coverage-report:
+    executor: default-docker
+    steps:
+      - attach_workspace:
+          at: *workingDirVar
+      - run:
+          name: Ensure coverage directory exists (FIXME find better way)
+          command: mkdir -p ./coverage
+      - run:
+          name: Merge json coverage files
+          command: npm run coverage:merge
+      - run:
+          name: Generate coverage report
+          command: npm run coverage:gen-report
+      - store_artifacts:
+          path: coverage
 
   # publish:
   #   executor: default-machine
@@ -209,8 +260,15 @@ workflows:
       #     requires:
       #       - approve_dep_check
 
-      # - publish:
-      #     context: org-global
-      #     filters:
-      #       branches:
-      #         only: main
+      - e2e-tests:
+          context: org-global
+          requires:
+            - setup
+
+      - publish:
+          context: org-global
+          filters:
+            branches:
+              only: main
+          requires:
+            - e2e-tests
