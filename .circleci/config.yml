@@ -128,25 +128,25 @@ jobs:
   #     - run: npm run dep:check:oracle
   #
 
-  publish:
-    executor: default-machine
-    steps:
-      - attach_workspace:
-          at: *workingDirVar
-      - run:
-          <<: *defaults_configure_git
-      - run:
-          name: Add github.com to known hosts
-          command: ssh-keyscan github.com >> ~/.ssh/known_hosts
-      - run:
-          <<: *defaults_npm_auth
-      - run:
-          name: Configure NPM registry
-          command: npm config set registry https://registry.npmjs.org/
-      - run:
-          name: Detect changes, publishing npm and publish docker images
-          no_output_timeout: 30m
-          command: chmod +x .circleci/*.sh && .circleci/publish.sh
+  # publish:
+  #   executor: default-machine
+  #   steps:
+  #     - attach_workspace:
+  #         at: *workingDirVar
+  #     - run:
+  #         <<: *defaults_configure_git
+  #     - run:
+  #         name: Add github.com to known hosts
+  #         command: ssh-keyscan github.com >> ~/.ssh/known_hosts
+  #     - run:
+  #         <<: *defaults_npm_auth
+  #     - run:
+  #         name: Configure NPM registry
+  #         command: npm config set registry https://registry.npmjs.org/
+  #     - run:
+  #         name: Detect changes, publishing npm and publish docker images
+  #         no_output_timeout: 30m
+  #         command: chmod +x .circleci/*.sh && .circleci/publish.sh
 
 workflows:
   version: 2
@@ -209,8 +209,8 @@ workflows:
       #     requires:
       #       - approve_dep_check
 
-      - publish:
-          context: org-global
-          # filters:
-          #   branches:
-          #     only: main
+      # - publish:
+      #     context: org-global
+      #     filters:
+      #       branches:
+      #         only: main
