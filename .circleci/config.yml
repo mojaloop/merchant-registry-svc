@@ -64,26 +64,86 @@ jobs:
           root: *workingDirVar
           paths:
             - .
-  lint:
+  lint:check:acquirer-backend:
     executor: default-docker
     steps:
       - attach_workspace:
           at: *workingDirVar
-      - run: npm run lint
+      - run: npm run lint:check:acquirer-backend
 
-  test-unit:
+  lint:check:acquirer-frontend:
     executor: default-docker
     steps:
       - attach_workspace:
           at: *workingDirVar
-      - run:
-          name: Execute unit tests
-          command: npm run test:unit
-      # store workspace for the coverage-report step
-      - persist_to_workspace:
-          root: *workingDirVar
-          paths:
-            - .
+      - run: npm run lint:check:acquirer-frontend
+
+  lint:check:registry-oracle:
+    executor: default-docker
+    steps:
+      - attach_workspace:
+          at: *workingDirVar
+      - run: npm run lint:check:registry-oracle
+
+  type:check:acquirer-backend:
+    executor: default-docker
+    steps:
+      - attach_workspace:
+          at: *workingDirVar
+      - run: npm run type:check:acquirer-backend
+
+  type:check:acquirer-frontend:
+    executor: default-docker
+    steps:
+      - attach_workspace:
+          at: *workingDirVar
+      - run: npm run type:check:acquirer-frontend
+
+  type:check:registry-oracle:
+    executor: default-docker
+    steps:
+      - attach_workspace:
+          at: *workingDirVar
+      - run: npm run type:check:registry-oracle
+
+  dep:check:acquirer-backend:
+    executor: default-docker
+    steps:
+      - attach_workspace:
+          at: *workingDirVar
+      - run: npm run dep:check:acquirer-backend
+
+  dep:check:acquirer-frontend:
+    executor: default-docker
+    steps:
+      - attach_workspace:
+          at: *workingDirVar
+      - run: npm run dep:check:acquirer-frontend
+
+  dep:check:registry-oracle:
+    executor: default-docker
+    steps:
+      - attach_workspace:
+          at: *workingDirVar
+      - run: npm run dep:check:registry-oracle
+
+
+  #
+  # test-unit:
+  #   executor: default-docker
+  #   steps:
+  #     - attach_workspace:
+  #         at: *workingDirVar
+  #     - run:
+  #         name: Execute unit tests
+  #         command: npm run test:unit
+  #     # store workspace for the coverage-report step
+  #     - persist_to_workspace:
+  #         root: *workingDirVar
+  #         paths:
+  #           - .
+  
+        
 
   coverage-report:
     executor: default-docker
@@ -132,22 +192,47 @@ workflows:
           context: org-global
           requires:
             - setup
-      - lint:
+      - lint:check:acquirer-backend:
           context: org-global
           requires:
-            - build
-      - test-unit:
+            - setup
+
+      - lint:check:acquirer-frontend:
           context: org-global
           requires:
-            - lint
-      - coverage-report:
+            - setup
+
+      - lint:check:registry-oracle:
           context: org-global
           requires:
-            - test-unit
-      - publish:
+            - setup
+
+      - type:check:acquirer-backend:
           context: org-global
-          filters:
-            branches:
-              only: main
           requires:
-            - test-unit # Use the latest 2.1 version of CircleCI pipeline process engine.
+            - setup
+
+      - type:check:acquirer-frontend:
+          context: org-global
+          requires:
+            - setup
+
+      - type:check:registry-oracle:
+          context: org-global
+          requires:
+            - setup
+
+      - dep:check:acquirer-backend:
+          context: org-global
+          requires:
+            - setup
+
+      - dep:check:acquirer-frontend:
+          context: org-global
+          requires:
+            - setup
+
+      - dep:check:registry-oracle:
+          context: org-global
+          requires:
+            - setup

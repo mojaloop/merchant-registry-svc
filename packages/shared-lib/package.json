@@ -4,6 +4,7 @@
   "description": "Shared Library to be used across Frontend and Backend Services",
   "main": "src/index.ts",
   "scripts": {
+    "build": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
