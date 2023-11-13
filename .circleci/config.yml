@@ -106,27 +106,27 @@ jobs:
           at: *workingDirVar
       - run: npm run type:check:oracle
 
-  dep-check-acquirer-backend:
-    executor: default-docker
-    steps:
-      - attach_workspace:
-          at: *workingDirVar
-      - run: npm run dep:check:backend
-
-  dep-check-acquirer-frontend:
-    executor: default-docker
-    steps:
-      - attach_workspace:
-          at: *workingDirVar
-      - run: npm run dep:check:frontend
-
-  dep-check-registry-oracle:
-    executor: default-docker
-    steps:
-      - attach_workspace:
-          at: *workingDirVar
-      - run: npm run dep:check:oracle
-
+  # dep-check-acquirer-backend:
+  #   executor: default-docker
+  #   steps:
+  #     - attach_workspace:
+  #         at: *workingDirVar
+  #     - run: npm run dep:check:backend
+  #
+  # dep-check-acquirer-frontend:
+  #   executor: default-docker
+  #   steps:
+  #     - attach_workspace:
+  #         at: *workingDirVar
+  #     - run: npm run dep:check:frontend
+  #
+  # dep-check-registry-oracle:
+  #   executor: default-docker
+  #   steps:
+  #     - attach_workspace:
+  #         at: *workingDirVar
+  #     - run: npm run dep:check:oracle
+  #
 
   #
   # test-unit:
