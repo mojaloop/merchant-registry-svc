@@ -18,7 +18,8 @@
     "dep:check:frontend": "npm run dep:check -w acquirer-frontend",
     "lint:check:oracle": "npm run lint:check -w registry-oracle",
     "type:check:oracle": "npm run type:check -w registry-oracle",
-    "dep:check:oracle": "npm run dep:check -w registry-oracle"
+    "dep:check:oracle": "npm run dep:check -w registry-oracle",
+    "build": "npm -ws run build"
   },
   "keywords": [],
   "author": "",
