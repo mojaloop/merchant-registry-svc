@@ -106,29 +106,29 @@ jobs:
           at: *workingDirVar
       - run: npm run type:check:oracle
 
-  # dep-check-acquirer-backend:
-  #   executor: default-docker
-  #   steps:
-  #     - attach_workspace:
-  #         at: *workingDirVar
-  #     - run: npm run dep:check:backend
-  #
-  # dep-check-acquirer-frontend:
-  #   executor: default-docker
-  #   steps:
-  #     - attach_workspace:
-  #         at: *workingDirVar
-  #     - run: npm run dep:check:frontend
-  #
-  # dep-check-registry-oracle:
-  #   executor: default-docker
-  #   steps:
-  #     - attach_workspace:
-  #         at: *workingDirVar
-  #     - run: npm run dep:check:oracle
-  #
+  dep-check-acquirer-backend:
+    executor: default-docker
+    steps:
+      - attach_workspace:
+          at: *workingDirVar
+      - run: npm run dep:check:backend
+  
+  dep-check-acquirer-frontend:
+    executor: default-docker
+    steps:
+      - attach_workspace:
+          at: *workingDirVar
+      - run: npm run dep:check:frontend
+  
+  dep-check-registry-oracle:
+    executor: default-docker
+    steps:
+      - attach_workspace:
+          at: *workingDirVar
+      - run: npm run dep:check:oracle
+  
 
-  #
+  
   # test-unit:
   #   executor: default-docker
   #   steps:
@@ -143,23 +143,23 @@ jobs:
   #         paths:
   #           - .
 
-    e2e-tests:
-      docker:
-        - image: cimg/node:18.0
-        - image: minio/minio:RELEASE.2023-07-21T21-12-44Z
-          environment:
-            MINIO_ACCESS_KEY: minioadmin
-            MINIO_SECRET_KEY: minioadmin
-          command: ["server", "/data"]
-        - image: rabbitmq:3.12.4-management-alpine
-          environment:
-            RABBITMQ_DEFAULT_USER: guest 
-            RABBITMQ_DEFAULT_PASS: guest
-      executor: default-docker
-      steps:
-        - attach_workspace:
-            at: *workingDirVar
-        - run: npm run acquirer-backend:test:coverage
+  e2e-tests:
+    docker:
+      - image: cimg/node:18.0
+      - image: minio/minio:RELEASE.2023-07-21T21-12-44Z
+        environment:
+          MINIO_ACCESS_KEY: minioadmin
+          MINIO_SECRET_KEY: minioadmin
+        command: ["server", "/data"]
+      - image: rabbitmq:3.12.4-management-alpine
+        environment:
+          RABBITMQ_DEFAULT_USER: guest 
+          RABBITMQ_DEFAULT_PASS: guest
+    # executor: default-docker
+    steps:
+      - attach_workspace:
+          at: *workingDirVar
+      - run: npm run acquirer-backend:test:coverage
 
   coverage-report:
     executor: default-docker
