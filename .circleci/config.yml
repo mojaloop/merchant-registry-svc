@@ -265,10 +265,10 @@ workflows:
           requires:
             - setup
 
-      - publish:
-          context: org-global
-          filters:
-            branches:
-              only: main
-          requires:
-            - e2e-tests
+      # - publish:
+      #     context: org-global
+      #     filters:
+      #       branches:
+      #         only: main
+      #     requires:
+      #       - e2e-tests
