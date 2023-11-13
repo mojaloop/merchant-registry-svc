@@ -64,63 +64,63 @@ jobs:
           root: *workingDirVar
           paths:
             - .
-  lint:check:acquirer-backend:
+  lint-check-acquirer-backend:
     executor: default-docker
     steps:
       - attach_workspace:
           at: *workingDirVar
       - run: npm run lint:check:acquirer-backend
 
-  lint:check:acquirer-frontend:
+  lint-check-acquirer-frontend:
     executor: default-docker
     steps:
       - attach_workspace:
           at: *workingDirVar
       - run: npm run lint:check:acquirer-frontend
 
-  lint:check:registry-oracle:
+  lint-check-registry-oracle:
     executor: default-docker
     steps:
       - attach_workspace:
           at: *workingDirVar
       - run: npm run lint:check:registry-oracle
 
-  type:check:acquirer-backend:
+  type-check-acquirer-backend:
     executor: default-docker
     steps:
       - attach_workspace:
           at: *workingDirVar
       - run: npm run type:check:acquirer-backend
 
-  type:check:acquirer-frontend:
+  type-check-acquirer-frontend:
     executor: default-docker
     steps:
       - attach_workspace:
           at: *workingDirVar
       - run: npm run type:check:acquirer-frontend
 
-  type:check:registry-oracle:
+  type-check-registry-oracle:
     executor: default-docker
     steps:
       - attach_workspace:
           at: *workingDirVar
       - run: npm run type:check:registry-oracle
 
-  dep:check:acquirer-backend:
+  dep-check-acquirer-backend:
     executor: default-docker
     steps:
       - attach_workspace:
           at: *workingDirVar
       - run: npm run dep:check:acquirer-backend
 
-  dep:check:acquirer-frontend:
+  dep-check-acquirer-frontend:
     executor: default-docker
     steps:
       - attach_workspace:
           at: *workingDirVar
       - run: npm run dep:check:acquirer-frontend
 
-  dep:check:registry-oracle:
+  dep-check-registry-oracle:
     executor: default-docker
     steps:
       - attach_workspace:
@@ -192,47 +192,47 @@ workflows:
           context: org-global
           requires:
             - setup
-      - lint:check:acquirer-backend:
+      - lint-check-acquirer-backend:
           context: org-global
           requires:
             - setup
 
-      - lint:check:acquirer-frontend:
+      - lint-check-acquirer-frontend:
           context: org-global
           requires:
             - setup
 
-      - lint:check:registry-oracle:
+      - lint-check-registry-oracle:
           context: org-global
           requires:
             - setup
 
-      - type:check:acquirer-backend:
+      - type-check-acquirer-backend:
           context: org-global
           requires:
             - setup
 
-      - type:check:acquirer-frontend:
+      - type-check-acquirer-frontend:
           context: org-global
           requires:
             - setup
 
-      - type:check:registry-oracle:
+      - type-check-registry-oracle:
           context: org-global
           requires:
             - setup
 
-      - dep:check:acquirer-backend:
+      - dep-check-acquirer-backend:
           context: org-global
           requires:
             - setup
 
-      - dep:check:acquirer-frontend:
+      - dep-check-acquirer-frontend:
           context: org-global
           requires:
             - setup
 
-      - dep:check:registry-oracle:
+      - dep-check-registry-oracle:
           context: org-global
           requires:
             - setup
