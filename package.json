@@ -10,15 +10,24 @@
     "acquirer-backend:test": "npm run test -w acquirer-backend",
     "acquirer-backend:test:coverage": "npm run test:coverage -w acquirer-backend",
     "registry-oracle:start": "npm run start -w registry-oracle",
+
     "lint:check:backend": "npm run lint:check -w acquirer-backend",
     "type:check:backend": "npm run type:check -w acquirer-backend",
     "dep:check:backend": "npm run dep:check -w acquirer-backend",
+    "test:unit:backend": "npm run test:unit -w acquirer-backend",
+    "test:integration:backend": "npm run test:integration -w acquirer-backend",
+    "test:e2e:backend": "npm run test:e2e -w acquirer-backend",
+
     "lint:check:frontend": "npm run lint -w acquirer-frontend",
     "type:check:frontend": "npm run type:check -w acquirer-frontend",
     "dep:check:frontend": "npm run dep:check -w acquirer-frontend",
+    "test:unit:frontend": "npm run test -w acquirer-frontend",
+
     "lint:check:oracle": "npm run lint:check -w registry-oracle",
     "type:check:oracle": "npm run type:check -w registry-oracle",
-    "dep:check:oracle": "npm run dep:check -w registry-oracle"
+    "dep:check:oracle": "npm run dep:check -w registry-oracle",
+
+    "build": "npm -ws run build"
   },
   "keywords": [],
   "author": "",

@@ -1,0 +1,312 @@
+# CircleCI v2.1 Config
+version: 2.1
+
+# this allows you to use CircleCI's dynamic configuration feature
+#setup: true
+
+##
+# Yaml anchors
+#
+##
+defaults_configure_git: &defaults_configure_git
+  name: Configure git
+  command: |
+    git config user.email ${GIT_CI_EMAIL}
+    git config user.name ${GIT_CI_USER}
+
+defaults_npm_auth: &defaults_npm_auth
+  name: Update NPM registry auth token
+  command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc
+
+##
+# Executors
+#
+# CircleCI Executors
+##
+executors:
+  default-docker:
+    working_directory: &workingDirVar /home/circleci/project
+    docker:
+      - image: mojaloop/node-18-builder:0.0.3
+  default-machine:
+    machine:
+      image: ubuntu-2204:2023.04.2
+      docker_layer_caching: true
+
+jobs:
+  setup:
+    executor: default-docker
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - node_modules-cache-{{ checksum "package.json" }}
+      - run: BUILD_LIBRDKAFKA=0 npm install
+      - save_cache:
+          paths:
+            - node_modules
+          key: node_modules-cache-{{ checksum "package.json" }}
+      - persist_to_workspace:
+          root: *workingDirVar
+          paths:
+            - .
+  build:
+    executor: default-docker
+    steps:
+      - attach_workspace:
+          at: *workingDirVar
+      - run: npm run build
+      - save_cache:
+          paths:
+            - packages
+          key: build-cache-{{ .Environment.CIRCLE_SHA1 }}
+      - persist_to_workspace:
+          root: *workingDirVar
+          paths:
+            - .
+  lint-check-acquirer-backend:
+    executor: default-docker
+    steps:
+      - attach_workspace:
+          at: *workingDirVar
+      - run: npm run lint:check:backend
+
+  lint-check-acquirer-frontend:
+    executor: default-docker
+    steps:
+      - attach_workspace:
+          at: *workingDirVar
+      - run: npm run lint:check:frontend
+
+  lint-check-registry-oracle:
+    executor: default-docker
+    steps:
+      - attach_workspace:
+          at: *workingDirVar
+      - run: npm run lint:check:oracle
+
+  type-check-acquirer-backend:
+    executor: default-docker
+    steps:
+      - attach_workspace:
+          at: *workingDirVar
+      - run: npm run type:check:backend
+
+  type-check-acquirer-frontend:
+    executor: default-docker
+    steps:
+      - attach_workspace:
+          at: *workingDirVar
+      - run: npm run type:check:frontend
+
+  type-check-registry-oracle:
+    executor: default-docker
+    steps:
+      - attach_workspace:
+          at: *workingDirVar
+      - run: npm run type:check:oracle
+
+  dep-check-acquirer-backend:
+    executor: default-docker
+    steps:
+      - attach_workspace:
+          at: *workingDirVar
+      - run: npm run dep:check:backend
+  
+  dep-check-acquirer-frontend:
+    executor: default-docker
+    steps:
+      - attach_workspace:
+          at: *workingDirVar
+      - run: npm run dep:check:frontend
+  
+  dep-check-registry-oracle:
+    executor: default-docker
+    steps:
+      - attach_workspace:
+          at: *workingDirVar
+      - run: npm run dep:check:oracle
+  
+
+  test-unit-frontend:
+    executor: default-docker
+    steps:
+      - attach_workspace:
+          at: *workingDirVar
+      - run:
+          name: Execute unit tests
+          command: npm run test:unit:frontend
+      # store workspace for the coverage-report step
+      - persist_to_workspace:
+          root: *workingDirVar
+          paths:
+            - .
+
+
+  test-unit-backend:
+    executor: default-docker
+    steps:
+      - attach_workspace:
+          at: *workingDirVar
+      - run:
+          name: Execute unit tests
+          command: npm run test:unit:backend
+      # store workspace for the coverage-report step
+      - persist_to_workspace:
+          root: *workingDirVar
+          paths:
+            - .
+  
+  # test-unit:
+  #   executor: default-docker
+  #   steps:
+  #     - attach_workspace:
+  #         at: *workingDirVar
+  #     - run:
+  #         name: Execute unit tests
+  #         command: npm run test:unit
+  #     # store workspace for the coverage-report step
+  #     - persist_to_workspace:
+  #         root: *workingDirVar
+  #         paths:
+  #           - .
+
+  # e2e-tests:
+  #   docker:
+  #     - image: cimg/node:18.0
+  #     - image: minio/minio:RELEASE.2023-07-21T21-12-44Z
+  #       environment:
+  #         MINIO_ACCESS_KEY: minioadmin
+  #         MINIO_SECRET_KEY: minioadmin
+  #       command: ["server", "/data"]
+  #     - image: rabbitmq:3.12.4-management-alpine
+  #       environment:
+  #         RABBITMQ_DEFAULT_USER: guest 
+  #         RABBITMQ_DEFAULT_PASS: guest
+  #   # executor: default-docker
+  #   steps:
+  #     - attach_workspace:
+  #         at: *workingDirVar
+  #     - run: npm install # required to install again 
+  #     - run: npm run acquirer-backend:test:coverage
+
+  coverage-report:
+    executor: default-docker
+    steps:
+      - attach_workspace:
+          at: *workingDirVar
+      - run:
+          name: Ensure coverage directory exists (FIXME find better way)
+          command: mkdir -p ./coverage
+      - run:
+          name: Merge json coverage files
+          command: npm run coverage:merge
+      - run:
+          name: Generate coverage report
+          command: npm run coverage:gen-report
+      - store_artifacts:
+          path: coverage
+
+  # publish:
+  #   executor: default-machine
+  #   steps:
+  #     - attach_workspace:
+  #         at: *workingDirVar
+  #     - run:
+  #         <<: *defaults_configure_git
+  #     - run:
+  #         name: Add github.com to known hosts
+  #         command: ssh-keyscan github.com >> ~/.ssh/known_hosts
+  #     - run:
+  #         <<: *defaults_npm_auth
+  #     - run:
+  #         name: Configure NPM registry
+  #         command: npm config set registry https://registry.npmjs.org/
+  #     - run:
+  #         name: Detect changes, publishing npm and publish docker images
+  #         no_output_timeout: 30m
+  #         command: chmod +x .circleci/*.sh && .circleci/publish.sh
+
+workflows:
+  version: 2
+  build_lint_and_test:
+    jobs:
+      - setup:
+          context: org-global
+      - build:
+          context: org-global
+          requires:
+            - setup
+
+      # - approve_dep_check:
+      #     type: approval
+      #     requires:
+      #       - setup
+
+      - lint-check-acquirer-backend:
+          context: org-global
+          requires:
+            - setup
+
+      - lint-check-acquirer-frontend:
+          context: org-global
+          requires:
+            - setup
+
+      - lint-check-registry-oracle:
+          context: org-global
+          requires:
+            - setup
+
+      - type-check-acquirer-backend:
+          context: org-global
+          requires:
+            - setup
+
+      - type-check-acquirer-frontend:
+          context: org-global
+          requires:
+            - setup
+
+      - type-check-registry-oracle:
+          context: org-global
+          requires:
+            - setup
+
+      # - dep-check-acquirer-backend:
+      #     context: org-global
+      #     requires:
+      #       - approve_dep_check
+      #
+      # - dep-check-acquirer-frontend:
+      #     context: org-global
+      #     requires:
+      #       - approve_dep_check
+      #
+      # - dep-check-registry-oracle:
+      #     context: org-global
+      #     requires:
+      #       - approve_dep_check
+
+      # - e2e-tests:
+      #     context: org-global
+      #     requires:
+      #       - setup
+
+      - test-unit-frontend:
+          context: org-global
+          requires:
+            - setup
+
+      - test-unit-backend:
+          context: org-global
+          requires:
+            - setup
+
+      # - publish:
+      #     context: org-global
+      #     filters:
+      #       branches:
+      #         only: main
+      #     requires:
+      #       - e2e-tests
