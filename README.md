@@ -25,6 +25,8 @@ and proceed with the necessary steps in the payment transaction.
 * [Merchant Registry Oracle](./packages/registry-oracle)
   * Will Serve as Oracle for Mojaloop ALS.
 
+See the README.md file on each services for more Environment Variable Configuration options.
+
 ## Deploying on Docker
 * Requirements
     - `docker` and `docker-compose`

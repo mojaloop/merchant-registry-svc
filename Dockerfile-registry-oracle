@@ -25,7 +25,7 @@ RUN npm i
 #  Copy all even although will not be using frontend in this container
 COPY . .
 
-EXPOSE 6666
+EXPOSE 8888
 
 # Run the app when the container launches
 CMD [ "npm", "run", "registry-oracle:start" ]
