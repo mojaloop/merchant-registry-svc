@@ -169,7 +169,7 @@ npm run registry-oracle:start
 
 ### Step 9: Add Oracle Endpoint to Mojaloop ALS
 Replace the `127.0.0.1:4001` with the ALS IP Address and Port.
-`registry-oracle:6666` should be reachable from ALS. (Trying pinging `registry-oracle` from ALS container)
+`registry-oracle:8888` should be reachable from ALS. (Trying pinging `registry-oracle` from ALS container)
 
 ```bash
 curl -H "Content-Type: application/json" \
@@ -178,7 +178,7 @@ curl -H "Content-Type: application/json" \
   -d '{
   "oracleIdType": "ALIAS",
   "endpoint": {
-    "value": "http://registry-oracle:6666",
+    "value": "http://registry-oracle:8888",
     "endpointType": "URL"
   },
   "currency": "USD",

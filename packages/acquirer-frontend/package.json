@@ -11,7 +11,6 @@
     "type:check": "tsc --noEmit",
     "dep:check": "npx ncu -e 2",
     "preview": "vite preview",
-    "prepare": "cd ../../ && husky install ./packages/acquirer-frontend/.husky",
     "theme": "chakra-cli tokens ./src/theme/index.ts",
     "theme:watch": "chakra-cli tokens ./src/theme/index.ts --watch",
     "test": "vitest",
