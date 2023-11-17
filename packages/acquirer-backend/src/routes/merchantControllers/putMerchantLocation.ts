@@ -117,6 +117,8 @@ import { type AuthRequest } from 'src/types/express'
  */
 export async function putMerchantLocation (req: AuthRequest, res: Response) {
   const portalUser = req.user
+
+  /* istanbul ignore if  */
   if (portalUser == null) {
     return res.status(401).send({ message: 'Unauthorized' })
   }
@@ -199,7 +201,7 @@ trying to access unauthorized(different DFSP) merchant ${merchant.id}`,
           location.checkout_counters[0].id,
           location.checkout_counters[0]
         )
-      } catch (err) {
+      } catch (err)/* istanbul ignore next */ {
         if (err instanceof QueryFailedError) {
           logger.error('Query Failed: %o', err.message)
           return res.status(500).send({ message: err.message })
@@ -215,7 +217,7 @@ trying to access unauthorized(different DFSP) merchant ${merchant.id}`,
       location.id,
       locationData
     )
-  } catch (err) {
+  } catch (err)/* istanbul ignore next */ {
     if (err instanceof QueryFailedError) {
       logger.error('Query Failed: %o', err.message)
       return res.status(500).send({ message: err.message })

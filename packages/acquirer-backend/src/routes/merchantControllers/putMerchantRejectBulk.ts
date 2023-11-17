@@ -4,7 +4,7 @@ import { AppDataSource } from '../../database/dataSource'
 import { MerchantEntity } from '../../entity/MerchantEntity'
 import logger from '../../services/logger'
 import { MerchantRegistrationStatus, AuditActionType, AuditTrasactionStatus } from 'shared-lib'
-import { In, Not } from 'typeorm'
+import { In } from 'typeorm'
 import { audit } from '../../utils/audit'
 import { type AuthRequest } from 'src/types/express'
 
@@ -49,6 +49,7 @@ import { type AuthRequest } from 'src/types/express'
 
 export async function putBulkReject (req: AuthRequest, res: Response) {
   const portalUser = req.user
+  /* istanbul ignore if */
   if (portalUser == null) {
     return res.status(401).send({ message: 'Unauthorized' })
   }
@@ -179,7 +180,7 @@ trying to access unauthorized(different DFSP) merchant ${req.params.id}`,
     res.status(200).send({
       message: 'Status Updated to "Rejected" for multiple merchants'
     })
-  } catch (e) {
+  } catch (e) /* istanbul ignore next */ {
     logger.error(e)
     await audit(
       AuditActionType.UPDATE,

@@ -12,7 +12,7 @@ export class RegistryEntity {
   @Column({ nullable: true })
     merchant_id!: number
 
-  @Column({ nullable: false})
+  @Column({ nullable: false })
     fspId!: string
 
   @Column({ nullable: true })
@@ -21,7 +21,7 @@ export class RegistryEntity {
   @Column({ nullable: true })
     checkout_counter_id!: number
 
-  @Column({ nullable: false, default: 'MERCHANT_PAYINTOID'})
+  @Column({ nullable: false, default: 'MERCHANT_PAYINTOID' })
     alias_type!: string
 
   @Column({ nullable: false })

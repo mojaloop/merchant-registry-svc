@@ -48,21 +48,10 @@ import { type AuthRequest } from 'src/types/express'
  */
 export async function getMerchantCheckoutCounters (req: AuthRequest, res: Response) {
   const portalUser = req.user
+
+  /* istanbul ignore if */
   if (portalUser == null) {
     return res.status(401).send({ message: 'Unauthorized' })
-  }
-
-  if (req.params.id === undefined || req.params.id === null) {
-    await audit(
-      AuditActionType.ACCESS,
-      AuditTrasactionStatus.FAILURE,
-      'getMerchantCheckoutCounters',
-      'Missing merchant id',
-      'Merchants',
-      {}, {}, portalUser
-    )
-    res.status(400).send({ message: 'Missing merchant id' })
-    return
   }
 
   if (isNaN(Number(req.params.id)) || Number(req.params.id) < 1) {
@@ -132,7 +121,7 @@ successfully fetched checkout counters for merchant ${merchant.id}`,
       {}, {}, portalUser
     )
     res.send({ message: 'OK', data: checkoutCounters })
-  } catch (e) {
+  } catch (e) /* istanbul ignore next */ {
     await audit(
       AuditActionType.ACCESS,
       AuditTrasactionStatus.FAILURE,

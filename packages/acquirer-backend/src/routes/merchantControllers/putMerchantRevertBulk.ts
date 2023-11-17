@@ -49,6 +49,7 @@ import { type AuthRequest } from 'src/types/express'
 
 export async function putBulkRevert (req: AuthRequest, res: Response) {
   const portalUser = req.user
+  /* istanbul ignore if */
   if (portalUser == null) {
     return res.status(401).send({ message: 'Unauthorized' })
   }
@@ -97,18 +98,6 @@ export async function putBulkRevert (req: AuthRequest, res: Response) {
 
       return res.status(422).send({ message: 'Each ID in the array must be a valid ID number.' })
     }
-  }
-
-  if (req.body.reason === undefined || req.body.reason == null || req.body.reason === '') {
-    await audit(
-      AuditActionType.UPDATE,
-      AuditTrasactionStatus.FAILURE,
-      'putBulkRevert',
-      'Reason is required',
-      'Merchant',
-      {}, {}, portalUser
-    )
-    return res.status(422).send({ message: 'Reason is required' })
   }
 
   const merchants = await merchantRepository.find({
@@ -193,7 +182,7 @@ trying to access unauthorized(different DFSP) merchant ${merchant.id}`,
     res.status(200).send({
       message: 'Status Updated to "Reverted" for multiple merchants'
     })
-  } catch (e) {
+  } catch (e) /* istanbul ignore next */ {
     logger.error(e)
     await audit(
       AuditActionType.UPDATE,

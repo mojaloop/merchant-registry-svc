@@ -109,10 +109,13 @@ export async function merchantsToXlsxWorkbook (merchants: MerchantEntity[]): Pro
       registration_status_reason: merchant.registration_status_reason,
       category: `${category.category_code} - ${category.description}`,
       currency: `${currency.iso_code} - ${currency.description}`,
+      /* istanbul ignore next */
       license_number: merchant.business_licenses[0]?.license_number,
-      // eslint-disable-next-line
+      /* istanbul ignore next */
       license_document_link: await getMerchantDocumentURL(merchant.business_licenses[0]?.license_document_link),
+      /* istanbul ignore next */
       created_by: merchant?.created_by?.email ?? undefined,
+      /* istanbul ignore next */
       checked_by: merchant?.checked_by?.email ?? undefined
     })
 
@@ -136,6 +139,7 @@ export async function merchantsToXlsxWorkbook (merchants: MerchantEntity[]): Pro
       businessOwnersWorkbook.addRow({
         merchant_id: merchant.id,
         ...businessOwner,
+        /* istanbul ignore next */
         businessPersonLocation: businessOwner.businessPersonLocation?.id
       })
     }

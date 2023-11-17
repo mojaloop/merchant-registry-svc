@@ -46,6 +46,8 @@ import { publishToQueue } from '../../services/messageQueue'
 
 export async function putBulkWaitingAliasGeneration (req: AuthRequest, res: Response) {
   const portalUser = req.user
+
+  /* istanbul ignore if */
   if (portalUser == null) {
     return res.status(401).send({ message: 'Unauthorized' })
   }
@@ -65,7 +67,7 @@ export async function putBulkWaitingAliasGeneration (req: AuthRequest, res: Resp
       'MerchantEntity',
       {}, {}, portalUser
     )
-    return res.status(422).send({ message: 'IDs must be an array of numbers.' })
+    return res.status(422).send({ message: 'IDs must be an array.' })
   }
 
   for (const id of ids) {
@@ -181,7 +183,7 @@ export async function putBulkWaitingAliasGeneration (req: AuthRequest, res: Resp
     res.status(200).send({
       message: '"Waiting For Alias Generation" Status Updated for multiple merchants'
     })
-  } catch (e) {
+  } catch (e)/* istanbul ignore next */ {
     logger.error(e)
     await audit(
       AuditActionType.UPDATE,

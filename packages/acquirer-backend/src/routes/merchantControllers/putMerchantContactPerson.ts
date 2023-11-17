@@ -62,7 +62,7 @@ import { type AuthRequest } from 'src/types/express'
  *                 type: string
  *                 example: "123-456-7890-333"
  *     responses:
- *       201:
+ *       200:
  *         description: Contact Person Updated
  *         content:
  *           application/json:
@@ -76,6 +76,8 @@ import { type AuthRequest } from 'src/types/express'
  */
 export async function putMerchantContactPerson (req: AuthRequest, res: Response) {
   const portalUser = req.user
+
+  /* istanbul ignore if */
   if (portalUser == null) {
     return res.status(401).send({ message: 'Unauthorized' })
   }
@@ -179,9 +181,9 @@ trying to access unauthorized(different DFSP) merchant ${merchant.id}`,
 
   try {
     await contactPersonRepository.save(contactPerson)
-  } catch (err) {
+  } catch (err)/* istanbul ignore next */ {
     if (err instanceof QueryFailedError) {
-      logger.error('Contact Person Validation error: %o', err.message)
+      logger.error('Contact Person DB Save error: %o', err.message)
       return res.status(422).send({ message: err.message })
     }
   }
@@ -191,9 +193,9 @@ trying to access unauthorized(different DFSP) merchant ${merchant.id}`,
     merchant.created_by = portalUser
     try {
       await merchantRepository.save(merchant)
-    } catch (err) {
+    } catch (err)/* istanbul ignore next */ {
       if (err instanceof QueryFailedError) {
-        logger.error('Merchant Validation error: %o', err.message)
+        logger.error('Merchant DB Save error (updating created_by): %o', err.message)
         return res.status(422).send({ message: err.message })
       }
     }
@@ -208,7 +210,7 @@ trying to access unauthorized(different DFSP) merchant ${merchant.id}`,
     oldContactPerson, { ...contactPerson, merchant: null }, portalUser
   )
 
-  return res.status(201).send({
+  return res.status(200).send({
     message: 'Contact Person Updated'
   })
 }

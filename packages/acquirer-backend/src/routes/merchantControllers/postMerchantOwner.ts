@@ -84,6 +84,8 @@ import { type AuthRequest } from 'src/types/express'
  */
 export async function postMerchantOwner (req: AuthRequest, res: Response) {
   const portalUser = req.user
+
+  /* istanbul ignore if */
   if (portalUser == null) {
     return res.status(401).send({ message: 'Unauthorized' })
   }
@@ -174,7 +176,7 @@ trying to access unauthorized(different DFSP) merchant ${merchant.id}`,
     // use 'as any' to solve eslint typecast issue.
     savedLocation = await locationRepository.save(locationObj as any)
     // businessOwner.businessPersonLocation = savedLocation
-  } catch (err) {
+  } catch (err)/* istanbul ignore next */ {
     logger.error('error creating business owner location: %o', err)
     return res.status(500).send({ message: 'error creating business owner location' })
   }
@@ -194,7 +196,7 @@ trying to access unauthorized(different DFSP) merchant ${merchant.id}`,
 
   try {
     await businessOwnerRepository.save(businessOwner)
-  } catch (err) {
+  } catch (err)/* istanbul ignore next */ {
     logger.error('error creating business owner: %o', err)
     await audit(
       AuditActionType.ADD,
@@ -214,7 +216,7 @@ trying to access unauthorized(different DFSP) merchant ${merchant.id}`,
   }
   try {
     await merchantRepository.save(merchant)
-  } catch (err) {
+  } catch (err)/* istanbul ignore next */ {
     logger.error('error updating merchant with business owner: %o', err)
     await audit(
       AuditActionType.ADD,

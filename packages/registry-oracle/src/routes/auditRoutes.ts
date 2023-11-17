@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
-import express, { Request, type Response } from 'express'
+/* eslint-disable @typescript-eslint/no-misused-promises */
+import express, { type Request, type Response } from 'express'
 import { type AuditTrasactionStatus, type AuditActionType } from 'shared-lib'
-import {AppDataSource} from '../database/dataSource'
-import {AuditEntity} from '../entity/AuditEntity'
+import { AppDataSource } from '../database/dataSource'
+import { AuditEntity } from '../entity/AuditEntity'
 import logger from '../services/logger'
 
 const router = express.Router()
 router.get('/audits', getAudits)
-
 
 export default router
 

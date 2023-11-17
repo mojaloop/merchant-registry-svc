@@ -47,22 +47,10 @@ import { type AuthRequest } from 'src/types/express'
  */
 export async function getMerchantLocations (req: AuthRequest, res: Response) {
   const portalUser = req.user
+
+  /* istanbul ignore if */
   if (portalUser == null) {
     return res.status(401).send({ message: 'Unauthorized' })
-  }
-
-  if (req.params.id == null || req.params.id === undefined) {
-    await audit(
-      AuditActionType.ACCESS,
-      AuditTrasactionStatus.FAILURE,
-      'getMerchantLocations',
-      'Missing merchant id',
-      'Merchant',
-      {}, {}, portalUser
-    )
-
-    res.status(400).send({ message: 'Invalid ID' })
-    return
   }
 
   if (isNaN(Number(req.params.id)) || Number(req.params.id) < 1) {
@@ -132,7 +120,7 @@ retrieved locations for merchant ${merchant.id}`,
     )
     const locations = merchant.locations
     res.send({ message: 'OK', data: locations })
-  } catch (e) {
+  } catch (e)/* istanbul ignore next */ {
     await audit(
       AuditActionType.ACCESS,
       AuditTrasactionStatus.FAILURE,

@@ -1,0 +1,11 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+npm run type:check:backend
+npm run lint:check:backend
+
+npm run type:check:oracle
+npm run lint:check:oracle
+
+npm run type:check:frontend
+npm run lint:check:frontend

@@ -45,6 +45,8 @@ import { type AuthRequest } from 'src/types/express'
 
 export async function exportMerchantIdsXlsx (req: AuthRequest, res: Response) {
   const portalUser = req.user
+
+  /* istanbul ignore if */
   if (portalUser == null) {
     return res.status(401).send({ message: 'Unauthorized' })
   }
@@ -73,7 +75,6 @@ export async function exportMerchantIdsXlsx (req: AuthRequest, res: Response) {
   }
 
   // Validate IDs
-  if (!Array.isArray(ids)) throw new Error('IDs must be an array of numbers.')
   for (const id of ids) {
     if (isNaN(Number(id)) || Number(id) < 1) {
       await audit(
@@ -113,7 +114,7 @@ export async function exportMerchantIdsXlsx (req: AuthRequest, res: Response) {
         created_at: 'DESC' // Sorting by the created_at field in descending order
       }
     })
-  } catch (e) {
+  } catch (e)/* istanbul ignore next */ {
     logger.error('Error fetching merchant: %o', e)
     await audit(
       AuditActionType.ACCESS,

@@ -78,7 +78,7 @@ import { type AuthRequest } from 'src/types/express'
  *     responses:
  *       200:
  *         description:
- *          The merchant draft has been created successfully.
+ *          Updating Merchant Draft Successful
  *         content:
  *          application/json:
  *            schema:
@@ -86,7 +86,7 @@ import { type AuthRequest } from 'src/types/express'
  *              properties:
  *                message:
  *                  type: string
- *                  example: "Drafting Merchant Successful."
+ *                  example: "Updating Merchant Draft Successful"
  *                data:
  *                  type: object
  *
@@ -99,6 +99,8 @@ import { type AuthRequest } from 'src/types/express'
 // TODO: check if the authenticated user is a Maker
 export async function putMerchantDraft (req: AuthRequest, res: Response) {
   const portalUser = req.user
+
+  /* istanbul ignore if */
   if (portalUser == null) {
     return res.status(401).send({ message: 'Unauthorized' })
   }
@@ -108,8 +110,18 @@ export async function putMerchantDraft (req: AuthRequest, res: Response) {
     MerchantSubmitDataSchema.parse(req.body)
   } catch (err) {
     if (err instanceof z.ZodError) {
-      logger.error('Validation error: %o', err.issues.map((issue) => issue.message))
-      return res.status(422).send({ message: err })
+      const errors = err.issues.map(issue => `${issue.path.toString()}: ${issue.message}`)
+      logger.error('Validation error: %o', errors)
+      await audit(
+        AuditActionType.ADD,
+        AuditTrasactionStatus.FAILURE,
+        'putMerchantDraft',
+        'Validation error',
+        'MerchantEntity',
+        {}, req.body, portalUser
+      )
+
+      return res.status(422).send({ message: errors })
     }
   }
 
@@ -205,7 +217,7 @@ trying to access unauthorized(different DFSP) merchant ${merchant.id}`,
     } else {
       logger.debug('No PDF file submitted for the merchant')
     }
-  } catch (err) {
+  } catch (err)/* istanbul ignore next */ {
     if (err instanceof QueryFailedError) {
       logger.error('Query Failed: %o', err.message)
       return res.status(500).send({ message: err.message })
@@ -234,5 +246,5 @@ trying to access unauthorized(different DFSP) merchant ${merchant.id}`,
     'Merchant',
     oldMerchant, { ...merchantData, business_licenses: [] }, portalUser
   )
-  return res.status(201).send({ message: 'Updating Merchant Draft Successful', data: merchantData })
+  return res.status(200).send({ message: 'Updating Merchant Draft Successful', data: merchantData })
 }

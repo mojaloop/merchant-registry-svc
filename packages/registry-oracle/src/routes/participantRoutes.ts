@@ -1,13 +1,15 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
+/* eslint-disable @typescript-eslint/no-misused-promises */
 import express, { type Request, type Response } from 'express'
-import {AuditActionType, AuditTrasactionStatus} from 'shared-lib'
-import {AppDataSource} from '../database/dataSource'
-import {RegistryEntity} from '../entity/RegistryEntity'
-import {authenticateAPIAccess} from '../middleware/authenticate'
+import { AuditActionType, AuditTrasactionStatus } from 'shared-lib'
+import { AppDataSource } from '../database/dataSource'
+import { RegistryEntity } from '../entity/RegistryEntity'
+import { authenticateAPIAccess } from '../middleware/authenticate'
 import logger from '../services/logger'
-import {EndpointAuthRequest} from '../types/express'
-import {audit} from '../utils/audit'
-import {prepareError} from '../utils/error'
-import {findIncrementAliasValue} from '../utils/utils'
+import { type EndpointAuthRequest } from '../types/express'
+import { audit } from '../utils/audit'
+import { prepareError } from '../utils/error'
+import { findIncrementAliasValue } from '../utils/utils'
 
 const router = express.Router()
 
@@ -61,54 +63,61 @@ const router = express.Router()
  *               properties:
  *                 error:
  *                   type: string
- * 
+ *
  */
 router.get('/participants/:type/:id', async (req: Request, res: Response) => {
-  const {type, id} = req.params 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { type, id } = req.params
 
   // Don't check for type for now
   // if(type == undefined || type == null || type != 'MERCHANT_PAYINTOID') {
   //   logger.error('Invalid Type')
   //   await audit(
-  //     AuditActionType.ACCESS, 
-  //     AuditTrasactionStatus.FAILURE, 
+  //     AuditActionType.ACCESS,
+  //     AuditTrasactionStatus.FAILURE,
   //     'getParticipants',
-  //     'GET Participants: Invalid Type', 
+  //     'GET Participants: Invalid Type',
   //     'RegistryEntity',
   //     {}, {type}
   //   )
   //   return res.status(400).send(prepareError('Invalid Type'))
   // }
 
-  if(id == undefined || id == null) {
+  if (id === undefined || id == null) {
     logger.error('Invalid ID')
     await audit(
-      AuditActionType.ACCESS, 
-      AuditTrasactionStatus.FAILURE, 
+      AuditActionType.ACCESS,
+      AuditTrasactionStatus.FAILURE,
       'getParticipants',
-      'GET Participants: Invalid ID', 
+      'GET Participants: Invalid ID',
       'RegistryEntity',
-      {}, {id}
+      {}, { id }
     )
     return res.status(400).send(prepareError('Invalid Id'))
   }
 
   const registryRecord = await AppDataSource.manager.findOne(RegistryEntity, {
     where: { alias_value: id },
-    select: ['fspId', 'currency'] 
+    select: ['fspId', 'currency']
   })
-  
+
+  // eslint-disable-next-line
+  let transaction_status = AuditTrasactionStatus.SUCCESS
+  if (registryRecord == null) {
+    transaction_status = AuditTrasactionStatus.FAILURE
+  }
+
   await audit(
     AuditActionType.ACCESS,
-    AuditTrasactionStatus.SUCCESS,
+    transaction_status,
     'getParticipants',
     'GET Participants: Participant retrieved',
     'RegistryEntity',
-    {}, {partyList: registryRecord}
+    {}, { partyList: registryRecord, payinto_id: id }
   )
 
-  logger.debug('registryRecord Retrieved: %o', registryRecord)
-  res.send({partyList: registryRecord ? [registryRecord] : []})
+  logger.debug('registryRecord %s Retrieved: %o', id, registryRecord)
+  res.send({ partyList: registryRecord !== null ? [registryRecord] : [] })
 })
 
 /**
@@ -159,7 +168,7 @@ router.get('/participants/:type/:id', async (req: Request, res: Response) => {
  *                 alias_value: "000002"
  *               - merchant_id: "10004"
  *                 currency: "JPY"
- *                 
+ *
  *     responses:
  *       200:
  *         description: Successfully created participants
@@ -185,11 +194,11 @@ router.get('/participants/:type/:id', async (req: Request, res: Response) => {
  *               properties:
  *                 error:
  *                   type: string
- * 
+ *
  */
 router.post('/participants', authenticateAPIAccess, async (req: EndpointAuthRequest, res: Response) => {
   const endpoint = req.endpoint
-  if(!endpoint) {
+  if (endpoint == null) {
     logger.error('Invalid Endpoint')
     await audit(
       AuditActionType.ADD,
@@ -202,20 +211,21 @@ router.post('/participants', authenticateAPIAccess, async (req: EndpointAuthRequ
     return res.status(400).send(prepareError('Authentication Error'))
   }
 
-  const participants = req.body;
+  const participants = req.body
 
-  if(!Array.isArray(participants)) {
-    return res.status(400).send(prepareError('Invalid request body, array expected'));
+  if (!Array.isArray(participants)) {
+    return res.status(400).send(prepareError('Invalid request body, array expected'))
   }
 
   const registryRepository = AppDataSource.getRepository(RegistryEntity)
 
-  const results = [];
+  const results = []
 
   for (const participant of participants) {
-    const {merchant_id, currency, alias_value } = participant;
-    
-    if(merchant_id == undefined || merchant_id == null) {
+    // eslint-disable-next-line
+    const { merchant_id, currency, alias_value } = participant
+
+    if (merchant_id === undefined || merchant_id == null) {
       logger.error('Invalid Merchant ID')
       await audit(
         AuditActionType.ADD,
@@ -223,7 +233,7 @@ router.post('/participants', authenticateAPIAccess, async (req: EndpointAuthRequ
         'postParticipants',
         'POST Participants: Merchant ID is required',
         'RegistryEntity',
-        {}, {merchant_id}
+        {}, { merchant_id }
       )
       results.push({
         merchant_id: null,
@@ -234,7 +244,7 @@ router.post('/participants', authenticateAPIAccess, async (req: EndpointAuthRequ
       continue
     }
 
-    if(currency == undefined || currency == null) {
+    if (currency === undefined || currency == null) {
       logger.error('Currency is required')
       await audit(
         AuditActionType.ADD,
@@ -242,7 +252,7 @@ router.post('/participants', authenticateAPIAccess, async (req: EndpointAuthRequ
         'postParticipants',
         'POST Participants: Currency is required',
         'RegistryEntity',
-        {}, {currency}
+        {}, { currency }
       )
       results.push({
         merchant_id: participant.merchant_id,
@@ -253,33 +263,31 @@ router.post('/participants', authenticateAPIAccess, async (req: EndpointAuthRequ
       continue
     }
 
+    let paddedAliasValue = alias_value
+    let headPointerAliasValue: RegistryEntity | null = null
 
-    let paddedAliasValue = alias_value;
-    let headPointerAliasValue: RegistryEntity | null = null;
-
-    if(alias_value == undefined || alias_value == null) {
+    if (alias_value === undefined || alias_value == null) {
       // find head pointer
       headPointerAliasValue = await registryRepository.findOne({
-        where: { is_incremental_head: true },
-      });
+        where: { is_incremental_head: true }
+      })
 
-      if(headPointerAliasValue) {
+      if (headPointerAliasValue != null) {
         // If head pointer exists, just increment it
-        paddedAliasValue = await findIncrementAliasValue(headPointerAliasValue.alias_value);
+        paddedAliasValue = await findIncrementAliasValue(headPointerAliasValue.alias_value)
       } else {
-          // If no record exists, start from 1
-          paddedAliasValue = await findIncrementAliasValue('0');
+        // If no record exists, start from 1
+        paddedAliasValue = await findIncrementAliasValue('0')
       }
-
-    }else{
+    } else {
       // Check if the alias_value already exists
-      const existingAliasEntity = await registryRepository.findOne({
-        where: { alias_value: alias_value },
+      const isAliasExists = await registryRepository.exist({
+        where: { alias_value },
 
-        select: ["alias_value"]
-      });
+        select: ['alias_value']
+      })
 
-      if(existingAliasEntity) {
+      if (isAliasExists) {
         logger.error('Alias Value already exists')
         await audit(
           AuditActionType.ADD,
@@ -287,7 +295,7 @@ router.post('/participants', authenticateAPIAccess, async (req: EndpointAuthRequ
           'postParticipants',
           'POST Participants: Alias Value already exists',
           'RegistryEntity',
-          {}, {alias_value}
+          {}, { alias_value }
         )
         results.push({
           merchant_id: participant.merchant_id,
@@ -299,7 +307,7 @@ router.post('/participants', authenticateAPIAccess, async (req: EndpointAuthRequ
       }
 
       // Check if the alias_value is a number
-      if(isNaN(alias_value)) {
+      if (isNaN(alias_value)) {
         logger.error('Invalid Alias Value')
         await audit(
           AuditActionType.ADD,
@@ -307,7 +315,7 @@ router.post('/participants', authenticateAPIAccess, async (req: EndpointAuthRequ
           'postParticipants',
           'POST Participants: Invalid Alias Value - Alias Value should be a number',
           'RegistryEntity',
-          {}, {alias_value}
+          {}, { alias_value }
         )
         results.push({
           merchant_id: participant.merchant_id,
@@ -326,15 +334,15 @@ router.post('/participants', authenticateAPIAccess, async (req: EndpointAuthRequ
     newRegistryRecord.alias_value = paddedAliasValue
 
     // If alias_value is not provided by external DFSP, Mark the new record as head pointer
-    if(alias_value == undefined || alias_value == null) {
+    if (alias_value === undefined || alias_value == null) {
       // Update the head pointer
-      
-      if(headPointerAliasValue) {
+
+      if (headPointerAliasValue != null) {
         // is_incremental_head false for the old head pointer
-        headPointerAliasValue.is_incremental_head = false;
-        try{
-          await AppDataSource.manager.save(headPointerAliasValue);
-        }catch(err){
+        headPointerAliasValue.is_incremental_head = false
+        try {
+          await AppDataSource.manager.save(headPointerAliasValue)
+        } catch (err) {
           logger.error('Error saving headPointerAliasValue: %o', err)
           await audit(
             AuditActionType.ADD,
@@ -342,7 +350,7 @@ router.post('/participants', authenticateAPIAccess, async (req: EndpointAuthRequ
             'postParticipants',
             'POST Participants: Error Updating Incremental Head Pointer',
             'RegistryEntity',
-            {}, {err}
+            {}, { err }
           )
           results.push({
             merchant_id: participant.merchant_id,
@@ -353,12 +361,11 @@ router.post('/participants', authenticateAPIAccess, async (req: EndpointAuthRequ
           continue
         }
       }
-        
-      newRegistryRecord.is_incremental_head = true;
+
+      newRegistryRecord.is_incremental_head = true
     }
 
-
-    try{
+    try {
       await AppDataSource.manager.save(newRegistryRecord)
       await audit(
         AuditActionType.ADD,
@@ -366,7 +373,7 @@ router.post('/participants', authenticateAPIAccess, async (req: EndpointAuthRequ
         'postParticipants',
         'POST Participants: Participant created',
         'RegistryEntity',
-        {}, {fspId: endpoint.fspId, currency}
+        {}, { fspId: endpoint.fspId, currency }
       )
       results.push({
         merchant_id: participant.merchant_id,
@@ -375,7 +382,7 @@ router.post('/participants', authenticateAPIAccess, async (req: EndpointAuthRequ
         alias_value: paddedAliasValue
       })
       continue
-    }catch(err){
+    } catch (err) {
       logger.error('Error saving new record: %o', err)
       await audit(
         AuditActionType.ADD,
@@ -383,7 +390,7 @@ router.post('/participants', authenticateAPIAccess, async (req: EndpointAuthRequ
         'postParticipants',
         'POST Participants: Error saving new record',
         'RegistryEntity',
-        {}, {err}
+        {}, { err }
       )
       results.push({
         merchant_id: participant.merchant_id,
@@ -393,7 +400,6 @@ router.post('/participants', authenticateAPIAccess, async (req: EndpointAuthRequ
       })
       continue
     }
-
   } // end of for loop for participants
 
   res.send(results)

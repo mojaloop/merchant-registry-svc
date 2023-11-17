@@ -1,46 +1,63 @@
 import express from 'express'
 import logger from '../../src/services/logger'
 import {
-  createMerchantDocumentBucket,
-  removeMerchantDocumentBucket
+  createMerchantDocumentBucket
 } from '../../src/services/S3Client'
 import { initializeDatabase } from '../../src/database/initDatabase'
 import { AppDataSource } from '../../src/database/dataSource'
 import setupRoutes from '../../src/setup/routesSetup'
-import { testSucceedHealthCheck } from './healthCheck.tests'
+import { testSucceedHealthCheck, testSucceedHealthCheckSendGridService } from './healthCheck.tests'
 import { disconnectMessageQueue } from '../../src/services/messageQueue'
-import { testUserLoginFails } from './testUserLoginFails'
-import { testUserLoginSucceed } from './testUserLoginSucceed'
-import { testGetMerchantsFails } from './testGetMerchantsFails'
-import { testGetMerchantsSucceed } from './testGetMerchantsSucceed'
-import { testPostMerchantDraft } from './testPostMerchantDraft'
-import { testPostDFSP } from './testPostDFSP'
-import { testPostExternalDFSPClientAcess } from './testPostExternalDFSPClientAccess'
-import { testGetDFSPs } from './testGetDFSP'
-import { testPutMerchantStatusReadyToReview } from './testPutMerchantReadyStatus'
-import { testPutMerchantStatusApprove } from './testPutMerchantApproveStatus'
-import { testPutMerchantRejectStatus } from './testPutMerchantRejectStatus'
-import { testPutMerchantRevertStatus } from './testPutMerchantRevertStatus'
-import { testGetUserProfile } from './testGetUserProfile'
-import { testGetAudits } from './testGetAudits'
-import { testGETMerchantXlsxWorkbook } from './testMerchantXlsxWorkbook'
-import { testPutConfigTraceLevel } from './testPutConfigTraceLevel'
-import { testGetCountries } from './testGetCountries'
-import { testGetSubDivisions } from './testGetSubDivisions'
-import { testGetDistricts } from './testGetDistricts'
-import { testGetMerchantById } from './testGetMerchantById'
-import { testPostMerchantLocations } from './testPostMerchantLocation'
-import { testGetMerchantLocations } from './testGetMerchantLocations'
-import { testGetUsers } from './testGetUsers'
-import { testGetCheckoutCounters } from './testGetCheckoutCounters'
-import { testGetRoles } from './testGetRoles'
-import { testGetMerchantDraftCounts } from './testGetMerchantDraftCounts'
-import { testPostCreateUser } from './testPostCreateUser'
-import { testPutUserResetPassword } from './testPutUserResetPassword'
-import { testGETMerchantXlsxWorkbookFilter } from './testMerchantXlsxWorkbookFilter'
-import { testPostUserRefreshToken } from './testPutUserRefreshToken'
-import { testPostMerchantContactPerson } from './testPostMerchantContactPerson'
-import { testPostMerchantOwner } from './testPostMerchantOwner'
+import { testUserLoginFails } from './UserLoginFails.tests'
+import { testUserLoginSucceed } from './UserLoginSucceed.tests'
+import { testGetMerchantsFails } from './GetMerchantsFails.tests'
+import { testGetMerchantsSucceed } from './GetMerchantsSucceed.tests'
+import { testPostMerchantDraft } from './PostMerchantDraft.tests'
+import { testPostDFSP } from './PostDFSP.tests'
+import { testPostExternalDFSPClientAcess } from './PostExternalDFSPClientAccess.tests'
+import { testGetDFSPs } from './GetDFSP.tests'
+import { testPutMerchantStatusReadyToReview } from './PutMerchantReadyStatus.tests'
+import { testPutMerchantStatusApprove } from './PutMerchantApproveStatus.tests'
+import { testPutMerchantRejectStatus } from './PutMerchantRejectStatus.tests'
+import { testPutMerchantRevertStatus } from './PutMerchantRevertStatus.tests'
+import { testGetUserProfile } from './GetUserProfile.tests'
+import { testGetAudits } from './GetAudits.tests'
+import { testGETMerchantXlsxWorkbook } from './MerchantXlsxWorkbook.tests'
+import { testPutConfigTraceLevel } from './PutConfigTraceLevel.tests'
+import { testGetCountries } from './GetCountries.tests'
+import { testGetSubDivisions } from './GetSubDivisions.tests'
+import { testGetDistricts } from './GetDistricts.tests'
+import { testGetMerchantById } from './GetMerchantById.tests'
+import { testPostMerchantLocations } from './PostMerchantLocation.tests'
+import { testGetMerchantLocations } from './GetMerchantLocations.tests'
+import { testGetUsers } from './GetUsers.tests'
+import { testGetCheckoutCounters } from './GetCheckoutCounters.tests'
+import { testGetRoles } from './GetRoles.tests'
+import { testGetMerchantDraftCounts } from './GetMerchantDraftCounts.tests'
+import { testPostCreateUser } from './PostCreateUser.tests'
+import { testPutUserResetPassword } from './PutUserResetPassword.tests'
+import { testGETMerchantXlsxWorkbookFilter } from './MerchantXlsxWorkbookFilter.tests'
+import { testPostUserRefreshToken } from './PutUserRefreshToken.tests'
+import { testPostMerchantContactPerson } from './PostMerchantContactPerson.tests'
+import { testPostMerchantOwner } from './PostMerchantOwner.tests'
+import { testPutMerchantDraft } from './PutMerchantDraft.tests'
+import { testPostRolecreate } from './PostRoleCreate.tests'
+import { testPutRoleUpdatePermissions } from './PutRoleUpdatePermissions.tests'
+import { testPutMerchantOwner } from './PutMerchantOwner.tests'
+import { testPutMerchantContactPerson } from './PutMerchantContactPerson.tests'
+import { testPutMerchantLocations } from './PutMerchantLocation.tests'
+import { testVerifyUser } from './VerifyUser.tests'
+
+jest.mock('@sendgrid/mail', () => ({
+  setApiKey: jest.fn(),
+  send: jest.fn().mockResolvedValue([
+    {
+      statusCode: 200,
+      body: '',
+      headers: {}
+    }
+  ])
+}))
 
 logger.silent = true
 
@@ -56,7 +73,7 @@ describe('E2E API Tests', () => {
 
   afterAll(async () => {
     await AppDataSource.destroy()
-    await removeMerchantDocumentBucket()
+    // await removeMerchantDocumentBucket()
     await disconnectMessageQueue()
   })
 
@@ -93,6 +110,14 @@ describe('E2E API Tests', () => {
     testPostMerchantContactPerson(app)
   })
 
+  describe('PUT Merchant Draft API Tests', () => {
+    testPutMerchantDraft(app)
+  })
+
+  describe('PUT Merchant Location API Tests', () => {
+    testPutMerchantLocations(app)
+  })
+
   describe('PUT Merchant Status ReadyToReview API Tests', () => {
     testPutMerchantStatusReadyToReview(app)
   })
@@ -107,6 +132,14 @@ describe('E2E API Tests', () => {
 
   describe('PUT Merchant Status Revert API Tests', () => {
     testPutMerchantRevertStatus(app)
+  })
+
+  describe('PUT Merchant Business Owner API Tests', () => {
+    testPutMerchantOwner(app)
+  })
+
+  describe('PUT Merchant Contact Person API Tests', () => {
+    testPutMerchantContactPerson(app)
   })
 
   describe('GET Merchant Draft Counts API Tests', () => {
@@ -133,6 +166,7 @@ describe('E2E API Tests', () => {
 
   describe('Health Check API Tests', () => {
     testSucceedHealthCheck(app)
+    testSucceedHealthCheckSendGridService(app)
   })
 
   describe('GET Audits API Tests', () => {
@@ -172,5 +206,17 @@ describe('E2E API Tests', () => {
 
   describe('GET Roles API Tests', () => {
     testGetRoles(app)
+  })
+
+  describe('POST Roles Create API Tests', () => {
+    testPostRolecreate(app)
+  })
+
+  describe('PUT Roles Update Permissions API Tests', () => {
+    testPutRoleUpdatePermissions(app)
+  })
+
+  describe('Verify User API Tests', () => {
+    testVerifyUser(app)
   })
 })

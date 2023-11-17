@@ -25,6 +25,8 @@ and proceed with the necessary steps in the payment transaction.
 * [Merchant Registry Oracle](./packages/registry-oracle)
   * Will Serve as Oracle for Mojaloop ALS.
 
+See the README.md file on each services for more Environment Variable Configuration options.
+
 ## Deploying on Docker
 * Requirements
     - `docker` and `docker-compose`
@@ -35,7 +37,7 @@ and proceed with the necessary steps in the payment transaction.
 
 * Run 
     ```bash 
-    $ docker-compose up --build
+    docker-compose up --build
     ```
     * Acquirer Frontend should be running at: http://localhost:5173
     * Acquirer Backend should be running at: http://localhost:5555/api/v1/health-check
@@ -46,12 +48,15 @@ and proceed with the necessary steps in the payment transaction.
         * To be able to access merchant license document file or QRCode Image, 
             * For Linux/Mac, open `/etc/hosts` with root permission and add this line `127.0.0.1 minio`, otherwise `minio:9000` link will be unreachable.
 
-## Running E2E Testing
-Require `docker-compose up --build` to be running.
-Use two different test databases for `acquirer-backend` and `registry-oracle` services. See `./mysql-init-scripts/init.mysql` 
-* Run
+## For Deploying manual without Docker
+* Check [Manual Deployment Guide](./docs/manual-deployment-guide.md)
+
+## Running Testing
+Require `docker-compose up minio rabbitmq` (MinIO and RabbitMQ) to be running.
+* Run at the root of the project
     ```bash
-    $ npm run acquirer-backend:test
+    npm install
+    npm run acquirer-backend:test:coverage
     ```
 
 ## ERD Design

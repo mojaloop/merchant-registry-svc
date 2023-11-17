@@ -7,7 +7,6 @@ import { PersonEntity } from './PersonEntity'
 
 @Entity('contact_persons')
 export class ContactPersonEntity extends PersonEntity {
-  // merchant_id
   @OneToOne(() => BusinessPersonLocationEntity)
     businessPersonLocation!: BusinessPersonLocationEntity
 

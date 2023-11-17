@@ -52,10 +52,10 @@ services:
       context: .
       dockerfile: Dockerfile-registry-oracle
     ports:
-      - 8888:6666
+      - 8888:8888
     environment:
       - HOST=0.0.0.0
-      - PORT=6666
+      - PORT=8888
 
       - DB_HOST=merchant-db
       - DB_PORT=3306

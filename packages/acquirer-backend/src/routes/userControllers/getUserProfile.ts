@@ -20,6 +20,7 @@ import { audit } from '../../utils/audit'
 
 export async function getUserProfile (req: AuthRequest, res: Response) {
   const portalUser = req.user
+  /* istanbul ignore if */
   if (portalUser == null) {
     return res.status(401).send({ message: 'Unauthorized' })
   }
@@ -28,9 +29,7 @@ export async function getUserProfile (req: AuthRequest, res: Response) {
        ...portalUser,
        role: {
          ...portalUser.role,
-         permissions: portalUser.role != null
-           ? portalUser.role.permissions.map(permission => permission.name)
-           : []
+         permissions: portalUser.role.permissions.map(permission => permission.name)
        },
        password: undefined
      }

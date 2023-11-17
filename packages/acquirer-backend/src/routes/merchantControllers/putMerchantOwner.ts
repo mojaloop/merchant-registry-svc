@@ -80,7 +80,7 @@ import { type AuthRequest } from 'src/types/express'
  *                 example: "99.0060"
  *
  *     responses:
- *       201:
+ *       200:
  *         description: Business Owner Updated
  *         content:
  *           application/json:
@@ -94,6 +94,7 @@ import { type AuthRequest } from 'src/types/express'
  */
 export async function putMerchantOwner (req: AuthRequest, res: Response) {
   const portalUser = req.user
+  /* istanbul ignore if  */
   if (portalUser == null) {
     return res.status(401).send({ message: 'Unauthorized' })
   }
@@ -178,7 +179,13 @@ trying to access unauthorized(different DFSP) merchant ${merchant.id}`,
   }
 
   try {
-    const locationObj = businessOwner.businessPersonLocation
+    // Handle Error when owner location does not exist
+    let locationObj = businessOwner.businessPersonLocation
+    if (locationObj == null) {
+      locationObj = new BusinessPersonLocationEntity()
+      businessOwner.businessPersonLocation = locationObj
+      await locationRepository.save(locationObj)
+    }
     const newLocationData = {
       ...businessOwnerData
     }
@@ -208,6 +215,7 @@ trying to access unauthorized(different DFSP) merchant ${merchant.id}`,
       identification_number: businessOwnerData.identification_number
     }
 
+    logger.debug('Updating Business Owner: %o', newBusinessOwnerData)
     await businessOwnerRepository.update(businessOwner.id, newBusinessOwnerData)
   } catch (err) {
     logger.error('Error Updating Business Owner: %o', err)
@@ -222,8 +230,7 @@ trying to access unauthorized(different DFSP) merchant ${merchant.id}`,
     'ContactPerson',
     oldBusinessOwner, newBusinessOwnerData, portalUser
   )
-  return res.status(201).send({
-    message: 'Business Owner Updated',
-    data: businessOwner
+  return res.status(200).send({
+    message: 'Business Owner Updated'
   })
 }

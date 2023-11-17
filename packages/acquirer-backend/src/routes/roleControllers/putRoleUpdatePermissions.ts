@@ -8,6 +8,7 @@ import { PortalPermissionEntity } from '../../entity/PortalPermissionEntity'
 import { In } from 'typeorm'
 import { AuditActionType, AuditTrasactionStatus } from 'shared-lib'
 import { audit } from '../../utils/audit'
+import { isUndefinedOrNull } from '../../utils/utils'
 /**
  * @openapi
  * /roles/{id}:
@@ -45,6 +46,7 @@ import { audit } from '../../utils/audit'
  */
 export async function putRoleUpdatePermissions (req: AuthRequest, res: Response) {
   const portalUser = req.user
+  /* istanbul ignore if */
   if (portalUser == null) {
     return res.status(401).send({ message: 'Unauthorized' })
   }
@@ -60,33 +62,60 @@ export async function putRoleUpdatePermissions (req: AuthRequest, res: Response)
     await audit(
       AuditActionType.ACCESS,
       AuditTrasactionStatus.FAILURE,
-      'getMerchantById',
+      'putRoleUpdatePermissions',
         `Invalid ID: ${req.params.id}`,
-        'Merchants',
+        'PortalRoleEntity',
         {}, {}, portalUser
     )
     res.status(422).send({ message: 'Invalid ID' })
     return
   }
 
+  if (isUndefinedOrNull(permissions)) {
+    await audit(AuditActionType.ADD, AuditTrasactionStatus.FAILURE,
+      'putRoleUpdatePermissions',
+      'Missing permissions field',
+      'PortalRoleEntity',
+      {}, { body: req.body }, portalUser
+    )
+    return res.status(400).send({ message: 'Missing permissions field' })
+  }
   // check if role exist
   const role = await RoleRepository.findOne({ where: { id } })
   if (role == null) {
-    return res.status(400).send({ message: 'Role does not exist' })
+    await audit(AuditActionType.UPDATE, AuditTrasactionStatus.FAILURE,
+      'putRoleUpdatePermissions',
+      'Role does not exist',
+      'PortalRoleEntity',
+      {}, { id }, portalUser)
+
+    return res.status(404).send({ message: 'Role does not exist' })
   }
 
   // check if permissions exist
   const perms = await PermsRepository.find({ where: { name: In(permissions) } })
   if (perms.length !== permissions.length) {
-    return res.status(400).send({ message: 'Invalid permissions' })
+    await audit(AuditActionType.UPDATE, AuditTrasactionStatus.FAILURE,
+      'putRoleUpdatePermissions',
+      'Invalid permissions. At least one of the permissions does not exist',
+      'PortalRoleEntity',
+      {}, { permissions }, portalUser)
+
+    return res.status(400).send({ message: 'Invalid permissions. At least one of the permissions does not exist' })
   }
 
   try {
     role.permissions = perms
     await RoleRepository.save(role)
 
-    res.send({ message: 'Role updated successfully' })
-  } catch (e) {
+    await audit(AuditActionType.UPDATE, AuditTrasactionStatus.SUCCESS,
+      'putRoleUpdatePermissions',
+      'Role updated successfully',
+      'PortalRoleEntity',
+      {}, { role }, portalUser)
+
+    return res.send({ message: 'Role updated successfully' })
+  } catch (e) /* istanbul ignore next */ {
     logger.error(e)
     res.status(500).send({ message: e })
   }
