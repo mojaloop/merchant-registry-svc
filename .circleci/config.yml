@@ -27,7 +27,19 @@ executors:
   default-docker:
     working_directory: &workingDirVar /home/circleci/project
     docker:
+      # Primary container
       - image: mojaloop/node-18-builder:0.0.3
+      # Secondary containers for e2e tests
+      - image: minio/minio:RELEASE.2023-07-21T21-12-44Z
+        environment:
+          MINIO_ACCESS_KEY: minioadmin
+          MINIO_SECRET_KEY: minioadmin
+        command: ["server", "/data"]
+      - image: rabbitmq:3.12.4-management-alpine
+        environment:
+          RABBITMQ_DEFAULT_USER: guest 
+          RABBITMQ_DEFAULT_PASS: guest
+
   default-machine:
     machine:
       image: ubuntu-2204:2023.04.2
@@ -141,54 +153,20 @@ jobs:
           root: *workingDirVar
           paths:
             - .
-
-
-  test-unit-backend:
+  
+  tests-acquirer-backend:
     executor: default-docker
     steps:
       - attach_workspace:
           at: *workingDirVar
       - run:
           name: Execute unit tests
-          command: npm run test:unit:backend
+          command: npm run acquirer-backend:test:coverage
       # store workspace for the coverage-report step
       - persist_to_workspace:
           root: *workingDirVar
           paths:
             - .
-  
-  # test-unit:
-  #   executor: default-docker
-  #   steps:
-  #     - attach_workspace:
-  #         at: *workingDirVar
-  #     - run:
-  #         name: Execute unit tests
-  #         command: npm run test:unit
-  #     # store workspace for the coverage-report step
-  #     - persist_to_workspace:
-  #         root: *workingDirVar
-  #         paths:
-  #           - .
-
-  # e2e-tests:
-  #   docker:
-  #     - image: cimg/node:18.0
-  #     - image: minio/minio:RELEASE.2023-07-21T21-12-44Z
-  #       environment:
-  #         MINIO_ACCESS_KEY: minioadmin
-  #         MINIO_SECRET_KEY: minioadmin
-  #       command: ["server", "/data"]
-  #     - image: rabbitmq:3.12.4-management-alpine
-  #       environment:
-  #         RABBITMQ_DEFAULT_USER: guest 
-  #         RABBITMQ_DEFAULT_PASS: guest
-  #   # executor: default-docker
-  #   steps:
-  #     - attach_workspace:
-  #         at: *workingDirVar
-  #     - run: npm install # required to install again 
-  #     - run: npm run acquirer-backend:test:coverage
 
   coverage-report:
     executor: default-docker
@@ -288,17 +266,12 @@ workflows:
       #     requires:
       #       - approve_dep_check
 
-      # - e2e-tests:
-      #     context: org-global
-      #     requires:
-      #       - setup
-
-      - test-unit-frontend:
+      - tests-acquirer-backend:
           context: org-global
           requires:
             - setup
 
-      - test-unit-backend:
+      - test-unit-frontend:
           context: org-global
           requires:
             - setup
