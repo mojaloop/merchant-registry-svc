@@ -10,6 +10,8 @@ import jwt from 'jsonwebtoken'
 import { audit } from '../../utils/audit'
 import { AuditActionType, AuditTrasactionStatus, PortalUserStatus } from 'shared-lib'
 import { readEnv } from '../../setup/readEnv'
+import { JwtTokenEntity } from '../../entity/JwtTokenEntity'
+import ms from 'ms'
 
 export const LoginFormSchema = z.object({
   email: z.string().email('Please enter a valid email'),
@@ -22,6 +24,8 @@ if (process.env.NODE_ENV === 'test') {
 
 const JWT_SECRET = readEnv('JWT_SECRET', 'secret') as string
 const JWT_EXPIRES_IN = readEnv('JWT_EXPIRES_IN', '1d') as string
+
+const JWT_EXPIRES_IN_MS = ms(JWT_EXPIRES_IN)
 
 /**
  * @openapi
@@ -114,10 +118,20 @@ export async function postUserLogin (req: Request, res: Response) {
     }
 
     const token = jwt.sign(
-      { id: user.id, email: user.email },
+      { id: user.id },
       JWT_SECRET,
       { expiresIn: JWT_EXPIRES_IN }
     )
+
+    const jwtTokenObj = AppDataSource.manager.create(JwtTokenEntity, {
+      token,
+      user,
+      expires_at: new Date(Date.now() + JWT_EXPIRES_IN_MS),
+      last_used: new Date()
+    })
+
+    await AppDataSource.manager.save(jwtTokenObj)
+
     logger.info('User %s logged in successfully.', user.email)
     await audit(
       AuditActionType.ACCESS,

@@ -9,7 +9,7 @@ import {
   useNavItems,
 } from '@/contexts/NavItemsContext'
 import { FALLBACK_ERROR_MESSAGE } from '@/constants/errorMessage'
-import { login, setPassword } from '../auth'
+import { login, logout, setPassword } from '../auth'
 import { getUserProfile } from '../users'
 
 export function useLogin() {
@@ -51,6 +51,34 @@ export function useLogin() {
           description:
             error.response?.data.message ||
             'Please check your credentials and try again.',
+          status: 'error',
+        })
+      }
+    },
+  })
+}
+
+
+export function useLogout() {
+  const navigate = useNavigate()
+  const toast = useToast()
+
+  return useMutation({
+    mutationFn: logout,
+    onSuccess: () => {
+      localStorage.removeItem('token')
+      navigate('/login')
+      toast({
+        title: 'Logout Successful!',
+        description: 'You have been logged out.',
+        status: 'success',
+      })
+    },
+    onError: error => {
+      if (isAxiosError(error)) {
+        toast({
+          title: 'Logout Failed!',
+          description: error.response?.data.message || 'Logout Failed. Please try again.',
           status: 'error',
         })
       }

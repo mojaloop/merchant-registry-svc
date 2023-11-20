@@ -1556,6 +1556,16 @@ paths:
                     example: Invalid credentials
         '422':
           description: Validation error
+  /users/logout:
+    post:
+      tags:
+        - Portal Users
+      security:
+        - Authorization: []
+      summary: Logout
+      responses:
+        '200':
+          description: Logout Successful
   /users/reset-password:
     put:
       tags:

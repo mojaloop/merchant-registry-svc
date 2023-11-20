@@ -10,6 +10,7 @@ import { verifyUserEmail } from './userControllers/verifyUser'
 import { putUserResetPassword } from './userControllers/putUserResetPassword'
 import { getUserProfile } from './userControllers/getUserProfile'
 import { postUserRefresh } from './userControllers/refreshUserToken'
+import { postUserLogout } from './userControllers/postUserLogout'
 
 /**
  * @openapi
@@ -52,5 +53,7 @@ router.post('/users/login', postUserLogin)
 router.get('/users/profile', authenticateJWT, getUserProfile)
 
 router.post('/users/refresh', authenticateJWT, postUserRefresh)
+
+router.post('/users/logout', authenticateJWT, postUserLogout)
 
 export default router
