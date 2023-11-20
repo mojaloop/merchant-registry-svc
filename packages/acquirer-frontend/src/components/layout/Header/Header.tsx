@@ -1,4 +1,3 @@
-import { useNavigate } from 'react-router-dom'
 import { useQueryClient } from '@tanstack/react-query'
 import {
   Avatar,
@@ -24,13 +23,14 @@ import mojaloopLogo from '@/assets/mojaloop-logo.png'
 import { useUserProfile } from '@/api/hooks/users'
 import { useDrawerDisclosure } from '@/contexts/DrawerDisclosureContext'
 import { Drawer } from '@/components/layout'
+import { useLogout } from '@/api/hooks/auth'
 
 const Header = () => {
-  const navigate = useNavigate()
   const queryClient = useQueryClient()
   const { onOpen } = useDrawerDisclosure()
 
   const userProfile = useUserProfile()
+  const logout = useLogout()
 
   return (
     <HStack
@@ -126,8 +126,7 @@ const Header = () => {
                 p='1.5'
                 _hover={{ bg: 'gray.100' }}
                 onClick={() => {
-                  localStorage.removeItem('token')
-                  navigate('/login')
+                  logout.mutate()
                   queryClient.removeQueries()
                 }}
               >

@@ -4,10 +4,9 @@ import dotenv from 'dotenv'
 import { type Request, type Response, type NextFunction } from 'express'
 import { audit } from '../utils/audit'
 import { AppDataSource } from '../database/dataSource'
-import { PortalUserEntity } from '../entity/PortalUserEntity'
 import { AuditActionType, AuditTrasactionStatus } from 'shared-lib'
-import { type IJWTUser } from 'src/types/jwtUser'
 import { isUndefinedOrNull } from '../utils/utils'
+import { JwtTokenEntity } from '../entity/JwtTokenEntity'
 
 if (process.env.NODE_ENV === 'test') {
   dotenv.config({ path: path.resolve(process.cwd(), '.env.test'), override: true })
@@ -35,20 +34,21 @@ export async function authenticateJWT (req: Request, res: Response, next: NextFu
   const token = authorization!.replace('Bearer', '').trim()
 
   try {
-    const jwtUser = jwt.verify(token, JWT_SECRET) as IJWTUser
-    const user = await AppDataSource.manager.findOne(
-      PortalUserEntity,
-      {
-        where: { email: jwtUser.email },
-        relations: ['role', 'role.permissions', 'dfsp']
-      }
-    )
+    const jwtTokenRecord = await AppDataSource.manager.findOne(JwtTokenEntity, {
+      where: { token },
+      relations: ['user', 'user.role', 'user.role.permissions', 'user.dfsp']
+    })
 
-    if (user == null) {
-      throw new Error('JWT User\'s Email not found')
+    if (jwtTokenRecord == null) {
+      throw new Error('JWT Token Not Found!')
     }
 
-    req.user = user
+    jwt.verify(token, JWT_SECRET)
+
+    req.user = jwtTokenRecord.user
+    req.token = token
+
+    await AppDataSource.manager.update(JwtTokenEntity, { token }, { last_used: new Date() })
     next()
   } catch (err) {
     await audit(
