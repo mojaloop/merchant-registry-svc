@@ -1,7 +1,7 @@
 import { type AuditTrasactionStatus, type AuditActionType } from 'shared-lib'
 import { AppDataSource } from '../database/dataSource'
 import { AuditEntity } from '../entity/AuditEntity'
-import { type EndpointDFSPEntity } from '../entity/EndpointDFSPEntity'
+import { type DFSPEntity } from '../entity/DFSPEntity'
 
 export async function audit (
   actionType: AuditActionType,
@@ -11,7 +11,7 @@ export async function audit (
   entityName: string,
   oldValue: Record<string, any>,
   newValue: Record<string, any>,
-  endpoint: EndpointDFSPEntity | null = null,
+  dfsp: DFSPEntity | null = null,
   deepObjectCompare: boolean = false
 ): Promise<void> {
   const auditNewValues: Record<string, any> = {}
@@ -45,8 +45,8 @@ export async function audit (
   auditObject.entity_name = entityName
   auditObject.old_value = auditOldValuesStr
   auditObject.new_value = auditNewValuesStr
-  if (endpoint != null) {
-    auditObject.endpoint_id = endpoint.id
+  if (dfsp != null) {
+    auditObject.dfsp_id = dfsp.id
   }
 
   await AppDataSource.getRepository(AuditEntity).save(auditObject)

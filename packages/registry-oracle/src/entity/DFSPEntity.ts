@@ -1,12 +1,12 @@
 import {
   Entity,
   Column, PrimaryGeneratedColumn,
-  CreateDateColumn, UpdateDateColumn, ManyToOne
+  CreateDateColumn, UpdateDateColumn, OneToMany
 } from 'typeorm'
 import { APIAccessEntity } from './APIAccessEntity'
 
-@Entity('endpoint_dfsp')
-export class EndpointDFSPEntity {
+@Entity('dfsp')
+export class DFSPEntity {
   @PrimaryGeneratedColumn()
     id!: number
 
@@ -16,12 +16,12 @@ export class EndpointDFSPEntity {
   @Column({ nullable: false })
     dfsp_name!: string
 
-  @ManyToOne(
+  @OneToMany(
     () => APIAccessEntity,
     // eslint-disable-next-line @typescript-eslint/naming-convention
-    api_access => api_access.endpoints
+    api_access => api_access.dfsp
   )
-    api_access!: APIAccessEntity
+    api_accesses!: APIAccessEntity[]
 
   @CreateDateColumn()
     created_at!: Date

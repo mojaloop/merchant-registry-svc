@@ -167,6 +167,20 @@ jobs:
           root: *workingDirVar
           paths:
             - .
+  
+  tests-oracle:
+    executor: default-docker
+    steps:
+      - attach_workspace:
+          at: *workingDirVar
+      - run:
+          name: Execute unit tests
+          command: npm run oracle:test:coverage
+      # store workspace for the coverage-report step
+      - persist_to_workspace:
+          root: *workingDirVar
+          paths:
+            - .
 
   coverage-report:
     executor: default-docker
@@ -267,6 +281,11 @@ workflows:
       #       - approve_dep_check
 
       - tests-acquirer-backend:
+          context: org-global
+          requires:
+            - setup
+
+      - tests-oracle:
           context: org-global
           requires:
             - setup

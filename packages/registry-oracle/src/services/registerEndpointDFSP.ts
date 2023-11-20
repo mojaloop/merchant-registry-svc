@@ -1,5 +1,5 @@
 import { AppDataSource } from '../database/dataSource'
-import { EndpointDFSPEntity } from '../entity/EndpointDFSPEntity'
+import { DFSPEntity } from '../entity/DFSPEntity'
 import { APIAccessEntity } from '../entity/APIAccessEntity'
 
 import logger from './logger'
@@ -13,16 +13,20 @@ export interface DFSPData {
 export async function registerEndpointDFSP (dfspData: DFSPData): Promise<APIAccessEntity> {
   logger.debug('Registering DFSP: %o', dfspData)
 
-  const endpointDfsp = new EndpointDFSPEntity()
-  endpointDfsp.fspId = dfspData.fspId
-  endpointDfsp.dfsp_name = dfspData.dfsp_name
+  let dfsp = await AppDataSource.manager.findOne(DFSPEntity, { where: { fspId: dfspData.fspId } })
+  if (dfsp == null) {
+    dfsp = new DFSPEntity()
+  }
+
+  dfsp.fspId = dfspData.fspId
+  dfsp.dfsp_name = dfspData.dfsp_name
 
   const apiAccess = new APIAccessEntity()
   apiAccess.client_secret = dfspData.client_secret
-  apiAccess.endpoints = [endpointDfsp]
+  apiAccess.dfsp = dfsp
 
   await AppDataSource.manager.transaction(async transactionalEntityManager => {
-    await transactionalEntityManager.save(EndpointDFSPEntity, endpointDfsp)
+    await transactionalEntityManager.save(DFSPEntity, dfsp as DFSPEntity) // I guranatee that dfsp is not null here
     await transactionalEntityManager.save(APIAccessEntity, apiAccess)
   })
 
