@@ -1,4 +1,4 @@
-import amqplib, { type Channel, type Message } from 'amqplib'
+import amqplib, { type Connection, type Channel, type Message } from 'amqplib'
 import 'dotenv/config'
 import logger from '../services/logger'
 import { readEnv } from '../setup/readEnv'
@@ -18,6 +18,7 @@ const RETRY_INTERVAL_MS = 5000 // in miliseconds
 //
 const connStr = `amqp://${RABBITMQ_USERNAME}:${RABBITMQ_PASSWORD}@${RABBITMQ_HOST}:${RABBITMQ_PORT}`
 let channel: Channel
+let conn: Connection
 
 logger.info('Connecting to RabbitMQ: %s', connStr)
 
@@ -28,7 +29,7 @@ interface MessagePayload {
 
 const connectToRabbitMQ = async (delay: number): Promise<void> => {
   try {
-    const conn = await amqplib.connect(connStr)
+    conn = await amqplib.connect(connStr)
     channel = await conn.createChannel()
 
     const result = await channel.assertQueue(RABBITMQ_QUEUE, { durable: true })
@@ -54,6 +55,10 @@ const connectToRabbitMQ = async (delay: number): Promise<void> => {
     //   logger.error('Max retries reached. Could not connect to RabbitMQ.')
     // }
   }
+}
+
+export async function disconnectMessageQueue (): Promise<void> {
+  await conn.close()
 }
 
 const consumeQueue = async (): Promise<void> => {

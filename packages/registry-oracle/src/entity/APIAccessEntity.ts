@@ -1,9 +1,9 @@
 import {
   Entity,
   Column, PrimaryGeneratedColumn,
-  CreateDateColumn, UpdateDateColumn, OneToMany
+  CreateDateColumn, UpdateDateColumn, ManyToOne
 } from 'typeorm'
-import { EndpointDFSPEntity } from './EndpointDFSPEntity'
+import { DFSPEntity } from './DFSPEntity'
 
 @Entity('api_access')
 export class APIAccessEntity {
@@ -13,11 +13,11 @@ export class APIAccessEntity {
   @Column({ nullable: false })
     client_secret!: string
 
-  @OneToMany(
-    () => EndpointDFSPEntity,
-    endpointDFSP => endpointDFSP.api_access
+  @ManyToOne(
+    () => DFSPEntity,
+    dfsp => dfsp.api_accesses
   )
-    endpoints!: EndpointDFSPEntity[]
+    dfsp!: DFSPEntity
 
   @CreateDateColumn()
     created_at!: Date
