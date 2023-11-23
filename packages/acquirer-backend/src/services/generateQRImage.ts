@@ -1,6 +1,49 @@
 import QRCode, { type QRCodeOptions } from 'qrcode'
 import sharp from 'sharp'
 import fs from 'fs'
+import { crc16ccitt } from 'crc'
+
+export const getEMVQRCodeText = (
+  checkoutCounterAliasValue: string,
+  merchantCategoryCode: string,
+  transactionCurrency: string,
+  // transactionAmount: string,
+  countryCode: string | null | undefined,
+  merchantDBAName: string,
+  merchantCity: string | null | undefined
+): string => {
+  // Function to add data objects with automatic length calculation
+  function addDataObject (id: string, value: string): string {
+    const length = value.length.toString().padStart(2, '0')
+    return `${id}${length}${value}`
+  }
+
+  let emvQRCodeText = addDataObject('00', '01')
+  emvQRCodeText += addDataObject('01', '12')
+
+  // Merchant Additional Info
+  const aliasObj = addDataObject('01', checkoutCounterAliasValue)
+  emvQRCodeText += addDataObject('28', aliasObj)
+
+  emvQRCodeText += addDataObject('52', merchantCategoryCode)
+  emvQRCodeText += addDataObject('53', transactionCurrency)
+  // emvQRCodeText += addDataObject('54', transactionAmount)
+  if (countryCode != null && countryCode !== undefined) {
+    emvQRCodeText += addDataObject('58', countryCode)
+  }
+  emvQRCodeText += addDataObject('59', merchantDBAName)
+
+  if (merchantCity != null && merchantCity !== undefined) {
+    emvQRCodeText += addDataObject('60', merchantCity)
+  }
+
+  // CRC
+  emvQRCodeText += '6304'
+  const crcValue = crc16ccitt(Buffer.from(emvQRCodeText, 'utf8'))
+  emvQRCodeText += crcValue.toString(16).toUpperCase().padStart(4, '0')
+
+  return emvQRCodeText
+}
 
 export const generateQRImage = async (
   text: string,
