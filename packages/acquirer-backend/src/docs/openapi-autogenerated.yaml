@@ -156,6 +156,37 @@ paths:
                     description: The list of countries
                     items:
                       type: object
+  /countries/{countryName}/code:
+    get:
+      tags:
+        - Countries
+      security:
+        - Authorization: []
+      summary: GET Country Code
+      parameters:
+        - in: path
+          name: countryName
+          schema:
+            type: string
+          required: true
+          description: Name of the Country
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: The response message
+                    example: OK
+                  data:
+                    type: array
+                    description: The list of country subdivisions
+                    items:
+                      type: object
   /countries/{countryName}/subdivisions/{subdivisionName}/districts:
     get:
       tags:
@@ -1556,6 +1587,16 @@ paths:
                     example: Invalid credentials
         '422':
           description: Validation error
+  /users/logout:
+    post:
+      tags:
+        - Portal Users
+      security:
+        - Authorization: []
+      summary: Logout
+      responses:
+        '200':
+          description: Logout Successful
   /users/reset-password:
     put:
       tags:

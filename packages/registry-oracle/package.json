@@ -10,7 +10,12 @@
     "lint:check": "eslint . --ext .js,.ts",
     "type:check": "tsc --noEmit",
     "dep:check": "npx ncu -e 2",
-    "test": "jest"
+    "test": "jest --detectOpenHandles --forceExit --verbose",
+    "test:unit": "jest --detectOpenHandles --forceExit --verbose --selectProjects 'Unit Tests'",
+    "test:integration": "jest --detectOpenHandles --forceExit --verbose --selectProjects 'Integration Tests'",
+    "test:e2e": "jest --detectOpenHandles --forceExit --verbose --selectProjects 'E2E Tests'",
+    "test:verbose": "jest --detectOpenHandles --forceExit --verbose",
+    "test:coverage": "jest --detectOpenHandles --forceExit --coverage --verbose"
   },
   "keywords": [],
   "author": "",

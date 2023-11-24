@@ -31,7 +31,7 @@ export async function authenticateAPIAccess (req: Request, res: Response, next: 
 
   const apiAccess = await AppDataSource.manager.findOne(APIAccessEntity, {
     where: { client_secret: apiKey },
-    relations: ['endpoints']
+    relations: ['dfsp']
   })
 
   if (apiAccess == null) {
@@ -46,10 +46,6 @@ export async function authenticateAPIAccess (req: Request, res: Response, next: 
     return res.status(400).send(prepareError('Invalid API key'))
   }
 
-  if (apiAccess.endpoints.length === 0) {
-    return res.status(400).send(prepareError('No endpoints configured for this API key'))
-  }
-
-  req.endpoint = apiAccess.endpoints[0]
+  req.dfsp = apiAccess.dfsp
   next()
 }

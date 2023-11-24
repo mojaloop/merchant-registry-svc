@@ -4,14 +4,14 @@ import {
   CreateDateColumn
 } from 'typeorm'
 
-import { AuditActionType, AuditTrasactionStatus } from 'shared-lib'
+import { AuditActionType, type AuditTrasactionStatus } from 'shared-lib'
 
 @Entity('audits')
 export class AuditEntity {
   @PrimaryGeneratedColumn()
     id!: number
 
-  @Column({ type: 'enum', enum: AuditActionType, nullable: false })
+  @Column({ type: 'simple-enum', enum: AuditActionType, nullable: false })
     action_type!: AuditActionType
 
   @Column({ nullable: false, length: 512 })
@@ -33,7 +33,7 @@ export class AuditEntity {
     new_value!: string
 
   @Column({ nullable: true })
-    endpoint_id!: number
+    dfsp_id!: number
 
   @CreateDateColumn()
     created_at!: Date

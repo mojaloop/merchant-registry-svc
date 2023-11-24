@@ -83,19 +83,6 @@ router.get('/participants/:type/:id', async (req: Request, res: Response) => {
   //   return res.status(400).send(prepareError('Invalid Type'))
   // }
 
-  if (id === undefined || id == null) {
-    logger.error('Invalid ID')
-    await audit(
-      AuditActionType.ACCESS,
-      AuditTrasactionStatus.FAILURE,
-      'getParticipants',
-      'GET Participants: Invalid ID',
-      'RegistryEntity',
-      {}, { id }
-    )
-    return res.status(400).send(prepareError('Invalid Id'))
-  }
-
   const registryRecord = await AppDataSource.manager.findOne(RegistryEntity, {
     where: { alias_value: id },
     select: ['fspId', 'currency']
@@ -197,16 +184,16 @@ router.get('/participants/:type/:id', async (req: Request, res: Response) => {
  *
  */
 router.post('/participants', authenticateAPIAccess, async (req: EndpointAuthRequest, res: Response) => {
-  const endpoint = req.endpoint
-  if (endpoint == null) {
+  const dfsp = req.dfsp
+  if (dfsp == null) {
     logger.error('Invalid Endpoint')
     await audit(
       AuditActionType.ADD,
       AuditTrasactionStatus.FAILURE,
       'postParticipants',
-      'POST Participants: Invalid Endpoint',
+      'POST Participants: Invalid DFSP',
       'RegistryEntity',
-      {}, {}, endpoint
+      {}, {}, dfsp
     )
     return res.status(400).send(prepareError('Authentication Error'))
   }
@@ -328,8 +315,8 @@ router.post('/participants', authenticateAPIAccess, async (req: EndpointAuthRequ
     }
 
     const newRegistryRecord = new RegistryEntity()
-    newRegistryRecord.fspId = endpoint.fspId // TODO: Should be the FSP ID of registered API Accessed DFSP
-    newRegistryRecord.dfsp_name = endpoint.dfsp_name
+    newRegistryRecord.fspId = dfsp.fspId // TODO: Should be the FSP ID of registered API Accessed DFSP
+    newRegistryRecord.dfsp_name = dfsp.dfsp_name
     newRegistryRecord.currency = currency
     newRegistryRecord.alias_value = paddedAliasValue
 
@@ -373,7 +360,7 @@ router.post('/participants', authenticateAPIAccess, async (req: EndpointAuthRequ
         'postParticipants',
         'POST Participants: Participant created',
         'RegistryEntity',
-        {}, { fspId: endpoint.fspId, currency }
+        {}, { fspId: dfsp.fspId, currency }
       )
       results.push({
         merchant_id: participant.merchant_id,

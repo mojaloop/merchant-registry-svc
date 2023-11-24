@@ -236,6 +236,7 @@ export interface SubdivisionData {
 
 export interface CountryData {
   name: string
+  code: string
   country_subdivisions: SubdivisionData[]
 }
 
@@ -256,6 +257,7 @@ export async function seedCountriesSubdivisionsDistricts (
     if (country == null) {
       country = new CountryEntity()
       country.name = countryData.name
+      country.code = countryData.code
       await AppDataSource.manager.save(country)
     }
 

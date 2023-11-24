@@ -13,6 +13,9 @@ export class CountryEntity {
   @Column({ nullable: false, length: 255 })
     name!: string
 
+  @Column({ nullable: false, length: 2 })
+    code!: string
+
   @OneToMany(() => CountrySubdivisionEntity, subdivision => subdivision.country)
     subdivisions!: CountrySubdivisionEntity[]
 }

@@ -47,6 +47,8 @@ import { testPutMerchantOwner } from './PutMerchantOwner.tests'
 import { testPutMerchantContactPerson } from './PutMerchantContactPerson.tests'
 import { testPutMerchantLocations } from './PutMerchantLocation.tests'
 import { testVerifyUser } from './VerifyUser.tests'
+import { testPostUserLogout } from './PostUserLogout.tests'
+import { testGetCountryCode } from './GetCountryCode.tests'
 
 jest.mock('@sendgrid/mail', () => ({
   setApiKey: jest.fn(),
@@ -198,10 +200,11 @@ describe('E2E API Tests', () => {
     testPutConfigTraceLevel(app)
   })
 
-  describe('GET Countries, SubDivision, Districts API Tests', () => {
+  describe('GET Countries, CountryCode, SubDivision, Districts API Tests', () => {
     testGetCountries(app)
     testGetSubDivisions(app)
     testGetDistricts(app)
+    testGetCountryCode(app)
   })
 
   describe('GET Roles API Tests', () => {
@@ -218,5 +221,9 @@ describe('E2E API Tests', () => {
 
   describe('Verify User API Tests', () => {
     testVerifyUser(app)
+  })
+
+  describe('POST User Logout API Tests', () => {
+    testPostUserLogout(app)
   })
 })

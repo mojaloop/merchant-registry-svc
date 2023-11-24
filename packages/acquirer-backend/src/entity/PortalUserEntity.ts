@@ -6,6 +6,7 @@ import { PersonEntity } from './PersonEntity'
 import { DFSPEntity } from './DFSPEntity'
 import { PortalRoleEntity } from './PortalRoleEntity'
 import { EmailVerificationTokenEntity } from './EmailVerificationToken'
+import { JwtTokenEntity } from './JwtTokenEntity'
 
 @Entity('portal_users')
 export class PortalUserEntity extends PersonEntity {
@@ -46,5 +47,7 @@ export class PortalUserEntity extends PersonEntity {
   @ManyToOne(() => PortalRoleEntity, role => role.users)
     role!: PortalRoleEntity
 
+  @OneToMany(() => JwtTokenEntity, jwtToken => jwtToken.user)
+    tokens!: JwtTokenEntity[]
   // TODO: Role Based Permission etc. use Mojaloop OAuth? WSO2? Keycloak?
 }

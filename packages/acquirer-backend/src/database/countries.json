@@ -500,7 +500,8 @@
                     "Tarnak Wa Jaldak"
                 ]
             }
-        ]
+        ],
+        "code": "AF"
     },
     {
         "name": "\u00c5land",
@@ -569,10 +570,12 @@
                 "name": "V\u00e5rd\u00f6",
                 "districts": []
             }
-        ]
+        ],
+        "code": "AX"
     },
     {
         "name": "Albania",
+        "code": "AL",
         "country_subdivisions": [
             {
                 "name": "Berat",
@@ -671,10 +674,12 @@
                     "Vlor\u00ebs"
                 ]
             }
-        ]
+        ],
+        "code": "AL"
     },
     {
         "name": "Algeria",
+        "code": "DZ",
         "country_subdivisions": [
             {
                 "name": "A\u00efn Defla",
@@ -2420,10 +2425,12 @@
                     "Zenata"
                 ]
             }
-        ]
+        ],
+        "code": "DZ"
     },
     {
         "name": "American Samoa",
+        "code": "AS",
         "country_subdivisions": [
             {
                 "name": "Eastern",
@@ -2461,10 +2468,12 @@
                     "Tualauta"
                 ]
             }
-        ]
+        ],
+        "code": "AS"
     },
     {
         "name": "Andorra",
+        "code": "AD",
         "country_subdivisions": [
             {
                 "name": "Andorra la Vella",
@@ -2494,10 +2503,12 @@
                 "name": "Sant Juli\u00e0 de L\u00f2ria",
                 "districts": []
             }
-        ]
+        ],
+        "code": "AD"
     },
     {
         "name": "Angola",
+        "code": "AO",
         "country_subdivisions": [
             {
                 "name": "Bengo",
@@ -2752,7 +2763,8 @@
                     "Tomboco"
                 ]
             }
-        ]
+        ],
+        "code": "AO"
     },
     {
         "name": "Anguilla",
@@ -2761,7 +2773,8 @@
                 "name": null,
                 "districts": []
             }
-        ]
+        ],
+        "code": "AI"
     },
     {
         "name": "Antigua and Barbuda",
@@ -2798,7 +2811,8 @@
                 "name": "Saint Philip",
                 "districts": []
             }
-        ]
+        ],
+        "code": "AG"
     },
     {
         "name": "Argentina",
@@ -2899,7 +2913,8 @@
                 "name": "Tucum\u00e1n",
                 "districts": []
             }
-        ]
+        ],
+        "code": "AR"
     },
     {
         "name": "Armenia",
@@ -2948,7 +2963,8 @@
                 "name": "Vayots Dzor",
                 "districts": []
             }
-        ]
+        ],
+        "code": "AM"
     },
     {
         "name": "Aruba",
@@ -2957,7 +2973,8 @@
                 "name": null,
                 "districts": []
             }
-        ]
+        ],
+        "code": "AW"
     },
     {
         "name": "Australia",
@@ -4412,7 +4429,8 @@
                     "York"
                 ]
             }
-        ]
+        ],
+        "code": "AU"
     },
     {
         "name": "Austria",
@@ -4561,7 +4579,8 @@
                     "Wien"
                 ]
             }
-        ]
+        ],
+        "code": "AT"
     },
     {
         "name": "Azerbaijan",
@@ -4694,7 +4713,8 @@
                     "Xocav<U+0259>nd  (Nagorno-Karabakh)"
                 ]
             }
-        ]
+        ],
+        "code": "AZ"
     },
     {
         "name": "Bahamas",
@@ -4827,7 +4847,8 @@
                 "name": "West Grand Bahama",
                 "districts": []
             }
-        ]
+        ],
+        "code": "BS"
     },
     {
         "name": "Bahrain",
@@ -4852,7 +4873,8 @@
                 "name": "Southern",
                 "districts": []
             }
-        ]
+        ],
+        "code": "BH"
     },
     {
         "name": "Bangladesh",
@@ -4957,7 +4979,8 @@
                     "Sylhet"
                 ]
             }
-        ]
+        ],
+        "code": "BD"
     },
     {
         "name": "Barbados",
@@ -5006,7 +5029,8 @@
                 "name": "Saint Thomas",
                 "districts": []
             }
-        ]
+        ],
+        "code": "BB"
     },
     {
         "name": "Belarus",
@@ -5159,7 +5183,8 @@
                     "Vyerkhnyazdvinsk"
                 ]
             }
-        ]
+        ],
+        "code": "BY"
     },
     {
         "name": "Belgium",
@@ -5768,7 +5793,8 @@
                     "Walcourt"
                 ]
             }
-        ]
+        ],
+        "code": "BE"
     },
     {
         "name": "Belize",
@@ -5797,7 +5823,8 @@
                 "name": "Toledo",
                 "districts": []
             }
-        ]
+        ],
+        "code": "BZ"
     },
     {
         "name": "Benin",
@@ -5938,7 +5965,8 @@
                     "Zogbodomey"
                 ]
             }
-        ]
+        ],
+        "code": "BJ"
     },
     {
         "name": "Bermuda",
@@ -5987,7 +6015,8 @@
                 "name": "Warwick",
                 "districts": []
             }
-        ]
+        ],
+        "code": "BM"
     },
     {
         "name": "Bhutan",
@@ -6297,7 +6326,8 @@
                     "Trong"
                 ]
             }
-        ]
+        ],
+        "code": "BT"
     },
     {
         "name": "Bolivia",
@@ -6662,7 +6692,8 @@
                     "Yunchar\u00e1"
                 ]
             }
-        ]
+        ],
+        "code": "BO"
     },
     {
         "name": "Bosnia and Herzegovina",
@@ -6823,7 +6854,8 @@
                     "Zvornik"
                 ]
             }
-        ]
+        ],
+        "code": "BA"
     },
     {
         "name": "Botswana",
@@ -6898,7 +6930,8 @@
                     "Ngwaketse South"
                 ]
             }
-        ]
+        ],
+        "code": "BW"
     },
     {
         "name": "Brazil",
@@ -16959,7 +16992,8 @@
                     "Xambio\u00e1"
                 ]
             }
-        ]
+        ],
+        "code": "BR"
     },
     {
         "name": "Brunei",
@@ -17016,7 +17050,8 @@
                     "Ukong"
                 ]
             }
-        ]
+        ],
+        "code": "BN"
     },
     {
         "name": "Bulgaria",
@@ -17424,7 +17459,8 @@
                     "Yambol"
                 ]
             }
-        ]
+        ],
+        "code": "BG"
     },
     {
         "name": "Burkina Faso",
@@ -17845,7 +17881,8 @@
                     "Perigban"
                 ]
             }
-        ]
+        ],
+        "code": "BF"
     },
     {
         "name": "Burundi",
@@ -20427,7 +20464,8 @@
                     "Ruyigi"
                 ]
             }
-        ]
+        ],
+        "code": "BI"
     },
     {
         "name": "Cambodia",
@@ -20735,7 +20773,8 @@
                     "Tboung Khmum"
                 ]
             }
-        ]
+        ],
+        "code": "KH"
     },
     {
         "name": "Cameroon",
@@ -21150,7 +21189,8 @@
                     "Olamz\u00e9"
                 ]
             }
-        ]
+        ],
+        "code": "CM"
     },
     {
         "name": "Canada",
@@ -26752,7 +26792,8 @@
                     "Yukon, Unorganized"
                 ]
             }
-        ]
+        ],
+        "code": "CA"
     },
     {
         "name": "Democratic Republic of the Congo",
@@ -26952,7 +26993,8 @@
                     "Yohuma"
                 ]
             }
-        ]
+        ],
+        "code": "CD"
     },
     {
         "name": "Republic of Congo",
@@ -27065,7 +27107,8 @@
                     "Souank\u00e9"
                 ]
             }
-        ]
+        ],
+        "code": "CG"
     },
     {
         "name": "Cape Verde",
@@ -27158,7 +27201,8 @@
                 "name": "Tarrafal",
                 "districts": []
             }
-        ]
+        ],
+        "code": "CV"
     },
     {
         "name": "Central African Republic",
@@ -27299,7 +27343,8 @@
                     "Ouanda Djall\u00e9"
                 ]
             }
-        ]
+        ],
+        "code": "CF"
     },
     {
         "name": "Chad",
@@ -27767,7 +27812,8 @@
                     "Kobe-Sud"
                 ]
             }
-        ]
+        ],
+        "code": "TD"
     },
     {
         "name": "Chile",
@@ -28146,7 +28192,8 @@
                     "Vina del Mar"
                 ]
             }
-        ]
+        ],
+        "code": "CL"
     },
     {
         "name": "China",
@@ -30698,7 +30745,8 @@
                     "Putuo"
                 ]
             }
-        ]
+        ],
+        "code": "CN"
     },
     {
         "name": "Colombia",
@@ -31928,7 +31976,8 @@
                     "Santa Rosal\u00eda"
                 ]
             }
-        ]
+        ],
+        "code": "CO"
     },
     {
         "name": "Comoros",
@@ -31945,7 +31994,8 @@
                 "name": "Nzwani",
                 "districts": []
             }
-        ]
+        ],
+        "code": "KM"
     },
     {
         "name": "Costa Rica",
@@ -32066,7 +32116,8 @@
                     "V\u00e1squez de Coronado"
                 ]
             }
-        ]
+        ],
+        "code": "CR"
     },
     {
         "name": "Croatia",
@@ -32736,7 +32787,8 @@
                     "Zapre\u0161ic"
                 ]
             }
-        ]
+        ],
+        "code": "HR"
     },
     {
         "name": "Cuba",
@@ -32989,7 +33041,8 @@
                     "Santo Domingo"
                 ]
             }
-        ]
+        ],
+        "code": "CU"
     },
     {
         "name": "Cyprus",
@@ -33014,7 +33067,8 @@
                 "name": "Paphos",
                 "districts": []
             }
-        ]
+        ],
+        "code": "CY"
     },
     {
         "name": "Czech Republic",
@@ -33187,7 +33241,8 @@
                     "Zl\u00edn"
                 ]
             }
-        ]
+        ],
+        "code": "CZ"
     },
     {
         "name": "C\u00f4te d'Ivoire",
@@ -33472,7 +33527,8 @@
                     "Transua"
                 ]
             }
-        ]
+        ],
+        "code": "CI"
     },
     {
         "name": "Denmark",
@@ -33601,7 +33657,8 @@
                     "Vejle"
                 ]
             }
-        ]
+        ],
+        "code": "DK"
     },
     {
         "name": "Djibouti",
@@ -33642,7 +33699,8 @@
                     "Tadjourah"
                 ]
             }
-        ]
+        ],
+        "code": "DJ"
     },
     {
         "name": "Dominica",
@@ -33687,7 +33745,8 @@
                 "name": "Saint Peter",
                 "districts": []
             }
-        ]
+        ],
+        "code": "DM"
     },
     {
         "name": "Dominican Republic",
@@ -34011,7 +34070,8 @@
                     "Mao"
                 ]
             }
-        ]
+        ],
+        "code": "DO"
     },
     {
         "name": "Ecuador",
@@ -34441,8 +34501,7 @@
             },
             {
                 "name": "Gal\u00e1pagos",
-                "districts": [
-                ]
+                "districts": []
             },
             {
                 "name": "Guayas",
@@ -35120,7 +35179,8 @@
                     "Zumbi"
                 ]
             }
-        ]
+        ],
+        "code": "EC"
     },
     {
         "name": "Egypt",
@@ -35602,7 +35662,8 @@
                     "Unorganized in Suhaj"
                 ]
             }
-        ]
+        ],
+        "code": "EG"
     },
     {
         "name": "El Salvador",
@@ -35942,7 +36003,8 @@
                     "Usulut\u00e1n"
                 ]
             }
-        ]
+        ],
+        "code": "SV"
     },
     {
         "name": "Equatorial Guinea",
@@ -35975,7 +36037,8 @@
                 "name": "Wele-Nz\u00e1s",
                 "districts": []
             }
-        ]
+        ],
+        "code": "GQ"
     },
     {
         "name": "Eritrea",
@@ -36060,7 +36123,8 @@
                     "Sel`a"
                 ]
             }
-        ]
+        ],
+        "code": "ER"
     },
     {
         "name": "Estonia",
@@ -36246,8 +36310,7 @@
             },
             {
                 "name": "Peipsi",
-                "districts": [
-                ]
+                "districts": []
             },
             {
                 "name": "Rapla",
@@ -36367,7 +36430,8 @@
                     "Viljandi"
                 ]
             }
-        ]
+        ],
+        "code": "EE"
     },
     {
         "name": "Ethiopia",
@@ -36989,7 +37053,8 @@
                     "Welkait"
                 ]
             }
-        ]
+        ],
+        "code": "ET"
     },
     {
         "name": "Fiji",
@@ -37034,7 +37099,8 @@
                     "Ra"
                 ]
             }
-        ]
+        ],
+        "code": "FJ"
     },
     {
         "name": "Finland",
@@ -37571,7 +37637,8 @@
                     "Riihim\u00e4ki"
                 ]
             }
-        ]
+        ],
+        "code": "FI"
     },
     {
         "name": "France",
@@ -41411,7 +41478,8 @@
                     "Saint-Michel-de-Maurienne"
                 ]
             }
-        ]
+        ],
+        "code": "FR"
     },
     {
         "name": "Gabon",
@@ -41498,7 +41566,8 @@
                     "Woleu"
                 ]
             }
-        ]
+        ],
+        "code": "GA"
     },
     {
         "name": "Gambia",
@@ -41570,7 +41639,8 @@
                     "Kombo South"
                 ]
             }
-        ]
+        ],
+        "code": "GM"
     },
     {
         "name": "Georgia",
@@ -41704,7 +41774,8 @@
                     "Tbilisi"
                 ]
             }
-        ]
+        ],
+        "code": "GE"
     },
     {
         "name": "Germany",
@@ -42224,7 +42295,8 @@
                     "Weimarer Land"
                 ]
             }
-        ]
+        ],
+        "code": "DE"
     },
     {
         "name": "Ghana",
@@ -42416,7 +42488,8 @@
                     "Wassa West"
                 ]
             }
-        ]
+        ],
+        "code": "GH"
     },
     {
         "name": "Greece",
@@ -42786,7 +42859,8 @@
                     "Zagora-Mouresi"
                 ]
             }
-        ]
+        ],
+        "code": "GR"
     },
     {
         "name": "Grenada",
@@ -42819,7 +42893,8 @@
                 "name": "Saint Patrick",
                 "districts": []
             }
-        ]
+        ],
+        "code": "GD"
     },
     {
         "name": "Guatemala",
@@ -43286,7 +43361,8 @@
                     "Zacapa"
                 ]
             }
-        ]
+        ],
+        "code": "GT"
     },
     {
         "name": "Guinea-Bissau",
@@ -43373,7 +43449,8 @@
                     "Quebo"
                 ]
             }
-        ]
+        ],
+        "code": "GW"
     },
     {
         "name": "Guinea",
@@ -43452,7 +43529,8 @@
                     "Yamou"
                 ]
             }
-        ]
+        ],
+        "code": "GN"
     },
     {
         "name": "Guyana",
@@ -43623,7 +43701,8 @@
                     "Rest of Region 10"
                 ]
             }
-        ]
+        ],
+        "code": "GY"
     },
     {
         "name": "Haiti",
@@ -43811,7 +43890,8 @@
                     "Port-Salut"
                 ]
             }
-        ]
+        ],
+        "code": "HT"
     },
     {
         "name": "Honduras",
@@ -44204,7 +44284,8 @@
                     "Yoro"
                 ]
             }
-        ]
+        ],
+        "code": "HN"
     },
     {
         "name": "Hong Kong",
@@ -44281,7 +44362,8 @@
                 "name": "Yuen Long",
                 "districts": []
             }
-        ]
+        ],
+        "code": "HK"
     },
     {
         "name": "Hungary",
@@ -44554,7 +44636,8 @@
                     "Zalaszentgr\u00f3t"
                 ]
             }
-        ]
+        ],
+        "code": "HU"
     },
     {
         "name": "Iceland",
@@ -44718,7 +44801,8 @@
                     "Sn\u00e6fellsb\u00e6r"
                 ]
             }
-        ]
+        ],
+        "code": "IS"
     },
     {
         "name": "India",
@@ -45497,7 +45581,8 @@
                     "West Midnapore"
                 ]
             }
-        ]
+        ],
+        "code": "IN"
     },
     {
         "name": "Indonesia",
@@ -46105,7 +46190,8 @@
                     "Yogyakarta"
                 ]
             }
-        ]
+        ],
+        "code": "ID"
     },
     {
         "name": "Iran",
@@ -46533,7 +46619,8 @@
                     "Zarrinabad"
                 ]
             }
-        ]
+        ],
+        "code": "IR"
     },
     {
         "name": "Iraq",
@@ -46730,7 +46817,8 @@
                     "Badrah"
                 ]
             }
-        ]
+        ],
+        "code": "IQ"
     },
     {
         "name": "Ireland",
@@ -46839,7 +46927,8 @@
                 "name": "Wicklow",
                 "districts": []
             }
-        ]
+        ],
+        "code": "IE"
     },
     {
         "name": "Israel",
@@ -46872,7 +46961,8 @@
                 "name": "Tel Aviv",
                 "districts": []
             }
-        ]
+        ],
+        "code": "IL"
     },
     {
         "name": "Italy",
@@ -55076,7 +55166,8 @@
                     "Zugliano"
                 ]
             }
-        ]
+        ],
+        "code": "IT"
     },
     {
         "name": "Jamaica",
@@ -55137,7 +55228,8 @@
                 "name": "Westmoreland",
                 "districts": []
             }
-        ]
+        ],
+        "code": "JM"
     },
     {
         "name": "Japan",
@@ -57188,7 +57280,8 @@
                     "Yamanashi"
                 ]
             }
-        ]
+        ],
+        "code": "JP"
     },
     {
         "name": "Jordan",
@@ -57305,7 +57398,8 @@
                     "Zarqa"
                 ]
             }
-        ]
+        ],
+        "code": "JO"
     },
     {
         "name": "Kazakhstan",
@@ -57554,7 +57648,8 @@
                     "Zhualy"
                 ]
             }
-        ]
+        ],
+        "code": "KZ"
     },
     {
         "name": "Kenya",
@@ -58679,7 +58774,8 @@
                     "South Maragoli"
                 ]
             }
-        ]
+        ],
+        "code": "KE"
     },
     {
         "name": "Kiribati",
@@ -58688,7 +58784,8 @@
                 "name": null,
                 "districts": []
             }
-        ]
+        ],
+        "code": "KI"
     },
     {
         "name": "Kuwait",
@@ -58717,7 +58814,8 @@
                 "name": "Mubarak Al-Kabeer",
                 "districts": []
             }
-        ]
+        ],
+        "code": "KW"
     },
     {
         "name": "Kyrgyzstan",
@@ -58811,7 +58909,8 @@
                     "Ysyk-K\u00f6l"
                 ]
             }
-        ]
+        ],
+        "code": "KG"
     },
     {
         "name": "Laos",
@@ -59048,7 +59147,8 @@
                     "Phookood"
                 ]
             }
-        ]
+        ],
+        "code": "LA"
     },
     {
         "name": "Latvia",
@@ -59104,7 +59204,8 @@
                     "Jelgava"
                 ]
             }
-        ]
+        ],
+        "code": "LV"
     },
     {
         "name": "Lebanon",
@@ -60704,7 +60805,8 @@
                     "Zebkine"
                 ]
             }
-        ]
+        ],
+        "code": "LB"
     },
     {
         "name": "Lesotho",
@@ -60749,7 +60851,8 @@
                 "name": "Thaba-Tseka",
                 "districts": []
             }
-        ]
+        ],
+        "code": "LS"
     },
     {
         "name": "Liberia",
@@ -61134,7 +61237,8 @@
                     "Wedjah"
                 ]
             }
-        ]
+        ],
+        "code": "LR"
     },
     {
         "name": "Libya",
@@ -61267,7 +61371,8 @@
                 "name": "Yafran-Jadu",
                 "districts": []
             }
-        ]
+        ],
+        "code": "LY"
     },
     {
         "name": "Liechtenstein",
@@ -61316,7 +61421,8 @@
                 "name": "Valduz",
                 "districts": []
             }
-        ]
+        ],
+        "code": "LI"
     },
     {
         "name": "Lithuania",
@@ -61419,7 +61525,8 @@
                     "Vilniaus"
                 ]
             }
-        ]
+        ],
+        "code": "LT"
     },
     {
         "name": "Luxembourg",
@@ -61555,7 +61662,8 @@
                     "Tuntange"
                 ]
             }
-        ]
+        ],
+        "code": "LU"
     },
     {
         "name": "Macedonia",
@@ -61900,7 +62008,8 @@
                 "name": "Zrnovci",
                 "districts": []
             }
-        ]
+        ],
+        "code": "MK"
     },
     {
         "name": "Madagascar",
@@ -62045,7 +62154,8 @@
                     "Morondava"
                 ]
             }
-        ]
+        ],
+        "code": "MG"
     },
     {
         "name": "Malawi",
@@ -62446,7 +62556,8 @@
                     "Zomba City"
                 ]
             }
-        ]
+        ],
+        "code": "MW"
     },
     {
         "name": "Malaysia",
@@ -62676,7 +62787,8 @@
                     "Setiu"
                 ]
             }
-        ]
+        ],
+        "code": "MY"
     },
     {
         "name": "Maldives",
@@ -62685,7 +62797,8 @@
                 "name": null,
                 "districts": []
             }
-        ]
+        ],
+        "code": "MV"
     },
     {
         "name": "Mali",
@@ -63439,7 +63552,8 @@
                     "Tombouctou"
                 ]
             }
-        ]
+        ],
+        "code": "ML"
     },
     {
         "name": "Malta",
@@ -63448,7 +63562,8 @@
                 "name": null,
                 "districts": []
             }
-        ]
+        ],
+        "code": "MT"
     },
     {
         "name": "Marshall Islands",
@@ -63457,7 +63572,8 @@
                 "name": null,
                 "districts": []
             }
-        ]
+        ],
+        "code": "MH"
     },
     {
         "name": "Mauritania",
@@ -63571,7 +63687,8 @@
                     "Rosso"
                 ]
             }
-        ]
+        ],
+        "code": "MR"
     },
     {
         "name": "Mauritius",
@@ -63624,7 +63741,8 @@
                 "name": "Savanne",
                 "districts": []
             }
-        ]
+        ],
+        "code": "MU"
     },
     {
         "name": "Mexico",
@@ -65641,7 +65759,8 @@
                     "Zacatecas"
                 ]
             }
-        ]
+        ],
+        "code": "MX"
     },
     {
         "name": "Micronesia",
@@ -65662,7 +65781,8 @@
                 "name": "Yap",
                 "districts": []
             }
-        ]
+        ],
+        "code": "FM"
     },
     {
         "name": "Moldova",
@@ -65815,7 +65935,8 @@
                 "name": "Ungheni",
                 "districts": []
             }
-        ]
+        ],
+        "code": "MD"
     },
     {
         "name": "Monaco",
@@ -65824,7 +65945,8 @@
                 "name": null,
                 "districts": []
             }
-        ]
+        ],
+        "code": "MC"
     },
     {
         "name": "Mongolia",
@@ -66266,7 +66388,8 @@
                     "Zavkhan"
                 ]
             }
-        ]
+        ],
+        "code": "MN"
     },
     {
         "name": "Montenegro",
@@ -66355,7 +66478,8 @@
                 "name": "Ulcinj",
                 "districts": []
             }
-        ]
+        ],
+        "code": "ME"
     },
     {
         "name": "Morocco",
@@ -67949,7 +68073,8 @@
                     "Oulad Chrif"
                 ]
             }
-        ]
+        ],
+        "code": "MA"
     },
     {
         "name": "Mozambique",
@@ -68419,7 +68544,8 @@
                     "Pebane"
                 ]
             }
-        ]
+        ],
+        "code": "MZ"
     },
     {
         "name": "Myanmar",
@@ -68783,7 +68909,8 @@
                     "Thongwa"
                 ]
             }
-        ]
+        ],
+        "code": "MM"
     },
     {
         "name": "Namibia",
@@ -68960,7 +69087,8 @@
                     "Sibinda"
                 ]
             }
-        ]
+        ],
+        "code": "NA"
     },
     {
         "name": "Nauru",
@@ -69021,7 +69149,8 @@
                 "name": "Yaren",
                 "districts": []
             }
-        ]
+        ],
+        "code": "NR"
     },
     {
         "name": "Nepal",
@@ -69126,7 +69255,8 @@
                     "Rupandehi"
                 ]
             }
-        ]
+        ],
+        "code": "NP"
     },
     {
         "name": "Netherlands",
@@ -69303,8 +69433,7 @@
             },
             {
                 "name": "IJsselmeer",
-                "districts": [
-                ]
+                "districts": []
             },
             {
                 "name": "Limburg",
@@ -69591,8 +69720,7 @@
             },
             {
                 "name": "Zeeuwse meren",
-                "districts": [
-                ]
+                "districts": []
             },
             {
                 "name": "Zuid-Holland",
@@ -69690,7 +69818,8 @@
                     "Zwijndrecht"
                 ]
             }
-        ]
+        ],
+        "code": "NL"
     },
     {
         "name": "New Zealand",
@@ -69856,7 +69985,8 @@
                     "Westland"
                 ]
             }
-        ]
+        ],
+        "code": "NZ"
     },
     {
         "name": "Nicaragua",
@@ -70090,7 +70220,8 @@
                     "Tola"
                 ]
             }
-        ]
+        ],
+        "code": "NI"
     },
     {
         "name": "Niger",
@@ -70266,7 +70397,8 @@
                     "ZR Tanout"
                 ]
             }
-        ]
+        ],
+        "code": "NE"
     },
     {
         "name": "Nigeria",
@@ -71236,7 +71368,8 @@
                     "Zurmi"
                 ]
             }
-        ]
+        ],
+        "code": "NG"
     },
     {
         "name": "North Korea",
@@ -71497,7 +71630,8 @@
                     "Sinuiju"
                 ]
             }
-        ]
+        ],
+        "code": "KP"
     },
     {
         "name": "Norway",
@@ -72035,7 +72169,8 @@
                     "Vaale"
                 ]
             }
-        ]
+        ],
+        "code": "NO"
     },
     {
         "name": "Oman",
@@ -72144,7 +72279,8 @@
                     "Quriyat"
                 ]
             }
-        ]
+        ],
+        "code": "OM"
     },
     {
         "name": "Pakistan",
@@ -72330,7 +72466,8 @@
                     "Sukkur"
                 ]
             }
-        ]
+        ],
+        "code": "PK"
     },
     {
         "name": "Palau",
@@ -72399,7 +72536,8 @@
                 "name": "Sonsorol",
                 "districts": []
             }
-        ]
+        ],
+        "code": "PW"
     },
     {
         "name": "Palestina",
@@ -72430,7 +72568,8 @@
                     "Tulkarm"
                 ]
             }
-        ]
+        ],
+        "code": "PS"
     },
     {
         "name": "Panama",
@@ -73093,7 +73232,8 @@
                     "Son\u00e1"
                 ]
             }
-        ]
+        ],
+        "code": "PA"
     },
     {
         "name": "Papua New Guinea",
@@ -73295,7 +73435,8 @@
                     "South Fly"
                 ]
             }
-        ]
+        ],
+        "code": "PG"
     },
     {
         "name": "Paraguay",
@@ -73608,7 +73749,8 @@
                     "Yataity del Norte"
                 ]
             }
-        ]
+        ],
+        "code": "PY"
     },
     {
         "name": "Peru",
@@ -75546,7 +75688,8 @@
                     "Purus"
                 ]
             }
-        ]
+        ],
+        "code": "PE"
     },
     {
         "name": "Philippines",
@@ -77603,7 +77746,8 @@
                     "Tungawan"
                 ]
             }
-        ]
+        ],
+        "code": "PH"
     },
     {
         "name": "Poland",
@@ -78064,7 +78208,8 @@
                     "Walcz"
                 ]
             }
-        ]
+        ],
+        "code": "PL"
     },
     {
         "name": "Portugal",
@@ -78475,7 +78620,8 @@
                     "Vouzela"
                 ]
             }
-        ]
+        ],
+        "code": "PT"
     },
     {
         "name": "Qatar",
@@ -78516,7 +78662,8 @@
                 "name": "Umm Salal",
                 "districts": []
             }
-        ]
+        ],
+        "code": "QA"
     },
     {
         "name": "Romania",
@@ -81670,7 +81817,8 @@
                     "Vulturu"
                 ]
             }
-        ]
+        ],
+        "code": "RO"
     },
     {
         "name": "Russia",
@@ -84534,7 +84682,8 @@
                     "Zabaykal'skiy rayon"
                 ]
             }
-        ]
+        ],
+        "code": "RU"
     },
     {
         "name": "Rwanda",
@@ -84970,7 +85119,8 @@
                     "Rwezamenyo"
                 ]
             }
-        ]
+        ],
+        "code": "RW"
     },
     {
         "name": "Sweden",
@@ -85366,7 +85516,8 @@
                     "Vara"
                 ]
             }
-        ]
+        ],
+        "code": "SE"
     },
     {
         "name": "Saint Kitts and Nevis",
@@ -85427,7 +85578,8 @@
                 "name": "Trinity Palmetto Point",
                 "districts": []
             }
-        ]
+        ],
+        "code": "KN"
     },
     {
         "name": "Saint Pierre and Miquelon",
@@ -85440,7 +85592,8 @@
                 "name": "Saint-Pierre",
                 "districts": []
             }
-        ]
+        ],
+        "code": "PM"
     },
     {
         "name": "Saint Vincent and the Grenadines",
@@ -85469,7 +85622,8 @@
                 "name": "Saint Patrick",
                 "districts": []
             }
-        ]
+        ],
+        "code": "VC"
     },
     {
         "name": "Saint Helena",
@@ -85486,7 +85640,8 @@
                 "name": "Tristan da Cunha",
                 "districts": []
             }
-        ]
+        ],
+        "code": "SH"
     },
     {
         "name": "Samoa",
@@ -85589,7 +85744,8 @@
                     "Vaisigano West"
                 ]
             }
-        ]
+        ],
+        "code": "WS"
     },
     {
         "name": "San Marino",
@@ -85630,7 +85786,8 @@
                 "name": "Serravalle",
                 "districts": []
             }
-        ]
+        ],
+        "code": "SM"
     },
     {
         "name": "Saint Lucia",
@@ -85675,7 +85832,8 @@
                 "name": "Vieux Fort",
                 "districts": []
             }
-        ]
+        ],
+        "code": "LC"
     },
     {
         "name": "Sao Tome and Principe",
@@ -85688,7 +85846,8 @@
                 "name": "S\u00e3o Tom\u00e9",
                 "districts": []
             }
-        ]
+        ],
+        "code": "ST"
     },
     {
         "name": "Saudi Arabia",
@@ -85745,7 +85904,8 @@
                 "name": "Tabuk",
                 "districts": []
             }
-        ]
+        ],
+        "code": "SA"
     },
     {
         "name": "Serbia",
@@ -85754,7 +85914,8 @@
                 "name": null,
                 "districts": []
             }
-        ]
+        ],
+        "code": "RS"
     },
     {
         "name": "Seychelles",
@@ -85763,7 +85924,8 @@
                 "name": null,
                 "districts": []
             }
-        ]
+        ],
+        "code": "SC"
     },
     {
         "name": "Singapore",
@@ -85772,7 +85934,8 @@
                 "name": null,
                 "districts": []
             }
-        ]
+        ],
+        "code": "SG"
     },
     {
         "name": "Slovakia",
@@ -85896,7 +86059,8 @@
                     "Trnava"
                 ]
             }
-        ]
+        ],
+        "code": "SK"
     },
     {
         "name": "Slovenia",
@@ -86153,7 +86317,8 @@
                     "Zagorje ob Savi"
                 ]
             }
-        ]
+        ],
+        "code": "SI"
     },
     {
         "name": "Solomon Islands",
@@ -86198,7 +86363,8 @@
                 "name": "Western",
                 "districts": []
             }
-        ]
+        ],
+        "code": "SB"
     },
     {
         "name": "Somalia",
@@ -86367,7 +86533,8 @@
                     "Hargeysa"
                 ]
             }
-        ]
+        ],
+        "code": "SO"
     },
     {
         "name": "South Africa",
@@ -86777,7 +86944,8 @@
                     "Wynberg"
                 ]
             }
-        ]
+        ],
+        "code": "ZA"
     },
     {
         "name": "South Georgia and the South Sandwich Islands",
@@ -86786,7 +86954,8 @@
                 "name": null,
                 "districts": []
             }
-        ]
+        ],
+        "code": "GS"
     },
     {
         "name": "South Korea",
@@ -87105,7 +87274,8 @@
                     "Ulju"
                 ]
             }
-        ]
+        ],
+        "code": "KR"
     },
     {
         "name": "Sri Lanka",
@@ -87558,7 +87728,8 @@
                     "Vengalacheddiculam"
                 ]
             }
-        ]
+        ],
+        "code": "LK"
     },
     {
         "name": "Sudan",
@@ -87733,7 +87904,8 @@
                     "Kosti"
                 ]
             }
-        ]
+        ],
+        "code": "SD"
     },
     {
         "name": "Syria",
@@ -87868,7 +88040,8 @@
                     "Tartus"
                 ]
             }
-        ]
+        ],
+        "code": "SY"
     },
     {
         "name": "Taiwan",
@@ -87881,8 +88054,7 @@
             },
             {
                 "name": "Pratas Islands",
-                "districts": [
-                ]
+                "districts": []
             },
             {
                 "name": "Taipei",
@@ -87914,7 +88086,8 @@
                     "Yunlin"
                 ]
             }
-        ]
+        ],
+        "code": "TW"
     },
     {
         "name": "Tajikistan",
@@ -88003,7 +88176,8 @@
                     "Varzob"
                 ]
             }
-        ]
+        ],
+        "code": "TJ"
     },
     {
         "name": "Togo",
@@ -88054,7 +88228,8 @@
                     "T\u00f4ne"
                 ]
             }
-        ]
+        ],
+        "code": "TG"
     },
     {
         "name": "Tokelau",
@@ -88071,7 +88246,8 @@
                 "name": "Nukunonu",
                 "districts": []
             }
-        ]
+        ],
+        "code": "TK"
     },
     {
         "name": "Tonga",
@@ -88096,7 +88272,8 @@
                 "name": "Vava'u",
                 "districts": []
             }
-        ]
+        ],
+        "code": "TO"
     },
     {
         "name": "Trinidad and Tobago",
@@ -88161,7 +88338,8 @@
                 "name": "Tunapuna/Piarco",
                 "districts": []
             }
-        ]
+        ],
+        "code": "TT"
     },
     {
         "name": "Tunisia",
@@ -88554,7 +88732,8 @@
                     "Zriba"
                 ]
             }
-        ]
+        ],
+        "code": "TN"
     },
     {
         "name": "Turkey",
@@ -89892,7 +90071,8 @@
                     "Merkez"
                 ]
             }
-        ]
+        ],
+        "code": "TR"
     },
     {
         "name": "Turkmenistan",
@@ -89921,7 +90101,8 @@
                 "name": "Tashauz",
                 "districts": []
             }
-        ]
+        ],
+        "code": "TM"
     },
     {
         "name": "Turks and Caicos Islands",
@@ -89950,7 +90131,8 @@
                 "name": "South Caicos and East Caicos",
                 "districts": []
             }
-        ]
+        ],
+        "code": "TC"
     },
     {
         "name": "Tuvalu",
@@ -89991,7 +90173,8 @@
                 "name": "Vaitupu",
                 "districts": []
             }
-        ]
+        ],
+        "code": "TV"
     },
     {
         "name": "Uganda",
@@ -90228,7 +90411,8 @@
                 "name": "Yumbe",
                 "districts": []
             }
-        ]
+        ],
+        "code": "UG"
     },
     {
         "name": "Ukraine",
@@ -90997,7 +91181,8 @@
                     "Zhytomyrs'kyi"
                 ]
             }
-        ]
+        ],
+        "code": "UA"
     },
     {
         "name": "United Arab Emirates",
@@ -91034,7 +91219,8 @@
                 "name": "Umm Al Qaywayn",
                 "districts": []
             }
-        ]
+        ],
+        "code": "AE"
     },
     {
         "name": "United Kingdom",
@@ -91251,7 +91437,8 @@
                     "Wrexham"
                 ]
             }
-        ]
+        ],
+        "code": "GB"
     },
     {
         "name": "United States Minor Outlying Islands",
@@ -91292,7 +91479,8 @@
                 "name": "Wake",
                 "districts": []
             }
-        ]
+        ],
+        "code": "UM"
     },
     {
         "name": "United States",
@@ -94700,7 +94888,8 @@
                     "Weston"
                 ]
             }
-        ]
+        ],
+        "code": "US"
     },
     {
         "name": "Uruguay",
@@ -95004,7 +95193,8 @@
                     "n.a91"
                 ]
             }
-        ]
+        ],
+        "code": "UY"
     },
     {
         "name": "Uzbekistan",
@@ -95240,7 +95430,8 @@
                     "Zangiota"
                 ]
             }
-        ]
+        ],
+        "code": "UZ"
     },
     {
         "name": "Vanuatu",
@@ -95269,7 +95460,8 @@
                 "name": "Torba",
                 "districts": []
             }
-        ]
+        ],
+        "code": "VU"
     },
     {
         "name": "Vatican City",
@@ -95278,7 +95470,8 @@
                 "name": null,
                 "districts": []
             }
-        ]
+        ],
+        "code": "VA"
     },
     {
         "name": "Venezuela",
@@ -95435,8 +95628,7 @@
             },
             {
                 "name": "Dependencias Federales",
-                "districts": [
-                ]
+                "districts": []
             },
             {
                 "name": "Distrito Capital",
@@ -95745,7 +95937,8 @@
                     "Valmore Rodr\u00edguez"
                 ]
             }
-        ]
+        ],
+        "code": "VE"
     },
     {
         "name": "Vietnam",
@@ -96742,7 +96935,8 @@
                     "Y\u00ean B\u00ecnh"
                 ]
             }
-        ]
+        ],
+        "code": "VN"
     },
     {
         "name": "Virgin Islands, U.S.",
@@ -96759,7 +96953,8 @@
                 "name": "Saint Thomas",
                 "districts": []
             }
-        ]
+        ],
+        "code": "VI"
     },
     {
         "name": "Wallis and Futuna",
@@ -96784,7 +96979,8 @@
                     "Mua"
                 ]
             }
-        ]
+        ],
+        "code": "WF"
     },
     {
         "name": "Western Sahara",
@@ -96805,7 +97001,8 @@
                 "name": "Oued el Dahab",
                 "districts": []
             }
-        ]
+        ],
+        "code": "EH"
     },
     {
         "name": "Yemen",
@@ -97248,7 +97445,8 @@
                     "Shara'b As Salam"
                 ]
             }
-        ]
+        ],
+        "code": "YE"
     },
     {
         "name": "Zambia",
@@ -97375,7 +97573,8 @@
                     "Shangombo"
                 ]
             }
-        ]
+        ],
+        "code": "ZM"
     },
     {
         "name": "Zimbabwe",
@@ -97490,6 +97689,7 @@
                     "Zvishavane"
                 ]
             }
-        ]
+        ],
+        "code": "ZW"
     }
 ]

@@ -9,7 +9,6 @@
     "acquirer-backend:start": "npm run start -w acquirer-backend",
     "acquirer-backend:test": "npm run test -w acquirer-backend",
     "acquirer-backend:test:coverage": "npm run test:coverage -w acquirer-backend",
-    "registry-oracle:start": "npm run start -w registry-oracle",
 
     "lint:check:backend": "npm run lint:check -w acquirer-backend",
     "type:check:backend": "npm run type:check -w acquirer-backend",
@@ -23,9 +22,12 @@
     "dep:check:frontend": "npm run dep:check -w acquirer-frontend",
     "test:unit:frontend": "npm run test -w acquirer-frontend",
 
+    "registry-oracle:start": "npm run start -w registry-oracle",
     "lint:check:oracle": "npm run lint:check -w registry-oracle",
     "type:check:oracle": "npm run type:check -w registry-oracle",
     "dep:check:oracle": "npm run dep:check -w registry-oracle",
+    "oracle:test": "npm run test -w acquirer-backend",
+    "oracle:test:coverage": "npm run test:coverage -w acquirer-backend",
 
     "build": "npm -ws run build"
   },

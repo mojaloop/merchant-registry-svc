@@ -12,8 +12,9 @@ import { AppDataSource } from '../database/dataSource'
 import { CheckoutCounterEntity } from '../entity/CheckoutCounterEntity'
 import { MerchantEntity } from '../entity/MerchantEntity'
 import { uploadCheckoutAliasQRImage } from './S3Client'
-import { generateQRImage } from './generateQRImage'
+import { generateQRImage, getEMVQRCodeText } from './generateQRImage'
 import path from 'path'
+import { CountryEntity } from '../entity/CountryEntity'
 
 const RABBITMQ_HOST = readEnv('RABBITMQ_HOST', '127.0.0.1') as string
 const RABBITMQ_PORT = readEnv('RABBITMQ_PORT', 5672) as number
@@ -154,30 +155,58 @@ async function processReplyMessage (msg: Message): Promise<void> {
       let qrImageBuffer = null
       try {
         const frameImagePath = path.join(__dirname, '../../assets/sample-qr-frame/frame.png')
-        qrImageBuffer = await generateQRImage(aliasData.alias_value, {}, frameImagePath)
+        const merchant = await AppDataSource.manager.findOne(MerchantEntity, {
+          where: { id: aliasData.merchant_id },
+          relations: ['category_code', 'currency_code']
+        })
+
+        logger.debug('Merchant: %o', merchant)
+
+        if (merchant == null) {
+          logger.error('Error while generating QR image: Merchant Not Found \'%o\'', aliasData)
+          continue
+        }
+
+        const checkoutCounter = await AppDataSource.manager.findOne(CheckoutCounterEntity, {
+          where: { id: aliasData.checkout_counter_id },
+          relations: ['checkout_location']
+        })
+
+        const country = await AppDataSource.manager.findOne(CountryEntity, {
+          where: { name: checkoutCounter?.checkout_location.country },
+          select: ['code']
+        })
+
+        const emvcoQRString = getEMVQRCodeText(
+          aliasData.alias_value,
+          merchant.category_code.category_code,
+          merchant.currency_code.iso_code,
+          country?.code,
+          merchant.dba_trading_name,
+          checkoutCounter?.checkout_location?.district_name
+        )
+        qrImageBuffer = await generateQRImage(emvcoQRString, {}, frameImagePath)
       } catch (e) {
-        logger.error('Error while generating QR image for alias value: %s', aliasData.alias_value)
+        logger.error('Error while generating QR image: %o', e)
         continue
       }
 
       if (qrImageBuffer == null) {
-        logger.error('Error while generating QR image for alias value: %s', aliasData.alias_value)
+        logger.error('Error while generating QR image')
         continue
       }
       const qrImageS3Path = await uploadCheckoutAliasQRImage(aliasData.alias_value, qrImageBuffer)
       if (qrImageS3Path == null) {
-        logger.error(
-          'Error while uploading QR image to S3 for alias value: %s',
-          aliasData.alias_value
-        )
+        logger.error('Error while uploading QR image to S3')
         continue
       }
-      logger.info('Uploaded QR image to S3 for alias value: %s', aliasData.alias_value)
+      logger.info('Uploaded QR image to S3: %s', qrImageS3Path)
 
       await AppDataSource.manager.update(CheckoutCounterEntity, aliasData.checkout_counter_id, {
         alias_value: aliasData.alias_value,
         qr_code_link: qrImageS3Path
       })
+
       await AppDataSource.manager.update(MerchantEntity, aliasData.merchant_id, {
         registration_status: MerchantRegistrationStatus.APPROVED
       })

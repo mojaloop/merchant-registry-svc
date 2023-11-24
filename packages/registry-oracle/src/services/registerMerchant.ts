@@ -6,14 +6,13 @@ import logger from './logger'
 
 const ALIAS_CHECKOUT_MAX_DIGITS = readEnv('ALIAS_CHECKOUT_MAX_DIGITS', 10) as number
 
-interface CurrencyCode {
+export interface CurrencyCode {
   iso_code: string
   description: string
 }
 
 export interface MerchantData {
   merchant_id: number
-  dfsp_id: string
   fspId: string
   dfsp_name: string
   checkout_counter_id: number
@@ -55,7 +54,7 @@ export async function registerMerchants (merchants: MerchantData[]): Promise<Reg
   logger.debug('Bulk inserting %d records', bulkRegistryEntities.length)
 
   if (bulkRegistryEntities.length === 0) {
-    logger.error('No valid merchant data found. Aborting transaction.')
+    logger.error('No valid merchant data is registered.')
     return []
   }
 
@@ -74,7 +73,7 @@ export async function registerMerchants (merchants: MerchantData[]): Promise<Reg
         )
       }
     })
-  } catch (err) {
+  } catch (err)/* istanbul ignore next */ {
     logger.error('Transaction failed: %o', err)
     return []
   };
