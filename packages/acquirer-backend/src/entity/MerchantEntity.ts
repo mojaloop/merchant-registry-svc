@@ -89,7 +89,7 @@ export class MerchantEntity {
 
   @ManyToOne(() => CurrencyEntity, currency => currency.merchants)
   @JoinColumn({ name: 'currency_code' })
-    currency_code!: string
+    currency_code!: CurrencyEntity
 
   @ManyToOne(
     () => MerchantCategoryEntity,
@@ -97,7 +97,7 @@ export class MerchantEntity {
   )
 
   @JoinColumn({ name: 'category_code' })
-    category_code!: string
+    category_code!: MerchantCategoryEntity
 
   @OneToMany(
     () => MerchantLocationEntity,
