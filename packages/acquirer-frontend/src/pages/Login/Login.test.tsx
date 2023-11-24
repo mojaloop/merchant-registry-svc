@@ -1,8 +1,15 @@
-import { describe, it } from 'vitest'
-import { fireEvent, render, screen } from '@testing-library/react'
+import { describe, it, vi } from 'vitest'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
 import TestWrapper from '@/__tests__/TestWrapper'
 import { Login } from '..'
+
+vi.mock('@/api/hooks/auth', () => ({
+  useLogin: () => ({
+    isLoading: false,
+    mutate: () => vi.fn(),
+  }),
+}))
 
 describe('Login', () => {
   it('should render the correct password toggle icon', () => {
@@ -46,5 +53,27 @@ describe('Login', () => {
 
     expect(emailInput.value).toEqual(email[1])
     expect(passwordInput.value).toEqual(password[1])
+  })
+
+  it('should call "login.mutate" function when "Log In" button is clicked', async () => {
+    const loginSpy = vi.spyOn(vi, 'fn')
+
+    render(
+      <TestWrapper>
+        <Login />
+      </TestWrapper>
+    )
+
+    const emailInput: HTMLInputElement = screen.getByLabelText('Email')
+    const passwordInput: HTMLInputElement = screen.getByLabelText('Password')
+    const loginButton: HTMLButtonElement = screen.getByText('Log In')
+
+    fireEvent.change(emailInput, { target: { value: 'john@gmail.com' } })
+    fireEvent.change(passwordInput, { target: { value: 'password' } })
+    fireEvent.submit(loginButton)
+
+    await waitFor(() => Promise.resolve)
+
+    expect(loginSpy).toHaveBeenCalled()
   })
 })

@@ -24,6 +24,7 @@ const queryClient = new QueryClient({
       refetchOnWindowFocus: false,
     },
   },
+  // https://tkdodo.eu/blog/breaking-react-querys-api-on-purpose
   queryCache: new QueryCache({
     onError: (error, query) => {
       if (isAxiosError(error) && query.meta?.toastTitle && query.meta?.toastStatus) {
