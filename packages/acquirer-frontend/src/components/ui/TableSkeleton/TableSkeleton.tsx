@@ -1,4 +1,4 @@
-import { type StackProps, VStack } from '@chakra-ui/react'
+import { VStack, type StackProps } from '@chakra-ui/react'
 
 import { Skeleton } from '@/components/ui'
 

@@ -1,7 +1,7 @@
 import type { PortalUserStatus, PortalUserType } from 'shared-lib'
 
-import type { Role } from './roles'
 import type { DFSP } from './merchantDetails'
+import type { Role } from './roles'
 
 export interface User {
   no: number

@@ -1,7 +1,6 @@
 import {
   Accordion,
   AccordionButton,
-  type AccordionButtonProps,
   AccordionIcon,
   AccordionItem,
   AccordionPanel,
@@ -10,6 +9,7 @@ import {
   HStack,
   Icon,
   Stack,
+  type AccordionButtonProps,
 } from '@chakra-ui/react'
 
 import type { NavAccordion } from '@/types/navItems'

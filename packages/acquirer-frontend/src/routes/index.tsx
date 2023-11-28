@@ -3,8 +3,8 @@ import { Navigate, useRoutes } from 'react-router-dom'
 import { Layout } from '@/components/layout'
 import {
   AddNewUser,
-  AllMerchantRecords,
   AliasGeneratedMerchantRecords,
+  AllMerchantRecords,
   AuditLog,
   DraftApplications,
   Login,

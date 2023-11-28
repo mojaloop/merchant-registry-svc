@@ -12,20 +12,20 @@ import {
   RadioGroup,
   Stack,
   Text,
-  VisuallyHiddenInput,
   useToast,
+  VisuallyHiddenInput,
 } from '@chakra-ui/react'
-import { Controller, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { Controller, useForm } from 'react-hook-form'
 import { MdFileUpload } from 'react-icons/md'
 import {
   CurrencyDescriptions,
   MerchantCategoryCodes,
-  NumberOfEmployees,
   MerchantType,
+  NumberOfEmployees,
 } from 'shared-lib'
 
-import { type BusinessInfoForm, businessInfoSchema } from '@/lib/validations/registry'
+import { businessInfoSchema, type BusinessInfoForm } from '@/lib/validations/registry'
 import { useCreateBusinessInfo, useDraft, useUpdateBusinessInfo } from '@/api/hooks/forms'
 import { useMerchantId } from '@/hooks'
 import { CustomButton, FloatingSpinner } from '@/components/ui'

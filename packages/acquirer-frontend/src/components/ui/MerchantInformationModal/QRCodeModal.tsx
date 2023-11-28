@@ -8,6 +8,7 @@ import {
   ModalHeader,
   ModalOverlay,
 } from '@chakra-ui/react'
+
 import { Skeleton } from '@/components/ui'
 
 interface QRCodeModalProps {

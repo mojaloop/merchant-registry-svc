@@ -1,17 +1,17 @@
 import { useState } from 'react'
-import { type Row, flexRender } from '@tanstack/react-table'
+import { flexRender, type Row } from '@tanstack/react-table'
 import {
   Accordion,
-  AccordionItem,
   AccordionButton,
+  AccordionItem,
   AccordionPanel,
-  Stack,
-  HStack,
   Box,
   Flex,
+  HStack,
   Icon,
+  Stack,
 } from '@chakra-ui/react'
-import { FiPlusCircle, FiMinusCircle } from 'react-icons/fi'
+import { FiMinusCircle, FiPlusCircle } from 'react-icons/fi'
 
 export type Meta = { isConditional: boolean; conditionStatement: string } | undefined
 

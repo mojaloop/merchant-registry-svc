@@ -1,5 +1,5 @@
 import { forwardRef } from 'react'
-import { type NavLinkProps, Link as ReactRouterLink } from 'react-router-dom'
+import { Link as ReactRouterLink, type NavLinkProps } from 'react-router-dom'
 import { Link as ChakraLink, type LinkProps } from '@chakra-ui/react'
 
 type CustomLinkProps = LinkProps &

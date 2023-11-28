@@ -1,7 +1,10 @@
 import {
+  Box,
   Grid,
   GridItem,
-  type HeadingProps,
+  Heading,
+  HStack,
+  Link,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -10,21 +13,18 @@ import {
   ModalHeader,
   ModalOverlay,
   Stack,
-  Heading,
-  type GridItemProps,
-  Link,
-  Box,
   Text,
-  HStack,
   useDisclosure,
+  type GridItemProps,
+  type HeadingProps,
 } from '@chakra-ui/react'
 
 import type { MerchantDetails } from '@/types/merchantDetails'
-import { useMerchant } from '@/api/hooks/merchants'
 import { formatLatitudeLongitude } from '@/utils'
+import { useMerchant } from '@/api/hooks/merchants'
 import { CustomButton, Skeleton } from '@/components/ui'
-import QRCodeModal from './QRCodeModal'
 import { DetailsItem } from '.'
+import QRCodeModal from './QRCodeModal'
 
 interface MerchantInformationModalProps {
   selectedMerchantId: number

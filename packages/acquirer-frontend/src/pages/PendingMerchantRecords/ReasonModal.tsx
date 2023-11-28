@@ -8,10 +8,10 @@ import {
   ModalHeader,
   ModalOverlay,
 } from '@chakra-ui/react'
-import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useForm } from 'react-hook-form'
 
-import { type ReasonForm, reasonSchema } from '@/lib/validations/reason'
+import { reasonSchema, type ReasonForm } from '@/lib/validations/reason'
 import { CustomButton } from '@/components/ui'
 import { FormTextarea } from '@/components/form'
 

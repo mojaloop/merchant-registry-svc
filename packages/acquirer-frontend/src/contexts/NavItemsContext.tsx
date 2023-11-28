@@ -1,8 +1,9 @@
-import { getUserProfile } from '@/api/users'
 import { createContext, useContext, useEffect, useState } from 'react'
 import { AiOutlineAudit } from 'react-icons/ai'
 import { MdAssignmentAdd } from 'react-icons/md'
 import { TbFileText, TbUserSearch } from 'react-icons/tb'
+
+import { getUserProfile } from '@/api/users'
 
 export const NAV_ITEMS = [
   {

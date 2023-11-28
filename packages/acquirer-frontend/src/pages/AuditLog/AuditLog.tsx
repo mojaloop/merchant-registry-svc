@@ -1,23 +1,23 @@
 import { useMemo, useState } from 'react'
 import { createColumnHelper, type PaginationState } from '@tanstack/react-table'
-import { Box, Flex, HStack, Heading, Stack, useDisclosure } from '@chakra-ui/react'
-import { useForm } from 'react-hook-form'
+import { Box, Flex, Heading, HStack, Stack, useDisclosure } from '@chakra-ui/react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import dayjs from 'dayjs'
+import { useForm } from 'react-hook-form'
 import { AuditActionType } from 'shared-lib'
 
 import type { AuditLogType } from '@/types/auditLogs'
 import {
-  type AuditLogsFilterForm,
   auditLogsFilterSchema,
+  type AuditLogsFilterForm,
 } from '@/lib/validations/auditLogsFilter'
 import { useAuditLogs } from '@/api/hooks/auditLogs'
 import { useUsers } from '@/api/hooks/users'
 import { useTable } from '@/hooks'
 import { CustomButton, DataTable, EmptyState, TableSkeleton } from '@/components/ui'
 import { FormSelect } from '@/components/form'
-import FilterFormSkeleton from './FilterFormSkeleton'
 import AuditLogDetailsModal from './AuditLogDetailsModal'
+import FilterFormSkeleton from './FilterFormSkeleton'
 
 const actionTypeOptions = Object.values(AuditActionType).map(actionType => ({
   value: actionType,

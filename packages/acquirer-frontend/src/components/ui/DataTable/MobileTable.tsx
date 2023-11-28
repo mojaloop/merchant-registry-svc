@@ -1,4 +1,4 @@
-import { type Table, flexRender } from '@tanstack/react-table'
+import { flexRender, type Table } from '@tanstack/react-table'
 import { Box, Flex, Stack } from '@chakra-ui/react'
 
 import MobileTableItem from './MobileTableItem'

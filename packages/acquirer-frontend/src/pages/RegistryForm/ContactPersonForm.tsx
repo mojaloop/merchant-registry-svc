@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react'
 import { Box, Checkbox, Heading, Stack, useDisclosure, useToast } from '@chakra-ui/react'
-import { Controller, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { Controller, useForm } from 'react-hook-form'
 
-import { type ContactPersonForm, contactPersonSchema } from '@/lib/validations/registry'
+import { contactPersonSchema, type ContactPersonForm } from '@/lib/validations/registry'
 import {
   useCreateContactPerson,
   useDraft,
@@ -12,8 +12,8 @@ import {
 import { useMerchantId } from '@/hooks'
 import { CustomButton, FloatingSpinner } from '@/components/ui'
 import { FormInput } from '@/components/form'
-import ReviewModal from './ReviewModal'
 import GridShell from './GridShell'
+import ReviewModal from './ReviewModal'
 
 interface ContactPersonProps {
   setActiveStep: React.Dispatch<React.SetStateAction<number>>

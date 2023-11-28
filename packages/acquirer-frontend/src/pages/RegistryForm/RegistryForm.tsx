@@ -5,17 +5,17 @@ import {
   StepIcon,
   StepIndicator,
   StepNumber,
+  Stepper,
   StepSeparator,
   StepStatus,
   StepTitle,
-  Stepper,
   useSteps,
 } from '@chakra-ui/react'
 
 import BusinessInfoForm from './BusinessInfoForm'
+import ContactPersonForm from './ContactPersonForm'
 import LocationInfoForm from './LocationInfoForm'
 import OwnerInfoForm from './OwnerInfoForm'
-import ContactPersonForm from './ContactPersonForm'
 
 const STEPS = [
   'Business Information',

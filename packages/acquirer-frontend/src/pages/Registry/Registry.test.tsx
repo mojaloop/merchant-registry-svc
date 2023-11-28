@@ -1,5 +1,5 @@
-import { describe, it, vi } from 'vitest'
 import { fireEvent, render, screen } from '@testing-library/react'
+import { describe, it, vi } from 'vitest'
 
 import TestWrapper from '@/__tests__/TestWrapper'
 import { Registry } from '..'

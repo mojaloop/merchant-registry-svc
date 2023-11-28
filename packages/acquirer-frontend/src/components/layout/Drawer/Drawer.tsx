@@ -9,10 +9,10 @@ import {
   VStack,
 } from '@chakra-ui/react'
 
-import { useNavItems } from '@/contexts/NavItemsContext'
 import { useDrawerDisclosure } from '@/contexts/DrawerDisclosureContext'
-import DrawerNavItem from './DrawerNavItem'
+import { useNavItems } from '@/contexts/NavItemsContext'
 import DrawerNavAccordion from './DrawerNavAccordion'
+import DrawerNavItem from './DrawerNavItem'
 
 const Drawer = () => {
   const { isOpen, onClose } = useDrawerDisclosure()

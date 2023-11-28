@@ -14,16 +14,16 @@ import {
   PopoverTrigger,
   Text,
 } from '@chakra-ui/react'
-import { FiMenu } from 'react-icons/fi'
-import { TbLogout } from 'react-icons/tb'
 import { AiOutlineMail, AiOutlineUser } from 'react-icons/ai'
+import { FiMenu } from 'react-icons/fi'
 import { MdLockOutline } from 'react-icons/md'
+import { TbLogout } from 'react-icons/tb'
 
 import mojaloopLogo from '@/assets/mojaloop-logo.png'
+import { useLogout } from '@/api/hooks/auth'
 import { useUserProfile } from '@/api/hooks/users'
 import { useDrawerDisclosure } from '@/contexts/DrawerDisclosureContext'
 import { Drawer } from '@/components/layout'
-import { useLogout } from '@/api/hooks/auth'
 
 const Header = () => {
   const queryClient = useQueryClient()
