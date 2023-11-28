@@ -127,14 +127,14 @@ const SetPassword = () => {
 
               {isConfirmPasswordShown ? (
                 <IconButton
-                  aria-label='Hide password'
+                  aria-label='Hide confirm password'
                   icon={<AiFillEyeInvisible />}
                   onClick={() => setIsConfirmPasswordShown(false)}
                   {...iconButtonProps}
                 />
               ) : (
                 <IconButton
-                  aria-label='Show password'
+                  aria-label='Show confirm password'
                   icon={<AiFillEye />}
                   onClick={() => setIsConfirmPasswordShown(true)}
                   {...iconButtonProps}
