@@ -59,10 +59,10 @@ const mockDraft = vi.fn()
 vi.mock('@/api/hooks/forms', () => ({
   useDraft: () => mockDraft(),
   useCreateBusinessInfo: () => ({
-    mutate: () => fn('create'),
+    mutate: () => fn('createBusinessInfo'),
   }),
   useUpdateBusinessInfo: () => ({
-    mutate: () => fn('update'),
+    mutate: () => fn('updateBusinessInfo'),
   }),
 }))
 
@@ -216,7 +216,7 @@ describe('BusinessInfoForm', () => {
       screen.getByLabelText(/Merchant Category/)
     const merchantTypeInput: HTMLSelectElement = screen.getByLabelText(/Merchant Type/)
     const currencyInput: HTMLSelectElement = screen.getByLabelText(/Currency/)
-    const submitButton: HTMLInputElement = screen.getByText('Save and Proceed')
+    const submitButton: HTMLButtonElement = screen.getByText('Save and Proceed')
 
     fireEvent.change(dbaNameInput, { target: { value: 'marco' } })
     fireEvent.change(numberOfEmployeeInput, { target: { value: '6 - 10' } })
@@ -227,7 +227,7 @@ describe('BusinessInfoForm', () => {
 
     await waitFor(() => Promise.resolve())
 
-    expect(fn.mock.calls[0]).toEqual(['create'])
+    expect(fn.mock.calls[0]).toEqual(['createBusinessInfo'])
   })
 
   it('should call "updateBusinessInfo.mutate" when it is a draft or reverted data', async () => {
@@ -242,12 +242,12 @@ describe('BusinessInfoForm', () => {
       </TestWrapper>
     )
 
-    const submitButton: HTMLInputElement = screen.getByText('Save and Proceed')
+    const submitButton: HTMLButtonElement = screen.getByText('Save and Proceed')
     fireEvent.click(submitButton)
 
     await waitFor(() => Promise.resolve())
 
-    expect(fn.mock.calls[0]).toEqual(['update'])
+    expect(fn.mock.calls[0]).toEqual(['updateBusinessInfo'])
   })
 
   it('should show an error toast when the merchantId is not found', async () => {
@@ -260,7 +260,7 @@ describe('BusinessInfoForm', () => {
       </TestWrapper>
     )
 
-    const submitButton: HTMLInputElement = screen.getByText('Save and Proceed')
+    const submitButton: HTMLButtonElement = screen.getByText('Save and Proceed')
     fireEvent.click(submitButton)
 
     await waitFor(() => Promise.resolve())

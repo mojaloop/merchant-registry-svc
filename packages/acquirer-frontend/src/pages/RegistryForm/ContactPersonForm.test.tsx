@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { vi } from 'vitest'
 
 import TestWrapper from '@/__tests__/TestWrapper'
@@ -31,11 +31,37 @@ const hoistedValues = vi.hoisted(() => ({
   },
 }))
 
+const fn = vi.fn()
+
+vi.mock('@chakra-ui/react', async () => {
+  const charaUI: object = await vi.importActual('@chakra-ui/react')
+
+  return {
+    ...charaUI,
+    useToast: () => {
+      return () => fn('toast')
+    },
+  }
+})
+
+const mockMerchantId = vi.fn()
+vi.mock('@/hooks', () => ({
+  useMerchantId: () => mockMerchantId(),
+}))
+
 const mockDraft = vi.fn()
 vi.mock('@/api/hooks/forms', () => ({
   useDraft: () => mockDraft(),
-  useCreateContactPerson: () => ({}),
-  useUpdateContactPerson: () => ({}),
+  useCreateContactPerson: () => ({
+    mutate: () => fn('createContactPerson'),
+  }),
+  useUpdateContactPerson: () => ({
+    mutate: () => fn('updateContactPerson'),
+  }),
+  useChangeStatusToReview: () => ({
+    isLoading: false,
+    mutate: () => fn('changeStatusToReview'),
+  }),
 }))
 
 const mockSetActiveStep = vi.fn()
@@ -99,8 +125,30 @@ describe('ContactPersonForm', () => {
     expect(emailInput.value).toEqual('johndoe@gmail.com')
   })
 
-  it('should have correct submitted values in onSubmit function', () => {
-    mockDraft.mockReturnValue({ data: hoistedValues.draft })
+  it('should not set input values to owner info values if owner info doesn\'t exist when "Same as business owner" checkbox is checked', () => {
+    mockDraft.mockReturnValue({ data: null })
+
+    render(
+      <TestWrapper>
+        <ContactPersonForm setActiveStep={mockSetActiveStep} />
+      </TestWrapper>
+    )
+
+    const sameAsBusinessOwnerCheckBox = screen.getByLabelText('Same as business owner')
+    const nameInput: HTMLInputElement = screen.getByLabelText(/Name/)
+    const phoneNumberInput: HTMLInputElement = screen.getByLabelText(/Phone Number/)
+    const emailInput: HTMLInputElement = screen.getByLabelText('Email')
+
+    fireEvent.click(sameAsBusinessOwnerCheckBox)
+
+    expect(nameInput.value).toEqual('')
+    expect(phoneNumberInput.value).toEqual('')
+    expect(emailInput.value).toEqual('')
+  })
+
+  it('should call "createContactPerson.mutate" when it is not a draft', async () => {
+    mockDraft.mockReturnValue({ data: null })
+    mockMerchantId.mockReturnValue(1)
 
     render(
       <TestWrapper>
@@ -110,17 +158,50 @@ describe('ContactPersonForm', () => {
 
     const nameInput: HTMLInputElement = screen.getByLabelText(/Name/)
     const phoneNumberInput: HTMLInputElement = screen.getByLabelText(/Phone Number/)
-    const emailInput: HTMLInputElement = screen.getByLabelText('Email')
     const submitButton: HTMLButtonElement = screen.getByText('Review Submission')
-    const contactPersonForm: HTMLFormElement = screen.getByTestId('contact-person-form')
 
-    fireEvent.submit(submitButton)
+    fireEvent.change(nameInput, { target: { value: 'John' } })
+    fireEvent.change(phoneNumberInput, { target: { value: '932-555-4213' } })
+    fireEvent.click(submitButton)
 
-    const formData = new FormData(contactPersonForm)
-    const [name, phoneNumber, email] = formData.entries()
+    await waitFor(() => Promise.resolve())
 
-    expect(nameInput.value).toEqual(name[1])
-    expect(phoneNumberInput.value).toEqual(phoneNumber[1])
-    expect(emailInput.value).toEqual(email[1])
+    expect(fn.mock.calls[0]).toEqual(['createContactPerson'])
+  })
+
+  it('should call "updateContactPerson.mutate" when it is a draft', async () => {
+    mockDraft.mockReturnValue({ data: hoistedValues.draft })
+    mockMerchantId.mockReturnValue(1)
+
+    render(
+      <TestWrapper>
+        <ContactPersonForm setActiveStep={mockSetActiveStep} />
+      </TestWrapper>
+    )
+
+    const submitButton: HTMLButtonElement = screen.getByText('Review Submission')
+    fireEvent.click(submitButton)
+
+    await waitFor(() => Promise.resolve())
+
+    expect(fn.mock.calls[0]).toEqual(['updateContactPerson'])
+  })
+
+  it('should show an error toast when the merchantId is not found', async () => {
+    mockDraft.mockReturnValue({ data: hoistedValues.draft })
+    mockMerchantId.mockReturnValue(null)
+
+    render(
+      <TestWrapper>
+        <ContactPersonForm setActiveStep={mockSetActiveStep} />
+      </TestWrapper>
+    )
+
+    const submitButton: HTMLButtonElement = screen.getByText('Review Submission')
+    fireEvent.click(submitButton)
+
+    await waitFor(() => Promise.resolve())
+
+    expect(fn.mock.calls[0]).toEqual(['toast'])
   })
 })
