@@ -57,7 +57,7 @@ export async function authenticateJWT (req: Request, res: Response, next: NextFu
       'authenticateJWT',
       'Invalid token',
       'PortalUserEntity',
-      {}, { token }, null
+      {}, {}, null
     )
     res.status(401).send({ message: 'Authorization Failed', error: err })
   }
