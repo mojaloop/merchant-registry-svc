@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { vi } from 'vitest'
 
 import TestWrapper from '@/__tests__/TestWrapper'
@@ -40,14 +40,36 @@ const hoistedValues = vi.hoisted(() => ({
   },
 }))
 
+const fn = vi.fn()
+
+vi.mock('@chakra-ui/react', async () => {
+  const charaUI: object = await vi.importActual('@chakra-ui/react')
+
+  return {
+    ...charaUI,
+    useToast: () => {
+      return () => fn('toast')
+    },
+  }
+})
+
+const mockMerchantId = vi.fn()
+vi.mock('@/hooks', () => ({
+  useMerchantId: () => mockMerchantId(),
+}))
+
 const mockDraft = vi.fn()
 vi.mock('@/api/hooks/forms', () => ({
   useCountries: () => ({ data: ['Australia'] }),
   useSubdivisions: () => ({ data: ['Western Australia'] }),
   useDistricts: () => ({ data: ['Perth'] }),
   useDraft: () => mockDraft(),
-  useCreateLocationInfo: () => ({}),
-  useUpdateLocationInfo: () => ({}),
+  useCreateLocationInfo: () => ({
+    mutate: () => fn('createLocationInfo'),
+  }),
+  useUpdateLocationInfo: () => ({
+    mutate: () => fn('updateLocationInfo'),
+  }),
 }))
 
 const mockSetActiveStep = vi.fn()
@@ -164,8 +186,9 @@ describe('ContactPersonForm', () => {
     expect(districtInput.value).toEqual('')
   })
 
-  it('should have correct submitted values in onSubmit function', () => {
-    mockDraft.mockReturnValue({ data: hoistedValues.draft })
+  it('should call "createLocationInfo.mutate" when it is not a draft', async () => {
+    mockDraft.mockReturnValue({ data: null })
+    mockMerchantId.mockReturnValue(1)
 
     render(
       <TestWrapper>
@@ -174,72 +197,50 @@ describe('ContactPersonForm', () => {
     )
 
     const locationTypeInput: HTMLSelectElement = screen.getByLabelText(/Location Type/)
-    const websiteUrlInput: HTMLInputElement = screen.getByLabelText('Website URL')
-    const departmentInput: HTMLInputElement = screen.getByLabelText('Department')
-    const subDepartmentInput: HTMLInputElement = screen.getByLabelText('Sub Department')
-    const streetNameInput: HTMLInputElement = screen.getByLabelText('Street Name')
-    const buildingNumberInput: HTMLInputElement = screen.getByLabelText('Building Number')
-    const buildingNameInput: HTMLInputElement = screen.getByLabelText('Building Name')
-    const floorNumberInput: HTMLInputElement = screen.getByLabelText('Floor Number')
-    const roomNumberInput: HTMLInputElement = screen.getByLabelText('Room Number')
-    const postBoxInput: HTMLInputElement = screen.getByLabelText('Post Box')
-    const postalCodeInput: HTMLInputElement = screen.getByLabelText('Postal Code')
-    const countryInput: HTMLSelectElement = screen.getByLabelText('Country')
-    const countrySubdivisionInput: HTMLSelectElement = screen.getByLabelText(
-      'Country Subdivision (State/Divison)'
-    )
-    const districtInput: HTMLSelectElement = screen.getByLabelText('District')
-    const townshipInput: HTMLInputElement = screen.getByLabelText('Township')
-    const longitudeInput: HTMLInputElement = screen.getByLabelText('Longitude')
-    const latitudeInput: HTMLInputElement = screen.getByLabelText('Latitude')
-    const checkoutCounterDescriptionInput: HTMLInputElement = screen.getByLabelText(
-      'Checkout Counter Description'
-    )
     const submitButton: HTMLButtonElement = screen.getByText('Save and Proceed')
-    const locationInfoForm: HTMLFormElement = screen.getByTestId('location-info-form')
 
-    fireEvent.submit(submitButton)
+    fireEvent.change(locationTypeInput, { target: { value: 'Virtual' } })
+    fireEvent.click(submitButton)
 
-    const formData = new FormData(locationInfoForm)
-    const [
-      locationType,
-      websiteUrl,
-      department,
-      subDepartment,
-      streetName,
-      buildingNumber,
-      buildingName,
-      floorNumber,
-      roomNumber,
-      postBox,
-      postalCode,
-      country,
-      countrySubdivision,
-      district,
-      township,
-      longitude,
-      latitude,
-      checkoutCounterDescription,
-    ] = formData.entries()
+    await waitFor(() => Promise.resolve())
 
-    expect(locationTypeInput.value).toEqual(locationType[1])
-    expect(websiteUrlInput.value).toEqual(websiteUrl[1])
-    expect(departmentInput.value).toEqual(department[1])
-    expect(subDepartmentInput.value).toEqual(subDepartment[1])
-    expect(streetNameInput.value).toEqual(streetName[1])
-    expect(buildingNumberInput.value).toEqual(buildingNumber[1])
-    expect(buildingNameInput.value).toEqual(buildingName[1])
-    expect(floorNumberInput.value).toEqual(floorNumber[1])
-    expect(roomNumberInput.value).toEqual(roomNumber[1])
-    expect(postBoxInput.value).toEqual(postBox[1])
-    expect(postalCodeInput.value).toEqual(postalCode[1])
-    expect(countryInput.value).toEqual(country[1])
-    expect(countrySubdivisionInput.value).toEqual(countrySubdivision[1])
-    expect(districtInput.value).toEqual(district[1])
-    expect(townshipInput.value).toEqual(township[1])
-    expect(longitudeInput.value).toEqual(longitude[1])
-    expect(latitudeInput.value).toEqual(latitude[1])
-    expect(checkoutCounterDescriptionInput.value).toEqual(checkoutCounterDescription[1])
+    expect(fn.mock.calls[0]).toEqual(['createLocationInfo'])
+  })
+
+  it('should call "updateLocationInfo.mutate" when it is a draft', async () => {
+    mockDraft.mockReturnValue({ data: hoistedValues.draft })
+    mockMerchantId.mockReturnValue(1)
+
+    render(
+      <TestWrapper>
+        <LocationInfoForm setActiveStep={mockSetActiveStep} />
+      </TestWrapper>
+    )
+
+    const submitButton: HTMLButtonElement = screen.getByText('Save and Proceed')
+    fireEvent.click(submitButton)
+
+    await waitFor(() => Promise.resolve())
+
+    expect(fn.mock.calls[0]).toEqual(['updateLocationInfo'])
+  })
+
+  it('should show an error toast when the merchantId is not found', async () => {
+    mockDraft.mockReturnValue({ data: hoistedValues.draft })
+    mockMerchantId.mockReturnValue(null)
+
+    render(
+      <TestWrapper>
+        <LocationInfoForm setActiveStep={mockSetActiveStep} />
+      </TestWrapper>
+    )
+
+    const submitButton: HTMLButtonElement = screen.getByText('Save and Proceed')
+    fireEvent.click(submitButton)
+
+    await waitFor(() => Promise.resolve())
+
+    expect(fn.mock.calls[0]).toEqual(['toast'])
   })
 })
 
