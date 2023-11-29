@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { vi } from 'vitest'
 
 import TestWrapper from '@/__tests__/TestWrapper'
@@ -37,11 +37,33 @@ const hoistedValues = vi.hoisted(() => ({
   },
 }))
 
+const fn = vi.fn()
+
+vi.mock('@chakra-ui/react', async () => {
+  const charaUI: object = await vi.importActual('@chakra-ui/react')
+
+  return {
+    ...charaUI,
+    useToast: () => {
+      return () => fn('toast')
+    },
+  }
+})
+
+const mockMerchantId = vi.fn()
+vi.mock('@/hooks', () => ({
+  useMerchantId: () => mockMerchantId(),
+}))
+
 const mockDraft = vi.fn()
 vi.mock('@/api/hooks/forms', () => ({
   useDraft: () => mockDraft(),
-  useCreateBusinessInfo: () => ({}),
-  useUpdateBusinessInfo: () => ({}),
+  useCreateBusinessInfo: () => ({
+    mutate: () => fn('create'),
+  }),
+  useUpdateBusinessInfo: () => ({
+    mutate: () => fn('update'),
+  }),
 }))
 
 const mockSetActiveStep = vi.fn()
@@ -178,8 +200,8 @@ describe('BusinessInfoForm', () => {
     expect(uploadFileButton).toEqual(document.activeElement)
   })
 
-  it('should have correct submitted values in onSubmit function', () => {
-    mockDraft.mockReturnValue({ data: hoistedValues.draft })
+  it('should call "createBusinessInfo.mutate" when it is not a draft', async () => {
+    mockDraft.mockReturnValue({ data: null })
 
     render(
       <TestWrapper>
@@ -188,45 +210,61 @@ describe('BusinessInfoForm', () => {
     )
 
     const dbaNameInput: HTMLInputElement = screen.getByLabelText(/Doing Business As Name/)
-    const registeredNameInput: HTMLInputElement = screen.getByLabelText(/Registered Name/)
     const numberOfEmployeeInput: HTMLSelectElement =
       screen.getByLabelText(/Number of Employee/)
-    const monthlyTurnOverInput: HTMLInputElement =
-      screen.getByLabelText(/Monthly Turn Over/)
     const merchantCategoryInput: HTMLSelectElement =
       screen.getByLabelText(/Merchant Category/)
     const merchantTypeInput: HTMLSelectElement = screen.getByLabelText(/Merchant Type/)
     const currencyInput: HTMLSelectElement = screen.getByLabelText(/Currency/)
-    const accountNumberInput: HTMLInputElement = screen.getByLabelText(/Account Number/)
-    const licenseNumberInput: HTMLInputElement = screen.getByLabelText(/License Number/)
     const submitButton: HTMLInputElement = screen.getByText('Save and Proceed')
-    const businessInfoForm: HTMLFormElement = screen.getByTestId('business-info-form')
 
-    fireEvent.submit(submitButton)
+    fireEvent.change(dbaNameInput, { target: { value: 'marco' } })
+    fireEvent.change(numberOfEmployeeInput, { target: { value: '6 - 10' } })
+    fireEvent.change(merchantCategoryInput, { target: { value: '10120' } })
+    fireEvent.change(merchantTypeInput, { target: { value: 'Small Shop' } })
+    fireEvent.change(currencyInput, { target: { value: 'ALL' } })
+    fireEvent.click(submitButton)
 
-    const formData = new FormData(businessInfoForm)
-    const [
-      dbaName,
-      registeredName,
-      numberOfEmployee,
-      monthlyTurnOver,
-      merchantCategory,
-      merchantType,
-      currency,
-      accountNumber,
-      haveBusinessLicnese,
-      licenseNumber,
-    ] = formData.entries()
+    await waitFor(() => Promise.resolve())
 
-    expect(dbaNameInput.value).toEqual(dbaName[1])
-    expect(registeredNameInput.value).toEqual(registeredName[1])
-    expect(numberOfEmployeeInput.value).toEqual(numberOfEmployee[1])
-    expect(monthlyTurnOverInput.value).toEqual(monthlyTurnOver[1])
-    expect(merchantCategoryInput.value).toEqual(merchantCategory[1])
-    expect(merchantTypeInput.value).toEqual(merchantType[1])
-    expect(currencyInput.value).toEqual(currency[1])
-    expect(accountNumberInput.value).toEqual(accountNumber[1])
-    expect(haveBusinessLicnese[1]).toEqual('yes')
-    expect(licenseNumberInput.value).toEqual(licenseNumber[1])
+    expect(fn.mock.calls[0]).toEqual(['create'])
+  })
+
+  it('should call "updateBusinessInfo.mutate" when it is a draft or reverted data', async () => {
+    mockDraft.mockReturnValue({
+      data: { ...hoistedValues.draft, registration_status: 'Reverted' },
+    })
+    mockMerchantId.mockReturnValue(1)
+
+    render(
+      <TestWrapper>
+        <BusinessInfoForm setActiveStep={mockSetActiveStep} />
+      </TestWrapper>
+    )
+
+    const submitButton: HTMLInputElement = screen.getByText('Save and Proceed')
+    fireEvent.click(submitButton)
+
+    await waitFor(() => Promise.resolve())
+
+    expect(fn.mock.calls[0]).toEqual(['update'])
+  })
+
+  it('should show an error toast when the merchantId is not found', async () => {
+    mockDraft.mockReturnValue({ data: hoistedValues.draft })
+    mockMerchantId.mockReturnValue(null)
+
+    render(
+      <TestWrapper>
+        <BusinessInfoForm setActiveStep={mockSetActiveStep} />
+      </TestWrapper>
+    )
+
+    const submitButton: HTMLInputElement = screen.getByText('Save and Proceed')
+    fireEvent.click(submitButton)
+
+    await waitFor(() => Promise.resolve())
+
+    expect(fn.mock.calls[0]).toEqual(['toast'])
   })
 })
