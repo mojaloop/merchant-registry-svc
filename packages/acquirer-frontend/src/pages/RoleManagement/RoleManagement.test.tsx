@@ -23,8 +23,6 @@ const hoistedValues = vi.hoisted(() => ({
     },
   ],
   permissions: [
-    'Access Create Merchant Form',
-    'Access Edit Merchant Form',
     'Approve Merchants',
     'Reject Merchants',
     'Revert Merchants',
@@ -32,8 +30,6 @@ const hoistedValues = vi.hoisted(() => ({
     'Create Merchants',
     'Edit Merchants',
     'Delete Merchants',
-    'View Pending Table',
-    'View Reverted Table',
     'Create Roles',
     'View Roles',
     'Edit Roles',

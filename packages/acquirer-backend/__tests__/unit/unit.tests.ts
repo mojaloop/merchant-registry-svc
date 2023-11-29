@@ -178,7 +178,7 @@ describe('Unit Tests', () => {
 
       it('should send 403 Forbidden with null user', () => {
         mockReq.user = undefined
-        const middleware = checkPermissions(PermissionsEnum.ACCESS_CREATE_MERCHANT_FORM)
+        const middleware = checkPermissions(PermissionsEnum.APPROVE_MERCHANTS)
         middleware(mockReq, mockRes, mockNext)
 
         expect(mockRes.status).toHaveBeenCalledWith(403)
@@ -190,17 +190,17 @@ describe('Unit Tests', () => {
 
       it('should call next for user with required permission', () => {
         const permission = new PortalPermissionEntity()
-        permission.name = PermissionsEnum.ACCESS_CREATE_MERCHANT_FORM
+        permission.name = PermissionsEnum.APPROVE_MERCHANTS
         user.role.permissions = [permission]
 
-        const middleware = checkPermissions(PermissionsEnum.ACCESS_CREATE_MERCHANT_FORM)
+        const middleware = checkPermissions(PermissionsEnum.APPROVE_MERCHANTS)
         middleware(mockReq, mockRes, mockNext)
         expect(mockNext).toHaveBeenCalled()
       })
 
       it('should send 403 for user with no permissions', () => {
         user.role = new PortalRoleEntity() // No permissions
-        const middleware = checkPermissions(PermissionsEnum.ACCESS_CREATE_MERCHANT_FORM)
+        const middleware = checkPermissions(PermissionsEnum.APPROVE_MERCHANTS)
         middleware(mockReq, mockRes, mockNext)
 
         expect(mockRes.status).toHaveBeenCalledWith(403)
@@ -212,7 +212,7 @@ describe('Unit Tests', () => {
 
       it('should send 403 for user without required permission', () => {
         const permission = new PortalPermissionEntity()
-        permission.name = PermissionsEnum.ACCESS_CREATE_MERCHANT_FORM
+        permission.name = PermissionsEnum.APPROVE_MERCHANTS
         user.role.permissions = [permission]
 
         const middleware = checkPermissions(PermissionsEnum.CREATE_DFSPS)
@@ -230,11 +230,11 @@ describe('Unit Tests', () => {
       it('should call next for user with one of the required permissions', () => {
         // Arrange
         const permission = new PortalPermissionEntity()
-        permission.name = PermissionsEnum.ACCESS_CREATE_MERCHANT_FORM
+        permission.name = PermissionsEnum.APPROVE_MERCHANTS
         user.role.permissions = [permission]
 
         // Act
-        const middleware = checkPermissionsOr([PermissionsEnum.ACCESS_CREATE_MERCHANT_FORM, PermissionsEnum.ACCESS_EDIT_MERCHANT_FORM])
+        const middleware = checkPermissionsOr([PermissionsEnum.APPROVE_MERCHANTS, PermissionsEnum.VIEW_MERCHANTS])
 
         // Assert
         middleware(mockReq, mockRes, mockNext)
@@ -247,7 +247,7 @@ describe('Unit Tests', () => {
         user.role = new PortalRoleEntity() // No permissions
 
         // Act
-        const middleware = checkPermissionsOr([PermissionsEnum.ACCESS_CREATE_MERCHANT_FORM])
+        const middleware = checkPermissionsOr([PermissionsEnum.APPROVE_MERCHANTS])
 
         // Assert
         middleware(mockReq, mockRes, mockNext)
@@ -260,7 +260,7 @@ describe('Unit Tests', () => {
 
       it('should send 403 for user without any of the required permissions', () => {
         const permission = new PortalPermissionEntity()
-        permission.name = PermissionsEnum.ACCESS_CREATE_MERCHANT_FORM
+        permission.name = PermissionsEnum.APPROVE_MERCHANTS
         user.role.permissions = [permission]
 
         const middleware = checkPermissionsOr([PermissionsEnum.CREATE_DFSPS, PermissionsEnum.VIEW_DFSPS])

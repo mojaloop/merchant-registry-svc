@@ -15,9 +15,6 @@ export const DefaultRoles = [
       PermissionsEnum.EDIT_PORTAL_USERS,
       PermissionsEnum.DELETE_PORTAL_USERS,
 
-      PermissionsEnum.ASSIGNABLE_ADMIN_ROLES,
-      PermissionsEnum.ASSIGNABLE_OPERATOR_ROLES,
-      PermissionsEnum.ASSIGNABLE_AUDITOR_ROLES,
 
       PermissionsEnum.CREATE_ROLES,
       PermissionsEnum.VIEW_ROLES,
@@ -32,8 +29,6 @@ export const DefaultRoles = [
     name: 'DFSP Super Admin',
     description: 'DFSP Super Admin Role',
     permissions: [
-      PermissionsEnum.ACCESS_CREATE_MERCHANT_FORM,
-      PermissionsEnum.ACCESS_EDIT_MERCHANT_FORM,
 
       PermissionsEnum.APPROVE_MERCHANTS,
       PermissionsEnum.REJECT_MERCHANTS,
@@ -44,15 +39,9 @@ export const DefaultRoles = [
       PermissionsEnum.EDIT_MERCHANTS,
       PermissionsEnum.DELETE_MERCHANTS,
 
-      PermissionsEnum.VIEW_PENDING_TABLE,
-      PermissionsEnum.VIEW_REVERTED_TABLE,
 
       PermissionsEnum.CREATE_ROLES, // TODO: Remove this permission when Hub User is ready.
       PermissionsEnum.VIEW_ROLES,
-
-      PermissionsEnum.ASSIGNABLE_ADMIN_ROLES,
-      PermissionsEnum.ASSIGNABLE_OPERATOR_ROLES,
-      PermissionsEnum.ASSIGNABLE_AUDITOR_ROLES,
 
       PermissionsEnum.CREATE_PORTAL_USERS,
       PermissionsEnum.VIEW_PORTAL_USERS,
@@ -68,8 +57,6 @@ export const DefaultRoles = [
     name: 'DFSP Admin',
     description: 'DFSP Admin Role',
     permissions: [
-      PermissionsEnum.ACCESS_CREATE_MERCHANT_FORM,
-      PermissionsEnum.ACCESS_EDIT_MERCHANT_FORM,
 
       PermissionsEnum.APPROVE_MERCHANTS,
       PermissionsEnum.REJECT_MERCHANTS,
@@ -80,9 +67,6 @@ export const DefaultRoles = [
       PermissionsEnum.EDIT_MERCHANTS,
       PermissionsEnum.DELETE_MERCHANTS,
 
-      PermissionsEnum.VIEW_PENDING_TABLE,
-      PermissionsEnum.VIEW_REVERTED_TABLE,
-
       PermissionsEnum.VIEW_ROLES,
 
       PermissionsEnum.VIEW_PORTAL_USERS,
@@ -90,8 +74,6 @@ export const DefaultRoles = [
       PermissionsEnum.EDIT_PORTAL_USERS,
       PermissionsEnum.DELETE_PORTAL_USERS,
 
-      PermissionsEnum.ASSIGNABLE_OPERATOR_ROLES,
-      PermissionsEnum.ASSIGNABLE_AUDITOR_ROLES,
 
       PermissionsEnum.VIEW_AUDIT_LOGS,
 
@@ -102,9 +84,6 @@ export const DefaultRoles = [
     name: 'DFSP Operator',
     description: 'DFSP Operator Role',
     permissions: [
-      PermissionsEnum.ACCESS_CREATE_MERCHANT_FORM,
-      PermissionsEnum.ACCESS_EDIT_MERCHANT_FORM,
-
       PermissionsEnum.APPROVE_MERCHANTS,
       PermissionsEnum.REJECT_MERCHANTS,
       PermissionsEnum.REVERT_MERCHANTS,
@@ -116,8 +95,6 @@ export const DefaultRoles = [
 
       PermissionsEnum.VIEW_PORTAL_USERS,
 
-      PermissionsEnum.VIEW_PENDING_TABLE,
-      PermissionsEnum.VIEW_REVERTED_TABLE,
 
       PermissionsEnum.EXPORT_MERCHANTS
     ]
@@ -127,9 +104,6 @@ export const DefaultRoles = [
     description: 'DFSP Auditor Role',
     permissions: [
       PermissionsEnum.VIEW_MERCHANTS,
-      PermissionsEnum.VIEW_PENDING_TABLE,
-      PermissionsEnum.VIEW_REVERTED_TABLE,
-
       PermissionsEnum.VIEW_PORTAL_USERS,
 
       PermissionsEnum.VIEW_AUDIT_LOGS
