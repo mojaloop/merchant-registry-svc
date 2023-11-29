@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { vi } from 'vitest'
 
 import TestWrapper from '@/__tests__/TestWrapper'
@@ -43,14 +43,36 @@ const hoistedValues = vi.hoisted(() => ({
   },
 }))
 
+const fn = vi.fn()
+
+vi.mock('@chakra-ui/react', async () => {
+  const charaUI: object = await vi.importActual('@chakra-ui/react')
+
+  return {
+    ...charaUI,
+    useToast: () => {
+      return () => fn('toast')
+    },
+  }
+})
+
+const mockMerchantId = vi.fn()
+vi.mock('@/hooks', () => ({
+  useMerchantId: () => mockMerchantId(),
+}))
+
 const mockDraft = vi.fn()
 vi.mock('@/api/hooks/forms', () => ({
   useCountries: () => ({ data: ['Australia'] }),
   useSubdivisions: () => ({ data: ['Western Australia'] }),
   useDistricts: () => ({ data: ['Perth'] }),
   useDraft: () => mockDraft(),
-  useCreateOwnerInfo: () => ({}),
-  useUpdateOwnerInfo: () => ({}),
+  useCreateOwnerInfo: () => ({
+    mutate: () => fn('createOwnerInfo'),
+  }),
+  useUpdateOwnerInfo: () => ({
+    mutate: () => fn('updateOwnerInfo'),
+  }),
 }))
 
 const mockSetActiveStep = vi.fn()
@@ -170,8 +192,9 @@ describe('OwnerInfoForm', () => {
     expect(districtInput.value).toEqual('')
   })
 
-  it('should have correct submitted values in onSubmit function', () => {
-    mockDraft.mockReturnValue({ data: hoistedValues.draft })
+  it('should call "createOwnerInfo.mutate" when it is not a draft', async () => {
+    mockDraft.mockReturnValue({ data: null })
+    mockMerchantId.mockReturnValue(1)
 
     render(
       <TestWrapper>
@@ -184,72 +207,52 @@ describe('OwnerInfoForm', () => {
     const identificationNumberInput: HTMLInputElement =
       screen.getByLabelText(/Identification Number/)
     const phoneNumberInput: HTMLInputElement = screen.getByLabelText(/Phone Number/)
-    const emailInput: HTMLInputElement = screen.getByLabelText('Email')
-    const departmentInput: HTMLInputElement = screen.getByLabelText('Department')
-    const subDepartmentInput: HTMLInputElement = screen.getByLabelText('Sub Department')
-    const streetNameInput: HTMLInputElement = screen.getByLabelText('Street Name')
-    const buildingNumberInput: HTMLInputElement = screen.getByLabelText('Building Number')
-    const buildingNameInput: HTMLInputElement = screen.getByLabelText('Building Name')
-    const floorNumberInput: HTMLInputElement = screen.getByLabelText('Floor Number')
-    const roomNumberInput: HTMLInputElement = screen.getByLabelText('Room Number')
-    const postBoxInput: HTMLInputElement = screen.getByLabelText('Post Box')
-    const postalCodeInput: HTMLInputElement = screen.getByLabelText('Postal Code')
-    const countryInput: HTMLSelectElement = screen.getByLabelText('Country')
-    const countrySubdivisionInput: HTMLSelectElement = screen.getByLabelText(
-      'Country Subdivision (State/Divison)'
-    )
-    const districtInput: HTMLSelectElement = screen.getByLabelText('District')
-    const townshipInput: HTMLInputElement = screen.getByLabelText('Township')
-    const longitudeInput: HTMLInputElement = screen.getByLabelText('Longitude')
-    const latitudeInput: HTMLInputElement = screen.getByLabelText('Latitude')
     const submitButton: HTMLButtonElement = screen.getByText('Save and Proceed')
-    const locationInfoForm: HTMLFormElement = screen.getByTestId('owner-info-form')
 
-    fireEvent.submit(submitButton)
+    fireEvent.change(nameInput, { target: { value: 'John' } })
+    fireEvent.change(idTypeInput, { target: { value: 'Passport' } })
+    fireEvent.change(identificationNumberInput, { target: { value: '30291' } })
+    fireEvent.change(phoneNumberInput, { target: { value: '932-555-4213' } })
+    fireEvent.click(submitButton)
 
-    const formData = new FormData(locationInfoForm)
-    const [
-      name,
-      idType,
-      identificationNumber,
-      phoneNumber,
-      email,
-      department,
-      subDepartment,
-      streetName,
-      buildingNumber,
-      buildingName,
-      floorNumber,
-      roomNumber,
-      postBox,
-      postalCode,
-      country,
-      countrySubdivision,
-      district,
-      township,
-      longitude,
-      latitude,
-    ] = formData.entries()
+    await waitFor(() => Promise.resolve())
 
-    expect(nameInput.value).toEqual(name[1])
-    expect(idTypeInput.value).toEqual(idType[1])
-    expect(identificationNumberInput.value).toEqual(identificationNumber[1])
-    expect(phoneNumberInput.value).toEqual(phoneNumber[1])
-    expect(emailInput.value).toEqual(email[1])
-    expect(departmentInput.value).toEqual(department[1])
-    expect(subDepartmentInput.value).toEqual(subDepartment[1])
-    expect(streetNameInput.value).toEqual(streetName[1])
-    expect(buildingNumberInput.value).toEqual(buildingNumber[1])
-    expect(buildingNameInput.value).toEqual(buildingName[1])
-    expect(floorNumberInput.value).toEqual(floorNumber[1])
-    expect(roomNumberInput.value).toEqual(roomNumber[1])
-    expect(postBoxInput.value).toEqual(postBox[1])
-    expect(postalCodeInput.value).toEqual(postalCode[1])
-    expect(countryInput.value).toEqual(country[1])
-    expect(countrySubdivisionInput.value).toEqual(countrySubdivision[1])
-    expect(districtInput.value).toEqual(district[1])
-    expect(townshipInput.value).toEqual(township[1])
-    expect(longitudeInput.value).toEqual(longitude[1])
-    expect(latitudeInput.value).toEqual(latitude[1])
+    expect(fn.mock.calls[0]).toEqual(['createOwnerInfo'])
+  })
+
+  it('should call "updateOwnerInfo.mutate" when it is a draft', async () => {
+    mockDraft.mockReturnValue({ data: hoistedValues.draft })
+    mockMerchantId.mockReturnValue(1)
+
+    render(
+      <TestWrapper>
+        <OwnerInfoForm setActiveStep={mockSetActiveStep} />
+      </TestWrapper>
+    )
+
+    const submitButton: HTMLButtonElement = screen.getByText('Save and Proceed')
+    fireEvent.click(submitButton)
+
+    await waitFor(() => Promise.resolve())
+
+    expect(fn.mock.calls[0]).toEqual(['updateOwnerInfo'])
+  })
+
+  it('should show an error toast when the merchantId is not found', async () => {
+    mockDraft.mockReturnValue({ data: hoistedValues.draft })
+    mockMerchantId.mockReturnValue(null)
+
+    render(
+      <TestWrapper>
+        <OwnerInfoForm setActiveStep={mockSetActiveStep} />
+      </TestWrapper>
+    )
+
+    const submitButton: HTMLButtonElement = screen.getByText('Save and Proceed')
+    fireEvent.click(submitButton)
+
+    await waitFor(() => Promise.resolve())
+
+    expect(fn.mock.calls[0]).toEqual(['toast'])
   })
 })
