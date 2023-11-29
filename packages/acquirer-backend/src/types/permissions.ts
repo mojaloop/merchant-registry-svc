@@ -1,8 +1,4 @@
 export enum PermissionsEnum {
-
-  ACCESS_CREATE_MERCHANT_FORM = 'Access Create Merchant Form',
-  ACCESS_EDIT_MERCHANT_FORM = 'Access Edit Merchant Form',
-
   APPROVE_MERCHANTS = 'Approve Merchants',
   REJECT_MERCHANTS = 'Reject Merchants',
   REVERT_MERCHANTS = 'Revert Merchants',
@@ -12,16 +8,9 @@ export enum PermissionsEnum {
   EDIT_MERCHANTS = 'Edit Merchants',
   DELETE_MERCHANTS = 'Delete Merchants',
 
-  VIEW_PENDING_TABLE = 'View Pending Table',
-  VIEW_REVERTED_TABLE = 'View Reverted Table',
-
   CREATE_ROLES = 'Create Roles',
   VIEW_ROLES = 'View Roles',
   EDIT_ROLES = 'Edit Roles',
-
-  ASSIGNABLE_ADMIN_ROLES = 'Assignable Admin Roles',
-  ASSIGNABLE_OPERATOR_ROLES = 'Assignable Operator Roles',
-  ASSIGNABLE_AUDITOR_ROLES = 'Assignable Auditor Roles',
 
   CREATE_PORTAL_USERS = 'Create Portal Users',
   VIEW_PORTAL_USERS = 'View Portal Users',
@@ -38,5 +27,4 @@ export enum PermissionsEnum {
   CREATE_DFSPS = 'Create DFSPs',
   EDIT_DFSPS = 'Edit DFSPs',
   DELETE_DFSPS = 'Delete DFSPs',
-
 }

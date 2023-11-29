@@ -92,9 +92,9 @@ export function testPostRolecreate (app: Application): void {
         name: 'test_role',
         description: 'test description',
         permissions: [
-          PermissionsEnum.ACCESS_CREATE_MERCHANT_FORM,
+          PermissionsEnum.CREATE_MERCHANTS,
           'invalid_permission',
-          PermissionsEnum.ACCESS_CREATE_MERCHANT_FORM
+          PermissionsEnum.CREATE_MERCHANTS
         ]
       })
     expect(res.statusCode).toEqual(400)
@@ -109,8 +109,8 @@ export function testPostRolecreate (app: Application): void {
         name: DefaultRoles[0].name,
         description: 'test description',
         permissions: [
-          PermissionsEnum.ACCESS_EDIT_MERCHANT_FORM,
-          PermissionsEnum.ACCESS_CREATE_MERCHANT_FORM
+          PermissionsEnum.CREATE_MERCHANTS,
+          PermissionsEnum.EDIT_MERCHANTS
         ]
       })
     expect(res.statusCode).toEqual(400)
@@ -125,8 +125,8 @@ export function testPostRolecreate (app: Application): void {
         name: 'new_test_role',
         description: 'test description',
         permissions: [
-          PermissionsEnum.ACCESS_EDIT_MERCHANT_FORM,
-          PermissionsEnum.ACCESS_CREATE_MERCHANT_FORM
+          PermissionsEnum.CREATE_MERCHANTS,
+          PermissionsEnum.EDIT_MERCHANTS
         ]
       })
     expect(res.statusCode).toEqual(201)
