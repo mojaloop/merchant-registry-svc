@@ -4,6 +4,8 @@ import { AppDataSource } from '../../database/dataSource'
 import logger from '../../services/logger'
 import { type AuthRequest } from 'src/types/express'
 import { DFSPEntity } from '../../entity/DFSPEntity'
+import { AuditActionType, AuditTrasactionStatus } from 'shared-lib'
+import { audit } from '../../utils/audit'
 
 /**
  * @openapi
@@ -50,9 +52,25 @@ export async function getDFSPs (req: AuthRequest, res: Response) {
 
     const dfsps = await DFSPRepository.find()
 
+    await audit(
+      AuditActionType.ACCESS,
+      AuditTrasactionStatus.SUCCESS,
+      'getDFSPs',
+      'GET DFSP List',
+      'DFSPEntity',
+      {}, {}, portalUser
+    )
     res.send({ message: 'OK', data: dfsps })
   } catch (e) /* istanbul ignore next */ {
     logger.error(e)
+    await audit(
+      AuditActionType.ACCESS,
+      AuditTrasactionStatus.FAILURE,
+      'getDFSPs',
+      'Failed to get DFSP List',
+      'DFSPEntity',
+      {}, {}, portalUser
+    )
     res.status(500).send({ message: e })
   }
 }

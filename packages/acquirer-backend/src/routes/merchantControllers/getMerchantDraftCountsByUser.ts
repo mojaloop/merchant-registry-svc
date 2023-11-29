@@ -61,7 +61,7 @@ export async function getMerchantDraftCountsByUser (req: AuthRequest, res: Respo
       AuditTrasactionStatus.SUCCESS,
       'getMerchantDraftCountsByUser',
       `User ${portalUser.email} successfully retrieved merchant draft counts`,
-      'Merchants',
+      'MerchantEntity',
       {}, {}, portalUser
     )
     return res.send({ message: 'OK', data: merchantDraftCountsByUser })
@@ -71,7 +71,7 @@ export async function getMerchantDraftCountsByUser (req: AuthRequest, res: Respo
       AuditTrasactionStatus.FAILURE,
       'getMerchantDraftCountsByUser',
       `Error: ${JSON.stringify(e)}`,
-      'Merchants',
+      'MerchantEntity',
       { }, { e }, portalUser
     )
     logger.error(e)

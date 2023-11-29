@@ -59,7 +59,7 @@ export async function getMerchantLocations (req: AuthRequest, res: Response) {
       AuditTrasactionStatus.FAILURE,
       'getMerchantLocations',
       `Invalid merchant id: ${req.params.id} `,
-      'Merchant',
+      'MerchantEntity',
       {}, {}, portalUser
     )
     res.status(400).send({ message: 'Invalid ID' })
@@ -83,7 +83,7 @@ export async function getMerchantLocations (req: AuthRequest, res: Response) {
         AuditTrasactionStatus.FAILURE,
         'getMerchantLocations',
         `Merchant Not Found: ${req.params.id}`,
-        'Merchant',
+        'MerchantEntity',
         {}, {}, portalUser
       )
       res.status(404).send({ message: 'Merchant not found' })
@@ -115,7 +115,7 @@ trying to access unauthorized(different DFSP) merchant ${merchant.id}`,
       'getMerchantLocations',
       `User ${portalUser.id} with email ${portalUser.email} \
 retrieved locations for merchant ${merchant.id}`,
-      'Merchant',
+      'MerchantEntity',
       {}, {}, portalUser
     )
     const locations = merchant.locations
@@ -126,7 +126,7 @@ retrieved locations for merchant ${merchant.id}`,
       AuditTrasactionStatus.FAILURE,
       'getMerchantLocations',
       `Error: ${JSON.stringify(e)}`,
-      'Merchant',
+      'MerchantEntity',
       {}, { e }, portalUser
     )
     logger.error(e)

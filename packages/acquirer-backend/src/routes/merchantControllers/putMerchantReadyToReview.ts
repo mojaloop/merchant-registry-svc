@@ -136,7 +136,7 @@ export async function putMerchantStatusReadyToReview (req: AuthRequest, res: Res
       AuditTrasactionStatus.SUCCESS,
       'putMerchantStatusReadyToReview',
       'Updating Merchant Status to \'Review\' Successful',
-      'Merchant',
+      'MerchantEntity',
       { registration_status: MerchantRegistrationStatus.DRAFT },
       { registration_status: MerchantRegistrationStatus.REVIEW },
       portalUser

@@ -243,7 +243,7 @@ trying to access unauthorized(different DFSP) merchant ${merchant.id}`,
     AuditTrasactionStatus.SUCCESS,
     'putMerchantDraft',
     'Updating Merchant Draft Successful',
-    'Merchant',
+    'MerchantEntity',
     oldMerchant, { ...merchantData, business_licenses: [] }, portalUser
   )
   return res.status(200).send({ message: 'Updating Merchant Draft Successful', data: merchantData })

@@ -60,7 +60,7 @@ export async function getMerchantCheckoutCounters (req: AuthRequest, res: Respon
       AuditTrasactionStatus.FAILURE,
       'getMerchantCheckoutCounters',
       `Invalid merchant id: ${req.params.id}`,
-      'Merchants',
+      'MerchantEntity',
       {}, {}, portalUser
     )
     res.status(400).send({ message: 'Invalid merchant id' })
@@ -84,7 +84,7 @@ export async function getMerchantCheckoutCounters (req: AuthRequest, res: Respon
         AuditTrasactionStatus.FAILURE,
         'getMerchantCheckoutCounters',
         `Merchant not found: ${req.params.id}`,
-        'Merchants',
+        'MerchantEntity',
         {}, {}, portalUser
       )
       res.status(404).send({ message: 'Merchant not found' })
@@ -117,7 +117,7 @@ trying to access unauthorized(different DFSP) merchant ${merchant.id}`,
       'getMerchantCheckoutCounters',
       `User ${portalUser.id} with email ${portalUser.email} \
 successfully fetched checkout counters for merchant ${merchant.id}`,
-      'Merchants',
+      'MerchantEntity',
       {}, {}, portalUser
     )
     res.send({ message: 'OK', data: checkoutCounters })
@@ -128,7 +128,7 @@ successfully fetched checkout counters for merchant ${merchant.id}`,
       'getMerchantCheckoutCounters',
       `User ${portalUser.id} with email ${portalUser.email} \
 failed to fetch checkout counters for merchant ${req.params.id}`,
-      'Merchants',
+      'MerchantEntity',
       {}, {}, portalUser
     )
     logger.error(e)

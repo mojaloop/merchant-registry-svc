@@ -160,7 +160,7 @@ trying to access unauthorized(different DFSP) merchant ${merchant.id}`,
   await audit(
     AuditActionType.ACCESS,
     AuditTrasactionStatus.SUCCESS,
-    'exportMerchantIdsXlsx',
+    'getMerchantExportIdsXlsx',
     `User ${portalUser.id} (${portalUser.email}) exported ${merchants.length} merchants`,
     'MerchantEntity',
     {}, { merchant_ids: merchants.map(m => m.id) }, portalUser

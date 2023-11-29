@@ -7,8 +7,9 @@ import { merchantsToXlsxWorkbook } from '../../utils/merchantsToXlsxWorkbook'
 import { PortalUserEntity } from '../../entity/PortalUserEntity'
 import { CheckoutCounterEntity } from '../../entity/CheckoutCounterEntity'
 import { isValidDate } from '../../utils/utils'
-import { type MerchantRegistrationStatus } from 'shared-lib'
+import { AuditActionType, AuditTrasactionStatus, type MerchantRegistrationStatus } from 'shared-lib'
 import { type AuthRequest } from 'src/types/express'
+import { audit } from '../../utils/audit'
 
 /**
  * @openapi
@@ -203,6 +204,15 @@ export async function exportMerchantFilterXlsx (req: AuthRequest, res: Response)
   const workbook = await merchantsToXlsxWorkbook(merchants)
 
   const buffer = await workbook.xlsx.writeBuffer()
+
+  await audit(
+    AuditActionType.ACCESS,
+    AuditTrasactionStatus.SUCCESS,
+    'getMerchantExportFilterXlsx',
+    `User ${portalUser.id} (${portalUser.email}) exported ${merchants.length} merchants`,
+    'MerchantEntity',
+    {}, { merchant_ids: merchants.map(m => m.id) }, portalUser
+  )
 
   res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
   res.setHeader('Content-Disposition', 'attachment; filename=merchants.xlsx')

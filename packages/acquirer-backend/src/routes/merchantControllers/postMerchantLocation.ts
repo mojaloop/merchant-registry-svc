@@ -125,7 +125,7 @@ export async function postMerchantLocation (req: AuthRequest, res: Response) {
       AuditTrasactionStatus.FAILURE,
       'postMerchantLocation',
       `Invalid ID: ${req.params.id}`,
-      'Merchant',
+      'MerchantEntity',
       {}, {}, portalUser
     )
     res.status(422).send({ message: 'Invalid ID' })
@@ -145,7 +145,7 @@ export async function postMerchantLocation (req: AuthRequest, res: Response) {
         AuditTrasactionStatus.FAILURE,
         'postMerchantLocation',
         'Merchant Location Validation error',
-        'Merchant',
+        'MerchantEntity',
         {}, locationData, portalUser
       )
       return res.status(422).send({ message: err.issues.map(issue => issue.message) })
@@ -170,7 +170,7 @@ export async function postMerchantLocation (req: AuthRequest, res: Response) {
       AuditTrasactionStatus.FAILURE,
       'postMerchantLocation',
       `Merchant not found: ${req.params.id}`,
-      'Merchant',
+      'MerchantEntity',
       {}, locationData, portalUser
     )
     return res.status(404).json({ message: 'Merchant not found' })
@@ -211,7 +211,7 @@ trying to access unauthorized(different DFSP) merchant ${merchant.id}`,
         AuditTrasactionStatus.FAILURE,
         'postMerchantLocation',
         'Query Failed',
-        'Merchant',
+        'MerchantEntity',
         {}, newLocation, portalUser
       )
       return res.status(500).send({ message: err.message })
@@ -248,7 +248,7 @@ trying to access unauthorized(different DFSP) merchant ${merchant.id}`,
         AuditTrasactionStatus.FAILURE,
         'postMerchantLocation',
         'Query Failed',
-        'Merchant',
+        'MerchantEntity',
         {}, locationData, portalUser
       )
       return res.status(500).send({ message: err.message })
@@ -264,7 +264,7 @@ trying to access unauthorized(different DFSP) merchant ${merchant.id}`,
     AuditTrasactionStatus.SUCCESS,
     'postMerchantLocation',
     'Merchant Location Saved',
-    'Merchant',
+    'MerchantEntity',
     {}, savedLocation ?? {}, portalUser
   )
   return res.status(201).send({ message: 'Merchant Location Saved', data: savedLocation })
