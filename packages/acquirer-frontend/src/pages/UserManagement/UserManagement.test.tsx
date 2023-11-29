@@ -29,6 +29,10 @@ vi.mock('@/api/hooks/users', () => ({
 }))
 
 describe('UserManagement', () => {
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
+
   it('should render table skeleton when users data is loading', () => {
     mockUsers.mockReturnValue({
       data: null,

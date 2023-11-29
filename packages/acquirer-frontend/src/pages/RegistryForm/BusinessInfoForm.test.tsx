@@ -47,6 +47,10 @@ vi.mock('@/api/hooks/forms', () => ({
 const mockSetActiveStep = vi.fn()
 
 describe('BusinessInfoForm', () => {
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
+
   it('should render "Document is already uploaded." text when license document exists', () => {
     mockDraft.mockReturnValue({ data: hoistedValues.draft })
 

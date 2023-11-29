@@ -13,6 +13,10 @@ vi.mock('@/api/hooks/forms', () => ({
 }))
 
 describe('ReviewModal', () => {
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
+
   it('should render skeleton when the draft is loading', () => {
     mockDraft.mockReturnValue({ isLoading: true })
 
@@ -38,6 +42,7 @@ describe('ReviewModal', () => {
   })
 
   it('should call "changeStatusToReview.mutate" function when "Submit" button is clicked', () => {
+    mockDraft.mockReturnValue({ isLoading: false })
     const chageStatusSpy = vi.spyOn(vi, 'fn')
 
     render(

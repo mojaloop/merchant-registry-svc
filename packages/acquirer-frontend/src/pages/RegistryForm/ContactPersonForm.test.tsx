@@ -41,6 +41,10 @@ vi.mock('@/api/hooks/forms', () => ({
 const mockSetActiveStep = vi.fn()
 
 describe('ContactPersonForm', () => {
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
+
   it('should focus the first input which has an error when the validation fails', async () => {
     mockDraft.mockReturnValue({ data: null })
 

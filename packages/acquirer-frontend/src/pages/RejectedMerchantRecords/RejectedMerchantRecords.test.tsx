@@ -48,6 +48,10 @@ vi.mock('@/utils', () => ({
 }))
 
 describe('RejectedMerchantRecords', () => {
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
+
   it('should render form skeleton when users data is loading', () => {
     mockUsers.mockReturnValue({ data: null, isLoading: true })
     mockRejectedMerchants.mockReturnValue({

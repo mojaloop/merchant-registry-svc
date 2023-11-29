@@ -12,6 +12,10 @@ vi.mock('@/api/hooks/auth', () => ({
 }))
 
 describe('SetPassword', () => {
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
+
   it('should render the correct password visibility toggle icon', () => {
     render(
       <TestWrapper>

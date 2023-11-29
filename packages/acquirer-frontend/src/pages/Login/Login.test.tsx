@@ -12,6 +12,10 @@ vi.mock('@/api/hooks/auth', () => ({
 }))
 
 describe('Login', () => {
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
+
   it('should render the correct password toggle icon', () => {
     render(
       <TestWrapper>
