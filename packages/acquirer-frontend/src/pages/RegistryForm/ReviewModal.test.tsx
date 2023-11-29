@@ -1,6 +1,7 @@
-import TestWrapper from '@/__tests__/TestWrapper'
 import { fireEvent, render, screen } from '@testing-library/react'
 import { vi } from 'vitest'
+
+import TestWrapper from '@/__tests__/TestWrapper'
 import ReviewModal from './ReviewModal'
 
 const mockDraft = vi.fn()

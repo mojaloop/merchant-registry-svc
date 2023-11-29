@@ -1,11 +1,10 @@
 import { z } from 'zod'
-
 import {
+  BusinessOwnerIDType,
   CurrencyCodes,
-  NumberOfEmployees,
   MerchantLocationType,
   MerchantType,
-  BusinessOwnerIDType,
+  NumberOfEmployees,
 } from 'shared-lib'
 
 export type BusinessInfoForm = z.infer<typeof businessInfoSchema>

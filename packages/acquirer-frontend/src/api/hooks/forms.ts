@@ -1,15 +1,15 @@
 import { useNavigate } from 'react-router-dom'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { isAxiosError } from 'axios'
 import { useToast } from '@chakra-ui/react'
+import { isAxiosError } from 'axios'
 
+import { FALLBACK_ERROR_MESSAGE } from '@/constants/errorMessage'
 import type {
   BusinessInfoForm,
   ContactPersonForm,
   LocationInfoForm,
   OwnerInfoForm,
 } from '@/lib/validations/registry'
-import { FALLBACK_ERROR_MESSAGE } from '@/constants/errorMessage'
 import { scrollToTop } from '@/utils'
 import {
   changeStatusToReview,

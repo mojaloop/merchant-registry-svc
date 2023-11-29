@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react'
 import { Box, Heading, Stack, useToast } from '@chakra-ui/react'
-import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useForm } from 'react-hook-form'
 import { BusinessOwnerIDType } from 'shared-lib'
 
-import { type OwnerInfoForm, ownerInfoSchema } from '@/lib/validations/registry'
+import { ownerInfoSchema, type OwnerInfoForm } from '@/lib/validations/registry'
 import {
   useCountries,
   useCreateOwnerInfo,

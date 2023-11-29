@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { isAxiosError } from 'axios'
 import { useToast } from '@chakra-ui/react'
+import { isAxiosError } from 'axios'
 
 import { FALLBACK_ERROR_MESSAGE } from '@/constants/errorMessage'
 import { createUser, getUserProfile, getUsers } from '../users'

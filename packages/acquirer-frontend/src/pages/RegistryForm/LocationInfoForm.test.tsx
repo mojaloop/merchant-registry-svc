@@ -1,5 +1,5 @@
-import { vi } from 'vitest'
 import { fireEvent, render, screen } from '@testing-library/react'
+import { vi } from 'vitest'
 
 import TestWrapper from '@/__tests__/TestWrapper'
 import LocationInfoForm, { removePropFromObj } from './LocationInfoForm'

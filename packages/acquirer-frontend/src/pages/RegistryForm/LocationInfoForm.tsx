@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react'
 import { Box, Heading, Stack, useToast } from '@chakra-ui/react'
-import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useForm } from 'react-hook-form'
 import { MerchantLocationType } from 'shared-lib'
 
-import { type LocationInfoForm, locationInfoSchema } from '@/lib/validations/registry'
+import { locationInfoSchema, type LocationInfoForm } from '@/lib/validations/registry'
 import {
   useCountries,
   useCreateLocationInfo,

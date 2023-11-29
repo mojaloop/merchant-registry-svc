@@ -1,14 +1,14 @@
 import { useNavigate } from 'react-router-dom'
 import { useMutation } from '@tanstack/react-query'
-import { isAxiosError } from 'axios'
 import { useToast } from '@chakra-ui/react'
+import { isAxiosError } from 'axios'
 
+import { FALLBACK_ERROR_MESSAGE } from '@/constants/errorMessage'
 import {
   NAV_ITEMS,
   RESTRICTED_ROUTE_NAMES,
   useNavItems,
 } from '@/contexts/NavItemsContext'
-import { FALLBACK_ERROR_MESSAGE } from '@/constants/errorMessage'
 import { login, logout, setPassword } from '../auth'
 import { getUserProfile } from '../users'
 
@@ -57,7 +57,6 @@ export function useLogin() {
     },
   })
 }
-
 
 export function useLogout() {
   const navigate = useNavigate()

@@ -1,14 +1,14 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { isAxiosError } from 'axios'
 import { useToast } from '@chakra-ui/react'
+import { isAxiosError } from 'axios'
 import { MerchantRegistrationStatus } from 'shared-lib'
 
 import type { MerchantDetails } from '@/types/merchantDetails'
 import type { MerchantInfo } from '@/types/merchants'
 import type { PaginationParams } from '@/types/pagination'
+import { FALLBACK_ERROR_MESSAGE } from '@/constants/errorMessage'
 import type { AllMerchantsFilterForm } from '@/lib/validations/allMerchantsFilter'
 import type { MerchantsFilterForm } from '@/lib/validations/merchantsFilter'
-import { FALLBACK_ERROR_MESSAGE } from '@/constants/errorMessage'
 import {
   approveMerchants,
   exportMerchants,

@@ -4,18 +4,18 @@ import {
   Flex,
   Heading,
   IconButton,
-  type IconButtonProps,
   Image,
   Stack,
   Text,
   VStack,
+  type IconButtonProps,
 } from '@chakra-ui/react'
-import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useForm } from 'react-hook-form'
 import { AiFillEye, AiFillEyeInvisible } from 'react-icons/ai'
 
 import mojaloopLogo from '@/assets/mojaloop-logo.png'
-import { type SetPasswordForm, setPasswordSchema } from '@/lib/validations/setPassword'
+import { setPasswordSchema, type SetPasswordForm } from '@/lib/validations/setPassword'
 import { useSetPassword } from '@/api/hooks/auth'
 import { CustomButton } from '@/components/ui'
 import { FormInput } from '@/components/form'
@@ -127,14 +127,14 @@ const SetPassword = () => {
 
               {isConfirmPasswordShown ? (
                 <IconButton
-                  aria-label='Hide password'
+                  aria-label='Hide confirm password'
                   icon={<AiFillEyeInvisible />}
                   onClick={() => setIsConfirmPasswordShown(false)}
                   {...iconButtonProps}
                 />
               ) : (
                 <IconButton
-                  aria-label='Show password'
+                  aria-label='Show confirm password'
                   icon={<AiFillEye />}
                   onClick={() => setIsConfirmPasswordShown(true)}
                   {...iconButtonProps}

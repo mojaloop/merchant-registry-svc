@@ -1,14 +1,14 @@
 import { useState } from 'react'
 import {
+  getCoreRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  useReactTable,
   type ColumnDef,
   type OnChangeFn,
   type PaginationState,
   type SortingState,
   type TableOptions,
-  getCoreRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  useReactTable,
 } from '@tanstack/react-table'
 
 interface UseTableProps<T> {

@@ -2,12 +2,12 @@ import { flexRender, type Table as TableType } from '@tanstack/react-table'
 import {
   Table,
   TableContainer,
-  type TableContainerProps,
   Tbody,
   Td,
   Th,
   Thead,
   Tr,
+  type TableContainerProps,
   type TableRowProps,
 } from '@chakra-ui/react'
 

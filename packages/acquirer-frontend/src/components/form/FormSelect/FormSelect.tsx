@@ -1,9 +1,9 @@
 import {
   FormControl,
-  type FormControlProps,
   FormErrorMessage,
   FormLabel,
   Select,
+  type FormControlProps,
   type SelectProps,
 } from '@chakra-ui/react'
 import type { FieldErrors, FieldValues, Path, UseFormRegister } from 'react-hook-form'

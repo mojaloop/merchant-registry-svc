@@ -2,29 +2,29 @@ import { useMemo, useState } from 'react'
 import { createColumnHelper, type PaginationState } from '@tanstack/react-table'
 import {
   Box,
-  HStack,
   Heading,
+  HStack,
   SimpleGrid,
   Stack,
   Text,
   useDisclosure,
 } from '@chakra-ui/react'
-import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useForm } from 'react-hook-form'
 import { MerchantRegistrationStatus } from 'shared-lib'
 
 import type { MerchantInfo } from '@/types/merchants'
 import {
-  type AllMerchantsFilterForm,
-  allMerchantsFilterSchema,
-} from '@/lib/validations/allMerchantsFilter'
-import { useAllMerchants, useExportMerchants } from '@/api/hooks/merchants'
-import { useUsers } from '@/api/hooks/users'
-import {
   REGISTRATION_STATUS_COLORS,
   type RegistrationStatus,
 } from '@/constants/registrationStatus'
+import {
+  allMerchantsFilterSchema,
+  type AllMerchantsFilterForm,
+} from '@/lib/validations/allMerchantsFilter'
 import { downloadMerchantsBlobAsXlsx } from '@/utils'
+import { useAllMerchants, useExportMerchants } from '@/api/hooks/merchants'
+import { useUsers } from '@/api/hooks/users'
 import { useTable } from '@/hooks'
 import {
   CustomButton,

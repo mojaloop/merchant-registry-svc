@@ -3,22 +3,22 @@ import { NavLink } from 'react-router-dom'
 import {
   Box,
   Flex,
-  HStack,
   Heading,
+  HStack,
   IconButton,
-  type IconButtonProps,
   Image,
   Link,
   Stack,
   Text,
   VStack,
+  type IconButtonProps,
 } from '@chakra-ui/react'
-import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useForm } from 'react-hook-form'
 import { AiFillEye, AiFillEyeInvisible } from 'react-icons/ai'
 
 import mojaloopLogo from '@/assets/mojaloop-logo.png'
-import { type LoginForm, loginSchema } from '@/lib/validations/login'
+import { loginSchema, type LoginForm } from '@/lib/validations/login'
 import { useLogin } from '@/api/hooks/auth'
 import { CustomButton } from '@/components/ui'
 import { FormInput } from '@/components/form'

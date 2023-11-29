@@ -1,9 +1,9 @@
-import { Box, HStack, Heading, Stack } from '@chakra-ui/react'
-import { useForm } from 'react-hook-form'
+import { Box, Heading, HStack, Stack } from '@chakra-ui/react'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useForm } from 'react-hook-form'
 
 import type { Role } from '@/types/roles'
-import { type AddNewUserForm, addNewUserSchema } from '@/lib/validations/addNewUser'
+import { addNewUserSchema, type AddNewUserForm } from '@/lib/validations/addNewUser'
 import { useRoles } from '@/api/hooks/roles'
 import { useCreateUser, useUserProfile } from '@/api/hooks/users'
 import { CustomButton, Skeleton } from '@/components/ui'

@@ -1,7 +1,7 @@
 import type { MerchantDetails } from '@/types/merchantDetails'
 import instance from '@/lib/axiosInstance'
-import type { MerchantsFilterForm } from '@/lib/validations/merchantsFilter'
 import type { AllMerchantsFilterForm } from '@/lib/validations/allMerchantsFilter'
+import type { MerchantsFilterForm } from '@/lib/validations/merchantsFilter'
 
 export async function getMerchants(params: AllMerchantsFilterForm | MerchantsFilterForm) {
   const response = await instance.get<{ data: MerchantDetails[]; totalPages: number }>(

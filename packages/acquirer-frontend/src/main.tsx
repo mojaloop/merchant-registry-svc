@@ -3,16 +3,17 @@ import ReactDOM from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
 import { QueryCache, QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
-import { isAxiosError } from 'axios'
 import {
   ChakraProvider,
-  type UseToastOptions,
   createStandaloneToast,
+  type UseToastOptions,
 } from '@chakra-ui/react'
+import { isAxiosError } from 'axios'
 
 import theme from '@/theme'
 import { DrawerDisclosureProvider, NavItemsProvider } from '@/contexts'
 import App from './App.tsx'
+
 import './index.css'
 
 const { ToastContainer, toast } = createStandaloneToast(theme)

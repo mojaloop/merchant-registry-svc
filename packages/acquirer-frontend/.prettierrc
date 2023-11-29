@@ -5,5 +5,32 @@
   "semi": false,
   "printWidth": 90,
   "jsxSingleQuote": true,
-  "arrowParens": "avoid"
+  "arrowParens": "avoid",
+  "importOrder": [
+    "^react$",
+    "^react-dom/client",
+    "^react-router-dom",
+    "^(@tanstack/(.*)$)|^(@tanstack$)",
+    "^(@chakra-ui/(.*)$)|^(@chakra-ui$)",
+    "<THIRD_PARTY_MODULES>",
+    "shared-lib",
+    "",
+    "^@/types(.*)$",
+    "^@/assets(.*)$",
+    "^@/theme(.*)$",
+    "^@/routes(.*)$",
+    "^@/constants(.*)$",
+    "^@/lib(.*)$",
+    "^@/utils(.*)$",
+    "^@/api(.*)$",
+    "^@/contexts(.*)$",
+    "^@/hooks(.*)$",
+    "^@/components/ui(.*)$",
+    "^@/components/form(.*)$",
+    "^@/components/layout(.*)$",
+    "^@/pages",
+    "^@/__tests__(.*)$",
+    "^[./]"
+  ],
+  "plugins": ["@ianvs/prettier-plugin-sort-imports"]
 }
