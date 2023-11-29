@@ -242,7 +242,7 @@ export async function getMerchants (req: AuthRequest, res: Response) {
       AuditTrasactionStatus.SUCCESS,
       'getMerchants',
       `User ${portalUser.id} with email ${portalUser.email} retrieved merchants`,
-      'Merchants',
+      'MerchantEntity',
       {}, { queryParams: req.query }, portalUser
     )
 
@@ -255,7 +255,7 @@ export async function getMerchants (req: AuthRequest, res: Response) {
       AuditTrasactionStatus.FAILURE,
       'getMerchants',
       `Error: ${JSON.stringify(e)}`,
-      'Merchants',
+      'MerchantEntity',
       {}, { e }, portalUser
     )
     res.status(500).send({ message: e })

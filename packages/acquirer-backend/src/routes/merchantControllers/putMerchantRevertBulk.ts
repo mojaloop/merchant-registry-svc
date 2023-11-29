@@ -60,7 +60,7 @@ export async function putBulkRevert (req: AuthRequest, res: Response) {
       AuditTrasactionStatus.FAILURE,
       'putBulkRevert',
       'Reason is required',
-      'Merchant',
+      'MerchantEntity',
       {}, {}, portalUser
     )
     return res.status(422).send({ message: 'Reason is required' })
@@ -92,7 +92,7 @@ export async function putBulkRevert (req: AuthRequest, res: Response) {
         AuditTrasactionStatus.FAILURE,
         'putBulkRevert',
         'ID must be a valid ID number',
-        'Merchant',
+        'MerchantEntity',
         {}, {}, portalUser
       )
 
@@ -135,7 +135,7 @@ trying to access unauthorized(different DFSP) merchant ${merchant.id}`,
         AuditTrasactionStatus.FAILURE,
         'putBulkRevert',
         'Merchant is not in Review Status',
-        'Merchant',
+        'MerchantEntity',
         {}, {}, portalUser
       )
       return res.status(422).send({
@@ -150,7 +150,7 @@ trying to access unauthorized(different DFSP) merchant ${merchant.id}`,
         AuditTrasactionStatus.FAILURE,
         'putBulkRevert',
         'Merchant cannot be reverted by the same user who submitted it',
-        'Merchant',
+        'MerchantEntity',
         {}, {}, portalUser
       )
       return res.status(422).send({
@@ -176,7 +176,7 @@ trying to access unauthorized(different DFSP) merchant ${merchant.id}`,
       AuditTrasactionStatus.SUCCESS,
       'putBulkReject',
       'Status Updated to Reverted Status',
-      'Merchant',
+      'MerchantEntity',
       {}, {}, portalUser
     )
     res.status(200).send({
@@ -189,7 +189,7 @@ trying to access unauthorized(different DFSP) merchant ${merchant.id}`,
       AuditTrasactionStatus.FAILURE,
       'putBulkReject',
       'Status Update Failed',
-      'Merchant',
+      'MerchantEntity',
       {}, {}, portalUser
     )
     res.status(500).send({ message: e })

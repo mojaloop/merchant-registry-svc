@@ -80,7 +80,7 @@ export async function postMerchantContactPerson (req: AuthRequest, res: Response
       AuditTrasactionStatus.FAILURE,
       'postMerchantContactPerson',
       `Invalid ID: ${req.params.id}`,
-      'Merchant',
+      'MerchantEntity',
       {}, {}, null
     )
     res.status(422).send({ message: 'Invalid ID' })
@@ -108,7 +108,7 @@ export async function postMerchantContactPerson (req: AuthRequest, res: Response
       AuditTrasactionStatus.FAILURE,
       'postMerchantContactPerson',
       `Merchant not found: ${req.params.id}`,
-      'Merchant',
+      'MerchantEntity',
       {}, {}, portalUser
     )
 
@@ -155,7 +155,7 @@ trying to access unauthorized(different DFSP) merchant ${merchant.id}`,
         AuditTrasactionStatus.FAILURE,
         'postMerchantContactPerson',
         `Business Owner not found: ${req.params.id}`,
-        'Merchant',
+        'MerchantEntity',
         {}, {}, portalUser
       )
 
@@ -181,7 +181,7 @@ trying to access unauthorized(different DFSP) merchant ${merchant.id}`,
           AuditTrasactionStatus.FAILURE,
           'postMerchantContactPerson',
           'Contact Person Validation error',
-          'Merchant',
+          'MerchantEntity',
           {}, contactPersonData, portalUser
         )
         return res.status(422).send({ message: err.issues.map(issue => issue.message) })
@@ -205,7 +205,7 @@ trying to access unauthorized(different DFSP) merchant ${merchant.id}`,
         AuditTrasactionStatus.FAILURE,
         'postMerchantContactPerson',
         'Contact Person Server Query error',
-        'Merchant',
+        'MerchantEntity',
         {}, { ...newContactPerson, merchant: undefined }, portalUser
       )
       return res.status(422).send({ message: err.message })
@@ -217,7 +217,7 @@ trying to access unauthorized(different DFSP) merchant ${merchant.id}`,
     AuditTrasactionStatus.SUCCESS,
     'postMerchantContactPerson',
     'Contact Person Saved',
-    'Merchant',
+    'MerchantEntity',
     {}, { ...savedContactPerson, merchant: undefined } ?? {}, portalUser
   )
 

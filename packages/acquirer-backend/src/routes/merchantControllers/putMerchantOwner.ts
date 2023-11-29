@@ -152,10 +152,10 @@ export async function putMerchantOwner (req: AuthRequest, res: Response) {
     await audit(
       AuditActionType.ACCESS,
       AuditTrasactionStatus.FAILURE,
-      'putMerchantContactPerson',
+      'putMerchantOwner',
           `User ${portalUser.id} (${portalUser.email}) 
 trying to access unauthorized(different DFSP) merchant ${merchant.id}`,
-          'MerchantEntity',
+          'BusinessOwnerEntity',
           {}, {}, portalUser
     )
     return res.status(400).send({
@@ -225,9 +225,9 @@ trying to access unauthorized(different DFSP) merchant ${merchant.id}`,
   await audit(
     AuditActionType.UPDATE,
     AuditTrasactionStatus.SUCCESS,
-    'putMerchantContactPerson',
-    'Contact Person Updated',
-    'ContactPerson',
+    'putMerchantOwner',
+    'Update Business Owner Successful',
+    'BusinessOwnerEntity',
     oldBusinessOwner, newBusinessOwnerData, portalUser
   )
   return res.status(200).send({

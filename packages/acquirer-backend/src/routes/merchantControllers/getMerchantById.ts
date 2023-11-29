@@ -53,7 +53,7 @@ export async function getMerchantById (req: AuthRequest, res: Response) {
         AuditTrasactionStatus.FAILURE,
         'getMerchantById',
         `Invalid ID: ${req.params.id}`,
-        'Merchants',
+        'MerchantEntity',
         {}, {}, portalUser
       )
       res.status(422).send({ message: 'Invalid ID' })
