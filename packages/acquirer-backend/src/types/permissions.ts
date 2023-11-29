@@ -1,6 +1,4 @@
 export enum PermissionsEnum {
-
-
   APPROVE_MERCHANTS = 'Approve Merchants',
   REJECT_MERCHANTS = 'Reject Merchants',
   REVERT_MERCHANTS = 'Revert Merchants',
@@ -9,7 +7,6 @@ export enum PermissionsEnum {
   CREATE_MERCHANTS = 'Create Merchants',
   EDIT_MERCHANTS = 'Edit Merchants',
   DELETE_MERCHANTS = 'Delete Merchants',
-
 
   CREATE_ROLES = 'Create Roles',
   VIEW_ROLES = 'View Roles',
@@ -30,5 +27,4 @@ export enum PermissionsEnum {
   CREATE_DFSPS = 'Create DFSPs',
   EDIT_DFSPS = 'Edit DFSPs',
   DELETE_DFSPS = 'Delete DFSPs',
-
 }
