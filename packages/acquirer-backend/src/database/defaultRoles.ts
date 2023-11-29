@@ -15,7 +15,6 @@ export const DefaultRoles = [
       PermissionsEnum.EDIT_PORTAL_USERS,
       PermissionsEnum.DELETE_PORTAL_USERS,
 
-
       PermissionsEnum.CREATE_ROLES,
       PermissionsEnum.VIEW_ROLES,
       PermissionsEnum.EDIT_ROLES,
@@ -29,7 +28,6 @@ export const DefaultRoles = [
     name: 'DFSP Super Admin',
     description: 'DFSP Super Admin Role',
     permissions: [
-
       PermissionsEnum.APPROVE_MERCHANTS,
       PermissionsEnum.REJECT_MERCHANTS,
       PermissionsEnum.REVERT_MERCHANTS,
@@ -38,7 +36,6 @@ export const DefaultRoles = [
       PermissionsEnum.CREATE_MERCHANTS,
       PermissionsEnum.EDIT_MERCHANTS,
       PermissionsEnum.DELETE_MERCHANTS,
-
 
       PermissionsEnum.CREATE_ROLES, // TODO: Remove this permission when Hub User is ready.
       PermissionsEnum.VIEW_ROLES,
@@ -57,7 +54,6 @@ export const DefaultRoles = [
     name: 'DFSP Admin',
     description: 'DFSP Admin Role',
     permissions: [
-
       PermissionsEnum.APPROVE_MERCHANTS,
       PermissionsEnum.REJECT_MERCHANTS,
       PermissionsEnum.REVERT_MERCHANTS,
@@ -73,7 +69,6 @@ export const DefaultRoles = [
       PermissionsEnum.CREATE_PORTAL_USERS,
       PermissionsEnum.EDIT_PORTAL_USERS,
       PermissionsEnum.DELETE_PORTAL_USERS,
-
 
       PermissionsEnum.VIEW_AUDIT_LOGS,
 
@@ -94,7 +89,6 @@ export const DefaultRoles = [
       PermissionsEnum.DELETE_MERCHANTS,
 
       PermissionsEnum.VIEW_PORTAL_USERS,
-
 
       PermissionsEnum.EXPORT_MERCHANTS
     ]
