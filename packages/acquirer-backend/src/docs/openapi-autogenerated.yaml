@@ -13,13 +13,80 @@ components:
       bearerFormat: JWT
       value: Bearer <JWT token here>
 paths:
-  /audits:
+  /audits/hub:
     get:
       tags:
         - Audits
       security:
         - Authorization: []
-      summary: GET Audit Logs
+      summary: GET Audit Logs Relating to Hub Actions
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+          description: The page number
+          minimum: 1
+          example: 1
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            minimum: 1
+          description: The number of items per page
+        - in: query
+          name: actionType
+          schema:
+            type: string
+            enum:
+              - UnauthorizedAccess
+              - Access
+              - Add
+              - Update
+              - Delete
+          description: The action type
+        - in: query
+          name: portalUserId
+          schema:
+            type: integer
+          description: The ID of the user who did on the action
+        - in: query
+          name: transactionStatus
+          schema:
+            type: string
+            enum:
+              - Success
+              - Failure
+          description: The transaction status Success or Failure
+        - in: query
+          name: applicationModule
+          schema:
+            type: string
+          description: The application module
+      responses:
+        '200':
+          description: GET Audit Logs
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: The response message
+                    example: OK
+                  data:
+                    type: array
+                    description: The list of audit logs
+                    items:
+                      type: object
+  /audits/merchant:
+    get:
+      tags:
+        - Audits
+      security:
+        - Authorization: []
+      summary: GET Audit Logs Relating to Merchant Actions
       parameters:
         - in: query
           name: page
@@ -70,7 +137,7 @@ paths:
           description: The entity name
       responses:
         '200':
-          description: GET Audit Logs
+          description: GET Audit Logs Relating to Merchant Actions
           content:
             application/json:
               schema:

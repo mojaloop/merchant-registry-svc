@@ -4,12 +4,18 @@ import { type Application } from 'express'
 import { DefaultHubUsers } from '../../src/database/defaultUsers'
 import { DefaultRoles } from '../../src/database/defaultRoles'
 import { PermissionsEnum } from '../../src/types/permissions'
+import { AppDataSource } from '../../src/database/dataSource'
+import { PortalPermissionEntity } from '../../src/entity/PortalPermissionEntity'
+import { PortalRoleEntity } from '../../src/entity/PortalRoleEntity'
 
-export function testPostRolecreate (app: Application): void {
+export function testPostRoleCreate (app: Application): void {
   let hubUserToken = ''
 
   const hubUserEmail = DefaultHubUsers[0].email
   const hubUserPwd = DefaultHubUsers[0].password
+
+  let hubUserRole: PortalRoleEntity
+  let createRolePermission: PortalPermissionEntity
 
   beforeAll(async () => {
     const res = await request(app)
@@ -19,6 +25,11 @@ export function testPostRolecreate (app: Application): void {
         password: hubUserPwd
       })
     hubUserToken = res.body.token
+
+    hubUserRole = await AppDataSource.manager.findOneOrFail(PortalRoleEntity, { where: { name: DefaultHubUsers[0].role }, relations: ['permissions'] })
+    createRolePermission = await AppDataSource.manager.findOneOrFail(PortalPermissionEntity, { where: { name: PermissionsEnum.CREATE_ROLES } })
+    hubUserRole.permissions.push(createRolePermission)
+    await AppDataSource.manager.save(hubUserRole)
   })
 
   it('should respond with 401 when Authorization header is missing', async () => {
@@ -33,6 +44,29 @@ export function testPostRolecreate (app: Application): void {
       .set('Authorization', 'Bearer invalid_token')
     expect(res.statusCode).toEqual(401)
     expect(res.body.message).toEqual('Authorization Failed')
+  })
+
+  it('should respond with 403 when user does not have required permissions', async () => {
+    // Arrange - remove CREATE_ROLES permission from hubUser
+    hubUserRole.permissions = hubUserRole.permissions.filter(p => p.id !== createRolePermission.id)
+    await AppDataSource.manager.save(hubUserRole)
+
+    // Act
+    const res = await request(app)
+      .post('/api/v1/roles')
+      .set('Authorization', `Bearer ${hubUserToken}`)
+      .send({
+        name: 'test_role',
+        description: 'test description',
+        permissions: ['test_permission']
+      })
+
+    expect(res.statusCode).toEqual(403)
+    expect(res.body.message).toEqual('Forbidden. \'Create Roles\' permission is required.')
+
+    // Restore CREATE_ROLES permission to hubUser
+    hubUserRole.permissions.push(createRolePermission)
+    await AppDataSource.manager.save(hubUserRole)
   })
 
   it('should respond with 400 when name field is missing', async () => {

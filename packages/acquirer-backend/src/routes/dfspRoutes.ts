@@ -3,7 +3,7 @@ import express from 'express'
 import { checkPermissions } from '../middleware/checkPermissions'
 import { PermissionsEnum } from '../types/permissions'
 import { authenticateJWT } from '../middleware/authenticate'
-import { checkUserUserType } from '../middleware/checkUserType'
+import { checkPortalUserType } from '../middleware/checkUserType'
 import { PortalUserType } from 'shared-lib'
 import { getDFSPs } from './dfspControllers/getDFSP'
 import { postCreateDFSP } from './dfspControllers/postCreateDFSP'
@@ -13,21 +13,21 @@ const router = express.Router()
 router.get('/dfsps',
   authenticateJWT,
   checkPermissions(PermissionsEnum.VIEW_DFSPS),
-  checkUserUserType(PortalUserType.HUB), // Only Hub Admin can view DFSPs
+  checkPortalUserType(PortalUserType.HUB), // Only Hub Admin can view DFSPs
   getDFSPs
 )
 
 router.post('/dfsps',
   authenticateJWT,
   checkPermissions(PermissionsEnum.CREATE_DFSPS),
-  checkUserUserType(PortalUserType.HUB), // Only Hub Admin can create DFSPs
+  checkPortalUserType(PortalUserType.HUB), // Only Hub Admin can create DFSPs
   postCreateDFSP
 )
 
 router.post('/dfsps/:id/client-access-key',
   authenticateJWT,
   checkPermissions(PermissionsEnum.EDIT_DFSPS),
-  checkUserUserType(PortalUserType.HUB), // Only Hub Admin can create DFSPs
+  checkPortalUserType(PortalUserType.HUB), // Only Hub Admin can create DFSPs
   createClientAccessKey
 )
 

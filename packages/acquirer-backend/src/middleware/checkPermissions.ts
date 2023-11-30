@@ -1,7 +1,7 @@
 import { type Response, type NextFunction } from 'express'
 import { type PortalUserEntity } from 'src/entity/PortalUserEntity'
 import { type AuthRequest } from 'src/types/express'
-import { type PermissionsEnum } from 'src/types/permissions'
+import { PermissionsEnum } from '../types/permissions'
 
 export const checkPermissions = (requiredPermission: PermissionsEnum) => {
   return (req: AuthRequest, res: Response, next: NextFunction) => {
@@ -16,6 +16,10 @@ export const checkPermissions = (requiredPermission: PermissionsEnum) => {
     )
 
     if (!hasPermission) {
+      if (requiredPermission === PermissionsEnum.EDIT_ROLES) {
+        console.log('checkPermissions: user.role.permissions: ', user.role.permissions)
+        console.log('user:', user)
+      }
       return res.status(403).json({
         message:
         `Forbidden. '${requiredPermission}' permission is required.`

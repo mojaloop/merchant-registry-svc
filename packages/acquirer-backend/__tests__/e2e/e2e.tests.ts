@@ -21,7 +21,7 @@ import { testPutMerchantStatusApprove } from './PutMerchantApproveStatus.tests'
 import { testPutMerchantRejectStatus } from './PutMerchantRejectStatus.tests'
 import { testPutMerchantRevertStatus } from './PutMerchantRevertStatus.tests'
 import { testGetUserProfile } from './GetUserProfile.tests'
-import { testGetAudits } from './GetAudits.tests'
+import { testGetMerchantAudits } from './GetMerchantAudits.tests'
 import { testGETMerchantXlsxWorkbook } from './MerchantXlsxWorkbook.tests'
 import { testPutConfigTraceLevel } from './PutConfigTraceLevel.tests'
 import { testGetCountries } from './GetCountries.tests'
@@ -41,7 +41,7 @@ import { testPostUserRefreshToken } from './PutUserRefreshToken.tests'
 import { testPostMerchantContactPerson } from './PostMerchantContactPerson.tests'
 import { testPostMerchantOwner } from './PostMerchantOwner.tests'
 import { testPutMerchantDraft } from './PutMerchantDraft.tests'
-import { testPostRolecreate } from './PostRoleCreate.tests'
+import { testPostRoleCreate } from './PostRoleCreate.tests'
 import { testPutRoleUpdatePermissions } from './PutRoleUpdatePermissions.tests'
 import { testPutMerchantOwner } from './PutMerchantOwner.tests'
 import { testPutMerchantContactPerson } from './PutMerchantContactPerson.tests'
@@ -172,7 +172,7 @@ describe('E2E API Tests', () => {
   })
 
   describe('GET Audits API Tests', () => {
-    testGetAudits(app)
+    testGetMerchantAudits(app)
   })
 
   describe('GET Users List API Tests', () => {
@@ -212,7 +212,7 @@ describe('E2E API Tests', () => {
   })
 
   describe('POST Roles Create API Tests', () => {
-    testPostRolecreate(app)
+    testPostRoleCreate(app)
   })
 
   describe('PUT Roles Update Permissions API Tests', () => {

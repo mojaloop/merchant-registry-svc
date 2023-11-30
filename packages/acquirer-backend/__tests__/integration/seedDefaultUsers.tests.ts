@@ -2,7 +2,7 @@
 import path from 'path'
 import { DataSource } from 'typeorm'
 import { DefaultDFSPUsers, DefaultHubUsers } from '../../src/database/defaultUsers'
-import { seedDefaultRoles, seedDefaultUsers, seedDFSPs } from '../../src/database/initDatabase'
+import { seedDefaultRoles, seedAllDefaultUsers, seedDFSPs } from '../../src/database/initDatabase'
 import { DFSPEntity } from '../../src/entity/DFSPEntity'
 import { PortalRoleEntity } from '../../src/entity/PortalRoleEntity'
 import { PortalUserEntity } from '../../src/entity/PortalUserEntity'
@@ -31,7 +31,7 @@ export function seedDefaultUsersTests (): void {
     await AppDataSource.manager.delete(PortalRoleEntity, { name: DefaultHubUsers[0].role }) // Deleting role to ensure it does not exist
 
     // Act & Assert
-    await expect(seedDefaultUsers(AppDataSource)).rejects.toThrowError(new Error(
+    await expect(seedAllDefaultUsers(AppDataSource)).rejects.toThrowError(new Error(
       `Role '${DefaultHubUsers[0].role}' not found for seeding with '${DefaultHubUsers[0].email}'.`
     ))
 
@@ -46,7 +46,7 @@ export function seedDefaultUsersTests (): void {
     await AppDataSource.manager.clear(PortalRoleEntity) // Clearing roles to ensure none exists
 
     // Act & Assert
-    await expect(seedDefaultUsers(AppDataSource)).rejects.toThrowError(new Error(
+    await expect(seedAllDefaultUsers(AppDataSource)).rejects.toThrowError(new Error(
       `Role '${DefaultDFSPUsers[0].role}' not found for seeding with '${DefaultDFSPUsers[0].email}'.`
     ))
 
@@ -60,7 +60,7 @@ export function seedDefaultUsersTests (): void {
     await seedDefaultRoles(AppDataSource)
 
     // Act & Assert
-    await expect(seedDefaultUsers(AppDataSource)).rejects.toThrowError(
+    await expect(seedAllDefaultUsers(AppDataSource)).rejects.toThrowError(
       new Error(`DFSP '${DefaultDFSPUsers[0].dfsp_name}' not found for seeding with '${DefaultDFSPUsers[0].email}'.`)
     )
 
@@ -76,7 +76,7 @@ export function seedDefaultUsersTests (): void {
     await seedDFSPs(AppDataSource)
 
     // Act
-    await seedDefaultUsers(AppDataSource)
+    await seedAllDefaultUsers(AppDataSource)
 
     // Assert
     const usersCountInDB = await AppDataSource.manager.count(PortalUserEntity)
@@ -94,8 +94,8 @@ export function seedDefaultUsersTests (): void {
     await seedDefaultRoles(AppDataSource)
     await seedDFSPs(AppDataSource)
 
-    await seedDefaultUsers(AppDataSource)
-    await seedDefaultUsers(AppDataSource)
+    await seedAllDefaultUsers(AppDataSource)
+    await seedAllDefaultUsers(AppDataSource)
 
     const usersCountInDB = await AppDataSource.manager.count(PortalUserEntity)
     expect(usersCountInDB).toBe(DefaultHubUsers.length + DefaultDFSPUsers.length)

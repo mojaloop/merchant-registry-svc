@@ -3,7 +3,7 @@ import { type PortalUserType } from 'shared-lib'
 import { type PortalUserEntity } from 'src/entity/PortalUserEntity'
 import { type AuthRequest } from 'src/types/express'
 
-export const checkUserUserType = (requiredUserType: PortalUserType) => {
+export const checkPortalUserType = (requiredUserType: PortalUserType) => {
   return (req: AuthRequest, res: Response, next: NextFunction) => {
     const user = req.user as PortalUserEntity
 

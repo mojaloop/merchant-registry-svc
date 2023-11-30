@@ -18,7 +18,7 @@ export function transformIntoTableData(auditLogResponse: AuditLogResponse): Audi
 
 export async function getAuditLogs(params: AuditLogParams & PaginationParams) {
   const response = await instance.get<{ data: AuditLogResponse[]; totalPages: number }>(
-    '/audits',
+    '/audits/merchant',
     { params }
   )
 

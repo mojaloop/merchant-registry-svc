@@ -11,6 +11,7 @@ import { putUserResetPassword } from './userControllers/putUserResetPassword'
 import { getUserProfile } from './userControllers/getUserProfile'
 import { postUserRefresh } from './userControllers/refreshUserToken'
 import { postUserLogout } from './userControllers/postUserLogout'
+import { checkUserCreationPermission } from '../middleware/checkUserCreationPermission'
 
 /**
  * @openapi
@@ -36,6 +37,7 @@ router.get('/users',
 router.post('/users/add',
   authenticateJWT,
   checkPermissions(PermissionsEnum.CREATE_PORTAL_USERS),
+  checkUserCreationPermission(),
   addUser
 )
 

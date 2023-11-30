@@ -2,7 +2,6 @@ import { AppDataSource } from './dataSource'
 import fs from 'fs'
 import path from 'path'
 import logger from '../services/logger'
-import 'dotenv/config'
 import {
   CurrencyCodes, CurrencyDescriptions,
   MerchantCategoryCodes,
@@ -23,6 +22,9 @@ import { CountryEntity } from '../entity/CountryEntity'
 import { CountrySubdivisionEntity } from '../entity/CountrySubdivisionEntity'
 import { DistrictEntity } from '../entity/DistrictEntity'
 import { type DataSource } from 'typeorm'
+import { readEnv } from '../setup/readEnv'
+
+const SEED_DEFAULT_DFSP_USERS = readEnv('SEED_DEFAULT_DFSP_USERS', 'false') === 'true'
 
 export const initializeDatabase = async (): Promise<void> => {
   logger.info('Connecting MySQL database...')
@@ -39,7 +41,12 @@ export const initializeDatabase = async (): Promise<void> => {
 
       await seedDefaultPermissions(AppDataSource)
       await seedDefaultRoles(AppDataSource)
-      await seedDefaultUsers(AppDataSource)
+
+      if (SEED_DEFAULT_DFSP_USERS) {
+        await seedDefaultDFSPUsers(AppDataSource)
+      }
+
+      await seedDefaultHubUsers(AppDataSource)
 
       /* istanbul ignore next */
       if (process.env.NODE_ENV !== 'test') {
@@ -55,11 +62,11 @@ export const initializeDatabase = async (): Promise<void> => {
     })
 }
 
-export async function seedCategoryCode (AppDataSource: DataSource, merchantCategoryData: Record<string, string>): Promise<void> {
+export async function seedCategoryCode (appDataSource: DataSource, merchantCategoryData: Record<string, string>): Promise<void> {
   // skip if already seeded by checking size
   // TODO: Is there a better way?
   logger.info('Seeding Merchant Category Codes...')
-  const alreadySeedSize = await AppDataSource.manager.count(MerchantCategoryEntity)
+  const alreadySeedSize = await appDataSource.manager.count(MerchantCategoryEntity)
   if (Object.keys(merchantCategoryData).length <= alreadySeedSize) {
     logger.info('Merchant Category Codes already seeded. Skipping...')
     return
@@ -72,15 +79,15 @@ export async function seedCategoryCode (AppDataSource: DataSource, merchantCateg
     category.description = merchantCategoryData[categoryCode]
     categories.push(category)
   }
-  await AppDataSource.manager.save(categories)
+  await appDataSource.manager.save(categories)
   logger.info('Seeding Merchant Category Codes... Done')
 }
 
-export async function seedCurrency (AppDataSource: DataSource): Promise<void> {
+export async function seedCurrency (appDataSource: DataSource): Promise<void> {
   // skip if already seeded by checking size
   // TODO: Is there a better way?
   logger.info('Seeding Currency Codes...')
-  const alreadySeedSize = await AppDataSource.manager.count(CurrencyEntity)
+  const alreadySeedSize = await appDataSource.manager.count(CurrencyEntity)
   if (Object.keys(CurrencyCodes).length <= alreadySeedSize) {
     logger.info('Currency Codes already seeded. Skipping...')
     return
@@ -90,15 +97,15 @@ export async function seedCurrency (AppDataSource: DataSource): Promise<void> {
     const currency = new CurrencyEntity()
     currency.iso_code = CurrencyCodes[currencyCode as keyof typeof CurrencyCodes]
     currency.description = CurrencyDescriptions[currencyCode as keyof typeof CurrencyDescriptions]
-    await AppDataSource.manager.save(currency)
+    await appDataSource.manager.save(currency)
   }
   logger.info('Seeding Currency Codes... Done')
 }
 
-export async function seedDFSPs (AppDataSource: DataSource): Promise<void> {
+export async function seedDFSPs (appDataSource: DataSource): Promise<void> {
   logger.info('Seeding Default DFSPs...')
   for (const dfsp of DefaultDFSPs) {
-    const dfspEntity = await AppDataSource.manager.findOne(
+    const dfspEntity = await appDataSource.manager.findOne(
       DFSPEntity,
       { where: { name: dfsp.name } }
     )
@@ -111,17 +118,17 @@ export async function seedDFSPs (AppDataSource: DataSource): Promise<void> {
       newDFSP.joined_date = dfsp.joined_date
       newDFSP.activated = dfsp.activated
       newDFSP.logo_uri = dfsp.logo_uri
-      await AppDataSource.manager.save(newDFSP)
+      await appDataSource.manager.save(newDFSP)
     }
   }
   logger.info('Seeding Default DFSPs... Done')
 }
 
-export async function seedDefaultPermissions (AppDataSource: DataSource): Promise<void> {
+export async function seedDefaultPermissions (appDataSource: DataSource): Promise<void> {
   logger.info('Seeding Default Permissions...')
   for (const key of Object.keys(PermissionsEnum)) {
     const permission = PermissionsEnum[key as keyof typeof PermissionsEnum]
-    let permissionEntity = await AppDataSource.manager.findOne(
+    let permissionEntity = await appDataSource.manager.findOne(
       PortalPermissionEntity,
       { where: { name: permission } }
     )
@@ -130,22 +137,22 @@ export async function seedDefaultPermissions (AppDataSource: DataSource): Promis
       permissionEntity = new PortalPermissionEntity()
       permissionEntity.name = permission
       permissionEntity.description = permission
-      await AppDataSource.manager.save(permissionEntity)
+      await appDataSource.manager.save(permissionEntity)
     }
   }
   logger.info('Seeding Default Permissions... Done')
 }
 
-export async function seedDefaultRoles (AppDataSource: DataSource): Promise<void> {
+export async function seedDefaultRoles (appDataSource: DataSource): Promise<void> {
   logger.info('Seeding Default Roles...')
-  const permissions = await AppDataSource.manager.find(PortalPermissionEntity)
+  const permissions = await appDataSource.manager.find(PortalPermissionEntity)
 
   for (const role of DefaultRoles) {
     const filteredPermissions = permissions.filter(permission =>
       role.permissions.includes(permission.name as unknown as PermissionsEnum)
     )
 
-    const roleEntity = await AppDataSource.manager.findOne(
+    const roleEntity = await appDataSource.manager.findOne(
       PortalRoleEntity,
       { where: { name: role.name } }
     )
@@ -155,21 +162,26 @@ export async function seedDefaultRoles (AppDataSource: DataSource): Promise<void
       newRole.name = role.name
       newRole.description = role.name
       newRole.permissions = filteredPermissions
-      await AppDataSource.manager.save(newRole)
+      await appDataSource.manager.save(newRole)
     }
   }
   logger.info('Seeding Default Roles... Done')
 }
 
-export async function seedDefaultUsers (AppDataSource: DataSource): Promise<void> {
-  logger.info('Seeding Default Users...')
+export async function seedAllDefaultUsers (appDataSource: DataSource): Promise<void> {
+  await seedDefaultDFSPUsers(appDataSource)
+  await seedDefaultHubUsers(appDataSource)
+}
 
-  const roles = await AppDataSource.manager.find(PortalRoleEntity)
+export async function seedDefaultDFSPUsers (appDataSource: DataSource): Promise<void> {
+  logger.info('Seeding Default DFSP Users...')
 
-  const dfsps = await AppDataSource.manager.find(DFSPEntity)
+  const roles = await appDataSource.manager.find(PortalRoleEntity)
+
+  const dfsps = await appDataSource.manager.find(DFSPEntity)
 
   for (const user of DefaultDFSPUsers) {
-    const userEntity = await AppDataSource.manager.findOne(
+    const userEntity = await appDataSource.manager.findOne(
       PortalUserEntity,
       { where: { email: user.email } }
     )
@@ -194,14 +206,20 @@ export async function seedDefaultUsers (AppDataSource: DataSource): Promise<void
       newUser.status = PortalUserStatus.ACTIVE
       newUser.role = newUserRole
       newUser.dfsp = newUserDFSP
-      await AppDataSource.manager.save(newUser)
+      await appDataSource.manager.save(newUser)
     } else {
       logger.info(`User ${user.email} already seeded. Skipping...`)
     }
   }
+}
+
+export async function seedDefaultHubUsers (appDataSource: DataSource): Promise<void> {
+  logger.info('Seeding Default Hub Users...')
+
+  const roles = await appDataSource.manager.find(PortalRoleEntity)
 
   for (const user of DefaultHubUsers) {
-    const userEntity = await AppDataSource.manager.findOne(
+    const userEntity = await appDataSource.manager.findOne(
       PortalUserEntity,
       { where: { email: user.email } }
     )
@@ -220,7 +238,7 @@ export async function seedDefaultUsers (AppDataSource: DataSource): Promise<void
       newUser.user_type = PortalUserType.HUB
       newUser.status = PortalUserStatus.ACTIVE
       newUser.role = newUserRole
-      await AppDataSource.manager.save(newUser)
+      await appDataSource.manager.save(newUser)
     } else {
       logger.info(`User ${user.email} already seeded. Skipping...`)
     }
@@ -241,16 +259,16 @@ export interface CountryData {
 }
 
 export async function seedCountriesSubdivisionsDistricts (
-  AppDataSource: DataSource,
+  appDataSource: DataSource,
   filePath: string): Promise<void> {
   logger.warn('Seeding Countries, Subdivisions, Districts... please wait...')
 
   const rawData = fs.readFileSync(filePath, 'utf-8')
   const seedData: CountryData[] = JSON.parse(rawData)
 
-  await AppDataSource.manager.clear(DistrictEntity)
+  await appDataSource.manager.clear(DistrictEntity)
   for (const countryData of seedData) {
-    let country = await AppDataSource.manager.findOne(
+    let country = await appDataSource.manager.findOne(
       CountryEntity, { where: { name: countryData.name } }
     )
 
@@ -258,11 +276,11 @@ export async function seedCountriesSubdivisionsDistricts (
       country = new CountryEntity()
       country.name = countryData.name
       country.code = countryData.code
-      await AppDataSource.manager.save(country)
+      await appDataSource.manager.save(country)
     }
 
     for (const subdivisionData of countryData.country_subdivisions) {
-      let subdivision = await AppDataSource.manager.findOne(
+      let subdivision = await appDataSource.manager.findOne(
         CountrySubdivisionEntity, { where: { name: subdivisionData.name } }
       )
 
@@ -270,7 +288,7 @@ export async function seedCountriesSubdivisionsDistricts (
         subdivision = new CountrySubdivisionEntity()
         subdivision.name = subdivisionData.name
         subdivision.country = country
-        await AppDataSource.manager.save(subdivision)
+        await appDataSource.manager.save(subdivision)
       }
 
       const districtEntities: DistrictEntity[] = []
@@ -280,7 +298,7 @@ export async function seedCountriesSubdivisionsDistricts (
         district.subdivision = subdivision
         districtEntities.push(district)
       }
-      await AppDataSource.manager.save(districtEntities)
+      await appDataSource.manager.save(districtEntities)
     }
   }
 
