@@ -12,6 +12,7 @@ import { getUserProfile } from './userControllers/getUserProfile'
 import { postUserRefresh } from './userControllers/refreshUserToken'
 import { postUserLogout } from './userControllers/postUserLogout'
 import { checkUserCreationPermission } from '../middleware/checkUserCreationPermission'
+import { authRateLimiter } from '../middleware/rateLimiter'
 
 /**
  * @openapi
@@ -50,7 +51,7 @@ router.put('/users/reset-password',
   putUserResetPassword
 )
 
-router.post('/users/login', postUserLogin)
+router.post('/users/login', authRateLimiter, postUserLogin)
 
 router.get('/users/profile', authenticateJWT, getUserProfile)
 
