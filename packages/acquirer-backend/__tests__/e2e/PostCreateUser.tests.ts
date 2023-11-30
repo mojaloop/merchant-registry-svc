@@ -221,7 +221,9 @@ export function testPostCreateUser (app: Application): void {
     expect(res.body.data.status).toEqual(PortalUserStatus.UNVERIFIED)
 
     // Clean up
+    await AppDataSource.query('PRAGMA foreign_keys = OFF;')
     await AppDataSource.manager.delete(PortalUserEntity, { id: res.body.data.id })
+    await AppDataSource.query('PRAGMA foreign_keys = ON;')
   })
 
   it('should successfully create a user from super dfsp admin and send verification email', async () => {
@@ -252,6 +254,8 @@ export function testPostCreateUser (app: Application): void {
     expect(res.body.data.status).toEqual(PortalUserStatus.UNVERIFIED)
 
     // Clean up
+    await AppDataSource.query('PRAGMA foreign_keys = OFF;')
     await AppDataSource.manager.delete(PortalUserEntity, { email: 'new-audit-test-user@example.com' })
+    await AppDataSource.query('PRAGMA foreign_keys = ON;')
   })
 }

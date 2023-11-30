@@ -1,4 +1,4 @@
-import { type Request, type Response } from 'express'
+import { type Response } from 'express'
 import logger from '../../services/logger'
 import { audit } from '../../utils/audit'
 import { AppDataSource } from '../../database/dataSource'
@@ -8,6 +8,7 @@ import {
   PortalUserStatus
 } from 'shared-lib'
 import { hashPassword } from '../../utils/utils'
+import { type AuthRequest } from '../../types/express'
 
 /**
  * @openapi
@@ -55,7 +56,7 @@ import { hashPassword } from '../../utils/utils'
  *
  */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
-export async function putUserResetPassword (req: Request, res: Response) {
+export async function putUserResetPassword (req: AuthRequest, res: Response) {
   const portalUser = req.user
 
   /* istanbul ignore if  */
