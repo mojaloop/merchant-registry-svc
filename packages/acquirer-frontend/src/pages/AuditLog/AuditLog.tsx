@@ -110,10 +110,11 @@ const AuditLog = () => {
   })
 
   const users = useUsers()
-  const userOptions = users.data?.map(({ id, name }) => ({
-    value: id,
-    label: name,
-  }))
+  const userOptions =
+    users.data?.map(({ id, name }) => ({
+      value: id,
+      label: name,
+    })) || []
 
   const table = useTable({
     data: auditLogs.data?.data || [],
@@ -140,6 +141,7 @@ const AuditLog = () => {
           flexDir={{ base: 'column', md: 'row' }}
           gap='8'
           onSubmit={handleSubmit(onSubmit)}
+          data-testid='filter-form'
         >
           <FormSelect
             name='actionType'
@@ -158,7 +160,7 @@ const AuditLog = () => {
             errors={errors}
             label='Portal User Name'
             placeholder='Choose Portal User Name'
-            options={userOptions || []}
+            options={userOptions}
             selectProps={{ bg: 'white' }}
             maxW={{ base: 'full', md: '20rem' }}
           />
