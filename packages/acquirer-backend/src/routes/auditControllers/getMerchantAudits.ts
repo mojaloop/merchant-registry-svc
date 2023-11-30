@@ -2,7 +2,7 @@
 import { type Response } from 'express'
 import { AppDataSource } from '../../database/dataSource'
 import logger from '../../services/logger'
-import { type AuditTrasactionStatus, type AuditActionType, PortalUserType } from 'shared-lib'
+import { type AuditTrasactionStatus, type AuditActionType } from 'shared-lib'
 import { AuditEntity } from '../../entity/AuditEntity'
 import { type AuthRequest } from 'src/types/express'
 import { PortalUserEntity } from '../../entity/PortalUserEntity'
@@ -11,13 +11,13 @@ import { PortalUserEntity } from '../../entity/PortalUserEntity'
  * @openapi
  * tags:
  *   name: Audits
- * /audits:
+ * /audits/merchant:
  *   get:
  *     tags:
  *       - Audits
  *     security:
  *       - Authorization: []
- *     summary: GET Audit Logs
+ *     summary: GET Audit Logs Relating to Merchant Actions
  *     parameters:
  *       - in: query
  *         name: page
@@ -61,7 +61,7 @@ import { PortalUserEntity } from '../../entity/PortalUserEntity'
  *         description: The entity name
  *     responses:
  *       200:
- *         description: GET Audit Logs
+ *         description: GET Audit Logs Relating to Merchant Actions
  *         content:
  *           application/json:
  *             schema:
@@ -77,11 +77,15 @@ import { PortalUserEntity } from '../../entity/PortalUserEntity'
  *                   items:
  *                     type: object
  */
-export async function getAudits (req: AuthRequest, res: Response) {
+export async function getMerchantAudits (req: AuthRequest, res: Response) {
   const portalUser = req.user
   /* istanbul ignore if */
   if (portalUser == null) {
     return res.status(401).send({ message: 'Unauthorized' })
+  }
+
+  if (portalUser.dfsp == null) { // middleware should already check DFSP User Type. dfsp should not be null
+    return res.status(400).send({ message: 'DFSP Information not found on user' })
   }
 
   try {
@@ -132,20 +136,16 @@ export async function getAudits (req: AuthRequest, res: Response) {
     const queryBuilder = AuditRepository.createQueryBuilder('audit')
     queryBuilder
       .leftJoin('audit.portal_user', 'portal_user')
+      .leftJoin('audit.dfsp', 'dfsp')
       .addSelect([
         'portal_user.name',
         'portal_user.email',
         'portal_user.phone_number',
-        'portal_user.id'
+        'portal_user.id',
+        'dfsp.id'
       ])
       .where(whereClause)
-
-    if (portalUser.user_type === PortalUserType.DFSP) {
-      queryBuilder
-        .leftJoin('audit.dfsp', 'dfsp')
-        .addSelect(['dfsp.id'])
-        .andWhere('dfsp.id = :dfspId', { dfspId: portalUser.dfsp.id })
-    }
+      .andWhere('dfsp.id = :dfspId', { dfspId: portalUser.dfsp.id })
 
     queryBuilder
       .orderBy('audit.created_at', 'DESC') // Sort by latest
@@ -160,7 +160,7 @@ export async function getAudits (req: AuthRequest, res: Response) {
     logger.debug('WhereClause: %o', whereClause)
 
     const audits = await queryBuilder.getMany()
-    res.send({ message: 'OK', data: audits, totalPages })
+    res.send({ message: 'GET Audit Logs Relating to Merchant Actions', data: audits, totalPages })
   } catch (e)/* istanbul ignore next */ {
     logger.error(e)
     res.status(500).send({ message: e })

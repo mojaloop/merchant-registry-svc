@@ -7,7 +7,7 @@ import { AppDataSource } from '../../src/database/dataSource'
 import { audit } from '../../src/utils/audit'
 import { AuditEntity } from '../../src/entity/AuditEntity'
 
-export function testGetAudits (app: Application): void {
+export function testGetMerchantAudits (app: Application): void {
   let dfspUserToken = ''
   let dfspUserWithId: PortalUserEntity
   const dfspUserEmail = DefaultDFSPUsers[0].email
@@ -42,7 +42,7 @@ export function testGetAudits (app: Application): void {
     // Arrange
 
     // Act
-    const res = await request(app).get('/api/v1/audits')
+    const res = await request(app).get('/api/v1/audits/merchant')
 
     // Assert
     expect(res.statusCode).toEqual(401)
@@ -54,7 +54,7 @@ export function testGetAudits (app: Application): void {
 
     // Act
     const res = await request(app)
-      .get('/api/v1/audits')
+      .get('/api/v1/audits/merchant')
       .set('Authorization', 'Bearer invalid_token')
 
     // Assert
@@ -68,7 +68,7 @@ export function testGetAudits (app: Application): void {
 
     // Act
     const res = await request(app)
-      .get('/api/v1/audits?page=-1&limit=10')
+      .get('/api/v1/audits/merchant?page=-1&limit=10')
       .set('Authorization', `Bearer ${dfspUserToken}`)
 
     // Assert
@@ -81,7 +81,7 @@ export function testGetAudits (app: Application): void {
 
     // Act
     const res = await request(app)
-      .get('/api/v1/audits?page=-1&limit=10')
+      .get('/api/v1/audits/merchant?page=-1&limit=10')
       .set('Authorization', `Bearer ${dfspUserToken}`)
 
     // Assert
@@ -95,7 +95,7 @@ export function testGetAudits (app: Application): void {
 
     // Act
     const res = await request(app)
-      .get('/api/v1/audits?page=1&limit=0')
+      .get('/api/v1/audits/merchant?page=1&limit=0')
       .set('Authorization', `Bearer ${dfspUserToken}`)
 
     // Assert
@@ -108,7 +108,7 @@ export function testGetAudits (app: Application): void {
 
     // Act
     const res = await request(app)
-      .get('/api/v1/audits?page=1&limit=0')
+      .get('/api/v1/audits/merchant?page=1&limit=0')
       .set('Authorization', `Bearer ${dfspUserToken}`)
 
     // Assert
@@ -121,7 +121,7 @@ export function testGetAudits (app: Application): void {
 
     // Act
     const res = await request(app)
-      .get('/api/v1/audits?page=-1&limit=0')
+      .get('/api/v1/audits/merchant?page=-1&limit=0')
       .set('Authorization', `Bearer ${dfspUserToken}`)
 
     // Assert
@@ -134,13 +134,13 @@ export function testGetAudits (app: Application): void {
 
     // Act
     const res = await request(app)
-      .get('/api/v1/audits')
+      .get('/api/v1/audits/merchant')
       .set('Authorization', `Bearer ${dfspUserToken}`)
 
     // Assert
     expect(res.statusCode).toEqual(200)
     expect(res.body).toHaveProperty('message')
-    expect(res.body.message).toEqual('OK')
+    expect(res.body.message).toEqual('GET Audit Logs Relating to Merchant Actions')
     expect(res.body).toHaveProperty('data')
     expect(res.body.data).toBeInstanceOf(Array)
     expect(res.body.data.length).toBeGreaterThan(0)
@@ -152,7 +152,7 @@ export function testGetAudits (app: Application): void {
 
     // Act
     const res = await request(app)
-      .get(`/api/v1/audits?actionType=${AuditActionType.UNAUTHORIZED_ACCESS}`)
+      .get(`/api/v1/audits/merchant?actionType=${AuditActionType.UNAUTHORIZED_ACCESS}`)
       .set('Authorization', `Bearer ${dfspUserToken}`)
 
     // Assert
@@ -173,7 +173,7 @@ export function testGetAudits (app: Application): void {
 
     // Act
     const res = await request(app)
-      .get(`/api/v1/audits?portalUserId=${dfspUserWithId.id}`)
+      .get(`/api/v1/audits/merchant?portalUserId=${dfspUserWithId.id}`)
       .set('Authorization', `Bearer ${dfspUserToken}`)
 
     // Assert
@@ -194,7 +194,7 @@ export function testGetAudits (app: Application): void {
 
     // Act
     const res = await request(app)
-      .get(`/api/v1/audits?transactionStatus=${AuditTrasactionStatus.SUCCESS}`)
+      .get(`/api/v1/audits/merchant?transactionStatus=${AuditTrasactionStatus.SUCCESS}`)
       .set('Authorization', `Bearer ${dfspUserToken}`)
 
     // Assert
@@ -214,7 +214,7 @@ export function testGetAudits (app: Application): void {
 
     // Act
     const res = await request(app)
-      .get(`/api/v1/audits?applicationModule=${sampleApplicationModule}`)
+      .get(`/api/v1/audits/merchant?applicationModule=${sampleApplicationModule}`)
       .set('Authorization', `Bearer ${dfspUserToken}`)
 
     // Assert
@@ -232,7 +232,7 @@ export function testGetAudits (app: Application): void {
 
     // Act
     const res = await request(app)
-      .get(`/api/v1/audits?entityName=${sampleEntity}`)
+      .get(`/api/v1/audits/merchant?entityName=${sampleEntity}`)
       .set('Authorization', `Bearer ${dfspUserToken}`)
 
     // Assert

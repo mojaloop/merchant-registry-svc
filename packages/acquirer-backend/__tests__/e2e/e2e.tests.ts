@@ -21,7 +21,7 @@ import { testPutMerchantStatusApprove } from './PutMerchantApproveStatus.tests'
 import { testPutMerchantRejectStatus } from './PutMerchantRejectStatus.tests'
 import { testPutMerchantRevertStatus } from './PutMerchantRevertStatus.tests'
 import { testGetUserProfile } from './GetUserProfile.tests'
-import { testGetAudits } from './GetAudits.tests'
+import { testGetMerchantAudits } from './GetMerchantAudits.tests'
 import { testGETMerchantXlsxWorkbook } from './MerchantXlsxWorkbook.tests'
 import { testPutConfigTraceLevel } from './PutConfigTraceLevel.tests'
 import { testGetCountries } from './GetCountries.tests'
@@ -172,7 +172,7 @@ describe('E2E API Tests', () => {
   })
 
   describe('GET Audits API Tests', () => {
-    testGetAudits(app)
+    testGetMerchantAudits(app)
   })
 
   describe('GET Users List API Tests', () => {
