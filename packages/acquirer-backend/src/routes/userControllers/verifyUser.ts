@@ -81,8 +81,6 @@ export async function verifyUserEmail (req: Request, res: Response) {
     return res.status(500).send({ message: 'Internal Server Error', error: err })
   }
 
-  const newToken = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET, { expiresIn: '1h' })
-
   logger.debug('Redirecting to frontend %o', FRONTEND_SET_PASSWORD_URL)
-  res.redirect(`${FRONTEND_SET_PASSWORD_URL}?token=${newToken}`)
+  res.redirect(`${FRONTEND_SET_PASSWORD_URL}?token=${token}`)
 }

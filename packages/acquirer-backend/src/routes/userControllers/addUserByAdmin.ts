@@ -17,6 +17,8 @@ import { sendVerificationEmail } from '../../utils/sendGrid'
 import { DFSPEntity } from '../../entity/DFSPEntity'
 import { type AuthRequest } from '../../types/express'
 import { readEnv } from '../../setup/readEnv'
+import { JwtTokenEntity } from '../../entity/JwtTokenEntity'
+import ms from 'ms'
 
 const AddUserSchema = z.object({
   name: z.string(),
@@ -26,6 +28,9 @@ const AddUserSchema = z.object({
 })
 
 const JWT_SECRET = readEnv('JWT_SECRET', '') as string
+
+const JWT_EXPIRES_IN = readEnv('JWT_EXPIRES_IN', '1d') as string
+const JWT_EXPIRES_IN_MS = ms(JWT_EXPIRES_IN)
 
 /**
  * @openapi
@@ -168,6 +173,14 @@ export async function addUser (req: AuthRequest, res: Response) {
       { id: newUser.id, email: newUser.email },
       JWT_SECRET, { expiresIn: '1y' })
 
+    const jwtTokenObj = AppDataSource.manager.create(JwtTokenEntity, {
+      token,
+      user: newUser,
+      expires_at: new Date(Date.now() + JWT_EXPIRES_IN_MS),
+      last_used: new Date()
+    })
+
+    await AppDataSource.manager.save(jwtTokenObj)
     await AppDataSource.manager.save(EmailVerificationTokenEntity, {
       user: newUser,
       token,
