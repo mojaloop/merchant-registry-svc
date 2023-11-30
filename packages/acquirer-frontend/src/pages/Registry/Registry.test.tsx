@@ -10,6 +10,10 @@ vi.mock('@/api/hooks/forms', () => ({
 }))
 
 describe('Registry', () => {
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
+
   it('should show loading spinner when draft count is loading', () => {
     mockDraftCount.mockReturnValue({ data: null, isLoading: true })
 
@@ -49,6 +53,7 @@ describe('Registry', () => {
   })
 
   it('should remove merchantId from local storage when add new record button is clicked', () => {
+    mockDraftCount.mockReturnValue({ data: 3, isLoading: false })
     const removeMerchantIdSpy = vi.spyOn(Storage.prototype, 'removeItem')
 
     render(

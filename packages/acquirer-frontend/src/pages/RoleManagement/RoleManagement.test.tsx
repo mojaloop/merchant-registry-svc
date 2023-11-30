@@ -56,6 +56,10 @@ vi.mock('@/api/hooks/roles', () => ({
 }))
 
 describe('RoleManagement', () => {
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
+
   it('should render table skeleton when roles data is loading', () => {
     mockRoles.mockReturnValue({
       data: null,

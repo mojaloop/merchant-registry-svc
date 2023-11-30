@@ -70,6 +70,10 @@ vi.mock('@/utils', () => ({
 }))
 
 describe('PendingMerchantRecords', () => {
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
+
   it('should render form skeleton when users data is loading', () => {
     mockUserProfile.mockReturnValue({ data: { id: 6, name: 'DFSP 1 Admin 1' } })
     mockUsers.mockReturnValue({ data: null, isLoading: true })

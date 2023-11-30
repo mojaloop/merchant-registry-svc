@@ -15,6 +15,10 @@ vi.mock('@chakra-ui/react', async () => {
 })
 
 describe('RegistryForm', () => {
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
+
   it('should render business info form in step 1', () => {
     mockStep.mockReturnValue(1)
 
