@@ -36,7 +36,7 @@ export function isValidDate (d: any): boolean {
 
 export function generateJwtToken (user: PortalUserEntity): string {
   const token = jwt.sign(
-    { id: user.id, email: user.email },
+    { id: user.id },
     JWT_SECRET,
     { expiresIn: JWT_EXPIRES_IN }
   )
