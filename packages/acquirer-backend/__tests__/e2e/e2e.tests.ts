@@ -172,7 +172,7 @@ describe('E2E API Tests', () => {
   })
 
   describe('GET Audits API Tests', () => {
-    testGetMerchantAudits(app)
+    testGetAudits(app)
   })
 
   describe('GET Users List API Tests', () => {
