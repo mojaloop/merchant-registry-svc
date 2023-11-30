@@ -2,22 +2,30 @@ import { PermissionsEnum } from '../types/permissions'
 
 export const DefaultRoles = [
   {
+    name: 'Hub Super Admin',
+    description: 'Hub Super Admin Role',
+    permissions: [
+      PermissionsEnum.CREATE_PORTAL_USERS,
+      PermissionsEnum.CREATE_HUB_ADMIN
+    ]
+  },
+  {
     name: 'Hub Admin',
     description: 'Hub Admin Role',
     permissions: [
+      PermissionsEnum.CREATE_PORTAL_USERS,
+      PermissionsEnum.CREATE_HUB_ADMIN,
+      PermissionsEnum.CREATE_DFSP_SUPER_AMDIN,
+
       PermissionsEnum.VIEW_DFSPS,
       PermissionsEnum.CREATE_DFSPS,
       PermissionsEnum.EDIT_DFSPS,
       PermissionsEnum.DELETE_DFSPS,
 
-      PermissionsEnum.CREATE_PORTAL_USERS,
       PermissionsEnum.VIEW_PORTAL_USERS,
-      PermissionsEnum.EDIT_PORTAL_USERS,
-      PermissionsEnum.DELETE_PORTAL_USERS,
+      PermissionsEnum.VIEW_MERCHANTS,
 
-      PermissionsEnum.CREATE_ROLES,
       PermissionsEnum.VIEW_ROLES,
-      PermissionsEnum.EDIT_ROLES,
 
       PermissionsEnum.VIEW_AUDIT_LOGS,
 
@@ -28,6 +36,11 @@ export const DefaultRoles = [
     name: 'DFSP Super Admin',
     description: 'DFSP Super Admin Role',
     permissions: [
+      PermissionsEnum.CREATE_PORTAL_USERS,
+      PermissionsEnum.CREATE_DFSP_ADMIN,
+      PermissionsEnum.CREATE_DFSP_OPERATOR,
+      PermissionsEnum.CREATE_DFSP_AUDITOR,
+
       PermissionsEnum.APPROVE_MERCHANTS,
       PermissionsEnum.REJECT_MERCHANTS,
       PermissionsEnum.REVERT_MERCHANTS,
@@ -35,15 +48,9 @@ export const DefaultRoles = [
       PermissionsEnum.VIEW_MERCHANTS,
       PermissionsEnum.CREATE_MERCHANTS,
       PermissionsEnum.EDIT_MERCHANTS,
-      PermissionsEnum.DELETE_MERCHANTS,
+      // PermissionsEnum.DELETE_MERCHANTS,
 
-      PermissionsEnum.CREATE_ROLES, // TODO: Remove this permission when Hub User is ready.
-      PermissionsEnum.VIEW_ROLES,
-
-      PermissionsEnum.CREATE_PORTAL_USERS,
       PermissionsEnum.VIEW_PORTAL_USERS,
-      PermissionsEnum.EDIT_PORTAL_USERS,
-      PermissionsEnum.DELETE_PORTAL_USERS,
 
       PermissionsEnum.EXPORT_MERCHANTS,
 
@@ -54,6 +61,10 @@ export const DefaultRoles = [
     name: 'DFSP Admin',
     description: 'DFSP Admin Role',
     permissions: [
+      PermissionsEnum.CREATE_PORTAL_USERS,
+      PermissionsEnum.CREATE_DFSP_OPERATOR,
+      PermissionsEnum.CREATE_DFSP_AUDITOR,
+
       PermissionsEnum.APPROVE_MERCHANTS,
       PermissionsEnum.REJECT_MERCHANTS,
       PermissionsEnum.REVERT_MERCHANTS,
@@ -61,14 +72,9 @@ export const DefaultRoles = [
       PermissionsEnum.VIEW_MERCHANTS,
       PermissionsEnum.CREATE_MERCHANTS,
       PermissionsEnum.EDIT_MERCHANTS,
-      PermissionsEnum.DELETE_MERCHANTS,
-
-      PermissionsEnum.VIEW_ROLES,
+      // PermissionsEnum.DELETE_MERCHANTS,
 
       PermissionsEnum.VIEW_PORTAL_USERS,
-      PermissionsEnum.CREATE_PORTAL_USERS,
-      PermissionsEnum.EDIT_PORTAL_USERS,
-      PermissionsEnum.DELETE_PORTAL_USERS,
 
       PermissionsEnum.VIEW_AUDIT_LOGS,
 
@@ -86,10 +92,11 @@ export const DefaultRoles = [
       PermissionsEnum.VIEW_MERCHANTS,
       PermissionsEnum.CREATE_MERCHANTS,
       PermissionsEnum.EDIT_MERCHANTS,
-      PermissionsEnum.DELETE_MERCHANTS,
+      // PermissionsEnum.DELETE_MERCHANTS,
 
       PermissionsEnum.VIEW_PORTAL_USERS,
 
+      PermissionsEnum.VIEW_AUDIT_LOGS,
       PermissionsEnum.EXPORT_MERCHANTS
     ]
   },

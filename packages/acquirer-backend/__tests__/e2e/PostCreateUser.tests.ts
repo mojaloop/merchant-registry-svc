@@ -6,8 +6,10 @@ import { DefaultDFSPUsers, DefaultHubUsers } from '../../src/database/defaultUse
 import { AppDataSource } from '../../src/database/dataSource'
 import { DFSPEntity } from '../../src/entity/DFSPEntity'
 import { PortalUserEntity } from '../../src/entity/PortalUserEntity'
-import { DefaultRoles } from '../../src/database/defaultRoles'
 import { PortalUserStatus } from 'shared-lib'
+import { PortalPermissionEntity } from '../../src/entity/PortalPermissionEntity'
+import { PermissionsEnum } from '../../src/types/permissions'
+import { PortalRoleEntity } from '../../src/entity/PortalRoleEntity'
 const sgMail = require('@sendgrid/mail')
 
 jest.mock('../../src/utils/sendGrid')
@@ -17,11 +19,21 @@ export function testPostCreateUser (app: Application): void {
   let hubUserToken = ''
   const hubUserEmail = DefaultHubUsers[0].email
   const hubUserPwd = DefaultHubUsers[0].password
+  let hubUserRole: PortalRoleEntity
+  let createDfspSuperAdminPermission: PortalPermissionEntity
+  let createPortalUserPermission: PortalPermissionEntity
+
   let validDfspId = 0
 
   let dfspUserToken = ''
   const dfspUserEmail = DefaultDFSPUsers[0].email
   const dfspUserPwd = DefaultDFSPUsers[0].password
+  let dfspUserRole: PortalRoleEntity
+  let dfspCreateDfspAdminPermission: PortalPermissionEntity
+  let dfspCreatePortalUserPermission: PortalPermissionEntity
+
+  const dfspSuperAdminRoleName = 'DFSP Super Admin'
+
   beforeAll(async () => {
     const res = await request(app)
       .post('/api/v1/users/login')
@@ -30,6 +42,14 @@ export function testPostCreateUser (app: Application): void {
         password: hubUserPwd
       })
     hubUserToken = res.body.token
+
+    // Hub User should have CREATE_PORTAL_USERS and CREATE_DFSP_SUPER_AMDIN permissions
+    hubUserRole = await AppDataSource.manager.findOneOrFail(PortalRoleEntity, { where: { name: DefaultHubUsers[0].role }, relations: ['permissions'] })
+    createPortalUserPermission = await AppDataSource.manager.findOneOrFail(PortalPermissionEntity, { where: { name: PermissionsEnum.CREATE_PORTAL_USERS } })
+    createDfspSuperAdminPermission = await AppDataSource.manager.findOneOrFail(PortalPermissionEntity, { where: { name: PermissionsEnum.CREATE_DFSP_SUPER_AMDIN } })
+    hubUserRole.permissions.push(createPortalUserPermission)
+    hubUserRole.permissions.push(createDfspSuperAdminPermission)
+    await AppDataSource.manager.save(hubUserRole)
 
     const res2 = await request(app)
       .post('/api/v1/users/login')
@@ -41,6 +61,14 @@ export function testPostCreateUser (app: Application): void {
 
     const dfsp = await AppDataSource.manager.findOne(DFSPEntity, { where: { name: DefaultDFSPUsers[0].dfsp_name } })
     validDfspId = dfsp?.id as number
+
+    // DFSP Super Admin should have CREATE_PORTAL_USERS and CREATE_DFSP_ADMIN
+    dfspUserRole = await AppDataSource.manager.findOneOrFail(PortalRoleEntity, { where: { name: dfspSuperAdminRoleName }, relations: ['permissions'] })
+    dfspCreatePortalUserPermission = await AppDataSource.manager.findOneOrFail(PortalPermissionEntity, { where: { name: PermissionsEnum.CREATE_PORTAL_USERS } })
+    dfspCreateDfspAdminPermission = await AppDataSource.manager.findOneOrFail(PortalPermissionEntity, { where: { name: PermissionsEnum.CREATE_DFSP_ADMIN } })
+    dfspUserRole.permissions.push(dfspCreatePortalUserPermission)
+    dfspUserRole.permissions.push(dfspCreateDfspAdminPermission)
+    await AppDataSource.manager.save(dfspUserRole)
   })
 
   beforeEach(() => {
@@ -73,14 +101,13 @@ export function testPostCreateUser (app: Application): void {
   })
 
   it('should respond with 422 when name is missing', async () => {
-    const roleName = DefaultRoles[1].name // Use an appropriate role name
     const res = await request(app)
       .post('/api/v1/users/add')
       .set('Authorization', `Bearer ${hubUserToken}`)
       .send({
         // name is omitted
         email: 'test@example.com',
-        role: roleName,
+        role: dfspSuperAdminRoleName,
         dfsp_id: validDfspId
       })
 
@@ -91,14 +118,13 @@ export function testPostCreateUser (app: Application): void {
   })
 
   it('should respond with 422 when email is invalid', async () => {
-    const roleName = DefaultRoles[1].name
     const res = await request(app)
       .post('/api/v1/users/add')
       .set('Authorization', `Bearer ${hubUserToken}`)
       .send({
         name: 'Test User',
         email: 'not-an-email', // Invalid email format
-        role: roleName,
+        role: dfspSuperAdminRoleName,
         dfsp_id: validDfspId
       })
 
@@ -119,10 +145,8 @@ export function testPostCreateUser (app: Application): void {
         dfsp_id: validDfspId
       })
 
-    expect(res.statusCode).toEqual(422)
-    expect(res.body.message).toContain('Validation error')
-    expect(res.body.errors).toHaveProperty('fieldErrors')
-    expect(res.body.errors.fieldErrors).toHaveProperty('role')
+    expect(res.statusCode).toEqual(400)
+    expect(res.body.message).toContain('Invalid role')
   })
 
   it('should respond with 400 when role is invalid', async () => {
@@ -141,14 +165,13 @@ export function testPostCreateUser (app: Application): void {
   })
 
   it('should respond with 400 when email already exists', async () => {
-    const roleName = DefaultRoles[1].name // DFSP Super Admin
     const res = await request(app)
       .post('/api/v1/users/add')
       .set('Authorization', `Bearer ${hubUserToken}`)
       .send({
         name: 'Test User',
         email: DefaultHubUsers[0].email,
-        role: roleName,
+        role: dfspSuperAdminRoleName,
         dfsp_id: validDfspId
       })
 
@@ -157,14 +180,13 @@ export function testPostCreateUser (app: Application): void {
   })
 
   it('should fails when creating a user from hub admin with invalid dfspid', async () => {
-    const roleName = DefaultRoles[1].name // DFSP Super Admin
     const res = await request(app)
       .post('/api/v1/users/add')
       .set('Authorization', `Bearer ${hubUserToken}`)
       .send({
         name: 'Test User 33',
         email: 'super-new-user-33@example.com',
-        role: roleName,
+        role: dfspSuperAdminRoleName,
         dfsp_id: 9999999 // if it's a HUB user
       })
     expect(res.statusCode).toEqual(400)
@@ -174,7 +196,6 @@ export function testPostCreateUser (app: Application): void {
   it('should successfully create a user from hub admin and send verification email', async () => {
     // Arrange
     await AppDataSource.manager.delete(PortalUserEntity, { email: 'super-new-user@example.com' })
-    const roleName = DefaultRoles[1].name // DFSP Super Admin
 
     // Act
     const res = await request(app)
@@ -183,7 +204,7 @@ export function testPostCreateUser (app: Application): void {
       .send({
         name: 'Test User',
         email: 'super-new-user@example.com',
-        role: roleName,
+        role: dfspSuperAdminRoleName,
         dfsp_id: validDfspId // if it's a HUB user
       })
 
@@ -206,7 +227,6 @@ export function testPostCreateUser (app: Application): void {
   it('should successfully create a user from super dfsp admin and send verification email', async () => {
     // Arrange
     await AppDataSource.manager.delete(PortalUserEntity, { email: 'new-audit-test-user@example.com' })
-    const roleName = DefaultRoles[DefaultRoles.length - 1].name // DFSP Audit User
 
     // Act
     const res = await request(app)
@@ -215,7 +235,7 @@ export function testPostCreateUser (app: Application): void {
       .send({
         name: 'Test User 2',
         email: 'new-audit-test-user@example.com',
-        role: roleName
+        role: 'DFSP Admin'
       })
 
     // Assert
