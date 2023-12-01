@@ -7,7 +7,7 @@ describe('useMerchantId', () => {
   function TestComponent() {
     const merchantId = useMerchantId()
 
-    return merchantId
+    return <div>{merchantId}</div>
   }
 
   it('should return merchantId if it exists in localStorage', () => {
