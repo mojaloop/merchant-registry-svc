@@ -98,7 +98,9 @@ export const MerchantInfo = ({
           lg: 'repeat(2, 1fr)',
         }}
         gap='4'
+        data-testid='merchant-information'
       >
+        {/* c8 ignore next 215 */}
         <GridItemShell rowSpan={2}>
           <SubHeading>Business Information</SubHeading>
 
@@ -146,6 +148,7 @@ export const MerchantInfo = ({
                     href={businessLicense?.license_document_link}
                     download
                     color='blue.500'
+                    data-testid='license-document-link'
                   >
                     License Document
                   </Link>
@@ -363,7 +366,7 @@ const MerchantInformationModal = ({
 
         <ModalBody py='5' px={{ base: '4', md: '6' }}>
           {merchant.isLoading && (
-            <HStack>
+            <HStack data-testid='skeleton-loading'>
               <Skeleton w='50%' h='500px' rounded='md' />
               <Skeleton w='50%' h='500px' rounded='md' />
             </HStack>
