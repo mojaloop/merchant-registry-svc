@@ -4,7 +4,7 @@ import { Skeleton } from '@/components/ui'
 
 const FilterFormSkeleton = () => {
   return (
-    <Flex flexDir={{ base: 'column', md: 'row' }} gap='8'>
+    <Flex flexDir={{ base: 'column', md: 'row' }} gap='8' data-testid='form-skeleton'>
       <VStack w={{ base: 'full', md: '20rem' }}>
         <Box w='full' maxW={{ base: 'full', md: '20rem' }}>
           <Skeleton h='3' w='10' rounded='md' />
