@@ -153,8 +153,8 @@ async function processReplyMessage (msg: Message): Promise<void> {
     for (const aliasData of response.data) {
       // generate qr image and upload to s3
       let qrImageBuffer = null
+      const guid = uuidv4()
       try {
-        const frameImagePath = path.join(__dirname, '../../assets/sample-qr-frame/frame.png')
         const merchant = await AppDataSource.manager.findOne(MerchantEntity, {
           where: { id: aliasData.merchant_id },
           relations: ['category_code', 'currency_code']
@@ -178,6 +178,7 @@ async function processReplyMessage (msg: Message): Promise<void> {
         })
 
         const emvcoQRString = getEMVQRCodeText(
+          guid,
           aliasData.alias_value,
           merchant.category_code.category_code,
           merchant.currency_code.iso_code,
@@ -185,6 +186,7 @@ async function processReplyMessage (msg: Message): Promise<void> {
           merchant.dba_trading_name,
           checkoutCounter?.checkout_location?.district_name
         )
+        const frameImagePath = path.join(__dirname, '../../assets/sample-qr-frame/frame.png')
         qrImageBuffer = await generateQRImage(emvcoQRString, {}, frameImagePath)
       } catch (e) {
         logger.error('Error while generating QR image: %o', e)
@@ -203,6 +205,7 @@ async function processReplyMessage (msg: Message): Promise<void> {
       logger.info('Uploaded QR image to S3: %s', qrImageS3Path)
 
       await AppDataSource.manager.update(CheckoutCounterEntity, aliasData.checkout_counter_id, {
+        guid,
         alias_value: aliasData.alias_value,
         qr_code_link: qrImageS3Path
       })

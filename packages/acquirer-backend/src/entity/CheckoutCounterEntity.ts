@@ -14,6 +14,9 @@ export class CheckoutCounterEntity {
   @Column({ nullable: true, length: 255 })
     description!: string
 
+  @Column({ nullable: true, length: 512 })
+    guid!: string
+
   @Column({ nullable: true, length: 255 })
     notification_number!: string
 
