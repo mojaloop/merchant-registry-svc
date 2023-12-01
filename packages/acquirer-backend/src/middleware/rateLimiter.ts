@@ -10,9 +10,12 @@ const authRateLimitMax = readEnv('AUTH_RATE_LIMIT_MAX', 10, true) as number // 1
 export const generalRateLimiter = rateLimit({
   windowMs: generalRateLimitWindow,
   max: generalRateLimitMax,
-  message: JSON.stringify({
-    message: 'Too many requests, please try again later.'
-  })
+  handler: (req, res) => {
+    const retryAfter = res.get('Retry-After')
+    res.status(429).json({
+      message: `Too many requests, please try again after ${retryAfter} seconds.`
+    })
+  }
 })
 
 // Auth rate limiter is used for login routes
@@ -20,8 +23,10 @@ export const generalRateLimiter = rateLimit({
 export const authRateLimiter = rateLimit({
   windowMs: authRateLimitWindow,
   max: authRateLimitMax,
-  message: JSON.stringify({
-    message: 'Too many Login Attempts, please try again later.'
-  })
-
+  handler: (req, res) => {
+    const retryAfter = res.get('Retry-After')
+    res.status(429).json({
+      message: `Too many login attempts, please try again after ${retryAfter} seconds.`
+    })
+  }
 })
