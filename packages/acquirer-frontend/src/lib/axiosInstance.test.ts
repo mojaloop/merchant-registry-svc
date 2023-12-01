@@ -5,7 +5,7 @@ import instance from './axiosInstance'
 describe('Axios Interceptor', () => {
   it("should set auth token if it's logged in", async () => {
     // mock log in
-    localStorage.setItem('token', 'token')
+    Storage.prototype.getItem = () => 'token'
 
     const mock = new MockAdapter(instance)
     mock.onGet('/users/profile').reply(200, {
