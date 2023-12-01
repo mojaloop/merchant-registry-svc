@@ -4,6 +4,7 @@ import fs from 'fs'
 import { crc16ccitt } from 'crc'
 
 export const getEMVQRCodeText = (
+  guid: string,
   checkoutCounterAliasValue: string,
   merchantCategoryCode: string,
   transactionCurrency: string,
@@ -22,8 +23,11 @@ export const getEMVQRCodeText = (
   emvQRCodeText += addDataObject('01', '12')
 
   // Merchant Additional Info
-  const aliasObj = addDataObject('01', checkoutCounterAliasValue)
-  emvQRCodeText += addDataObject('28', aliasObj)
+  const guidObj = addDataObject('00', guid)
+  const aliasType = addDataObject('01', 'ALIAS')
+  const aliasObj = addDataObject('02', checkoutCounterAliasValue)
+
+  emvQRCodeText += addDataObject('28', guidObj + aliasType + aliasObj)
 
   emvQRCodeText += addDataObject('52', merchantCategoryCode)
   emvQRCodeText += addDataObject('53', transactionCurrency)
