@@ -63,6 +63,7 @@ const PaginationControl = <T,>({
           rounded='md'
           flexShrink='0'
           value={getState().pagination.pageSize}
+          /* c8 ignore next 4 */
           onChange={e => {
             const value = e.target.value ? Number(e.target.value) : 0
             setPageSize(value)

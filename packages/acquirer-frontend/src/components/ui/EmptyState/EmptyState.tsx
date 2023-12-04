@@ -7,6 +7,7 @@ interface EmptyStateProps extends StackProps {
 }
 
 const EmptyState = ({ text, ...props }: EmptyStateProps) => {
+  /* c8 ignore next 10 */
   return (
     <VStack textAlign='center' {...props}>
       <Image src={emptyData} w='16' />

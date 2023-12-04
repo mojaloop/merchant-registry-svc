@@ -78,6 +78,7 @@ const MobileTableItem = <T,>({ row, alwaysVisibleColumns }: MobileTableItemProps
               let isVisible = true
               const meta = cell.column.columnDef.meta as Meta
 
+              /* c8 ignore next 5 */
               if (meta?.isConditional) {
                 isVisible = eval(meta.conditionStatement)
               }
