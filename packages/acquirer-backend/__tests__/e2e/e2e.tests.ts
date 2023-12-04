@@ -49,6 +49,7 @@ import { testPutMerchantLocations } from './PutMerchantLocation.tests'
 import { testVerifyUser } from './VerifyUser.tests'
 import { testPostUserLogout } from './PostUserLogout.tests'
 import { testGetCountryCode } from './GetCountryCode.tests'
+import { testGetHubAudits } from './GetHubAudits.tests'
 
 jest.mock('@sendgrid/mail', () => ({
   setApiKey: jest.fn(),
@@ -173,6 +174,7 @@ describe('E2E API Tests', () => {
 
   describe('GET Audits API Tests', () => {
     testGetMerchantAudits(app)
+    testGetHubAudits(app)
   })
 
   describe('GET Users List API Tests', () => {
