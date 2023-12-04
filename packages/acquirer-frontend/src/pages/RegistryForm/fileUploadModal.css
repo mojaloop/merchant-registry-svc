@@ -1,0 +1,4 @@
+/* to prevent firing dragleave event when dragging over child elements */
+.dragging-over > * {
+  pointer-events: none;
+}

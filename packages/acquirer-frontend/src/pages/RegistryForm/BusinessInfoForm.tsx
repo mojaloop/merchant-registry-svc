@@ -30,6 +30,7 @@ import { useCreateBusinessInfo, useDraft, useUpdateBusinessInfo } from '@/api/ho
 import { useMerchantId } from '@/hooks'
 import { CustomButton, FloatingSpinner } from '@/components/ui'
 import { FormInput, FormSelect } from '@/components/form'
+import FileUploadModal from './FileUploadModal'
 import GridShell from './GridShell'
 
 const EMPLOYEE_COUNTS = Object.values(NumberOfEmployees).map(value => ({
@@ -76,6 +77,8 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
 
   const [isDraft, setIsDraft] = useState(false)
   const [licenseDocument, setLicenseDocument] = useState<LicenseDocument | null>(null)
+  const [isDocumentModalOpen, setIsDocumentModalOpen] = useState(false)
+  const [isUploading, setIsUploading] = useState(false)
 
   const licenseDocumentRef = useRef<HTMLInputElement>(null)
   const uploadFileButtonRef = useRef<HTMLButtonElement>(null)
@@ -339,6 +342,7 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
                     onChange={e => {
                       if (!e.target.files) return
                       onChange(e.target.files[0])
+                      setIsUploading(true)
                     }}
                   />
                 )}
@@ -372,8 +376,7 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
                   color='accent'
                   isDisabled={!haveLicense}
                   onClick={() => {
-                    licenseDocumentRef.current?.click()
-                    uploadFileButtonRef.current?.focus()
+                    setIsDocumentModalOpen(true)
                   }}
                 />
               </HStack>
@@ -385,6 +388,17 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
                 Document is already uploaded.
               </Text>
             )}
+
+            <FileUploadModal
+              isOpen={isDocumentModalOpen}
+              onClose={() => setIsDocumentModalOpen(false)}
+              isUploading={isUploading}
+              setIsUploading={setIsUploading}
+              openFileInput={() => licenseDocumentRef.current?.click()}
+              setFile={(file: File) => {
+                setValue('license_document', file)
+              }}
+            />
 
             {haveLicense && (
               <Box mt='2'>
