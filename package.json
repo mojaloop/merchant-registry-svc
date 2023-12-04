@@ -26,8 +26,8 @@
     "lint:check:oracle": "npm run lint:check -w registry-oracle",
     "type:check:oracle": "npm run type:check -w registry-oracle",
     "dep:check:oracle": "npm run dep:check -w registry-oracle",
-    "oracle:test": "npm run test -w acquirer-backend",
-    "oracle:test:coverage": "npm run test:coverage -w acquirer-backend",
+    "oracle:test": "npm run test -w registry-oracle",
+    "oracle:test:coverage": "npm run test:coverage -w registry-oracle",
 
     "build": "npm -ws run build"
   },
