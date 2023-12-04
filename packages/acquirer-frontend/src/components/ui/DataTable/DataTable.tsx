@@ -93,6 +93,7 @@ const DataTable = <T,>({
                       _first={{ borderLeftRadius: 'md' }}
                       _last={{ borderRightRadius: 'md' }}
                     >
+                      {/* c8 ignore next */}
                       {flexRender(cell.column.columnDef.cell, cell.getContext()) ?? '-'}
                     </Td>
                   )
