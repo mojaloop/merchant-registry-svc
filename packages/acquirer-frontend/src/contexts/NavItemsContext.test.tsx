@@ -107,9 +107,9 @@ describe('NavItemsContext', () => {
   it('should have access to all routes when the user is not operator or auditor', () => {
     mockUserProfile.mockReturnValue({
       id: 5,
-      name: 'DFSP 1 Super Admin 1',
+      name: 'DFSP 1 Admin 1',
       role: {
-        name: 'DFSP Super Admin',
+        name: 'DFSP Admin',
       },
     })
     Storage.prototype.getItem = () => 'token'

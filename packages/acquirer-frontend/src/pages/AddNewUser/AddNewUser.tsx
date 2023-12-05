@@ -26,17 +26,17 @@ const AddNewUser = () => {
   let roleOptions
   if (roles.isSuccess && userProfile.isSuccess) {
     const createAccesses: Role[] = []
-    if (userProfile.data.role.permissions.includes('Assignable Admin Roles')) {
+    if (userProfile.data.role.permissions.includes('Create DFSP Admin')) {
       createAccesses.push(roles.data.data.filter(role => role.name === 'DFSP Admin')[0])
     }
 
-    if (userProfile.data.role.permissions.includes('Assignable Operator Roles')) {
+    if (userProfile.data.role.permissions.includes('Create DFSP Operator')) {
       createAccesses.push(
         roles.data.data.filter(role => role.name === 'DFSP Operator')[0]
       )
     }
 
-    if (userProfile.data.role.permissions.includes('Assignable Auditor Roles')) {
+    if (userProfile.data.role.permissions.includes('Create DFSP Auditor')) {
       createAccesses.push(roles.data.data.filter(role => role.name === 'DFSP Auditor')[0])
     }
 

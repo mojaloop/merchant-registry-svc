@@ -19,13 +19,13 @@ const hoistedValues = vi.hoisted(() => ({
       registrationStatus: 'Pending',
       maker: {
         id: 5,
-        name: 'DFSP 1 Super Admin 1',
+        name: 'DFSP 1 Admin 1',
       },
     },
   ],
   users: [
-    { id: 5, name: 'DFSP 1 Super Admin 1' },
-    { id: 6, name: 'DFSP 1 Admin 1' },
+    { id: 5, name: 'DFSP 1 Admin 1' },
+    { id: 6, name: 'DFSP 1 Admin 2' },
   ],
 }))
 
@@ -75,7 +75,7 @@ describe('PendingMerchantRecords', () => {
   })
 
   it('should render form skeleton when users data is loading', () => {
-    mockUserProfile.mockReturnValue({ data: { id: 6, name: 'DFSP 1 Admin 1' } })
+    mockUserProfile.mockReturnValue({ data: { id: 6, name: 'DFSP 1 Admin 2' } })
     mockUsers.mockReturnValue({ data: null, isLoading: true })
     mockPendingMerchants.mockReturnValue({
       data: { data: hoistedValues.pendingMerchants, totalPages: 1 },
@@ -93,7 +93,7 @@ describe('PendingMerchantRecords', () => {
   })
 
   it('should render filter form when users data is successfully loaded', () => {
-    mockUserProfile.mockReturnValue({ data: { id: 6, name: 'DFSP 1 Admin 1' } })
+    mockUserProfile.mockReturnValue({ data: { id: 6, name: 'DFSP 1 Admin 2' } })
     mockUsers.mockReturnValue({ data: hoistedValues.users, isLoading: false })
     mockPendingMerchants.mockReturnValue({
       data: { data: hoistedValues.pendingMerchants, totalPages: 1 },
@@ -111,7 +111,7 @@ describe('PendingMerchantRecords', () => {
   })
 
   it('should render table skeleton when pending merchants data is loading', () => {
-    mockUserProfile.mockReturnValue({ data: { id: 6, name: 'DFSP 1 Admin 1' } })
+    mockUserProfile.mockReturnValue({ data: { id: 6, name: 'DFSP 1 Admin 2' } })
     mockUsers.mockReturnValue({ data: hoistedValues.users, isLoading: false })
     mockPendingMerchants.mockReturnValue({
       data: null,
@@ -129,7 +129,7 @@ describe('PendingMerchantRecords', () => {
   })
 
   it('should render table content when pending merchants data is successfully loaded', () => {
-    mockUserProfile.mockReturnValue({ data: { id: 6, name: 'DFSP 1 Admin 1' } })
+    mockUserProfile.mockReturnValue({ data: { id: 6, name: 'DFSP 1 Admin 2' } })
     mockUsers.mockReturnValue({ data: hoistedValues.users, isLoading: false })
     mockPendingMerchants.mockReturnValue({
       data: { data: hoistedValues.pendingMerchants, totalPages: 1 },
@@ -151,7 +151,7 @@ describe('PendingMerchantRecords', () => {
   })
 
   it('should reset the filter form values when "Clear Filter" button is clicked', () => {
-    mockUserProfile.mockReturnValue({ data: { id: 6, name: 'DFSP 1 Admin 1' } })
+    mockUserProfile.mockReturnValue({ data: { id: 6, name: 'DFSP 1 Admin 2' } })
     mockUsers.mockReturnValue({ data: hoistedValues.users, isLoading: false })
     mockPendingMerchants.mockReturnValue({
       data: { data: hoistedValues.pendingMerchants, totalPages: 1 },
@@ -195,7 +195,7 @@ describe('PendingMerchantRecords', () => {
   })
 
   it('should call "pendingMerchants.refetch" function when the filter form is submitted', async () => {
-    mockUserProfile.mockReturnValue({ data: { id: 6, name: 'DFSP 1 Admin 1' } })
+    mockUserProfile.mockReturnValue({ data: { id: 6, name: 'DFSP 1 Admin 2' } })
     mockUsers.mockReturnValue({ data: hoistedValues.users, isLoading: false })
     mockPendingMerchants.mockReturnValue({
       data: { data: hoistedValues.pendingMerchants, totalPages: 1 },
@@ -220,7 +220,7 @@ describe('PendingMerchantRecords', () => {
   })
 
   it('should disable row select checkbox when the logged in user is the maker', () => {
-    mockUserProfile.mockReturnValue({ data: { id: 5, name: 'DFSP 1 Super Admin 1' } })
+    mockUserProfile.mockReturnValue({ data: { id: 5, name: 'DFSP 1 Admin 1' } })
     mockUsers.mockReturnValue({ data: hoistedValues.users, isLoading: false })
     mockPendingMerchants.mockReturnValue({
       data: { data: hoistedValues.pendingMerchants, totalPages: 1 },
@@ -242,7 +242,7 @@ describe('PendingMerchantRecords', () => {
   })
 
   it('should call "exportMerchants.mutateAsync" function when "Export" button is clicked', () => {
-    mockUserProfile.mockReturnValue({ data: { id: 6, name: 'DFSP 1 Admin 1' } })
+    mockUserProfile.mockReturnValue({ data: { id: 6, name: 'DFSP 1 Admin 2' } })
     mockUsers.mockReturnValue({ data: hoistedValues.users, isLoading: false })
     mockPendingMerchants.mockReturnValue({
       data: { data: hoistedValues.pendingMerchants, totalPages: 1 },
@@ -264,7 +264,7 @@ describe('PendingMerchantRecords', () => {
   })
 
   it('should call "rejectMerchants.mutateAsync" function when "Reject" button is clicked', async () => {
-    mockUserProfile.mockReturnValue({ data: { id: 6, name: 'DFSP 1 Admin 1' } })
+    mockUserProfile.mockReturnValue({ data: { id: 6, name: 'DFSP 1 Admin 2' } })
     mockUsers.mockReturnValue({ data: hoistedValues.users, isLoading: false })
     mockPendingMerchants.mockReturnValue({
       data: { data: hoistedValues.pendingMerchants, totalPages: 1 },
@@ -300,7 +300,7 @@ describe('PendingMerchantRecords', () => {
   })
 
   it('should call "approveMerchants.mutateAsync" function when "Approve" button is clicked', async () => {
-    mockUserProfile.mockReturnValue({ data: { id: 6, name: 'DFSP 1 Admin 1' } })
+    mockUserProfile.mockReturnValue({ data: { id: 6, name: 'DFSP 1 Admin 2' } })
     mockUsers.mockReturnValue({ data: hoistedValues.users, isLoading: false })
     mockPendingMerchants.mockReturnValue({
       data: { data: hoistedValues.pendingMerchants, totalPages: 1 },
@@ -331,7 +331,7 @@ describe('PendingMerchantRecords', () => {
   })
 
   it('should call "revertMerchants.mutateAsync" function when "Revert" button is clicked', async () => {
-    mockUserProfile.mockReturnValue({ data: { id: 6, name: 'DFSP 1 Admin 1' } })
+    mockUserProfile.mockReturnValue({ data: { id: 6, name: 'DFSP 1 Admin 2' } })
     mockUsers.mockReturnValue({ data: hoistedValues.users, isLoading: false })
     mockPendingMerchants.mockReturnValue({
       data: { data: hoistedValues.pendingMerchants, totalPages: 1 },
@@ -367,7 +367,7 @@ describe('PendingMerchantRecords', () => {
   })
 
   it('should render merchant info modal when "View Details" button is clicked', () => {
-    mockUserProfile.mockReturnValue({ data: { id: 6, name: 'DFSP 1 Admin 1' } })
+    mockUserProfile.mockReturnValue({ data: { id: 6, name: 'DFSP 1 Admin 2' } })
     mockUsers.mockReturnValue({ data: hoistedValues.users, isLoading: false })
     mockPendingMerchants.mockReturnValue({
       data: { data: hoistedValues.pendingMerchants, totalPages: 1 },
