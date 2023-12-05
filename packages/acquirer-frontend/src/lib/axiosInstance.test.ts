@@ -10,7 +10,7 @@ describe('Axios Interceptor', () => {
     const mock = new MockAdapter(instance)
     mock.onGet('/users/profile').reply(200, {
       id: 5,
-      name: 'DFSP 1 Super Admin 1',
+      name: 'DFSP 1 Admin 1',
     })
 
     const response = await instance.get('/users/profile')

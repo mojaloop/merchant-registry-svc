@@ -14,10 +14,9 @@ const hoistedValues = vi.hoisted(() => ({
         'Create Roles',
         'View Roles',
         'Edit Roles',
-        'Assignable Admin Roles',
-        'Assignable Operator Roles',
-        'Assignable Auditor Roles',
         'Create Portal Users',
+        'Create Hub Admin',
+        'Create DFSP Admin',
         'View Portal Users',
         'Edit Portal Users',
         'Delete Portal Users',
@@ -30,12 +29,10 @@ const hoistedValues = vi.hoisted(() => ({
       ],
     },
     {
-      description: 'DFSP Super Admin',
+      description: 'DFSP Admin',
       id: 2,
-      name: 'DFSP Super Admin',
+      name: 'DFSP Admin',
       permissions: [
-        'Access Create Merchant Form',
-        'Access Edit Merchant Form',
         'Approve Merchants',
         'Reject Merchants',
         'Revert Merchants',
@@ -47,37 +44,9 @@ const hoistedValues = vi.hoisted(() => ({
         'View Reverted Table',
         'Create Roles',
         'View Roles',
-        'Assignable Admin Roles',
-        'Assignable Operator Roles',
-        'Assignable Auditor Roles',
         'Create Portal Users',
-        'View Portal Users',
-        'Edit Portal Users',
-        'Delete Portal Users',
-        'Export Merchants',
-        'View Audit Logs',
-      ],
-    },
-    {
-      description: 'DFSP Admin',
-      id: 3,
-      name: 'DFSP Admin',
-      permissions: [
-        'Access Create Merchant Form',
-        'Access Edit Merchant Form',
-        'Approve Merchants',
-        'Reject Merchants',
-        'Revert Merchants',
-        'View Merchants',
-        'Create Merchants',
-        'Edit Merchants',
-        'Delete Merchants',
-        'View Pending Table',
-        'View Reverted Table',
-        'View Roles',
-        'Assignable Operator Roles',
-        'Assignable Auditor Roles',
-        'Create Portal Users',
+        'Create DFSP Operator',
+        'Create DFSP Auditor',
         'View Portal Users',
         'Edit Portal Users',
         'Delete Portal Users',
@@ -144,34 +113,13 @@ describe('AddNewUser', () => {
     vi.restoreAllMocks()
   })
 
-  it('should show admin, operator and auditor roles when user is super admin', () => {
-    mockUserProfile.mockReturnValue({
-      isSuccess: true,
-      data: {
-        id: 5,
-        name: 'DFSP 1 Super Admin 1',
-        role: hoistedValues.roles[1],
-      },
-    })
-
-    render(
-      <TestWrapper>
-        <AddNewUser />
-      </TestWrapper>
-    )
-
-    expect(screen.getByText('DFSP Admin')).toBeInTheDocument()
-    expect(screen.getByText('DFSP Operator')).toBeInTheDocument()
-    expect(screen.getByText('DFSP Auditor')).toBeInTheDocument()
-  })
-
   it('should show operator and auditor roles when user is admin', () => {
     mockUserProfile.mockReturnValue({
       isSuccess: true,
       data: {
         id: 6,
         name: 'DFSP 1 Admin 1',
-        role: hoistedValues.roles[2],
+        role: hoistedValues.roles[1],
       },
     })
 
@@ -191,7 +139,7 @@ describe('AddNewUser', () => {
       isSuccess: true,
       data: {
         id: 5,
-        name: 'DFSP 1 Super Admin 1',
+        name: 'DFSP 1 Admin 1',
         role: hoistedValues.roles[1],
       },
     })
@@ -210,11 +158,10 @@ describe('AddNewUser', () => {
 
     fireEvent.change(nameInput, { target: { value: 'John' } })
     fireEvent.change(emailInput, { target: { value: 'john@gmail.com' } })
-    fireEvent.change(roleInput, { target: { value: 'DFSP Admin' } })
+    fireEvent.change(roleInput, { target: { value: 'DFSP Operator' } })
     fireEvent.click(submitButton)
 
     await waitFor(() => Promise.resolve)
-
     expect(mutateAsyncSpy).toHaveBeenCalled()
   })
 
@@ -223,7 +170,7 @@ describe('AddNewUser', () => {
       isSuccess: true,
       data: {
         id: 5,
-        name: 'DFSP 1 Super Admin 1',
+        name: 'DFSP 1 Admin 1',
         role: hoistedValues.roles[1],
       },
     })
@@ -241,7 +188,7 @@ describe('AddNewUser', () => {
 
     fireEvent.change(nameInput, { target: { value: 'John' } })
     fireEvent.change(emailInput, { target: { value: 'john@gmail.com' } })
-    fireEvent.change(roleInput, { target: { value: 'DFSP Admin' } })
+    fireEvent.change(roleInput, { target: { value: 'DFSP Operator' } })
     fireEvent.click(cancelButton)
 
     expect(nameInput.value).toEqual('')

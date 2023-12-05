@@ -31,7 +31,7 @@ export function seedDefaultUsersTests (): void {
     await AppDataSource.manager.delete(PortalRoleEntity, { name: DefaultHubUsers[0].role }) // Deleting role to ensure it does not exist
 
     // Act & Assert
-    await expect(seedAllDefaultUsers(AppDataSource)).rejects.toThrowError(new Error(
+    await expect(seedAllDefaultUsers(AppDataSource)).rejects.toThrow(new Error(
       `Role '${DefaultHubUsers[0].role}' not found for seeding with '${DefaultHubUsers[0].email}'.`
     ))
 
@@ -46,7 +46,7 @@ export function seedDefaultUsersTests (): void {
     await AppDataSource.manager.clear(PortalRoleEntity) // Clearing roles to ensure none exists
 
     // Act & Assert
-    await expect(seedAllDefaultUsers(AppDataSource)).rejects.toThrowError(new Error(
+    await expect(seedAllDefaultUsers(AppDataSource)).rejects.toThrow(new Error(
       `Role '${DefaultDFSPUsers[0].role}' not found for seeding with '${DefaultDFSPUsers[0].email}'.`
     ))
 
@@ -60,7 +60,7 @@ export function seedDefaultUsersTests (): void {
     await seedDefaultRoles(AppDataSource)
 
     // Act & Assert
-    await expect(seedAllDefaultUsers(AppDataSource)).rejects.toThrowError(
+    await expect(seedAllDefaultUsers(AppDataSource)).rejects.toThrow(
       new Error(`DFSP '${DefaultDFSPUsers[0].dfsp_name}' not found for seeding with '${DefaultDFSPUsers[0].email}'.`)
     )
 

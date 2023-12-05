@@ -15,7 +15,7 @@ export const DefaultRoles = [
     permissions: [
       PermissionsEnum.CREATE_PORTAL_USERS,
       PermissionsEnum.CREATE_HUB_ADMIN,
-      PermissionsEnum.CREATE_DFSP_SUPER_AMDIN,
+      PermissionsEnum.CREATE_DFSP_ADMIN,
 
       PermissionsEnum.VIEW_DFSPS,
       PermissionsEnum.CREATE_DFSPS,
@@ -30,31 +30,6 @@ export const DefaultRoles = [
       PermissionsEnum.VIEW_AUDIT_LOGS,
 
       PermissionsEnum.EDIT_SERVER_LOG_LEVEL
-    ]
-  },
-  {
-    name: 'DFSP Super Admin',
-    description: 'DFSP Super Admin Role',
-    permissions: [
-      PermissionsEnum.CREATE_PORTAL_USERS,
-      PermissionsEnum.CREATE_DFSP_ADMIN,
-      PermissionsEnum.CREATE_DFSP_OPERATOR,
-      PermissionsEnum.CREATE_DFSP_AUDITOR,
-
-      PermissionsEnum.APPROVE_MERCHANTS,
-      PermissionsEnum.REJECT_MERCHANTS,
-      PermissionsEnum.REVERT_MERCHANTS,
-
-      PermissionsEnum.VIEW_MERCHANTS,
-      PermissionsEnum.CREATE_MERCHANTS,
-      PermissionsEnum.EDIT_MERCHANTS,
-      // PermissionsEnum.DELETE_MERCHANTS,
-
-      PermissionsEnum.VIEW_PORTAL_USERS,
-
-      PermissionsEnum.EXPORT_MERCHANTS,
-
-      PermissionsEnum.VIEW_AUDIT_LOGS
     ]
   },
   {
