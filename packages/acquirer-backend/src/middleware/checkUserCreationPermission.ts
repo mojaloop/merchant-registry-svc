@@ -17,7 +17,6 @@ export function checkUserCreationPermission () {
       'Hub Super Admin': PermissionsEnum.CREATE_HUB_SUPER_ADMIN,
       'Hub Admin': PermissionsEnum.CREATE_HUB_ADMIN,
 
-      'DFSP Super Admin': PermissionsEnum.CREATE_DFSP_SUPER_AMDIN,
       'DFSP Admin': PermissionsEnum.CREATE_DFSP_ADMIN,
       'DFSP Operator': PermissionsEnum.CREATE_DFSP_OPERATOR,
       'DFSP Auditor': PermissionsEnum.CREATE_DFSP_AUDITOR

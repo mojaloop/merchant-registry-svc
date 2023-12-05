@@ -19,13 +19,13 @@ const hoistedValues = vi.hoisted(() => ({
       registrationStatus: 'Approved',
       maker: {
         id: 5,
-        name: 'DFSP 1 Super Admin 1',
+        name: 'DFSP 1 Admin 1',
       },
     },
   ],
   users: [
-    { id: 5, name: 'DFSP 1 Super Admin 1' },
-    { id: 6, name: 'DFSP 1 Admin 1' },
+    { id: 5, name: 'DFSP 1 Admin 1' },
+    { id: 6, name: 'DFSP 1 Admin 2' },
   ],
 }))
 

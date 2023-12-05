@@ -8,13 +8,13 @@ const hoistedValues = vi.hoisted(() => ({
   users: [
     {
       id: 5,
-      name: 'DFSP 1 Super Admin 1',
-      email: 'd1superadmin1@email.com',
-      phone_number: '0000000',
+      name: 'DFSP 1 Admin 1',
+      email: 'd1admin1@email.com',
+      phone_number: '1111111',
       role: {
         id: 2,
-        name: 'DFSP Super Admin',
-        description: 'DFSP Super Admin',
+        name: 'DFSP Admin',
+        description: 'DFSP Admin',
       },
       user_type: 'DFSP',
       status: 'Active',

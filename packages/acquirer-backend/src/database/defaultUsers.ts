@@ -7,24 +7,9 @@ export const DefaultHubUsers = [
     role: 'Hub Admin'
   }
 ]
+
 export const DefaultDFSPUsers = [
   // Green Bank
-  {
-    email: 'greenbanksuperadmin1@email.com',
-    name: 'Green Bank Super Admin 1',
-    password: 'password',
-    phone_number: '0000000',
-    role: 'DFSP Super Admin',
-    dfsp_name: 'Green Bank'
-  },
-  {
-    email: 'greenbanksuperadmin2@email.com',
-    name: 'Green Bank Super Admin 2',
-    password: 'password',
-    phone_number: '0000000',
-    role: 'DFSP Super Admin',
-    dfsp_name: 'Green Bank'
-  },
   {
     email: 'greenbankadmin1@email.com',
     name: 'Green Bank Admin 1',
@@ -44,18 +29,18 @@ export const DefaultDFSPUsers = [
 
   // DFSP 1
   {
-    email: 'd1superadmin1@email.com',
-    name: 'DFSP 1 Super Admin 1',
-    password: 'password',
-    phone_number: '0000000',
-    role: 'DFSP Super Admin',
-    dfsp_name: 'DFSP 1'
-  },
-  {
     email: 'd1admin1@email.com',
     name: 'DFSP 1 Admin 1',
     password: 'password',
     phone_number: '1111111',
+    role: 'DFSP Admin',
+    dfsp_name: 'DFSP 1'
+  },
+  {
+    email: 'd1admin2@email.com',
+    name: 'DFSP 1 Admin 2',
+    password: 'password',
+    phone_number: '2222222',
     role: 'DFSP Admin',
     dfsp_name: 'DFSP 1'
   },
@@ -86,11 +71,11 @@ export const DefaultDFSPUsers = [
 
   // DFSP 2
   {
-    email: 'd2superadmin1@email.com',
-    name: 'DFSP 2 Super Admin 2',
+    email: 'd2admin2@email.com',
+    name: 'DFSP 2 Admin 2',
     password: 'password',
-    phone_number: '0000000',
-    role: 'DFSP Super Admin',
+    phone_number: '2222222',
+    role: 'DFSP Admin',
     dfsp_name: 'DFSP 2'
   },
   {
@@ -128,18 +113,18 @@ export const DefaultDFSPUsers = [
 
   // DFSP 3
   {
-    email: 'd3superadmin1@email.com',
-    name: 'DFSP 3 Super Admin 1',
-    password: 'password',
-    phone_number: '0000000',
-    role: 'DFSP Super Admin',
-    dfsp_name: 'DFSP 3'
-  },
-  {
     email: 'd3admin1@email.com',
     name: 'DFSP 3 Admin 1',
     password: 'password',
     phone_number: '1111111',
+    role: 'DFSP Admin',
+    dfsp_name: 'DFSP 3'
+  },
+  {
+    email: 'd3admin2@email.com',
+    name: 'DFSP 3 Admin 2',
+    password: 'password',
+    phone_number: '2222222',
     role: 'DFSP Admin',
     dfsp_name: 'DFSP 3'
   },

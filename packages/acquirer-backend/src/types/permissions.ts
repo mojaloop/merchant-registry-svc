@@ -4,7 +4,6 @@ export enum PermissionsEnum {
   CREATE_HUB_SUPER_ADMIN = 'Create Hub Super Admin',
   CREATE_HUB_ADMIN = 'Create Hub Admin',
 
-  CREATE_DFSP_SUPER_AMDIN = 'Create DFSP Super Admin',
   CREATE_DFSP_ADMIN = 'Create DFSP Admin',
   CREATE_DFSP_OPERATOR = 'Create DFSP Operator',
   CREATE_DFSP_AUDITOR = 'Create DFSP Auditor',

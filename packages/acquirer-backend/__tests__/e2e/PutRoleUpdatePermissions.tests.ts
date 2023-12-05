@@ -29,7 +29,7 @@ export function testPutRoleUpdatePermissions (app: Application): void {
     hubUserRole.permissions.push(editRolePermission)
     await AppDataSource.manager.save(hubUserRole)
 
-    const role = await AppDataSource.manager.findOneOrFail(PortalRoleEntity, { where: { name: 'DFSP Super Admin' } })
+    const role = await AppDataSource.manager.findOneOrFail(PortalRoleEntity, { where: { name: 'DFSP Admin' } })
     roleId = role.id
   })
 

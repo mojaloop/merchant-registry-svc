@@ -14,13 +14,13 @@ const hoistedValues = vi.hoisted(() => ({
       eventDescription: 'Get a list of users',
       newValue: '{}',
       oldValue: '{}',
-      portalUserName: 'DFSP 1 Super Admin 1',
+      portalUserName: 'DFSP 1 Admin 1',
       transactionStatus: 'Success',
     },
   ],
   users: [
-    { id: 5, name: 'DFSP 1 Super Admin 1' },
-    { id: 6, name: 'DFSP 1 Admin 1' },
+    { id: 5, name: 'DFSP 1 Admin 1' },
+    { id: 6, name: 'DFSP 1 Admin 2' },
   ],
 }))
 
@@ -148,7 +148,7 @@ describe('AuditLog', () => {
     const clearFilterButton = screen.getByText('Clear Filter')
 
     fireEvent.change(actionTypeInput, { target: { value: 'Access' } })
-    fireEvent.change(portalUserNameInput, { target: { value: 'DFSP 1 Super Admin 1' } })
+    fireEvent.change(portalUserNameInput, { target: { value: 'DFSP 1 Admin 1' } })
     fireEvent.click(clearFilterButton)
 
     expect(actionTypeInput.value).toEqual('')
@@ -177,7 +177,7 @@ describe('AuditLog', () => {
     const searchButton = screen.getByText('Search')
 
     fireEvent.change(actionTypeInput, { target: { value: 'Access' } })
-    fireEvent.change(portalUserNameInput, { target: { value: 'DFSP 1 Super Admin 1' } })
+    fireEvent.change(portalUserNameInput, { target: { value: 'DFSP 1 Admin 1' } })
     fireEvent.click(searchButton)
 
     await waitFor(() => Promise.resolve())
