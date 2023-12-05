@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom'
-import { useMutation } from '@tanstack/react-query'
+import { useQueryClient, useMutation } from '@tanstack/react-query'
 import { useToast } from '@chakra-ui/react'
 import { isAxiosError } from 'axios'
 
@@ -59,13 +59,16 @@ export function useLogin() {
 }
 
 export function useLogout() {
+  const queryClient = useQueryClient()
   const navigate = useNavigate()
   const toast = useToast()
 
   return useMutation({
     mutationFn: logout,
     onSuccess: () => {
+      queryClient.invalidateQueries(['users', 'profile']);
       localStorage.removeItem('token')
+
       navigate('/login')
       toast({
         title: 'Logout Successful!',
