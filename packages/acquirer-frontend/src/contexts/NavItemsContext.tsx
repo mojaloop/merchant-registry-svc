@@ -11,36 +11,43 @@ export const NAV_ITEMS = [
     to: '/registry',
     label: 'Go to registry page',
     icon: MdAssignmentAdd,
+    permissions: ['View Merchants'],
   },
   {
     name: 'Merchant Records',
     label: 'Open merchant records nav menu',
     icon: TbFileText,
+    permissions: ['View Merchants'],
     subNavItems: [
       {
         name: 'All Merchant Records',
         shortName: 'All',
         to: '/merchant-records/all-merchant-records',
+        permissions: ['View Merchants'],
       },
       {
         name: 'Pending Merchant Records',
         shortName: 'Pending',
         to: '/merchant-records/pending-merchant-records',
+        permissions: ['View Merchants'],
       },
       {
         name: 'Reverted Merchant Records',
         shortName: 'Reverted',
         to: '/merchant-records/reverted-merchant-records',
+        permissions: ['View Merchants'],
       },
       {
         name: 'Rejected Merchant Records',
         shortName: 'Rejected',
         to: '/merchant-records/rejected-merchant-records',
+        permissions: ['View Merchants'],
       },
       {
         name: 'Alias Generated Merchant Records',
         shortName: 'Alias Generated',
         to: '/merchant-records/alias-generated-merchant-records',
+        permissions: ['View Merchants'],
       },
     ],
   },
@@ -48,16 +55,19 @@ export const NAV_ITEMS = [
     name: 'Portal User Management',
     label: 'Open portal user management nav menu',
     icon: TbUserSearch,
+    permissions: ['View Portal Users'],
     subNavItems: [
       {
         name: 'Role Management',
         shortName: 'Role',
         to: '/portal-user-management/role-management',
+        permissions: ['View Roles'],
       },
       {
         name: 'User Management',
         shortName: 'User',
         to: '/portal-user-management/user-management',
+        permissions: ['View Portal Users'],
       },
     ],
   },
@@ -66,17 +76,16 @@ export const NAV_ITEMS = [
     to: '/audit-log',
     label: 'Go to audit log page',
     icon: AiOutlineAudit,
+    permissions: ['View Audit Logs'],
   },
 ]
-
-export const RESTRICTED_ROUTE_NAMES = ['Portal User Management', 'Audit Log']
 
 interface NavItemsContextProps {
   navItems: typeof NAV_ITEMS
   setNavItems: React.Dispatch<React.SetStateAction<typeof NAV_ITEMS>>
 }
 
-const NavItemsContext = createContext<NavItemsContextProps | null>(null)
+export const NavItemsContext = createContext<NavItemsContextProps | null>(null)
 
 export const useNavItems = () => {
   const context = useContext(NavItemsContext)
@@ -96,18 +105,28 @@ const NavItemsProvider = ({ children }: { children: React.ReactNode }) => {
     if (!token) return
 
     getUserProfile().then(userProfile => {
-      // Remove portal user management from sidebar if the user is operator or auditor
-      if (
-        userProfile.role.name === 'DFSP Operator' ||
-        userProfile.role.name === 'DFSP Auditor'
-      ) {
-        const navItems = NAV_ITEMS.filter(
-          navItem => !RESTRICTED_ROUTE_NAMES.includes(navItem.name)
-        )
-        setNavItems(navItems)
-      } else {
-        setNavItems(NAV_ITEMS)
-      }
+      // Remove navigation item from sidebar if the user doesn't have the required permissions
+      const userPermissions = userProfile?.role?.permissions || []
+
+      const filteredNavItems = NAV_ITEMS.map(navItem => {
+        // Copy the navItem to avoid mutating the original
+        const newItem = { ...navItem };
+
+        if (newItem.subNavItems) {
+          newItem.subNavItems = newItem.subNavItems.filter(subNavItem => {
+            return subNavItem.permissions ? subNavItem.permissions.some(permission => userPermissions.includes(permission)) : true;
+          });
+        }
+
+        // Check the main navItem
+        if (newItem.permissions && !newItem.permissions.some(permission => userPermissions.includes(permission))) {
+          return null; // Exclude the main navItem if user lacks permissions
+        }
+
+        return newItem;
+      }).filter(item => item !== null); // Remove null items
+
+      setNavItems(filteredNavItems as typeof NAV_ITEMS);
     })
   }, [])
 

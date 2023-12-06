@@ -83,6 +83,17 @@ export async function addUser (req: AuthRequest, res: Response) {
     return res.status(401).send({ message: 'Unauthorized' })
   }
 
+  // Handle Hub Onboarding by Hub Super Admin
+  if (portalUser.user_type === PortalUserType.HUB && portalUser.role.name === 'Hub Super Admin') {
+    const userCountCreatedByHubSuperAdmin = await AppDataSource.manager.find(PortalUserEntity, {
+      where: { created_by: { id: portalUser.id } }
+    })
+
+    if (userCountCreatedByHubSuperAdmin.length >= 3) {
+      return res.status(400).send({ message: 'Hub Super Admin can create only 3 users' })
+    }
+  }
+
   const result = AddUserSchema.safeParse(req.body)
   if (!result.success) {
     await audit(
@@ -138,6 +149,8 @@ export async function addUser (req: AuthRequest, res: Response) {
     newUser.user_type = PortalUserType.DFSP
     newUser.status = PortalUserStatus.UNVERIFIED
     newUser.role = roleObj
+    newUser.created_by = portalUser
+
     if (portalUser.user_type === PortalUserType.HUB) {
       const dfsp = await AppDataSource.manager.findOne(DFSPEntity, {
         where: { id: dfsp_id }

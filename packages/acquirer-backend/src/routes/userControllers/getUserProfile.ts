@@ -1,8 +1,6 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { type Response } from 'express'
 import { type AuthRequest } from 'src/types/express'
-import { AuditActionType, AuditTrasactionStatus } from 'shared-lib'
-import { audit } from '../../utils/audit'
 
 /**
  * @openapi
@@ -33,15 +31,6 @@ export async function getUserProfile (req: AuthRequest, res: Response) {
        },
        password: undefined
      }
-
-  await audit(
-    AuditActionType.ACCESS,
-    AuditTrasactionStatus.SUCCESS,
-    'getUserProfile',
-    'Get Portal User Profile',
-    'PortalUserEntity',
-    {}, {}, portalUser
-  )
 
   res.send({ message: 'GET Portal User Profile', data: user })
 }

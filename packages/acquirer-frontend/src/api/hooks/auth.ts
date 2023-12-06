@@ -1,14 +1,11 @@
 import { useNavigate } from 'react-router-dom'
-import { useQueryClient, useMutation } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useToast } from '@chakra-ui/react'
 import { isAxiosError } from 'axios'
+import { PortalUserType } from 'shared-lib'
 
 import { FALLBACK_ERROR_MESSAGE } from '@/constants/errorMessage'
-import {
-  NAV_ITEMS,
-  RESTRICTED_ROUTE_NAMES,
-  useNavItems,
-} from '@/contexts/NavItemsContext'
+import { NAV_ITEMS, useNavItems } from '@/contexts/NavItemsContext'
 import { login, logout, setPassword } from '../auth'
 import { getUserProfile } from '../users'
 
@@ -24,21 +21,44 @@ export function useLogin() {
     onSuccess: async data => {
       localStorage.setItem('token', data)
 
-      // Remove portal user management from sidebar if the user is operator or auditor
       const userProfile = await getUserProfile()
-      if (
-        userProfile.role.name === 'DFSP Operator' ||
-        userProfile.role.name === 'DFSP Auditor'
-      ) {
-        const navItems = NAV_ITEMS.filter(
-          navItem => !RESTRICTED_ROUTE_NAMES.includes(navItem.name)
-        )
-        setNavItems(navItems)
+      // Remove navigation item from sidebar if the user doesn't have the required permissions
+      const userPermissions = userProfile?.role?.permissions || []
+
+      const filteredNavItems = NAV_ITEMS.map(navItem => {
+        // Copy the navItem to avoid mutating the original
+        const newItem = { ...navItem }
+
+        if (newItem.subNavItems) {
+          // remove subNavItems that user lacks permissions for
+          newItem.subNavItems = newItem.subNavItems.filter(subNavItem => {
+            return subNavItem.permissions
+              ? subNavItem.permissions.some(permission =>
+                  userPermissions.includes(permission)
+                )
+              : true
+          })
+        }
+
+        // Check the main navItem
+        if (
+          newItem.permissions &&
+          !newItem.permissions.some(permission => userPermissions.includes(permission))
+        ) {
+          return null // Exclude the main navItem if user lacks permissions
+        }
+
+        return newItem
+      }).filter(item => item !== null) // Remove null items
+
+      setNavItems(filteredNavItems as typeof NAV_ITEMS)
+
+      if (userProfile?.user_type === PortalUserType.HUB) {
+        navigate('/portal-user-management/user-management')
       } else {
-        setNavItems(NAV_ITEMS)
+        navigate('/')
       }
 
-      navigate('/')
       toast({
         title: 'Login Successful!',
         status: 'success',
@@ -66,7 +86,7 @@ export function useLogout() {
   return useMutation({
     mutationFn: logout,
     onSuccess: () => {
-      queryClient.invalidateQueries(['users', 'profile']);
+      queryClient.invalidateQueries(['users', 'profile'])
       localStorage.removeItem('token')
 
       navigate('/login')
@@ -78,6 +98,8 @@ export function useLogout() {
     },
     onError: error => {
       if (isAxiosError(error)) {
+        queryClient.invalidateQueries(['users', 'profile'])
+        localStorage.removeItem('token')
         toast({
           title: 'Logout Failed!',
           description: error.response?.data.message || 'Logout Failed. Please try again.',
