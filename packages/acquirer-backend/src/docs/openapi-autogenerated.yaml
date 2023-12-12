@@ -443,6 +443,16 @@ paths:
       responses:
         '200':
           description: Health Check
+  /health-check/is-hubonboard-complete:
+    get:
+      tags:
+        - Health Check
+      security:
+        - Authorization: []
+      summary: Health Check for Hub Onboarding
+      responses:
+        '200':
+          description: Health Check for Hub Onboarding
   /health-check/sendgrid-email-service:
     get:
       tags:

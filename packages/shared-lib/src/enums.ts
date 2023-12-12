@@ -53,7 +53,8 @@ export enum PortalUserStatus {
   FRESH = 'Fresh',
   INACTIVE = 'Inactive',
   ACTIVE = 'Active',
-  BLOCKED = 'Blocked'
+  BLOCKED = 'Blocked',
+  DISABLED = 'Disabled'
 }
 
 export enum PortalUserType {

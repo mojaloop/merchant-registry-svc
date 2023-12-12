@@ -15,7 +15,7 @@ import { PermissionsEnum } from '../types/permissions'
 import { DefaultRoles } from './defaultRoles'
 import { PortalPermissionEntity } from '../entity/PortalPermissionEntity'
 import { PortalRoleEntity } from '../entity/PortalRoleEntity'
-import { DefaultDFSPUsers, DefaultHubUsers } from './defaultUsers'
+import { DefaultDFSPUsers, DefaultHubSuperAdmin, DefaultHubUsers } from './defaultUsers'
 import { DefaultDFSPs } from './defaultDfsps'
 import { DFSPEntity } from '../entity/DFSPEntity'
 import { CountryEntity } from '../entity/CountryEntity'
@@ -23,8 +23,10 @@ import { CountrySubdivisionEntity } from '../entity/CountrySubdivisionEntity'
 import { DistrictEntity } from '../entity/DistrictEntity'
 import { type DataSource } from 'typeorm'
 import { readEnv } from '../setup/readEnv'
+import { ApplicationStateEntity } from '../entity/ApplicationStateEntity'
 
 const SEED_DEFAULT_DFSP_USERS = readEnv('SEED_DEFAULT_DFSP_USERS', 'false') === 'true'
+const SEED_DEFAULT_HUB_USERS = readEnv('SEED_DEFAULT_HUB_USERS', 'false') === 'true'
 
 export const initializeDatabase = async (): Promise<void> => {
   logger.info('Connecting MySQL database...')
@@ -46,7 +48,9 @@ export const initializeDatabase = async (): Promise<void> => {
         await seedDefaultDFSPUsers(AppDataSource)
       }
 
-      await seedDefaultHubUsers(AppDataSource)
+      if (SEED_DEFAULT_HUB_USERS) {
+        await seedDefaultHubUsers(AppDataSource)
+      }
 
       /* istanbul ignore next */
       if (process.env.NODE_ENV !== 'test') {
@@ -54,6 +58,17 @@ export const initializeDatabase = async (): Promise<void> => {
         // because it takes a long time to seed
         const filePath = path.join(__dirname, 'countries.json')
         await seedCountriesSubdivisionsDistricts(AppDataSource, filePath)
+      }
+
+      let applicationState = await AppDataSource.manager.findOne(ApplicationStateEntity, { where: {} })
+      if (applicationState == null) {
+        applicationState = new ApplicationStateEntity()
+        applicationState.is_hub_onboarding_complete = false
+        await AppDataSource.manager.save(applicationState)
+      }
+
+      if (!applicationState.is_hub_onboarding_complete) {
+        await seedDefaultHubSuperAdmin(AppDataSource)
       }
     })
     .catch((error) => {
@@ -211,6 +226,37 @@ export async function seedDefaultDFSPUsers (appDataSource: DataSource): Promise<
       logger.info(`User ${user.email} already seeded. Skipping...`)
     }
   }
+}
+
+export async function seedDefaultHubSuperAdmin (appDataSource: DataSource): Promise<void> {
+  logger.info('Seeding Default Hub Super Admin...')
+  const roles = await appDataSource.manager.find(PortalRoleEntity)
+
+  const user = DefaultHubSuperAdmin
+  const userEntity = await appDataSource.manager.findOne(
+    PortalUserEntity,
+    { where: { email: user.email } }
+  )
+
+  if (userEntity != null) {
+    logger.info(`User ${user.email} already seeded. Skipping...`)
+    return
+  }
+
+  const newUserRole = roles.find(role => user.role === role.name)
+  if (newUserRole == null) {
+    throw new Error(`Role '${user.role}' not found for seeding with '${user.email}'.`)
+  }
+
+  const newUser = new PortalUserEntity()
+  newUser.name = user.name
+  newUser.email = user.email
+  newUser.password = await hashPassword(user.password)
+  newUser.phone_number = user.phone_number
+  newUser.user_type = PortalUserType.HUB
+  newUser.status = PortalUserStatus.ACTIVE
+  newUser.role = newUserRole
+  await appDataSource.manager.save(newUser)
 }
 
 export async function seedDefaultHubUsers (appDataSource: DataSource): Promise<void> {

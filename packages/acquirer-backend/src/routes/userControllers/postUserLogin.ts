@@ -112,6 +112,22 @@ export async function postUserLogin (req: Request, res: Response) {
       throw new Error('User need to reset password')
     }
 
+    if (user.status === PortalUserStatus.BLOCKED) {
+      throw new Error('User is blocked')
+    }
+
+    if (user.status === PortalUserStatus.DISABLED) {
+      throw new Error('User is disabled')
+    }
+
+    if (user.status === PortalUserStatus.INACTIVE) {
+      throw new Error('User is inactive')
+    }
+
+    if (user.status !== PortalUserStatus.ACTIVE) {
+      throw new Error('User needs to be active to login')
+    }
+
     const passwordMatch = await bcrypt.compare(req.body.password, user.password)
     if (!passwordMatch) {
       throw new Error('Invalid credentials')
