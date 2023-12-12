@@ -82,7 +82,7 @@ export async function verifyUserEmail (req: Request, res: Response) {
     await PortalUserRepository.save(user)
 
     // Handle Hub Onboarding Flow
-    if (user.created_by.email === DefaultHubSuperAdmin.email) {
+    if (user.created_by?.email === DefaultHubSuperAdmin.email) {
       const userCountCreatedByHubSuperAdmin = await PortalUserRepository.count({ where: { created_by: { id: user.created_by.id } } })
 
       if (userCountCreatedByHubSuperAdmin >= 3) {
