@@ -25,6 +25,8 @@ export const DefaultRoles = [
       PermissionsEnum.DELETE_DFSPS,
 
       PermissionsEnum.VIEW_PORTAL_USERS,
+      PermissionsEnum.EDIT_PORTAL_USERS_STATUS,
+
       PermissionsEnum.VIEW_MERCHANTS,
 
       PermissionsEnum.VIEW_ROLES,
