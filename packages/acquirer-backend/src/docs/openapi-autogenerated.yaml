@@ -1705,6 +1705,30 @@ paths:
                   message:
                     type: string
                     example: Invalid credentials
+  /users/{user_id}/status:
+    put:
+      tags:
+        - Portal Users
+      summary: Update User Status
+      security:
+        - Authorization: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  enum:
+                    - Active
+                    - Inactive
+                    - Blocked
+                    - Disabled
+      responses:
+        '200':
+          description: Update User Status Successful
   /users/refresh:
     post:
       tags:

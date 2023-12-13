@@ -16,6 +16,8 @@ export enum PermissionsEnum {
   DELETE_DFSPS = 'Delete DFSPs',
 
   VIEW_PORTAL_USERS = 'View Portal Users',
+  EDIT_PORTAL_USERS_STATUS = 'Edit Portal Users Status',
+
   VIEW_MERCHANTS = 'View Merchants',
   CREATE_MERCHANTS = 'Create Merchants',
   EDIT_MERCHANTS = 'Edit Merchants',
