@@ -403,16 +403,6 @@ paths:
                   type: string
                   example: Other
                   description: The type of the dfsp
-                joinedDate:
-                  type: string
-                  example: '2021-01-01'
-                  description: The date the dfsp joined the hub
-                  format: date
-                  pattern: ^[0-9]{4}-[0-9]{2}-[0-9]{2}$
-                activated:
-                  type: boolean
-                  example: true
-                  description: Whether the dfsp is activated
                 logoURI:
                   type: string
                   example: https://picsum.photos/200/300

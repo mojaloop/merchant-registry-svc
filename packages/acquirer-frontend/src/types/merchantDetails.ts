@@ -95,7 +95,6 @@ export interface DFSP {
   name: string
   dfsp_type: string
   logo_uri: string
-  joined_date: string
   activated: boolean
   created_at: string
   updated_at: string
