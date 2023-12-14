@@ -52,14 +52,6 @@ export const initializeDatabase = async (): Promise<void> => {
         await seedDefaultHubUsers(AppDataSource)
       }
 
-      /* istanbul ignore next */
-      if (process.env.NODE_ENV !== 'test') {
-        // only seed countries, subdivisions, districts in non-test environment
-        // because it takes a long time to seed
-        const filePath = path.join(__dirname, 'countries.json')
-        await seedCountriesSubdivisionsDistricts(AppDataSource, filePath)
-      }
-
       let applicationState = await AppDataSource.manager.findOne(ApplicationStateEntity, { where: {} })
       if (applicationState == null) {
         applicationState = new ApplicationStateEntity()
@@ -69,6 +61,14 @@ export const initializeDatabase = async (): Promise<void> => {
 
       if (!applicationState.is_hub_onboarding_complete) {
         await seedDefaultHubSuperAdmin(AppDataSource)
+      }
+
+      /* istanbul ignore next */
+      if (process.env.NODE_ENV !== 'test') {
+        // only seed countries, subdivisions, districts in non-test environment
+        // because it takes a long time to seed
+        const filePath = path.join(__dirname, 'countries.json')
+        await seedCountriesSubdivisionsDistricts(AppDataSource, filePath)
       }
     })
     .catch((error) => {
