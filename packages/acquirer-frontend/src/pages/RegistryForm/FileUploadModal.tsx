@@ -68,8 +68,8 @@ const FileUploadModal = ({
     <Modal
       isOpen={isOpen}
       onClose={() => {
-        onClose()
         resetUploadStates()
+        onClose()
       }}
     >
       <ModalOverlay bg='hsl(0, 0%, 100%, 0.6)' backdropFilter='blur(4px)' />
@@ -110,6 +110,7 @@ const FileUploadModal = ({
             onDragOver={e => e.preventDefault()}
             onDragEnter={() => setIsDraggingOver(true)}
             onDragLeave={() => setIsDraggingOver(false)}
+            data-testid='dropzone'
           >
             <Stack content='center' align='center' spacing='3'>
               <Box w='20' h='20' position='relative'>

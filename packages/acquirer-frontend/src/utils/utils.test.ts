@@ -11,6 +11,7 @@ const fn = vi.fn()
 
 afterEach(() => {
   fn.mockClear()
+  vi.unstubAllGlobals()
 })
 
 describe('scrollToTop', () => {
@@ -24,7 +25,6 @@ describe('scrollToTop', () => {
     scrollToTop()
 
     expect(fn.mock.calls[0]).toEqual(['scroll'])
-    vi.unstubAllGlobals()
   })
 })
 
