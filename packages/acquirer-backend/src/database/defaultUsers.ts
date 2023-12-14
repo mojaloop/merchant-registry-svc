@@ -1,3 +1,11 @@
+export const DefaultHubSuperAdmin = {
+  email: 'hubsuperadmin@email.com',
+  name: 'Hub Super Admin',
+  password: 'password',
+  phone_number: '0000000',
+  role: 'Hub Super Admin'
+}
+
 export const DefaultHubUsers = [
   {
     email: 'hubuser1@email.com',

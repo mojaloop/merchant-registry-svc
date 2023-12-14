@@ -24,10 +24,7 @@ export class DFSPEntity {
   @Column({ type: 'simple-enum', enum: DFSPType, nullable: false, default: DFSPType.BANK })
     dfsp_type!: DFSPType
 
-  @Column({ type: 'datetime', nullable: false })
-    joined_date!: Date
-
-  @Column({ type: 'boolean', nullable: false, default: false })
+  @Column({ type: 'boolean', nullable: false, default: true })
     activated!: boolean
 
   @Column({ nullable: false, length: 512 })

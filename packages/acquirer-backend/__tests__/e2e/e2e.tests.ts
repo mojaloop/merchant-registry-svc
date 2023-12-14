@@ -1,8 +1,6 @@
 import express from 'express'
 import logger from '../../src/services/logger'
-import {
-  createMerchantDocumentBucket
-} from '../../src/services/S3Client'
+import { createMerchantDocumentBucket } from '../../src/services/S3Client'
 import { initializeDatabase } from '../../src/database/initDatabase'
 import { AppDataSource } from '../../src/database/dataSource'
 import setupRoutes from '../../src/setup/routesSetup'
@@ -50,6 +48,7 @@ import { testVerifyUser } from './VerifyUser.tests'
 import { testPostUserLogout } from './PostUserLogout.tests'
 import { testGetCountryCode } from './GetCountryCode.tests'
 import { testGetHubAudits } from './GetHubAudits.tests'
+import { testPutUserStatus } from './PutUserStatus.tests'
 
 jest.mock('@sendgrid/mail', () => ({
   setApiKey: jest.fn(),
@@ -187,6 +186,10 @@ describe('E2E API Tests', () => {
 
   describe('PUT Reset User Password API Tests', () => {
     testPutUserResetPassword(app)
+  })
+
+  describe('PUT User Status Tests', () => {
+    testPutUserStatus(app)
   })
 
   describe('PUT Refresh User Token API Tests', () => {

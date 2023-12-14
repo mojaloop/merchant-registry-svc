@@ -49,5 +49,10 @@ export class PortalUserEntity extends PersonEntity {
 
   @OneToMany(() => JwtTokenEntity, jwtToken => jwtToken.user)
     tokens!: JwtTokenEntity[]
-  // TODO: Role Based Permission etc. use Mojaloop OAuth? WSO2? Keycloak?
+
+  @OneToMany(() => PortalUserEntity, user => user.created_by)
+    created_users!: PortalUserEntity[]
+
+  @ManyToOne(() => PortalUserEntity, user => user.created_users)
+    created_by!: PortalUserEntity
 }

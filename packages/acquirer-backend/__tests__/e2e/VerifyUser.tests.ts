@@ -1,4 +1,5 @@
 import request from 'supertest'
+import ms from 'ms'
 import { type Application } from 'express'
 import jwt from 'jsonwebtoken'
 import { readEnv } from '../../src/setup/readEnv'
@@ -6,6 +7,7 @@ import { AppDataSource } from '../../src/database/dataSource'
 import { PortalUserEntity } from '../../src/entity/PortalUserEntity'
 import { PortalUserStatus, PortalUserType } from 'shared-lib'
 import { EmailVerificationTokenEntity } from '../../src/entity/EmailVerificationToken'
+import { JwtTokenEntity } from '../../src/entity/JwtTokenEntity'
 
 export function testVerifyUser (app: Application): void {
   let unVerifyUser: any
@@ -24,6 +26,13 @@ export function testVerifyUser (app: Application): void {
     unVerifyUserToken = jwt.sign(
       { id: unVerifyUser.id, email: unVerifyUser.email },
       JWT_SECRET, { expiresIn: '1y' })
+
+    await AppDataSource.manager.save(JwtTokenEntity, {
+      token: unVerifyUserToken,
+      user: unVerifyUser,
+      expires_at: new Date(Date.now() + ms('1d')),
+      last_used: new Date()
+    })
 
     await AppDataSource.manager.save(EmailVerificationTokenEntity, {
       user: unVerifyUser,

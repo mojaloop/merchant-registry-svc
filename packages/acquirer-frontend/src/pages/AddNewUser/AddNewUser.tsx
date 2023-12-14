@@ -26,6 +26,11 @@ const AddNewUser = () => {
   let roleOptions
   if (roles.isSuccess && userProfile.isSuccess) {
     const createAccesses: Role[] = []
+
+    if(userProfile.data.role.permissions.includes('Create Hub Admin')) {
+      createAccesses.push(roles.data.data.filter(role => role.name === 'Hub Admin')[0])
+    }
+
     if (userProfile.data.role.permissions.includes('Create DFSP Admin')) {
       createAccesses.push(roles.data.data.filter(role => role.name === 'DFSP Admin')[0])
     }

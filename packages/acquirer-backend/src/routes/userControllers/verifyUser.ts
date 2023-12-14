@@ -8,6 +8,9 @@ import { PortalUserEntity } from '../../entity/PortalUserEntity'
 import { PortalUserStatus } from 'shared-lib'
 import { readEnv } from '../../setup/readEnv'
 import { type IJWTUser } from '../../types/jwtUser'
+import { DefaultHubSuperAdmin } from '../../database/defaultUsers'
+import { JwtTokenEntity } from '../../entity/JwtTokenEntity'
+import { ApplicationStateEntity } from '../../entity/ApplicationStateEntity'
 
 const JWT_SECRET = readEnv('JWT_SECRET', 'secret') as string
 const FRONTEND_SET_PASSWORD_URL = readEnv('FRONTEND_SET_PASSWORD_URL', '') as string
@@ -63,7 +66,8 @@ export async function verifyUserEmail (req: Request, res: Response) {
   }
 
   const user = await PortalUserRepository.findOne({
-    where: { email: emailVerificationToken.email }
+    where: { email: emailVerificationToken.email },
+    relations: ['created_by']
   })
 
   if (user == null) {
@@ -76,6 +80,29 @@ export async function verifyUserEmail (req: Request, res: Response) {
   try {
     await EmailVerificationTokenRepository.save(emailVerificationToken)
     await PortalUserRepository.save(user)
+
+    // Handle Hub Onboarding Flow
+    if (user.created_by?.email === DefaultHubSuperAdmin.email) {
+      const userCountCreatedByHubSuperAdmin = await PortalUserRepository.count({ where: { created_by: { id: user.created_by.id } } })
+
+      if (userCountCreatedByHubSuperAdmin >= 3) {
+        //
+        // Remove all login tokens of the Hub Super Admin
+        // And Disable the Hub Super Admin
+        //
+        const tokens = await AppDataSource.getRepository(JwtTokenEntity).find({
+          where: { user: { id: user.created_by.id } }
+        })
+
+        const tokenRepository = AppDataSource.getRepository(JwtTokenEntity)
+        for (const token of tokens) {
+          await tokenRepository.remove(token)
+        }
+
+        await PortalUserRepository.update({ id: user.created_by.id }, { status: PortalUserStatus.DISABLED })
+        await AppDataSource.manager.update(ApplicationStateEntity, {}, { is_hub_onboarding_complete: true })
+      }
+    }
   } catch (err)/* istanbul ignore next */ {
     logger.error('%o', err)
     return res.status(500).send({ message: 'Internal Server Error', error: err })

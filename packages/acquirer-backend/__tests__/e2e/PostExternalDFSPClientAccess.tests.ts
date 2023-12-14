@@ -27,7 +27,6 @@ export function testPostExternalDFSPClientAcess (app: Application): void {
         name: 'NewDFSP',
         fspId: 'DFSP001',
         dfspType: 'Other',
-        joinedDate: '2021-01-01',
         activated: true,
         logoURI: 'https://picsum.photos/200/300'
       })
@@ -114,7 +113,6 @@ export function testPostExternalDFSPClientAcess (app: Application): void {
         name: 'NewDFSP',
         fspId: 'DFSP001',
         dfspType: 'Other',
-        joinedDate: '2021-01-01',
         activated: true,
         logoURI: 'https://picsum.photos/200/300'
       })

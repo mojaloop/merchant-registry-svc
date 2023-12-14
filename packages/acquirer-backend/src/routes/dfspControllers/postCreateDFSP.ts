@@ -13,8 +13,6 @@ const createDFSPSchema = z.object({
   name: z.string(),
   fspId: z.string(),
   dfspType: z.nativeEnum(DFSPType),
-  joinedDate: z.string(),
-  activated: z.boolean(),
   logoURI: z.string()
 })
 /**
@@ -48,16 +46,6 @@ const createDFSPSchema = z.object({
  *                 type: string
  *                 example: "Other"
  *                 description: "The type of the dfsp"
- *               joinedDate:
- *                 type: string
- *                 example: "2021-01-01"
- *                 description: "The date the dfsp joined the hub"
- *                 format: date
- *                 pattern: "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
- *               activated:
- *                 type: boolean
- *                 example: true
- *                 description: "Whether the dfsp is activated"
  *               logoURI:
  *                 type: string
  *                 example: "https://picsum.photos/200/300"
@@ -102,7 +90,7 @@ export async function postCreateDFSP (req: AuthRequest, res: Response) {
       message: 'Invalid request body', errors: parsedBody.error.formErrors.fieldErrors
     })
   }
-  const { name, fspId, dfspType, joinedDate, activated, logoURI } = parsedBody.data
+  const { name, fspId, dfspType, logoURI } = parsedBody.data
 
   try {
     const DFSPRepository = AppDataSource.manager.getRepository(DFSPEntity)
@@ -112,8 +100,6 @@ export async function postCreateDFSP (req: AuthRequest, res: Response) {
     newDFSP.name = name
     newDFSP.fspId = fspId
     newDFSP.dfsp_type = dfspType
-    newDFSP.joined_date = new Date(joinedDate)
-    newDFSP.activated = activated
     newDFSP.logo_uri = logoURI
 
     // Save to database

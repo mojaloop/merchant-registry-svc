@@ -5,6 +5,8 @@ export const DefaultRoles = [
     name: 'Hub Super Admin',
     description: 'Hub Super Admin Role',
     permissions: [
+      PermissionsEnum.VIEW_PORTAL_USERS,
+      PermissionsEnum.VIEW_ROLES,
       PermissionsEnum.CREATE_PORTAL_USERS,
       PermissionsEnum.CREATE_HUB_ADMIN
     ]
@@ -23,6 +25,8 @@ export const DefaultRoles = [
       PermissionsEnum.DELETE_DFSPS,
 
       PermissionsEnum.VIEW_PORTAL_USERS,
+      PermissionsEnum.EDIT_PORTAL_USERS_STATUS,
+
       PermissionsEnum.VIEW_MERCHANTS,
 
       PermissionsEnum.VIEW_ROLES,

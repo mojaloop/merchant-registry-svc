@@ -1,5 +1,8 @@
+import { useEffect, useState } from 'react'
 import { Navigate, useRoutes } from 'react-router-dom'
+import { PortalUserType } from 'shared-lib'
 
+import { getUserProfile } from '@/api/users'
 import { Layout } from '@/components/layout'
 import {
   AddNewUser,
@@ -19,6 +22,32 @@ import {
 } from '@/pages'
 
 const Routes = () => {
+  const [redirectTarget, setRedirectTarget] = useState('/registry')
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      try {
+        if (!localStorage.getItem('token')) {
+          setIsLoading(false)
+          return
+        }
+
+        const userProfile = await getUserProfile()
+        if (userProfile.user_type === PortalUserType.HUB) {
+          setRedirectTarget('/portal-user-management/user-management')
+        }
+
+        setIsLoading(false)
+      } catch (error) {
+        console.error('Error fetching user profile:', error)
+        setIsLoading(false)
+      }
+    }
+
+    fetchUserProfile()
+  }, [redirectTarget])
+
   const element = useRoutes([
     {
       path: '/',
@@ -26,7 +55,7 @@ const Routes = () => {
       children: [
         {
           index: true,
-          element: <Navigate to='/registry' replace />,
+          element: <Navigate to={redirectTarget} replace />,
         },
         {
           path: 'registry',
@@ -101,7 +130,9 @@ const Routes = () => {
       caseSensitive: true,
     },
   ])
-
+  if (isLoading) {
+    return <div></div>
+  }
   return element
 }
 

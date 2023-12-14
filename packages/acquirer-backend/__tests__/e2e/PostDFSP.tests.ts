@@ -42,7 +42,6 @@ export function testPostDFSP (app: Application): void {
         name: 12345,
         fspId: 555555,
         dfspType: 'non-existing-type',
-        joinedDate: 66666,
         activated: 'true',
         logoURI: 77777
       })
@@ -54,7 +53,6 @@ export function testPostDFSP (app: Application): void {
     expect(res.body.errors).toHaveProperty('name')
     expect(res.body.errors).toHaveProperty('fspId')
     expect(res.body.errors).toHaveProperty('dfspType')
-    expect(res.body.errors).toHaveProperty('joinedDate')
   })
 
   it('should respond with 201 and DFSP data when everything is valid.', async () => {
@@ -65,7 +63,6 @@ export function testPostDFSP (app: Application): void {
         name: 'NewDFSP',
         fspId: 'DFSP001',
         dfspType: 'Other',
-        joinedDate: '2021-01-01',
         activated: true,
         logoURI: 'https://picsum.photos/200/300'
       })
@@ -99,7 +96,6 @@ export function testPostDFSP (app: Application): void {
         name: 'NewDFSP',
         fspId: 'DFSP001',
         dfspType: 'Other',
-        joinedDate: '2021-01-01',
         activated: true,
         logoURI: 'https://picsum.photos/200/300'
       })

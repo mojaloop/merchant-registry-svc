@@ -10,9 +10,11 @@ merchant registry, which will serve as an oracle in the payment process.
 The Mojaloop's Account Lookup Service will interact with the merchant registry
 and proceed with the necessary steps in the payment transaction.
 
+![Draw.io Diagram](./docs/Services.jpg)
+
 ##### For more information on Requirements, Diagrams, and User Stories
 
-[Merchant Payment Documentation Repository](https://github.com/mojaloop/merchant-payment-docs/tree/master)
+[Merchant Payment Documentation Repository](https://github.com/mojaloop/merchant-payment-docs/)
 
 ## Workspaces
 
@@ -32,8 +34,7 @@ See the README.md file on each services for more Environment Variable Configurat
     - `docker` and `docker-compose`
     - [SendGrid](https://sendgrid.com/) API key is required for Email Verification 
         - Register at [SendGrid](https://sendgrid.com/) and create new API Key at https://app.sendgrid.com/settings/api_keys
-        - Create a `.env` file inside `packages/acquirer-backend/` and copy everything from `.env.example` into it
-        - Update the `SENDGRID_API_KEY` in the `.env` file with the new API Key obtained from https://app.sendgrid.com/settings/api_keys
+        - Update the `SENDGRID_API_KEY` in the `./packages/acquirer-backend/.env` file with the new API Key obtained from https://app.sendgrid.com/settings/api_keys
 
 * Run 
     ```bash 

@@ -13,6 +13,9 @@ import { postUserRefresh } from './userControllers/refreshUserToken'
 import { postUserLogout } from './userControllers/postUserLogout'
 import { checkUserCreationPermission } from '../middleware/checkUserCreationPermission'
 import { authRateLimiter } from '../middleware/rateLimiter'
+import { checkPortalUserType } from '../middleware/checkUserType'
+import { PortalUserType } from 'shared-lib'
+import { putUserStatus } from './userControllers/putUserStatus'
 
 /**
  * @openapi
@@ -29,26 +32,26 @@ import { authRateLimiter } from '../middleware/rateLimiter'
  */
 
 const router = express.Router()
-router.get('/users',
-  authenticateJWT,
-  checkPermissions(PermissionsEnum.VIEW_PORTAL_USERS),
-  getUsers
-)
+router.get('/users', authenticateJWT, checkPermissions(PermissionsEnum.VIEW_PORTAL_USERS), getUsers)
 
-router.post('/users/add',
+router.post(
+  '/users/add',
   authenticateJWT,
   checkPermissions(PermissionsEnum.CREATE_PORTAL_USERS),
   checkUserCreationPermission(),
   addUser
 )
 
-router.get('/users/verify',
-  verifyUserEmail
-)
+router.get('/users/verify', verifyUserEmail)
 
-router.put('/users/reset-password',
+router.put('/users/reset-password', authenticateJWT, putUserResetPassword)
+
+router.put(
+  '/users/:user_id/status',
   authenticateJWT,
-  putUserResetPassword
+  checkPermissions(PermissionsEnum.EDIT_PORTAL_USERS_STATUS),
+  checkPortalUserType(PortalUserType.HUB),
+  putUserStatus
 )
 
 router.post('/users/login', authRateLimiter, postUserLogin)
