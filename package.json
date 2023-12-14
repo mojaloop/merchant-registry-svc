@@ -19,6 +19,7 @@
 
     "lint:check:frontend": "npm run lint -w acquirer-frontend",
     "type:check:frontend": "npm run type:check -w acquirer-frontend",
+    "format:write:frontend": "npm run format:write -w acquirer-frontend",
     "dep:check:frontend": "npm run dep:check -w acquirer-frontend",
     "test:unit:frontend": "npm run test -w acquirer-frontend",
 

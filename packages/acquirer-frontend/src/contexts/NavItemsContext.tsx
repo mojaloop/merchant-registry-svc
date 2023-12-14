@@ -110,23 +110,30 @@ const NavItemsProvider = ({ children }: { children: React.ReactNode }) => {
 
       const filteredNavItems = NAV_ITEMS.map(navItem => {
         // Copy the navItem to avoid mutating the original
-        const newItem = { ...navItem };
+        const newItem = { ...navItem }
 
         if (newItem.subNavItems) {
           newItem.subNavItems = newItem.subNavItems.filter(subNavItem => {
-            return subNavItem.permissions ? subNavItem.permissions.some(permission => userPermissions.includes(permission)) : true;
-          });
+            return subNavItem.permissions
+              ? subNavItem.permissions.some(permission =>
+                  userPermissions.includes(permission)
+                )
+              : true
+          })
         }
 
         // Check the main navItem
-        if (newItem.permissions && !newItem.permissions.some(permission => userPermissions.includes(permission))) {
-          return null; // Exclude the main navItem if user lacks permissions
+        if (
+          newItem.permissions &&
+          !newItem.permissions.some(permission => userPermissions.includes(permission))
+        ) {
+          return null // Exclude the main navItem if user lacks permissions
         }
 
-        return newItem;
-      }).filter(item => item !== null); // Remove null items
+        return newItem
+      }).filter(item => item !== null) // Remove null items
 
-      setNavItems(filteredNavItems as typeof NAV_ITEMS);
+      setNavItems(filteredNavItems as typeof NAV_ITEMS)
     })
   }, [])
 

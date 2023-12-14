@@ -86,7 +86,7 @@ export function useLogout() {
   return useMutation({
     mutationFn: logout,
     onSuccess: () => {
-      queryClient.clear();
+      queryClient.clear()
       localStorage.removeItem('token')
 
       navigate('/login')

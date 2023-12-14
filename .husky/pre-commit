@@ -9,3 +9,4 @@ npm run lint:check:oracle
 
 npm run type:check:frontend
 npm run lint:check:frontend
+npm run format:write:frontend

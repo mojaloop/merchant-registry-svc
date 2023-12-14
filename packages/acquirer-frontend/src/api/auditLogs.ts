@@ -1,8 +1,9 @@
+import { PortalUserType } from 'shared-lib'
+
 import type { AuditLogParams, AuditLogResponse, AuditLogType } from '@/types/auditLogs'
 import type { PaginationParams } from '@/types/pagination'
 import instance from '@/lib/axiosInstance'
-import {getUserProfile} from './users'
-import {PortalUserType} from 'shared-lib'
+import { getUserProfile } from './users'
 
 export function transformIntoTableData(auditLogResponse: AuditLogResponse): AuditLogType {
   return {
@@ -21,7 +22,7 @@ export function transformIntoTableData(auditLogResponse: AuditLogResponse): Audi
 export async function getAuditLogs(params: AuditLogParams & PaginationParams) {
   let auditRoute = '/audits/merchant'
   const userProfile = await getUserProfile()
-  if(userProfile.user_type === PortalUserType.HUB){
+  if (userProfile.user_type === PortalUserType.HUB) {
     auditRoute = '/audits/hub'
   }
   const response = await instance.get<{ data: AuditLogResponse[]; totalPages: number }>(
