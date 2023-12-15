@@ -185,7 +185,7 @@ describe('BusinessInfoForm', () => {
     expect(licenseNumberInput.value).toEqual('')
   })
 
-  it('should focus the "Upload file" button when it is clicked', () => {
+  it('should render file upload modal when upload file icon button is clicked', () => {
     mockDraft.mockReturnValue({ data: hoistedValues.draft })
 
     render(
@@ -197,7 +197,7 @@ describe('BusinessInfoForm', () => {
     const uploadFileButton = screen.getByLabelText('Upload file')
     fireEvent.click(uploadFileButton)
 
-    expect(uploadFileButton).toEqual(document.activeElement)
+    expect(screen.getByRole('dialog')).toBeInTheDocument()
   })
 
   it('should call "createBusinessInfo.mutate" when it is not a draft', async () => {
