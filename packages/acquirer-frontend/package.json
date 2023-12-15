@@ -13,6 +13,7 @@
     "preview": "vite preview",
     "theme": "chakra-cli tokens ./src/theme/index.ts",
     "theme:watch": "chakra-cli tokens ./src/theme/index.ts --watch",
+    "format:write": "prettier --write \"**/*.{ts,tsx,mdx}\" --cache",
     "test": "vitest",
     "coverage": "vitest run --coverage"
   },

@@ -27,7 +27,7 @@ const AddNewUser = () => {
   if (roles.isSuccess && userProfile.isSuccess) {
     const createAccesses: Role[] = []
 
-    if(userProfile.data.role.permissions.includes('Create Hub Admin')) {
+    if (userProfile.data.role.permissions.includes('Create Hub Admin')) {
       createAccesses.push(roles.data.data.filter(role => role.name === 'Hub Admin')[0])
     }
 
