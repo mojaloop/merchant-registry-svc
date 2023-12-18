@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: acquirer-backend-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: acquirer-backend
+  template:
+    metadata:
+      labels:
+        component: acquirer-backend
+    spec:
+      containers:
+        - name: acquirer-backend
+          image: twstm/acquirer-backend:0.0.3k
+          ports:
+            - containerPort: 5555
+          env:
+          - name: DB_HOST
+            value: merchant-db-clusterip-service
+          - name: DB_PORT
+            value: "3306"
+          - name: DB_DATABASE
+            value: acquirer_db
+          - name: DB_USERNAME
+            value: root
+          - name: DB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: merchant-db-secret
+                key: mysql-root-password
+
+          - name: SENDGRID_API_KEY
+            value: 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
+
+          - name: S3_ENDPOINT
+            value: minio-clusterip-service 
+
+          - name: RABBITMQ_HOST
+            value: rabbitmq-clusterip-service
+          - name: RABBITMQ_PORT
+            value: "5672"
+          - name: RABBITMQ_USERNAME
+            value: guest
+          - name: RABBITMQ_PASSWORD
+            value: guest

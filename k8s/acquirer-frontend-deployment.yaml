@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: acquirer-frontend-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: acquirer-frontend
+  template:
+    metadata:
+      labels:
+        component: acquirer-frontend
+    spec:
+      containers:
+        - name: acquirer-frontend
+          image: twstm/acquirer-frontend:0.0.3k
+          ports:
+            - containerPort: 5173
+            

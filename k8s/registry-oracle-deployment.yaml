@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: registry-oracle-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: registry-oracle
+  template:
+    metadata:
+      labels:
+        component: registry-oracle
+    spec:
+      containers:
+        - name: registry-oracle
+          image: twstm/registry-oracle:0.0.3k
+          ports:
+            - containerPort: 8888
+            
+          env:
+          - name: DB_HOST
+            value: merchant-db-clusterip-service
+          - name: DB_PORT
+            value: "3306"
+          - name: DB_DATABASE
+            value: registry_db
+          - name: DB_USERNAME
+            value: root
+          - name: DB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: merchant-db-secret
+                key: mysql-root-password
+
+          - name: RABBITMQ_HOST
+            value: rabbitmq-clusterip-service
+          - name: RABBITMQ_PORT
+            value: "5672"
+          - name: RABBITMQ_USERNAME
+            value: guest
+          - name: RABBITMQ_PASSWORD
+            value: guest

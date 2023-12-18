@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: registry-oracle-clusterip-service
+spec:
+  type: ClusterIP
+  selector:
+    component: registry-oracle
+  ports:
+    - port: 8888
+      targetPort: 8888
