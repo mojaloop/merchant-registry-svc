@@ -431,7 +431,7 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
 
           <CustomButton
             type='submit'
-            isLoading={createBusinessInfo.isLoading || updateBusinessInfo.isLoading}
+            isLoading={createBusinessInfo.isPending || updateBusinessInfo.isPending}
           >
             Save and Proceed
           </CustomButton>

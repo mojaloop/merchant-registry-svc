@@ -379,8 +379,8 @@ const PendingMerchantRecords = () => {
           onApproveAlertClose()
           await approveMerchants.mutateAsync(selectedMerchantIds)
           pendingMerchants.refetch()
-          queryClient.invalidateQueries(['approved-merchants'])
-          queryClient.invalidateQueries(['all-merchants'])
+          queryClient.invalidateQueries({ queryKey: ['approved-merchants'] })
+          queryClient.invalidateQueries({ queryKey: ['all-merchants'] })
         }}
         alertText='Are you sure you want to approve these merchant records?'
       />
@@ -404,8 +404,8 @@ const PendingMerchantRecords = () => {
           table.setRowSelection({})
           await rejectMerchants.mutateAsync({ selectedMerchantIds, reason })
           pendingMerchants.refetch()
-          queryClient.invalidateQueries(['rejected-merchants'])
-          queryClient.invalidateQueries(['all-merchants'])
+          queryClient.invalidateQueries({ queryKey: ['rejected-merchants'] })
+          queryClient.invalidateQueries({ queryKey: ['all-merchants'] })
         }}
       />
 
@@ -418,8 +418,8 @@ const PendingMerchantRecords = () => {
           table.setRowSelection({})
           await revertMerchants.mutateAsync({ selectedMerchantIds, reason })
           pendingMerchants.refetch()
-          queryClient.invalidateQueries(['reverted-merchants'])
-          queryClient.invalidateQueries(['all-merchants'])
+          queryClient.invalidateQueries({ queryKey: ['reverted-merchants'] })
+          queryClient.invalidateQueries({ queryKey: ['all-merchants'] })
         }}
       />
 

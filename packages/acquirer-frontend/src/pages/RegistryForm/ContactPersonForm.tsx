@@ -196,7 +196,7 @@ const ContactPersonForm = ({ setActiveStep }: ContactPersonProps) => {
 
           <CustomButton
             type='submit'
-            isLoading={createContactPerson.isLoading || updateContactPerson.isLoading}
+            isLoading={createContactPerson.isPending || updateContactPerson.isPending}
           >
             Review Submission
           </CustomButton>

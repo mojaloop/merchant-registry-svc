@@ -1,4 +1,4 @@
-import jwt_decode from 'jwt-decode'
+import { jwtDecode } from 'jwt-decode'
 
 import type { Decoded } from '@/types/auth'
 
@@ -27,7 +27,7 @@ export function downloadMerchantsBlobAsXlsx(blobData: Blob) {
 }
 
 export function isTokenExpired(token: string) {
-  const decoded: Decoded = jwt_decode(token)
+  const decoded: Decoded = jwtDecode(token)
   const expirationTimestamp = decoded.exp * 1000
   return expirationTimestamp <= Date.now()
 }

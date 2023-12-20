@@ -24,7 +24,7 @@ export function useCreateUser() {
   return useMutation({
     mutationFn: createUser,
     onSuccess: () => {
-      queryClient.invalidateQueries(['users'])
+      queryClient.invalidateQueries({ queryKey: ['users'] })
       toast({
         title: 'User Creation Successful!',
         description: 'Please notify the new user to check the email.',
