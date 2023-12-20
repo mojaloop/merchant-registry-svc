@@ -17,4 +17,6 @@ spec:
           image: twstm/acquirer-frontend:0.0.3k
           ports:
             - containerPort: 5173
-            
+          env:
+          - name: VITE_API_URL
+            value: http://acquirer.example.com/api/v1

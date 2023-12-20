@@ -14,13 +14,14 @@ spec:
             name: acquirer-frontend-clusterip-service
             port:
               number: 5173
-     # - path: /backend
-      #   pathType: Prefix
-      #   backend:
-      #     service:
-      #       name: acquirer-backend-clusterip-service
-      #       port:
-      #         number: 5555
+      - path: /api/v1
+        pathType: Prefix
+        backend:
+          service:
+            name: acquirer-backend-clusterip-service
+            port:
+              number: 5555
+
   # Add more rules for other services as needed.
 
 # apiVersion: networking.k8s.io/v1

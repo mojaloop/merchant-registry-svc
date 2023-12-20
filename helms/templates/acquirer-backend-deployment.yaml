@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: acquirer-backend-deployment
+spec:
+  replicas: {{ .Values.acquirerBackend.replicaCount }}
+  selector:
+    matchLabels:
+      component: acquirer-backend
+  template:
+    metadata:
+      labels:
+        component: acquirer-backend
+    spec:
+      containers:
+        - name: acquirer-backend
+          image: "{{ .Values.acquirerBackend.image.repository }}:{{ .Values.acquirerBackend.image.tag }}"
+          ports:
+            - containerPort: {{ .Values.acquirerBackend.service.port }}
+          env:
+          - name: DB_HOST
+            value: "{{ .Values.acquirerBackend.env.dbHost }}"
+          - name: DB_PORT
+            value: "{{ .Values.acquirerBackend.env.dbPort }}"
+          - name: DB_DATABASE
+            value: "{{ .Values.acquirerBackend.env.database }}"
+          - name: DB_USERNAME
+            value: "{{ .Values.acquirerBackend.env.dbUsername }}"
+          - name: DB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: merchant-db-secret
+                key: mysql-root-password
+          - name: SENDGRID_API_KEY
+            value: "{{ .Values.acquirerBackend.env.sendgridApiKey }}"
+
+          - name: S3_ENDPOINT
+            value: "{{ .Values.acquirerBackend.env.s3Endpoint }}"
+
+          - name: RABBITMQ_HOST
+            value: "{{ .Values.acquirerBackend.env.rabbitmqHost }}"
+          - name: RABBITMQ_PORT
+            value: "{{ .Values.acquirerBackend.env.rabbitmqPort }}"
+          - name: RABBITMQ_USERNAME
+            value: "{{ .Values.acquirerBackend.env.rabbitmqUsername }}"
+          - name: RABBITMQ_PASSWORD
+            value: "{{ .Values.acquirerBackend.env.rabbitmqPassword }}"

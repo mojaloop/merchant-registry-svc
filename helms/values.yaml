@@ -1,0 +1,201 @@
+# Default values for helms.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+replicaCount: 1
+
+acquirerBackend:
+  replicaCount: 1
+  image:
+    repository: twstm/acquirer-backend
+    tag: 0.0.3k
+  service:
+    type: ClusterIP
+    port: 5555
+  env:
+    dbHost: merchant-db-clusterip-service
+    dbPort: "3306"
+    database: acquirer_db
+    dbUsername: root
+    rabbitmqHost: rabbitmq-clusterip-service
+    rabbitmqPort: "5672"
+    rabbitmqUsername: guest
+    rabbitmqPassword: guest
+    sendgridApiKey: "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"
+    s3Endpoint: minio-clusterip-service
+
+registryOracle:
+  replicaCount: 1
+  image:
+    repository: twstm/registry-oracle
+    tag: 0.0.3k
+  service:
+    type: ClusterIP
+    port: 8888
+  env:
+    dbHost: merchant-db-clusterip-service
+    dbPort: "3306"
+    database: registry_db
+    dbUsername: root
+    dbPasswordSecret:
+      name: merchant-db-secret
+      key: mysql-root-password
+    rabbitmqHost: rabbitmq-clusterip-service
+    rabbitmqPort: "5672"
+    rabbitmqUsername: guest
+    rabbitmqPassword: guest
+
+acquirerFrontend:
+  replicaCount: 1
+  image:
+    repository: twstm/acquirer-frontend
+    tag: 0.0.3k
+  service:
+    type: ClusterIP
+    port: 5173
+  env:
+    apiURL: "http://acquirer.example.com/api/v1"
+
+merchantDb:
+  replicaCount: 1
+  image:
+    repository: mysql
+    tag: 8.0.33
+  service:
+    type: ClusterIP
+    port: 3306
+  pvc:
+    name: merchant-db-pvc
+    accessMode: ReadWriteOnce
+    size: 2Gi
+  secret:
+    name: merchant-db-secret
+    mysqlRootPassword: "cGFzc3dvcmQ=" # make sure to base64 encode the password
+  databases:
+    - name: acquirer_db
+    - name: registry_db
+  initScript:
+    name: merchant-db-init-script
+
+minio:
+  replicaCount: 1
+  image:
+    repository: minio/minio
+    tag: RELEASE.2023-07-21T21-12-44Z
+  service:
+    type: ClusterIP
+    port: 9000
+  pvc:
+    name: minio-s3-pvc
+    accessMode: ReadWriteOnce
+    size: 2Gi
+  env:
+    rootUser: "minioadmin"
+    rootPassword: "minioadmin"
+
+rabbitmq:
+  replicaCount: 1
+  image:
+    repository: rabbitmq
+    tag: 3.12.4-management-alpine
+  service:
+    type: ClusterIP
+    ports:
+      - name: amqp
+        port: 5672
+      - name: management
+        port: 15672
+  env:
+    defaultUser: "guest"
+    defaultPass: "guest"
+
+ingress:
+  enabled: true
+  annotations: {}
+  hosts:
+    - host: "acquirer.example.com"
+      paths:
+        - path: /
+          pathType: Prefix
+          serviceName: acquirer-frontend-clusterip-service
+          servicePort: 5173
+        - path: /api/v1
+          pathType: Prefix
+          serviceName: acquirer-backend-clusterip-service
+          servicePort: 5555
+
+image:
+  repository: nginx
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: ""
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+service:
+  type: ClusterIP
+  port: 80
+
+# ingress:
+#   enabled: false
+#   className: ""
+#   annotations: {}
+#     # kubernetes.io/ingress.class: nginx
+#     # kubernetes.io/tls-acme: "true"
+#   hosts:
+#     - host: chart-example.local
+#       paths:
+#         - path: /
+#           pathType: ImplementationSpecific
+#   tls: []
+#   #  - secretName: chart-example-tls
+#   #    hosts:
+#   #      - chart-example.local
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
