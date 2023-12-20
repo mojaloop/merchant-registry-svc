@@ -63,7 +63,7 @@ describe('downloadMerchantsBlobAsXlsx', () => {
 
 const mockJWTDecode = vi.fn()
 vi.mock('jwt-decode', () => ({
-  default: () => mockJWTDecode(),
+  jwtDecode: () => mockJWTDecode(),
 }))
 
 describe('isTokenExpired', () => {
