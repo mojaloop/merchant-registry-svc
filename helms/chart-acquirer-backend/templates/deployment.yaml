@@ -18,6 +18,10 @@ spec:
           ports:
             - containerPort: {{ .Values.acquirerBackend.service.port }}
           env:
+          - name: APP_URL # for email redirect verification
+            value: "{{ .Values.acquirerBackend.env.appURL }}"
+          - name: FRONTEND_SET_PASSWORD_URL
+            value: "{{ .Values.acquirerBackend.env.frontendSetPasswordRedirectURL }}"
           - name: DB_HOST
             value: "{{ .Release.Name }}-{{ .Values.acquirerBackend.env.dbHost }}"
           - name: DB_PORT

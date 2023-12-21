@@ -3,114 +3,10 @@
 # Declare variables to be passed into your templates.
 replicaCount: 1
 
-acquirerBackend:
-  replicaCount: 1
-  image:
-    repository: twstm/acquirer-backend
-    tag: 0.0.3k
-  service:
-    type: ClusterIP
-    port: 5555
-  env:
-    dbHost: merchant-db-clusterip-service
-    dbPort: "3306"
-    database: acquirer_db
-    dbUsername: root
-    # db password will be fetched from k8s secret object
-
-    rabbitmqHost: rabbitmq-clusterip-service
-    rabbitmqPort: "5672"
-    rabbitmqUsername: guest
-    rabbitmqPassword: guest
-    sendgridApiKey: "YOUR_SENDGIRD_API_KEY" # 3rd Party Email Service
-    s3Endpoint: minio-clusterip-service
-
-registryOracle:
-  replicaCount: 1
-  image:
-    repository: twstm/registry-oracle
-    tag: 0.0.3k
-  service:
-    type: ClusterIP
-    port: 8888
-  env:
-    dbHost: merchant-db-clusterip-service
-    dbPort: "3306"
-    database: registry_db
-    dbUsername: root
-    dbPasswordSecret:
-      name: merchant-db-secret
-      key: mysql-root-password
-    rabbitmqHost: rabbitmq-clusterip-service
-    rabbitmqPort: "5672"
-    rabbitmqUsername: guest
-    rabbitmqPassword: guest
-
-acquirerFrontend:
-  replicaCount: 1
-  image:
-    repository: twstm/acquirer-frontend
-    tag: 0.0.3k
-  service:
-    type: ClusterIP
-    port: 5173
-  env:
-    apiURL: "http://api.acquirer-merchant.local/api/v1"
-
-merchantDb:
-  replicaCount: 1
-  image:
-    repository: mysql
-    tag: 8.0.33
-  service:
-    type: ClusterIP
-    port: 3306
-  pvc:
-    size: 2Gi
-  secret:
-    name: merchant-db-secret
-    mysqlRootPassword: "cGFzc3dvcmQ=" # make sure to base64 encode the password
-  databases:
-    - name: acquirer_db
-    - name: registry_db
-  initScript:
-    name: merchant-db-init-script
-
-minio:
-  replicaCount: 1
-  image:
-    repository: minio/minio
-    tag: RELEASE.2023-07-21T21-12-44Z
-  service:
-    type: ClusterIP
-    port: 9000
-  pvc:
-    name: minio-s3-pvc
-    accessMode: ReadWriteOnce
-    size: 2Gi
-  env:
-    rootUser: "minioadmin"
-    rootPassword: "minioadmin"
-
-rabbitmq:
-  replicaCount: 1
-  image:
-    repository: rabbitmq
-    tag: 3.12.4-management-alpine
-  service:
-    type: ClusterIP
-    ports:
-      - name: amqp
-        port: 5672
-      - name: management
-        port: 15672
-  env:
-    defaultUser: "guest"
-    defaultPass: "guest"
-
 ingress:
   enabled: true
   annotations: {}
+    # nginx.ingress.kubernetes.io/ssl-redirect: "true"
   hosts:
     - host: "www.acquirer-merchant.local"
       paths:
@@ -118,6 +14,8 @@ ingress:
           pathType: Prefix
           serviceName: acquirer-frontend-clusterip-service
           servicePort: 5173
+    # NOTE: need to update the acquirer-frontend apiUrl chart value if this is changed.
+    # NOTE: need to update the acquirer-backend appUrl chart value if this is changed.
     - host: "api.acquirer-merchant.local"
       paths:
         - path: /
