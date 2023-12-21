@@ -109,7 +109,7 @@ const AddNewUser = () => {
           />
 
           <HStack spacing='3' alignSelf='end' mt='8'>
-            <CustomButton type='submit' isLoading={createUser.isLoading}>
+            <CustomButton type='submit' isLoading={createUser.isPending}>
               Submit
             </CustomButton>
             <CustomButton colorVariant='accent-outline' onClick={() => reset()}>

@@ -98,7 +98,7 @@ export function useLogout() {
     },
     onError: error => {
       if (isAxiosError(error)) {
-        queryClient.invalidateQueries(['users', 'profile'])
+        queryClient.invalidateQueries({ queryKey: ['users', 'profile'] })
         localStorage.removeItem('token')
         toast({
           title: 'Logout Failed!',

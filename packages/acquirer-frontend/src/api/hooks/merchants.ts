@@ -201,8 +201,8 @@ export function useApproveMerchants() {
   return useMutation({
     mutationFn: (selectedMerchantIds: number[]) => approveMerchants(selectedMerchantIds),
     onSuccess: () => {
-      queryClient.invalidateQueries(['all-merchants'])
-      queryClient.invalidateQueries(['alias-generated-merchants'])
+      queryClient.invalidateQueries({ queryKey: ['all-merchants'] })
+      queryClient.invalidateQueries({ queryKey: ['alias-generated-merchants'] })
       toast({
         title: 'Approving Merchants Successful!',
         status: 'success',
@@ -228,8 +228,8 @@ export function useRejectMerchants() {
     mutationFn: ({ selectedMerchantIds, reason }: ActionWithReasonParams) =>
       rejectMerchants(selectedMerchantIds, reason),
     onSuccess: () => {
-      queryClient.invalidateQueries(['all-merchants'])
-      queryClient.invalidateQueries(['rejected-merchants'])
+      queryClient.invalidateQueries({ queryKey: ['all-merchants'] })
+      queryClient.invalidateQueries({ queryKey: ['rejected-merchants'] })
       toast({
         title: 'Rejecting Merchants Successful!',
         status: 'success',
@@ -255,8 +255,8 @@ export function useRevertMerchants() {
     mutationFn: ({ selectedMerchantIds, reason }: ActionWithReasonParams) =>
       revertMerchants(selectedMerchantIds, reason),
     onSuccess: () => {
-      queryClient.invalidateQueries(['all-merchants'])
-      queryClient.invalidateQueries(['reverted-merchants'])
+      queryClient.invalidateQueries({ queryKey: ['all-merchants'] })
+      queryClient.invalidateQueries({ queryKey: ['reverted-merchants'] })
       toast({
         title: 'Reverting Merchants Successful!',
         status: 'success',

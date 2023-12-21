@@ -102,7 +102,7 @@ export function useCreateBusinessInfo(goToNextStep: () => void) {
     mutationFn: (params: BusinessInfoForm) => createBusinessInfo(params),
     onSuccess: data => {
       localStorage.setItem('merchantId', data.data.id.toString())
-      queryClient.invalidateQueries(['draft-count'])
+      queryClient.invalidateQueries({ queryKey: ['draft-count'] })
       toast({
         title: data.message,
         status: 'success',
@@ -135,7 +135,7 @@ export function useUpdateBusinessInfo(goToNextStep: () => void) {
       merchantId: string
     }) => updateBusinessInfo(params, merchantId),
     onSuccess: data => {
-      queryClient.invalidateQueries(['draft-count'])
+      queryClient.invalidateQueries({ queryKey: ['draft-count'] })
       toast({
         title: data.message,
         status: 'success',
@@ -291,7 +291,7 @@ export function useCreateContactPerson(openReviewModal: () => void) {
       merchantId: string
     }) => createContactPersonInfo(params, merchantId),
     onSuccess: data => {
-      queryClient.invalidateQueries(['merchants'])
+      queryClient.invalidateQueries({ queryKey: ['merchants'] })
       toast({
         title: data.message,
         status: 'success',
@@ -325,7 +325,7 @@ export function useUpdateContactPerson(openReviewModal: () => void) {
       contactPersonId: number
     }) => updateContactPersonInfo(params, merchantId, contactPersonId),
     onSuccess: data => {
-      queryClient.invalidateQueries(['merchants'])
+      queryClient.invalidateQueries({ queryKey: ['merchants'] })
       toast({
         title: data.message,
         status: 'success',
@@ -354,10 +354,10 @@ export function useChangeStatusToReview(closeReviewModal: () => void) {
     onSuccess: () => {
       localStorage.removeItem('merchantId')
       closeReviewModal()
-      queryClient.invalidateQueries(['draft-count'])
-      queryClient.invalidateQueries(['drafts'])
-      queryClient.invalidateQueries(['pending-merchants'])
-      queryClient.invalidateQueries(['all-merchants'])
+      queryClient.invalidateQueries({ queryKey: ['draft-count'] })
+      queryClient.invalidateQueries({ queryKey: ['drafts'] })
+      queryClient.invalidateQueries({ queryKey: ['pending-merchants'] })
+      queryClient.invalidateQueries({ queryKey: ['all-merchants'] })
       navigate('/registry')
       toast({
         title: 'Submission Successful!',

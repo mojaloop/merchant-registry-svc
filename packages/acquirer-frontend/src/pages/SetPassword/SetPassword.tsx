@@ -146,7 +146,7 @@ const SetPassword = () => {
               type='submit'
               size='md'
               mt='8'
-              isLoading={setPassword.isLoading}
+              isLoading={setPassword.isPending}
             >
               Confirm
             </CustomButton>

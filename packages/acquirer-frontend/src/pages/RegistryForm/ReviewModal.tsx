@@ -57,7 +57,7 @@ const ReviewModal = ({ isOpen, onClose, merchantId }: ReviewModalProps) => {
             Close
           </CustomButton>
 
-          <CustomButton onClick={handleSubmit} isLoading={changeStatusToReview.isLoading}>
+          <CustomButton onClick={handleSubmit} isLoading={changeStatusToReview.isPending}>
             Submit
           </CustomButton>
         </ModalFooter>

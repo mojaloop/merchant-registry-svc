@@ -359,7 +359,7 @@ const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
 
           <CustomButton
             type='submit'
-            isLoading={createLocationInfo.isLoading || updateLocationInfo.isLoading}
+            isLoading={createLocationInfo.isPending || updateLocationInfo.isPending}
           >
             Save and Proceed
           </CustomButton>

@@ -371,7 +371,7 @@ const OwnerInfoForm = ({ setActiveStep }: OwnerInfoFormProps) => {
 
           <CustomButton
             type='submit'
-            isLoading={createOwnerInfo.isLoading || updateOwnerInfo.isLoading}
+            isLoading={createOwnerInfo.isPending || updateOwnerInfo.isPending}
           >
             Save and Proceed
           </CustomButton>

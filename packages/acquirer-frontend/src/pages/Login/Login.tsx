@@ -137,7 +137,7 @@ const Login = () => {
               </Link>
             </HStack>
 
-            <CustomButton type='submit' size='md' mt='8' isLoading={login.isLoading}>
+            <CustomButton type='submit' size='md' mt='8' isLoading={login.isPending}>
               Log In
             </CustomButton>
           </Stack>
