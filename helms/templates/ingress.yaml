@@ -2,11 +2,12 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: merchant-ingress
+  name: {{ .Release.Name }}-merchant-ingress
   annotations:
 {{ toYaml .Values.ingress.annotations | indent 4 }}
 spec:
   rules:
+  {{- $releaseName := .Release.Name }}
   {{- range .Values.ingress.hosts }}
   - host: "{{ .host }}"
     http:
@@ -16,7 +17,7 @@ spec:
         pathType: {{ .pathType }}
         backend:
           service:
-            name: "{{ .serviceName }}"
+            name: "{{ $releaseName }}-{{ .serviceName }}"
             port:
               number: {{ .servicePort }}
       {{- end }}

@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: minio-deployment
+  name: {{ .Release.Name }}-minio-deployment
 spec:
   selector:
     matchLabels:
@@ -31,4 +31,4 @@ spec:
       volumes:
         - name: storage
           persistentVolumeClaim:
-            claimName: {{ .Values.minio.pvc.name }}
+            claimName: {{ .Release.Name }}-minio-s3-pvc

@@ -1,10 +1,10 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: {{ .Values.merchantDb.pvc.name }}
+  name: {{ .Release.Name }}-merchant-db-pvc
 spec:
   accessModes:
-    - {{ .Values.merchantDb.pvc.accessMode }}
+    - ReadWriteOnce
   resources:
     requests:
       storage: {{ .Values.merchantDb.pvc.size }}

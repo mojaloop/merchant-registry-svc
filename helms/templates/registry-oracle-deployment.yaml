@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: registry-oracle-deployment
+  name: {{ .Release.Name }}-registry-oracle-deployment
 spec:
   replicas: {{ .Values.registryOracle.replicaCount }}
   selector:
@@ -19,7 +19,7 @@ spec:
             - containerPort: {{ .Values.registryOracle.service.port }}
           env:
             - name: DB_HOST
-              value: "{{ .Values.registryOracle.env.dbHost }}"
+              value: "{{ .Release.Name }}-{{ .Values.registryOracle.env.dbHost }}"
             - name: DB_PORT
               value: "{{ .Values.registryOracle.env.dbPort }}"
             - name: DB_DATABASE
@@ -29,10 +29,10 @@ spec:
             - name: DB_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.registryOracle.env.dbPasswordSecret.name }}
+                  name: {{ .Release.Name }}-{{ .Values.registryOracle.env.dbPasswordSecret.name }}
                   key: {{ .Values.registryOracle.env.dbPasswordSecret.key }}
             - name: RABBITMQ_HOST
-              value: "{{ .Values.registryOracle.env.rabbitmqHost }}"
+              value: "{{ .Release.Name }}-{{ .Values.registryOracle.env.rabbitmqHost }}"
             - name: RABBITMQ_PORT
               value: "{{ .Values.registryOracle.env.rabbitmqPort }}"
             - name: RABBITMQ_USERNAME

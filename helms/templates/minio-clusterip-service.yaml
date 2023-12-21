@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: minio-clusterip-service
+  name: {{ .Release.Name }}-minio-clusterip-service
 spec:
   type: {{ .Values.minio.service.type }}
   ports:

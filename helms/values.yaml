@@ -16,11 +16,13 @@ acquirerBackend:
     dbPort: "3306"
     database: acquirer_db
     dbUsername: root
+    # db password will be fetched from k8s secret object
+
     rabbitmqHost: rabbitmq-clusterip-service
     rabbitmqPort: "5672"
     rabbitmqUsername: guest
     rabbitmqPassword: guest
-    sendgridApiKey: "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"
+    sendgridApiKey: "YOUR_SENDGIRD_API_KEY" # 3rd Party Email Service
     s3Endpoint: minio-clusterip-service
 
 registryOracle:
@@ -53,7 +55,7 @@ acquirerFrontend:
     type: ClusterIP
     port: 5173
   env:
-    apiURL: "http://acquirer.example.com/api/v1"
+    apiURL: "http://api.acquirer-merchant.local/api/v1"
 
 merchantDb:
   replicaCount: 1
@@ -64,8 +66,6 @@ merchantDb:
     type: ClusterIP
     port: 3306
   pvc:
-    name: merchant-db-pvc
-    accessMode: ReadWriteOnce
     size: 2Gi
   secret:
     name: merchant-db-secret
@@ -112,16 +112,24 @@ ingress:
   enabled: true
   annotations: {}
   hosts:
-    - host: "acquirer.example.com"
+    - host: "www.acquirer-merchant.local"
       paths:
         - path: /
           pathType: Prefix
           serviceName: acquirer-frontend-clusterip-service
           servicePort: 5173
-        - path: /api/v1
+    - host: "api.acquirer-merchant.local"
+      paths:
+        - path: /
           pathType: Prefix
           serviceName: acquirer-backend-clusterip-service
           servicePort: 5555
+    - host: "oracle.acquirer-merchant.local"
+      paths:
+        - path: /
+          pathType: Prefix
+          serviceName: registry-oracle-clusterip-service
+          servicePort: 8888
 
 image:
   repository: nginx

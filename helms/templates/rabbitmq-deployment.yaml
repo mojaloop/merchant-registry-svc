@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: rabbitmq-deployment
+  name: {{ .Release.Name }}-rabbitmq-deployment
 spec:
   replicas: {{ .Values.rabbitmq.replicaCount }} 
   selector:

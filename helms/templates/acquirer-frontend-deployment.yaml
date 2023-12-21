@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: acquirer-frontend-deployment
+  name: {{ .Release.Name }}-acquirer-frontend-deployment
 spec:
   replicas: {{ .Values.acquirerFrontend.replicaCount }}
   selector:
