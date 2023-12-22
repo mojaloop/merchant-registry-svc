@@ -1,0 +1,14 @@
+# Default values for acquirer-frontend.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+acquirerFrontend:
+  replicaCount: 1
+  image:
+    repository: twstm/acquirer-frontend
+    tag: 0.0.3k
+  service:
+    type: ClusterIP
+    port: 5173
+  env:
+    apiURL: "http://api.acquirer-merchant.local/api/v1"

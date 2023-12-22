@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: merchant-db-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: merchant-db
+  template:
+    metadata:
+      labels:
+        component: merchant-db
+    spec:
+      containers:
+      - name: merchant-db
+        image: mysql:8.0.33
+        args: ["--default-authentication-plugin=mysql_native_password"]
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: merchant-db-secret
+              key: mysql-root-password
+        ports:
+        - containerPort: 3306
+        # volumeMounts:
+        # - name: merchant-db-vol
+        #   mountPath: /docker-entrypoint-initdb.d
+        volumeMounts:
+        - name: merchant-db-vol
+          mountPath: /var/lib/mysql
+        - name: init-script
+          mountPath: /docker-entrypoint-initdb.d
+      volumes:
+      - name: merchant-db-vol
+        persistentVolumeClaim:
+          claimName: merchant-db-pvc
+      - name: init-script
+        configMap:
+          name: merchant-db-init-script
+

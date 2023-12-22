@@ -1,0 +1,28 @@
+# Default values for acquirer-backend.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+acquirerBackend:
+  replicaCount: 1
+  image:
+    repository: twstm/acquirer-backend
+    tag: 0.0.3k
+  service:
+    type: ClusterIP
+    port: 5555
+  env:
+    dbHost: merchant-db-clusterip-service
+    dbPort: "3306"
+    database: acquirer_db
+    dbUsername: root
+    # db password will be fetched from k8s secret object
+
+    rabbitmqHost: rabbitmq-clusterip-service
+    rabbitmqPort: "5672"
+    rabbitmqUsername: guest
+    rabbitmqPassword: guest
+    sendgridApiKey: "YOUR_SENDGIRD_API_KEY" # 3rd Party Email Service
+    s3Endpoint: minio-clusterip-service
+    appURL: "http://api.acquirer-merchant.local" # for email verification link
+    frontendSetPasswordRedirectURL: "http://www.acquirer-merchant.local/set-password" # reset password link after email verification
+

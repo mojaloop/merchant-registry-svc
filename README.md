@@ -29,6 +29,9 @@ and proceed with the necessary steps in the payment transaction.
 
 See the README.md file on each services for more Environment Variable Configuration options.
 
+## Kubernetes Deployment with Helm Charts
+* [Instruction README](./helms/README.md)
+
 ## Deploying on Docker
 * Requirements
     - `docker` and `docker-compose`

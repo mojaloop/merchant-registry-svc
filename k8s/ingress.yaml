@@ -1,0 +1,50 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: my-ingress
+spec:
+  rules:
+  - host: "acquirer.example.com"
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: acquirer-frontend-clusterip-service
+            port:
+              number: 5173
+      - path: /api/v1
+        pathType: Prefix
+        backend:
+          service:
+            name: acquirer-backend-clusterip-service
+            port:
+              number: 5555
+
+  # Add more rules for other services as needed.
+
+# apiVersion: networking.k8s.io/v1
+# kind: Ingress
+# metadata:
+#   name: example-ingress
+#   annotations:
+#     nginx.ingress.kubernetes.io/rewrite-target: /
+# spec:
+#   rules:
+#   - http:
+#       paths:
+#       - path: /
+#         pathType: Prefix
+#         backend:
+#           service:
+#             name: acquirer-frontend-clusterip-service
+#             port:
+#               number: 5173
+      # - path: /backend
+      #   pathType: Prefix
+      #   backend:
+      #     service:
+      #       name: acquirer-backend-clusterip-service
+      #       port:
+      #         number: 5555
