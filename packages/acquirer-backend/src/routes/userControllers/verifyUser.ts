@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { type Request, type Response } from 'express'
 import jwt from 'jsonwebtoken'
+import { Not } from 'typeorm'
 import logger from '../../services/logger'
 import { EmailVerificationTokenEntity } from '../../entity/EmailVerificationToken'
 import { AppDataSource } from '../../database/dataSource'
@@ -47,7 +48,7 @@ export async function verifyUserEmail (req: Request, res: Response) {
     decodedJwt = jwt.verify(token, JWT_SECRET) as IJWTUser
     logger.debug(`Decoded JWT: ${JSON.stringify(decodedJwt)}`)
   } catch (error) {
-  // If an error occurs, it is likely due to an invalid token
+    // If an error occurs, it is likely due to an invalid token
     logger.error('JWT verification error: ', error)
     return res.status(401).send({ message: 'JWT Invalid' })
   }
@@ -83,7 +84,9 @@ export async function verifyUserEmail (req: Request, res: Response) {
 
     // Handle Hub Onboarding Flow
     if (user.created_by?.email === DefaultHubSuperAdmin.email) {
-      const userCountCreatedByHubSuperAdmin = await PortalUserRepository.count({ where: { created_by: { id: user.created_by.id } } })
+      const userCountCreatedByHubSuperAdmin = await PortalUserRepository.count({
+        where: { created_by: { id: user.created_by.id }, status: Not(PortalUserStatus.UNVERIFIED) }
+      })
 
       if (userCountCreatedByHubSuperAdmin >= 3) {
         //
@@ -103,7 +106,7 @@ export async function verifyUserEmail (req: Request, res: Response) {
         await AppDataSource.manager.update(ApplicationStateEntity, {}, { is_hub_onboarding_complete: true })
       }
     }
-  } catch (err)/* istanbul ignore next */ {
+  } catch (err) /* istanbul ignore next */ {
     logger.error('%o', err)
     return res.status(500).send({ message: 'Internal Server Error', error: err })
   }
