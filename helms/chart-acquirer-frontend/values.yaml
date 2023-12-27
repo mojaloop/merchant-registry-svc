@@ -11,4 +11,4 @@ acquirerFrontend:
     type: ClusterIP
     port: 5173
   env:
-    apiURL: "http://api.acquirer-merchant.local/api/v1"
+    apiURL: "http://www.acquirer-merchant.local/api/v1"

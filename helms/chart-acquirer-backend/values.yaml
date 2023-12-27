@@ -23,6 +23,6 @@ acquirerBackend:
     rabbitmqPassword: guest
     sendgridApiKey: "YOUR_SENDGIRD_API_KEY" # 3rd Party Email Service
     s3Endpoint: minio-clusterip-service
-    appURL: "http://api.acquirer-merchant.local" # for email verification link
+    appURL: "http://www.acquirer-merchant.local" # for email verification backend link
     frontendSetPasswordRedirectURL: "http://www.acquirer-merchant.local/set-password" # reset password link after email verification
 

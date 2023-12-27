@@ -23,9 +23,6 @@ helm install my-release <rootProject>/helms
 
 2. Default Ingress DNS (add following records to the `/etc/hosts` file)
     - www.acquirer-merchant.local
-    - api.acquirer-merchant.local
-    - oracle.acquirer-merchant.local
-
 
 ### IMPORTANT NOTES:
 When updating ingress's host make sure to update the `apiUrl` of `./chart-acquirer-frontend/values.yaml` file too. 

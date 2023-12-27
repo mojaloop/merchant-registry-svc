@@ -5,30 +5,30 @@ replicaCount: 1
 
 ingress:
   enabled: true
-  annotations: {}
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: "100m"
     # nginx.ingress.kubernetes.io/ssl-redirect: "true"
   hosts:
     - host: "www.acquirer-merchant.local"
       paths:
+        - path: /api/v1
+          pathType: Prefix
+          serviceName: acquirer-backend-clusterip-service
+          servicePort: 5555
+        - path: /participants
+          pathType: Prefix
+          serviceName: registry-oracle-clusterip-service
+          servicePort: 8888
         - path: /
           pathType: Prefix
           serviceName: acquirer-frontend-clusterip-service
           servicePort: 5173
-    # NOTE: need to update the acquirer-frontend apiUrl chart value if this is changed.
-    # NOTE: need to update the acquirer-backend appUrl chart value if this is changed.
-    - host: "api.acquirer-merchant.local"
+    - host: "s3.acquirer-merchant.local"
       paths:
         - path: /
           pathType: Prefix
-          serviceName: acquirer-backend-clusterip-service
-          servicePort: 5555
-    - host: "oracle.acquirer-merchant.local"
-      paths:
-        - path: /
-          pathType: Prefix
-          serviceName: registry-oracle-clusterip-service
-          servicePort: 8888
-
+          serviceName: minio-clusterip-service
+          servicePort: 5173
 image:
   repository: nginx
   pullPolicy: IfNotPresent
