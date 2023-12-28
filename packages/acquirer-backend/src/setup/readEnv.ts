@@ -24,3 +24,8 @@ export function readEnvAsMilliseconds (key: string, defaultValue: string): numbe
   // Assuming the value is always a string representing time
   return ms(value) ?? ms(defaultValue)
 }
+
+export function readEnvAsBoolean (key: string, defaultValue: string): boolean {
+  const value = readEnv(key, defaultValue) as string
+  return value === 'true'
+}

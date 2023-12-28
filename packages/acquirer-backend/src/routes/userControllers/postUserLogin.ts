@@ -3,19 +3,21 @@ import bcrypt from 'bcrypt'
 import { type Request, type Response } from 'express'
 import * as z from 'zod'
 import dotenv from 'dotenv'
+import axios from 'axios'
 import { AppDataSource } from '../../database/dataSource'
 import { PortalUserEntity } from '../../entity/PortalUserEntity'
 import logger from '../../services/logger'
 import jwt from 'jsonwebtoken'
 import { audit } from '../../utils/audit'
 import { AuditActionType, AuditTrasactionStatus, PortalUserStatus } from 'shared-lib'
-import { readEnv } from '../../setup/readEnv'
+import { readEnv, readEnvAsBoolean } from '../../setup/readEnv'
 import { JwtTokenEntity } from '../../entity/JwtTokenEntity'
 import ms from 'ms'
 
 export const LoginFormSchema = z.object({
   email: z.string().email('Please enter a valid email'),
-  password: z.string().min(8)
+  password: z.string().min(8),
+  recaptchaToken: z.string().optional() // optional to pass the e2e tests
 })
 
 if (process.env.NODE_ENV === 'test') {
@@ -26,6 +28,8 @@ const JWT_SECRET = readEnv('JWT_SECRET', 'secret') as string
 const JWT_EXPIRES_IN = readEnv('JWT_EXPIRES_IN', '1d') as string
 
 const JWT_EXPIRES_IN_MS = ms(JWT_EXPIRES_IN)
+const RECAPTCHA_SECRET_KEY = readEnv('RECAPTCHA_SECRET_KEY', '') as string
+const RECAPTCHA_ENABLED = readEnvAsBoolean('RECAPTCHA_ENABLED', 'false')
 
 /**
  * @openapi
@@ -92,12 +96,22 @@ export async function postUserLogin (req: Request, res: Response) {
   }
 
   try {
-    const user = await AppDataSource.manager.findOne(
-      PortalUserEntity,
-      {
-        where: { email: req.body.email }
+    if (RECAPTCHA_ENABLED) {
+      // Verify reCAPTCHA token
+      const { recaptchaToken } = req.body
+      const verifyUrl = `https://www.google.com/recaptcha/api/siteverify?secret=${RECAPTCHA_SECRET_KEY}&response=${recaptchaToken}`
+      const response = await axios.post(verifyUrl)
+      if (response.data.success === false) {
+        logger.debug('reCAPTCHA verification failed: %o', response.data)
+        throw new Error('reCAPTCHA verification failed')
+      } else {
+        logger.debug('reCAPTCHA verification success: %o', response.data)
       }
-    )
+    }
+
+    const user = await AppDataSource.manager.findOne(PortalUserEntity, {
+      where: { email: req.body.email }
+    })
     logger.info('User %s login attempt.', req.body.email)
 
     if (user == null) {
@@ -133,11 +147,7 @@ export async function postUserLogin (req: Request, res: Response) {
       throw new Error('Invalid credentials')
     }
 
-    const token = jwt.sign(
-      { id: user.id },
-      JWT_SECRET,
-      { expiresIn: JWT_EXPIRES_IN }
-    )
+    const token = jwt.sign({ id: user.id }, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN })
 
     const jwtTokenObj = AppDataSource.manager.create(JwtTokenEntity, {
       token,
@@ -155,23 +165,25 @@ export async function postUserLogin (req: Request, res: Response) {
       'postUserLogin',
       'User login successful',
       'PortalUserEntity',
-      {}, {}, user
+      {},
+      {},
+      user
     )
 
     res.json({ success: true, message: 'Login successful', token })
-  } catch (error: any)/* istanbul ignore next */ {
+  } catch (error: any) /* istanbul ignore next */ {
     await audit(
       AuditActionType.ACCESS,
       AuditTrasactionStatus.FAILURE,
       'postUserLogin',
       'User login failed',
       'PortalUserEntity',
-      {}, { error: error.message }, null
+      {},
+      { error: error.message },
+      null
     )
 
-    logger.error('User %s login failed: %o', req.body.email, error)
-    res
-      .status(400)
-      .send({ success: false, message: error.message })
+    logger.error('User %s login failed: %s', req.body.email, error.message)
+    res.status(400).send({ success: false, message: error.message })
   }
 }
