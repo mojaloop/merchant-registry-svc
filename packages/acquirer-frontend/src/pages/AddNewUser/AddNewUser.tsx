@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom'
 import { Box, Heading, HStack, Stack } from '@chakra-ui/react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
@@ -18,6 +19,8 @@ const AddNewUser = () => {
   } = useForm<AddNewUserForm>({
     resolver: zodResolver(addNewUserSchema),
   })
+
+  const navigate = useNavigate()
 
   const roles = useRoles()
   const createUser = useCreateUser()
@@ -112,7 +115,13 @@ const AddNewUser = () => {
             <CustomButton type='submit' isLoading={createUser.isPending}>
               Submit
             </CustomButton>
-            <CustomButton colorVariant='accent-outline' onClick={() => reset()}>
+            <CustomButton
+              colorVariant='accent-outline'
+              onClick={() => {
+                reset()
+                navigate(-1)
+              }}
+            >
               Cancel
             </CustomButton>
           </HStack>
