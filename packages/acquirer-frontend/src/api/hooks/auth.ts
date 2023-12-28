@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useToast } from '@chakra-ui/react'
+import ReCAPTCHA from 'react-google-recaptcha'
 import { isAxiosError } from 'axios'
 import { PortalUserType } from 'shared-lib'
 
@@ -9,14 +10,22 @@ import { NAV_ITEMS, useNavItems } from '@/contexts/NavItemsContext'
 import { login, logout, setPassword } from '../auth'
 import { getUserProfile } from '../users'
 
-export function useLogin() {
+export function useLogin(recaptchaRef: React.RefObject<ReCAPTCHA>) {
   const navigate = useNavigate()
   const toast = useToast()
   const { setNavItems } = useNavItems()
 
   return useMutation({
-    mutationFn: ({ email, password }: { email: string; password: string }) => {
-      return login(email, password)
+    mutationFn: ({
+      email,
+      password,
+      recaptchaToken,
+    }: {
+      email: string
+      password: string
+      recaptchaToken: string | null
+    }) => {
+      return login(email, password, recaptchaToken)
     },
     onSuccess: async data => {
       localStorage.setItem('token', data)
@@ -73,6 +82,10 @@ export function useLogin() {
             'Please check your credentials and try again.',
           status: 'error',
         })
+      }
+      // Reset reCAPTCHA
+      if (recaptchaRef.current) {
+          recaptchaRef.current.reset();
       }
     },
   })

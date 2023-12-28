@@ -32,13 +32,15 @@ export function useCreateUser() {
       })
     },
     onError: error => {
-      if (isAxiosError(error)) {
-        toast({
-          title: 'User Creation Failed!',
-          description: error.response?.data.message || FALLBACK_ERROR_MESSAGE,
-          status: 'error',
-        })
+      let errorMessage = FALLBACK_ERROR_MESSAGE
+      if (isAxiosError(error) && typeof error.response?.data.message === 'string') {
+        errorMessage = error.response.data.message
       }
+      toast({
+        title: 'User Creation Failed!',
+        description: errorMessage,
+        status: 'error',
+      })
     },
   })
 }

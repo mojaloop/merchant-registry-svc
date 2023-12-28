@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { NavLink } from 'react-router-dom'
 import {
   Box,
@@ -14,6 +14,7 @@ import {
   type IconButtonProps,
 } from '@chakra-ui/react'
 import { zodResolver } from '@hookform/resolvers/zod'
+import ReCAPTCHA from 'react-google-recaptcha'
 import { useForm } from 'react-hook-form'
 import { AiFillEye, AiFillEyeInvisible } from 'react-icons/ai'
 
@@ -25,7 +26,7 @@ import { FormInput } from '@/components/form'
 
 const Login = () => {
   const [isPasswordShown, setIsPasswordShown] = useState(false)
-
+  const [recaptchaToken, setRecaptchaToken] = useState('')
   const {
     register,
     formState: { errors },
@@ -34,10 +35,16 @@ const Login = () => {
     resolver: zodResolver(loginSchema),
   })
 
-  const login = useLogin()
+  const recaptchaRef = useRef(null);
+  const login = useLogin(recaptchaRef)
+  const recaptchaSiteKey = import.meta.env.VITE_RECAPTCHA_SITE_KEY
 
   const onSubmit = (values: LoginForm) => {
-    login.mutate({ email: values.email, password: values.password })
+    login.mutate({ email: values.email, password: values.password, recaptchaToken: recaptchaToken })
+  }
+
+  const onRecaptchaChange = (value: string | null) => {
+    setRecaptchaToken(value || '')
   }
 
   const iconButtonProps: Omit<IconButtonProps, 'icon' | 'aria-label'> = {
@@ -136,6 +143,8 @@ const Login = () => {
                 Forgot Password?
               </Link>
             </HStack>
+
+            <ReCAPTCHA ref={recaptchaRef} sitekey={recaptchaSiteKey} onChange={onRecaptchaChange} />
 
             <CustomButton type='submit' size='md' mt='8' isLoading={login.isPending}>
               Log In

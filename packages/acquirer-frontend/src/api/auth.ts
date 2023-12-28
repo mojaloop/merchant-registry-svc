@@ -1,9 +1,14 @@
 import instance from '@/lib/axiosInstance'
 
-export async function login(email: string, password: string) {
+export async function login(
+  email: string,
+  password: string,
+  recaptchaToken: string | null
+) {
   const response = await instance.post<{ token: string }>('/users/login', {
     email,
     password,
+    recaptchaToken,
   })
   return response.data.token
 }
