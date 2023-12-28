@@ -4,7 +4,7 @@ kind: Ingress
 metadata:
   name: {{ .Release.Name }}-merchant-ingress
   annotations:
-{{ toYaml .Values.ingress.annotations | indent 4 }}
+{{ toYaml .Values.ingress.annotations | nindent 4 }}
 spec:
   rules:
   {{- $releaseName := .Release.Name }}

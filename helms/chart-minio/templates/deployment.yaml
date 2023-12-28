@@ -23,6 +23,8 @@ spec:
               value: "{{ .Values.minio.env.rootUser }}"
             - name: MINIO_ROOT_PASSWORD
               value: "{{ .Values.minio.env.rootPassword }}"
+            - name: MINIO_SERVER_URL
+              value: "{{ .Values.minio.env.serverUrl }}"
           ports:
             - containerPort: {{ .Values.minio.service.port }}
           volumeMounts:

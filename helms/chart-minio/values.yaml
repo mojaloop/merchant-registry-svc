@@ -17,3 +17,4 @@ minio:
   env:
     rootUser: "minioadmin"
     rootPassword: "minioadmin"
+    serverUrl: "http://s3.acquirer-merchant.local"
