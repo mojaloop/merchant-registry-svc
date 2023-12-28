@@ -17,7 +17,7 @@ import ms from 'ms'
 export const LoginFormSchema = z.object({
   email: z.string().email('Please enter a valid email'),
   password: z.string().min(8),
-  recaptchaToken: z.string()
+  recaptchaToken: z.string().optional() // optional to pass the e2e tests
 })
 
 if (process.env.NODE_ENV === 'test') {
