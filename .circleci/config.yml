@@ -297,9 +297,9 @@ workflows:
 
       - publish:
           context: org-global
-          # filters:
-          #   branches:
-          #     only: main
+          filters:
+            branches:
+              only: main
           requires:
             - tests-acquirer-backend
             - tests-oracle
