@@ -28,6 +28,10 @@ const UserManagement = () => {
         cell: info => info.getValue(),
         header: 'Role',
       }),
+      columnHelper.accessor('status', {
+        cell: info => info.getValue(),
+        header: 'Status',
+      }),
       columnHelper.display({
         id: 'action',
         header: 'Action',
@@ -40,10 +44,11 @@ const UserManagement = () => {
   let data
 
   if (users.isSuccess && !users.isFetching) {
-    data = users.data.map(({ id, name, email, role }) => ({
+    data = users.data.map(({ id, name, email, role, status }) => ({
       no: id,
       name,
       email,
+      status: status,
       role: role.description,
     }))
   }
