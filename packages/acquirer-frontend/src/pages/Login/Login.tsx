@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import { useRef, useState } from 'react'
 import { NavLink } from 'react-router-dom'
 import {
   Box,
@@ -35,12 +35,16 @@ const Login = () => {
     resolver: zodResolver(loginSchema),
   })
 
-  const recaptchaRef = useRef(null);
+  const recaptchaRef = useRef(null)
   const login = useLogin(recaptchaRef)
   const recaptchaSiteKey = import.meta.env.VITE_RECAPTCHA_SITE_KEY
 
   const onSubmit = (values: LoginForm) => {
-    login.mutate({ email: values.email, password: values.password, recaptchaToken: recaptchaToken })
+    login.mutate({
+      email: values.email,
+      password: values.password,
+      recaptchaToken: recaptchaToken,
+    })
   }
 
   const onRecaptchaChange = (value: string | null) => {
@@ -144,7 +148,11 @@ const Login = () => {
               </Link>
             </HStack>
 
-            <ReCAPTCHA ref={recaptchaRef} sitekey={recaptchaSiteKey} onChange={onRecaptchaChange} />
+            <ReCAPTCHA
+              ref={recaptchaRef}
+              sitekey={recaptchaSiteKey}
+              onChange={onRecaptchaChange}
+            />
 
             <CustomButton type='submit' size='md' mt='8' isLoading={login.isPending}>
               Log In
