@@ -48,7 +48,7 @@ const UserManagement = () => {
       no: id,
       name,
       email,
-      status: status,
+      status,
       role: role.description,
     }))
   }
