@@ -301,4 +301,6 @@ workflows:
           #   branches:
           #     only: main
           requires:
-            - e2e-tests
+            - tests-acquirer-backend
+            - tests-oracle
+            - test-unit-frontend
