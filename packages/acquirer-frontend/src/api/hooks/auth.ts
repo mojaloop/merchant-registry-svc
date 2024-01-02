@@ -1,8 +1,8 @@
 import { useNavigate } from 'react-router-dom'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useToast } from '@chakra-ui/react'
-import ReCAPTCHA from 'react-google-recaptcha'
 import { isAxiosError } from 'axios'
+import ReCAPTCHA from 'react-google-recaptcha'
 import { PortalUserType } from 'shared-lib'
 
 import { FALLBACK_ERROR_MESSAGE } from '@/constants/errorMessage'
@@ -85,7 +85,7 @@ export function useLogin(recaptchaRef: React.RefObject<ReCAPTCHA>) {
       }
       // Reset reCAPTCHA
       if (recaptchaRef.current) {
-          recaptchaRef.current.reset();
+        recaptchaRef.current.reset()
       }
     },
   })

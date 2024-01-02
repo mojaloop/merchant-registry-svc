@@ -6,12 +6,7 @@ import { PortalUserEntity } from '../../entity/PortalUserEntity'
 import { AppDataSource } from '../../database/dataSource'
 import { PortalRoleEntity } from '../../entity/PortalRoleEntity'
 import * as z from 'zod'
-import {
-  AuditActionType,
-  AuditTrasactionStatus,
-  PortalUserStatus,
-  PortalUserType
-} from 'shared-lib'
+import { AuditActionType, AuditTrasactionStatus, PortalUserStatus, PortalUserType } from 'shared-lib'
 import { EmailVerificationTokenEntity } from '../../entity/EmailVerificationToken'
 import { sendVerificationEmail } from '../../utils/sendGrid'
 import { DFSPEntity } from '../../entity/DFSPEntity'
@@ -102,7 +97,9 @@ export async function addUser (req: AuthRequest, res: Response) {
       'addUser',
       'User Creation failed',
       'PortalUserEntity',
-      {}, { error: result.error.flatten() }, null
+      {},
+      { error: result.error.flatten() },
+      null
     )
     return res.status(422).send({ message: 'Validation error', errors: result.error.flatten() })
   }
@@ -121,16 +118,15 @@ export async function addUser (req: AuthRequest, res: Response) {
         'addUser',
         'User Creation failed',
         'PortalUserEntity',
-        {}, {}, null
+        {},
+        {},
+        null
       )
       return res.status(400).send({ message: 'Invalid role' })
     }
 
     // check if email exists
-    const existsEmail = await AppDataSource.manager.exists(
-      PortalUserEntity,
-      { where: { email } }
-    )
+    const existsEmail = await AppDataSource.manager.exists(PortalUserEntity, { where: { email } })
     if (existsEmail) {
       await audit(
         AuditActionType.ADD,
@@ -138,7 +134,9 @@ export async function addUser (req: AuthRequest, res: Response) {
         'addUser',
         'User Creation failed',
         'PortalUserEntity',
-        {}, {}, null
+        {},
+        {},
+        null
       )
       return res.status(400).send({ message: 'Email already exists' })
     }
@@ -162,7 +160,9 @@ export async function addUser (req: AuthRequest, res: Response) {
           'addUser',
           'User Creation failed: Invalid DFSP dfsp_id Not found',
           'PortalUserEntity',
-          {}, {}, null
+          {},
+          {},
+          null
         )
         return res.status(400).send({ message: 'Invalid dfsp_id: DFSP Not found' })
       }
@@ -170,38 +170,40 @@ export async function addUser (req: AuthRequest, res: Response) {
     } else {
       newUser.dfsp = portalUser.dfsp
     }
-    await AppDataSource.manager.save(newUser)
+    // Start Transaction
+    await AppDataSource.manager.transaction(async (transactionalEntityManager) => {
+      await transactionalEntityManager.save(newUser)
+      await audit(
+        AuditActionType.ADD,
+        AuditTrasactionStatus.SUCCESS,
+        'addUser',
+        'User Created',
+        'PortalUserEntity',
+        {},
+        { ...newUser },
+        null
+      )
 
-    await audit(
-      AuditActionType.ADD,
-      AuditTrasactionStatus.SUCCESS,
-      'addUser',
-      'User Created',
-      'PortalUserEntity',
-      {}, { ...newUser }, null
-    )
+      // Generate Token using jwt
+      const token = jwt.sign({ id: newUser.id, email: newUser.email }, JWT_SECRET, { expiresIn: '1y' })
 
-    // Generate Token using jwt
-    const token = jwt.sign(
-      { id: newUser.id, email: newUser.email },
-      JWT_SECRET, { expiresIn: '1y' })
+      const jwtTokenObj = transactionalEntityManager.create(JwtTokenEntity, {
+        token,
+        user: newUser,
+        expires_at: new Date(Date.now() + JWT_EXPIRES_IN_MS),
+        last_used: new Date()
+      })
 
-    const jwtTokenObj = AppDataSource.manager.create(JwtTokenEntity, {
-      token,
-      user: newUser,
-      expires_at: new Date(Date.now() + JWT_EXPIRES_IN_MS),
-      last_used: new Date()
+      await transactionalEntityManager.save(jwtTokenObj)
+      await transactionalEntityManager.save(EmailVerificationTokenEntity, {
+        user: newUser,
+        token,
+        email: newUser.email
+      })
+
+      // Send Email with token
+      await sendVerificationEmail(newUser.email, token, roleObj.name)
     })
-
-    await AppDataSource.manager.save(jwtTokenObj)
-    await AppDataSource.manager.save(EmailVerificationTokenEntity, {
-      user: newUser,
-      token,
-      email: newUser.email
-    })
-
-    // Send Email with token
-    await sendVerificationEmail(newUser.email, token, roleObj.name)
 
     res.status(201).send({ message: 'User created. And Verification Email Sent', data: newUser })
   } catch (error) /* istanbul ignore next */ {
@@ -211,12 +213,12 @@ export async function addUser (req: AuthRequest, res: Response) {
       'addUser',
       'User Creation failed',
       'PortalUserEntity',
-      {}, {}, null
+      {},
+      {},
+      null
     )
 
     logger.error('%o', error)
-    res
-      .status(500)
-      .send({ message: error })
+    res.status(500).send({ message: error })
   }
 }
