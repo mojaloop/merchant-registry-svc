@@ -2,7 +2,7 @@ registryOracle:
   replicaCount: 1
   image:
     repository: twstm/registry-oracle
-    tag: 0.0.3k
+    tag: 0.0.3l
   service:
     type: ClusterIP
     port: 8888

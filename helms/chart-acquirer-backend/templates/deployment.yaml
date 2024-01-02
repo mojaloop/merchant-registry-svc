@@ -22,6 +22,8 @@ spec:
             value: "{{ .Values.acquirerBackend.env.appURL }}"
           - name: FRONTEND_SET_PASSWORD_URL
             value: "{{ .Values.acquirerBackend.env.frontendSetPasswordRedirectURL }}"
+          - name: RECAPTCHA_SECRET_KEY
+            value: "{{ .Values.acquirerBackend.env.recaptchaBackendSiteKey }}"
           - name: DB_HOST
             value: "{{ .Release.Name }}-{{ .Values.acquirerBackend.env.dbHost }}"
           - name: DB_PORT

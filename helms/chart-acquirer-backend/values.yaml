@@ -6,7 +6,7 @@ acquirerBackend:
   replicaCount: 1
   image:
     repository: twstm/acquirer-backend
-    tag: 0.0.3k
+    tag: 0.0.3l
   service:
     type: ClusterIP
     port: 5555
@@ -25,4 +25,5 @@ acquirerBackend:
     s3Endpoint: minio-clusterip-service
     appURL: "http://www.acquirer-merchant.local" # for email verification backend link
     frontendSetPasswordRedirectURL: "http://www.acquirer-merchant.local/set-password" # reset password link after email verification
+    recaptchaBackendSiteKey: "6LcEfT4pAAAAAF9a9PgebViC87aRPsd10JQDalNy"
 
