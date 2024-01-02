@@ -96,6 +96,7 @@ export async function postUserLogin (req: Request, res: Response) {
   }
 
   try {
+    // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
     if (RECAPTCHA_ENABLED) {
       // Verify reCAPTCHA token
       const { recaptchaToken } = req.body

@@ -6,9 +6,10 @@ acquirerFrontend:
   replicaCount: 1
   image:
     repository: twstm/acquirer-frontend
-    tag: 0.0.3k
+    tag: 0.0.3l
   service:
     type: ClusterIP
     port: 5173
   env:
     apiURL: "http://www.acquirer-merchant.local/api/v1"
+    recaptchaFrontendSiteKey: "6LcEfT4pAAAAAAONtUPIQYSoYvNSbvKiexaZLo4R"

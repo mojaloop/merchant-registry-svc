@@ -22,3 +22,6 @@ spec:
             value: "{{ .Values.acquirerFrontend.env.apiURL }}"
           - name: VITE_PORT
             value: "{{ .Values.acquirerFrontend.service.port }}"
+          - name: VITE_RECAPTCHA_SITE_KEY
+            value: {{ .Values.acquirerFrontend.env.recaptchaFrontendSiteKey }}
+

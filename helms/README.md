@@ -1,16 +1,25 @@
 ## Helm Charts Deployment
 
+### Default Ingress DNS (add following records to the `/etc/hosts` file)
+   - www.acquirer-merchant.local
+
 ### Prerequisites
 
 - Kubernetes cluster
 - Helm 3
 - SendGrid API Key (for sending verification emails)
-    - Update API key in the `./chart-acquirer-backend/values.yaml` file:
+  - Update API key in the `./chart-acquirer-backend/values.yaml` file:
+- Register for Google reCAPTCHA v2 and Add Ingress Domain
+  - https://www.google.com/recaptcha/admin/create
+  - Update the `./chart-acquirer-backend/values.yaml` file with the following values:
+    - `recaptchaBackendSiteKey`
+  - Update the `./chart-acquirer-frontend/values.yaml` file with the following values:
+    - `recaptchaFrontendSiteKey`
 
 ### Deploying the Helm Charts
 
-
 1. Build Dependency Chart
+
 ```bash
 helm dependency build <rootProject>/helms
 ```
@@ -21,9 +30,8 @@ helm dependency build <rootProject>/helms
 helm install my-release <rootProject>/helms
 ```
 
-2. Default Ingress DNS (add following records to the `/etc/hosts` file)
-    - www.acquirer-merchant.local
 
 ### IMPORTANT NOTES:
-When updating ingress's host make sure to update the `apiUrl` of `./chart-acquirer-frontend/values.yaml` file too. 
+
+When updating ingress's host make sure to update the `apiUrl` of `./chart-acquirer-frontend/values.yaml` file too.
 Otherwise frontend will not be able to communicate with backend.

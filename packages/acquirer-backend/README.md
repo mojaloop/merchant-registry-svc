@@ -37,6 +37,8 @@
 | `FRONTEND_SET_PASSWORD_URL`              | `http://localhost:5173/set-password` | URL for redirecting to set password in frontend, typically used in email verification. |
 | `JWT_SECRET`                             | `merchant-acquirer-jwt_secret`       | Secret key for JWT. _(Change in production)_                                           |
 | `JWT_EXPIRES_IN`                         | `1d`                                 | Expiration time for JWT. Common formats: `1d` for 1 day, `2h` for 2 hours, etc.        |
+| `RECAPTCHA_SECRET_KEY`                   | `recaptcha-secret-key`               | Backend Secret key for Google reCAPTCHA. (Change in production)                        |
+| `RECAPTCHA_ENABLED`                      | `false`                              | Enable or disable Google reCAPTCHA.                                                    |
 | **API Key Generation Configuration**     |                                      |                                                                                        |
 | `API_KEY_LENGTH`                         | `64`                                 | Length of the generated API key.                                                       |
 | `API_KEY_PREFIX`                         | `MR`                                 | Prefix for the API key.                                                                |
