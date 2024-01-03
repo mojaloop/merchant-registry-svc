@@ -3,6 +3,7 @@ import AliasGeneratedMerchantRecords from './AliasGeneratedMerchantRecords/Alias
 import AllMerchantRecords from './AllMerchantRecords/AllMerchantRecords'
 import AuditLog from './AuditLog/AuditLog'
 import DraftApplications from './DraftApplications/DraftApplications'
+import ForgotPassword from './ForgotPassword/ForgotPassword'
 import Login from './Login/Login'
 import PendingMerchantRecords from './PendingMerchantRecords/PendingMerchantRecords'
 import Registry from './Registry/Registry'
@@ -28,4 +29,5 @@ export {
   AuditLog,
   Login,
   SetPassword,
+  ForgotPassword,
 }

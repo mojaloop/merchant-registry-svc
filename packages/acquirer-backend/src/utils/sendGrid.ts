@@ -1,10 +1,8 @@
 import sgMail from '@sendgrid/mail'
 import dotenv from 'dotenv'
 import path from 'path'
-import { AuditActionType, AuditTrasactionStatus } from 'shared-lib'
 import logger from '../services/logger'
 import { readEnv } from '../setup/readEnv'
-import { audit } from './audit'
 
 if (process.env.NODE_ENV === 'test') {
   dotenv.config({ path: path.resolve(process.cwd(), '.env.test'), override: true })
@@ -13,6 +11,7 @@ if (process.env.NODE_ENV === 'test') {
 sgMail.setApiKey(readEnv('SENDGRID_API_KEY', '<empty-api-key>') as string)
 
 const backendAppUrl = readEnv('APP_URL', 'http://localhost:3000') as string
+const FRONTEND_SET_PASSWORD_URL = readEnv('FRONTEND_SET_PASSWORD_URL', '') as string
 
 export async function sendVerificationEmail (
   email: string, token: string, role: string
@@ -44,16 +43,33 @@ in Merchant Acquirer System.<br/>
     `
   }
   const response = await sgMail.send(msg)
-  logger.debug('Email sent: %o', response)
+  logger.debug('Email Verification sent: %o', response)
+}
 
-  await audit(
-    AuditActionType.ACCESS,
-    AuditTrasactionStatus.SUCCESS,
-    'sendVerificationEmail',
-    `Verification Email Sent: ${email} with token: ${token}`,
-    'PortalUserEntity',
-    {}, {}, null
-  )
+export async function sendForgotPasswordEmail (
+  email: string, token: string
+): Promise<void> {
+  const msg = {
+    to: email,
+    from: 'sithu.myo@thitsaworks.com',
+    subject: 'Reset Password For Merchant Acquirer System',
+    mail_settings: {
+      sandbox_mode: {
+        enable: process.env.node_env === 'test'
+      }
+    },
+    html: `
+      Dear User,<br/>
+Please ignore this email if you did not request to reset your password. <br />
+Reset Password Link for Merchant Acquirer System: <br />
+<a href="${FRONTEND_SET_PASSWORD_URL}?token=${token}"> 
+${FRONTEND_SET_PASSWORD_URL}?token=${token}
+</a> 
+<br/>
+    `
+  }
+  const response = await sgMail.send(msg)
+  logger.debug('Reset Password Email sent: %o', response)
 }
 
 export async function checkSendGridAPIKeyValidity (apiKey: string): Promise<boolean> {

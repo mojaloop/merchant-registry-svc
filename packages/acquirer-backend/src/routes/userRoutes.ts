@@ -12,10 +12,11 @@ import { getUserProfile } from './userControllers/getUserProfile'
 import { postUserRefresh } from './userControllers/refreshUserToken'
 import { postUserLogout } from './userControllers/postUserLogout'
 import { checkUserCreationPermission } from '../middleware/checkUserCreationPermission'
-import { authRateLimiter } from '../middleware/rateLimiter'
+import { authRateLimiter, forgotPasswordRateLimiter } from '../middleware/rateLimiter'
 import { checkPortalUserType } from '../middleware/checkUserType'
 import { PortalUserType } from 'shared-lib'
 import { putUserStatus } from './userControllers/putUserStatus'
+import { postUserForgotPassword } from './userControllers/forgotPassword'
 
 /**
  * @openapi
@@ -43,6 +44,8 @@ router.post(
 )
 
 router.get('/users/verify', verifyUserEmail)
+
+router.post('/users/forgot-password', forgotPasswordRateLimiter, postUserForgotPassword)
 
 router.put('/users/reset-password', authenticateJWT, putUserResetPassword)
 

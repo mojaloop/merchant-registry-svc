@@ -1585,6 +1585,45 @@ paths:
           description: Invalid credentials
         '422':
           description: Validation error
+  /users/forgot-password:
+    post:
+      tags:
+        - Portal Users
+      summary: Reset Forgot Password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: email
+                  example: user@email.com
+      responses:
+        '200':
+          description: Reset Password Link Sent Successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Reset Password Link Sent Successful
+        '400':
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: Invalid credentials
   /users/profile:
     get:
       tags:
