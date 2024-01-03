@@ -80,31 +80,6 @@ export function testVerifyUser (app: Application): void {
     expect(response.body.message).toEqual('Token not found')
   })
 
-  it('should return 400 when token is already used', async () => {
-    // Arrange
-    const verifiedUser = AppDataSource.manager.create(PortalUserEntity)
-    verifiedUser.name = 'New Unverification User'
-    verifiedUser.email = 'new-unverification-user@email.com'
-    verifiedUser.user_type = PortalUserType.HUB
-    verifiedUser.status = PortalUserStatus.RESETPASSWORD
-    await AppDataSource.manager.save(verifiedUser)
-
-    const usedToken = jwt.sign(
-      { id: verifiedUser.id, email: verifiedUser.email },
-      JWT_SECRET, { expiresIn: '1y' })
-
-    await AppDataSource.manager.save(EmailVerificationTokenEntity, {
-      user: verifiedUser,
-      token: usedToken,
-      email: verifiedUser.email,
-      is_used: true
-    })
-
-    const response = await request(app).get(`/api/v1/users/verify?token=${usedToken}`)
-    expect(response.status).toBe(400)
-    expect(response.body.message).toEqual('Token already used')
-  })
-
   it('should return 404 when user does not exist', async () => {
     const nonExistEmailToken = jwt.sign(
       { id: unVerifyUser.id, email: 'random-nonexistent-user@email.com' },

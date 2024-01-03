@@ -61,10 +61,6 @@ export async function verifyUserEmail (req: Request, res: Response) {
     return res.status(404).send({ message: 'Token not found' })
   }
 
-  if (emailVerificationToken.is_used) {
-    return res.status(400).send({ message: 'Token already used' })
-  }
-
   const user = await PortalUserRepository.findOne({
     where: { email: emailVerificationToken.email },
     relations: ['created_by']
