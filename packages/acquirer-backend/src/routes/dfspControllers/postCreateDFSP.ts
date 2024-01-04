@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/explicit-function-return-type */
+ /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { type Response } from 'express'
 import { AppDataSource } from '../../database/dataSource'
 import logger from '../../services/logger'
@@ -15,7 +15,8 @@ const createDFSPSchema = z.object({
   dfspType: z.nativeEnum(DFSPType),
   joinedDate: z.string(),
   activated: z.boolean(),
-  logoURI: z.string()
+  logoURI: z.string(),
+  businessLicenseId: z.string()
 })
 /**
  * @openapi
@@ -89,7 +90,7 @@ export async function postCreateDFSP (req: AuthRequest, res: Response) {
       message: 'Invalid request body', errors: parsedBody.error.formErrors.fieldErrors
     })
   }
-  const { name, fspId, dfspType, joinedDate, activated, logoURI } = parsedBody.data
+  const { name, fspId, dfspType, joinedDate, activated, logoURI, businessLicenseId } = parsedBody.data
 
   // Check for authenticated user
   /* istanbul ignore if */
@@ -108,6 +109,7 @@ export async function postCreateDFSP (req: AuthRequest, res: Response) {
     newDFSP.joined_date = new Date(joinedDate)
     newDFSP.activated = activated
     newDFSP.logo_uri = logoURI
+    newDFSP.business_license_id = businessLicenseId
 
     // Save to database
     await DFSPRepository.save(newDFSP)

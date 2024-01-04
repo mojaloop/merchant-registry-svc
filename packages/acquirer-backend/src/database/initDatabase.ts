@@ -111,6 +111,7 @@ export async function seedDFSPs (AppDataSource: DataSource): Promise<void> {
       newDFSP.joined_date = dfsp.joined_date
       newDFSP.activated = dfsp.activated
       newDFSP.logo_uri = dfsp.logo_uri
+      newDFSP.business_license_id= dfsp.business_license_id
       await AppDataSource.manager.save(newDFSP)
     }
   }

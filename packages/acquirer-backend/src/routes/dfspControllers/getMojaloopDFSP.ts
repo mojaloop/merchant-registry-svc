@@ -3,20 +3,20 @@ import { type Response } from 'express'
 import { AppDataSource } from '../../database/dataSource'
 import logger from '../../services/logger'
 import { type AuthRequest } from 'src/types/express'
-import { DFSPOnboardEntity } from '../../entity/DFSPOnboardEntity'
+import { MojaloopDFSPEntity } from '../../entity/MojaloopDFSPEntity'
 
 /**
  * @openapi
  * tags:
- *   name: Onboard Dfsps
+ *   name: DFSP
  *
- * /onboarded_dfsps:
+ * /mojaloop-dfsps:
  *   get:
  *     tags:
- *       - Onboard Dfsps
+ *       - DFSP
  *     security:
  *       - Authorization: []
- *     summary: GET ONBOARDED DFSP
+ *     summary: GET MojaloopDFSP
  *     responses:
  *       200:
  *         description: GET Roles
@@ -35,8 +35,7 @@ import { DFSPOnboardEntity } from '../../entity/DFSPOnboardEntity'
  *                   items:
  *                     type: object
  */
-
-export async function getOnboardedDFPS (req: AuthRequest, res: Response) {
+export async function getMojaloopDFSPs (req: AuthRequest, res: Response) {
     const portalUser = req.user
 
     /* istanbul ignore if */
@@ -47,11 +46,11 @@ export async function getOnboardedDFPS (req: AuthRequest, res: Response) {
     try {
         logger.debug('req.query: %o', req.query)
 
-        const OnboardedDFSPRepository = AppDataSource.getRepository(DFSPOnboardEntity)
+        const DFSPRepository = AppDataSource.getRepository(MojaloopDFSPEntity)
 
-        const onboardedDfsps = await OnboardedDFSPRepository.find()
+        const mojaloopDfsps = await DFSPRepository.find()
 
-        res.send({ message: 'OK', data: onboardedDfsps })
+        res.send({ message: 'OK', data: mojaloopDfsps })
     } catch (e) /* istanbul ignore next */ {
         logger.error(e)
         res.status(500).send({ message: e })

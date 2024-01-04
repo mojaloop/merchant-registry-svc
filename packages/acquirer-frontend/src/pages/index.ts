@@ -11,6 +11,8 @@ import UserManagement from './UserManagement/UserManagement'
 import AddNewUser from './AddNewUser/AddNewUser'
 import AuditLog from './AuditLog/AuditLog'
 import Login from './Login/Login'
+import Dfsps from './Dfsps/Dfsps'
+import OnboardDfsp from './OnboardDfsp/OnboardDfsp'
 import SetPassword from './SetPassword/SetPassword'
 
 export {
@@ -27,5 +29,7 @@ export {
   AddNewUser,
   AuditLog,
   Login,
+  Dfsps,
+  OnboardDfsp,
   SetPassword,
 }
