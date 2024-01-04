@@ -12,6 +12,8 @@ import {
   DraftApplications,
   ForgotPassword,
   Login,
+  Dfsps,
+  OnboardDfsp,
   PendingMerchantRecords,
   Registry,
   RegistryForm,
@@ -57,6 +59,16 @@ const Routes = () => {
         {
           index: true,
           element: <Navigate to={redirectTarget} replace />,
+        },
+        {
+          path: 'onboarding-dfsp',
+          element: <OnboardDfsp />,
+          caseSensitive: true,
+        },
+        {
+          path: 'dfsp-list',
+          element: <Dfsps />,
+          caseSensitive: true,
         },
         {
           path: 'registry',

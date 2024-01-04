@@ -11,6 +11,8 @@ import RegistryForm from './RegistryForm/RegistryForm'
 import RejectedMerchantRecords from './RejectedMerchantRecords/RejectedMerchantRecords'
 import RevertedMerchantRecords from './RevertedMerchantRecords/RevertedMerchantRecords'
 import RoleManagement from './RoleManagement/RoleManagement'
+import Dfsps from './Dfsps/Dfsps'
+import OnboardDfsp from './OnboardDfsp/OnboardDfsp'
 import SetPassword from './SetPassword/SetPassword'
 import UserManagement from './UserManagement/UserManagement'
 
@@ -28,6 +30,8 @@ export {
   AddNewUser,
   AuditLog,
   Login,
+  Dfsps,
+  OnboardDfsp,
   SetPassword,
   ForgotPassword,
 }

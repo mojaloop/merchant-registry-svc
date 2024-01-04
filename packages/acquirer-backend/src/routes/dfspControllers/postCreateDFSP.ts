@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/explicit-function-return-type */
+ /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { type Response } from 'express'
 import { AppDataSource } from '../../database/dataSource'
 import logger from '../../services/logger'
@@ -13,7 +13,10 @@ const createDFSPSchema = z.object({
   name: z.string(),
   fspId: z.string(),
   dfspType: z.nativeEnum(DFSPType),
-  logoURI: z.string()
+  joinedDate: z.string(),
+  activated: z.boolean(),
+  logoURI: z.string(),
+  businessLicenseId: z.string()
 })
 /**
  * @openapi
@@ -71,6 +74,15 @@ const createDFSPSchema = z.object({
  *         description: Internal Server Error
  */
 export async function postCreateDFSP (req: AuthRequest, res: Response) {
+  const parsedBody = createDFSPSchema.safeParse(req.body)
+  if (!parsedBody.success) {
+    return res.status(400).send({
+      message: 'Invalid request body', errors: parsedBody.error.formErrors.fieldErrors
+    })
+  }
+  const { name, fspId, dfspType, joinedDate, activated, logoURI, businessLicenseId } = parsedBody.data
+
+  // Check for authenticated user
   /* istanbul ignore if */
   if (req.user === null || req.user === undefined) {
     return res.status(401).send({ message: 'Unauthorized' })
@@ -101,6 +113,7 @@ export async function postCreateDFSP (req: AuthRequest, res: Response) {
     newDFSP.fspId = fspId
     newDFSP.dfsp_type = dfspType
     newDFSP.logo_uri = logoURI
+    newDFSP.business_license_id = businessLicenseId
 
     // Save to database
     await DFSPRepository.save(newDFSP)
