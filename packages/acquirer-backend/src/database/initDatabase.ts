@@ -131,7 +131,9 @@ export async function seedDFSPs (appDataSource: DataSource): Promise<void> {
       newDFSP.fspId = dfsp.fspId
       newDFSP.dfsp_type = dfsp.dfsp_type
       newDFSP.logo_uri = dfsp.logo_uri
-      await appDataSource.manager.save(newDFSP)
+      newDFSP.business_license_id= dfsp.business_license_id
+      await AppDataSource.manager.save(newDFSP)
+
     }
   }
   logger.info('Seeding Default DFSPs... Done')
