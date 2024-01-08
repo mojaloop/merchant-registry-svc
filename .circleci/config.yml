@@ -61,7 +61,7 @@ jobs:
       - persist_to_workspace:
           root: *workingDirVar
           paths:
-            - setup/
+            - .
   build:
     executor: default-docker
     steps:
