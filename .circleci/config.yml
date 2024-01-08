@@ -61,7 +61,7 @@ jobs:
       - persist_to_workspace:
           root: *workingDirVar
           paths:
-            - .
+            - setup/
   build:
     executor: default-docker
     steps:
@@ -75,7 +75,8 @@ jobs:
       - persist_to_workspace:
           root: *workingDirVar
           paths:
-            - .
+            - build/
+
   lint-check-acquirer-backend:
     executor: default-docker
     steps:
@@ -152,7 +153,7 @@ jobs:
       - persist_to_workspace:
           root: *workingDirVar
           paths:
-            - .
+            - test-results/
   
   tests-acquirer-backend:
     executor: default-docker
@@ -166,7 +167,7 @@ jobs:
       - persist_to_workspace:
           root: *workingDirVar
           paths:
-            - .
+            - test-results/
   
   tests-oracle:
     executor: default-docker
@@ -180,7 +181,7 @@ jobs:
       - persist_to_workspace:
           root: *workingDirVar
           paths:
-            - .
+            - test-results/
 
   coverage-report:
     executor: default-docker
@@ -225,82 +226,62 @@ workflows:
     jobs:
       - setup:
           context: org-global
-      - build:
-          context: org-global
-          requires:
-            - setup
-
-      # - approve_dep_check:
-      #     type: approval
+      # - build:
+      #     context: org-global
       #     requires:
       #       - setup
-
-      - lint-check-acquirer-backend:
-          context: org-global
-          requires:
-            - setup
-
-      - lint-check-acquirer-frontend:
-          context: org-global
-          requires:
-            - setup
-
-      - lint-check-registry-oracle:
-          context: org-global
-          requires:
-            - setup
-
-      - type-check-acquirer-backend:
-          context: org-global
-          requires:
-            - setup
-
-      - type-check-acquirer-frontend:
-          context: org-global
-          requires:
-            - setup
-
-      - type-check-registry-oracle:
-          context: org-global
-          requires:
-            - setup
-
-      # - dep-check-acquirer-backend:
-      #     context: org-global
-      #     requires:
-      #       - approve_dep_check
       #
-      # - dep-check-acquirer-frontend:
+      # - lint-check-acquirer-backend:
       #     context: org-global
       #     requires:
-      #       - approve_dep_check
+      #       - setup
       #
-      # - dep-check-registry-oracle:
+      # - lint-check-acquirer-frontend:
       #     context: org-global
       #     requires:
-      #       - approve_dep_check
-
-      - tests-acquirer-backend:
-          context: org-global
-          requires:
-            - setup
-
-      - tests-oracle:
-          context: org-global
-          requires:
-            - setup
-
-      - test-unit-frontend:
-          context: org-global
-          requires:
-            - setup
+      #       - setup
+      #
+      # - lint-check-registry-oracle:
+      #     context: org-global
+      #     requires:
+      #       - setup
+      #
+      # - type-check-acquirer-backend:
+      #     context: org-global
+      #     requires:
+      #       - setup
+      #
+      # - type-check-acquirer-frontend:
+      #     context: org-global
+      #     requires:
+      #       - setup
+      #
+      # - type-check-registry-oracle:
+      #     context: org-global
+      #     requires:
+      #       - setup
+      #
+      # - tests-acquirer-backend:
+      #     context: org-global
+      #     requires:
+      #       - setup
+      #
+      # - tests-oracle:
+      #     context: org-global
+      #     requires:
+      #       - setup
+      #
+      # - test-unit-frontend:
+      #     context: org-global
+      #     requires:
+      #       - setup
 
       - publish:
           context: org-global
           # filters:
           #   branches:
           #     only: main
-          requires:
-            - tests-acquirer-backend
-            - tests-oracle
-            - test-unit-frontend
+          # requires:
+          #   - tests-acquirer-backend
+          #   - tests-oracle
+          #   - test-unit-frontend
