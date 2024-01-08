@@ -129,6 +129,7 @@ for PACKAGE in ${CHANGED_PACKAGES}; do
     echo -e "Processing package: ${PACKAGE}..."
 
     PACKAGE_PATH=${ROOT}/$PACKAGE
+    DOCKERFILE_PATH=${ROOT}/Dockerfile-${PACKAGE}
     PACKAGE_NAME=$(cat ${PACKAGE_PATH}/package.json | jq -r ".name")
     DOCKER_IMAGE_NAME=$(echo $PACKAGE_NAME | sed -e 's/@//')
     PACKAGE_CUR_VERSION=$(cat ${PACKAGE_PATH}/package.json | jq -r ".version")
@@ -171,7 +172,7 @@ for PACKAGE in ${CHANGED_PACKAGES}; do
 #    docker buildx build --platform ${DOCKER_BUILD_PLATFORMS} --cache-from=${DOCKER_TAG_LATEST_RELEASE} \
     docker buildx build --progress plain --platform ${DOCKER_BUILD_PLATFORMS} --push \
         --cache-from=${DOCKER_TAG_PREV_VERSION} \
-        -f ${PACKAGE_PATH}/Dockerfile \
+        -f ${DOCKERFILE_PATH} \
         -t ${DOCKER_TAG_VERSION} -t ${DOCKER_TAG_SHORT_GIT_HASH} -t ${DOCKER_TAG_LATEST_RELEASE} \
         .
     BUILD_AND_PUB_SUCCESS=$?

@@ -22,6 +22,7 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "publish_to_dockerhub": true,
   "dependencies": {
     "@sendgrid/mail": "^7.7.0",
     "amqplib": "^0.10.3",
