@@ -281,7 +281,8 @@ workflows:
           # filters:
           #   branches:
           #     only: main
-          # requires:
+          requires:
+            - setup
           #   - tests-acquirer-backend
           #   - tests-oracle
           #   - test-unit-frontend
