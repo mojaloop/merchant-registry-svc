@@ -38,6 +38,7 @@ See the README.md file on each services for more Environment Variable Configurat
     - [SendGrid](https://sendgrid.com/) API key is required for Email Verification 
         - Register at [SendGrid](https://sendgrid.com/) and create new API Key at https://app.sendgrid.com/settings/api_keys
         - Update the `SENDGRID_API_KEY` in the `./packages/acquirer-backend/.env` file with the new API Key obtained from https://app.sendgrid.com/settings/api_keys
+        - Update the `SENDER_EMAIL` in the `./packages/acquirer-backend/.env`
     - reCAPTCHA Site Key and Secret Key is required for reCAPTCHA Verification
         - Register at [Google reCAPTCHA](https://www.google.com/recaptcha/admin/create) and create new reCAPTCHA v2 Checkbox
         - Use Client Site Key and Update the `VITE_RECAPTCHA_SITE_KEY` in the `./packages/acquirer-frontend/.env`
