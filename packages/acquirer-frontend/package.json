@@ -3,8 +3,10 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "mojaloop": {
+    "publish_to_dockerhub": true
+  },
   "license": "ISC",
-  "publish_to_dockerhub": true,
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
