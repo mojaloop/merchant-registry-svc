@@ -39,6 +39,8 @@ spec:
                 key: mysql-root-password
           - name: SENDGRID_API_KEY
             value: "{{ .Values.acquirerBackend.env.sendgridApiKey }}"
+          - name: SENDER_EMAIL
+            value: "{{ .Values.acquirerBackend.env.senderEmail }}"
 
           - name: S3_ENDPOINT
             value: "{{ .Release.Name }}-{{ .Values.acquirerBackend.env.s3Endpoint }}"

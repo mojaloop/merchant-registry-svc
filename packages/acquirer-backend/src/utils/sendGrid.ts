@@ -13,13 +13,14 @@ if (process.env.NODE_ENV === 'test') {
 sgMail.setApiKey(readEnv('SENDGRID_API_KEY', '<empty-api-key>') as string)
 
 const backendAppUrl = readEnv('APP_URL', 'http://localhost:3000') as string
+const SENDER_EMAIL = readEnv('SENDER_EMAIL', 'test@example.com') as string
 
 export async function sendVerificationEmail (
   email: string, token: string, role: string
 ): Promise<void> {
   const msg = {
     to: email,
-    from: 'sithu.myo@thitsaworks.com',
+    from: SENDER_EMAIL,
     subject: 'Email Verification For Merchant Acquirer System',
     mail_settings: {
       sandbox_mode: {
