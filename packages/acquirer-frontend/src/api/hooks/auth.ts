@@ -7,7 +7,7 @@ import { PortalUserType } from 'shared-lib'
 
 import { FALLBACK_ERROR_MESSAGE } from '@/constants/errorMessage'
 import { NAV_ITEMS, useNavItems } from '@/contexts/NavItemsContext'
-import { login, logout, setPassword } from '../auth'
+import { forgotPassword, login, logout, setPassword } from '../auth'
 import { getUserProfile } from '../users'
 
 export function useLogin(recaptchaRef: React.RefObject<ReCAPTCHA>) {
@@ -141,6 +141,30 @@ export function useSetPassword() {
       if (isAxiosError(error)) {
         toast({
           title: 'Setting Password Failed!',
+          description: error.response?.data.message || FALLBACK_ERROR_MESSAGE,
+          status: 'error',
+        })
+      }
+    },
+  })
+}
+
+export function useForgotPassword() {
+  const toast = useToast()
+
+  return useMutation({
+    mutationFn: forgotPassword,
+    onSuccess: () => {
+      toast({
+        title: 'Reset Password Link Sent!',
+        description: 'You will receive an email with a link to reset your password.',
+        status: 'success',
+      })
+    },
+    onError: error => {
+      if (isAxiosError(error)) {
+        toast({
+          title: 'Sending Reset Password Link Failed!',
           description: error.response?.data.message || FALLBACK_ERROR_MESSAGE,
           status: 'error',
         })

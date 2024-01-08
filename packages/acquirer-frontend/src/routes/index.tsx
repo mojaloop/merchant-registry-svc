@@ -10,6 +10,7 @@ import {
   AllMerchantRecords,
   AuditLog,
   DraftApplications,
+  ForgotPassword,
   Login,
   PendingMerchantRecords,
   Registry,
@@ -127,6 +128,11 @@ const Routes = () => {
     {
       path: '/set-password',
       element: <SetPassword />,
+      caseSensitive: true,
+    },
+    {
+      path: '/forgot-password',
+      element: <ForgotPassword />,
       caseSensitive: true,
     },
   ])

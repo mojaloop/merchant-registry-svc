@@ -24,3 +24,10 @@ export async function setPassword(password: string) {
   })
   return response.data
 }
+
+export async function forgotPassword(email: string) {
+  const response = await instance.post('/users/forgot-password', {
+    email,
+  })
+  return response.data
+}
