@@ -8,7 +8,9 @@
 - Kubernetes cluster
 - Helm 3
 - SendGrid API Key (for sending verification emails)
-  - Update API key in the `./chart-acquirer-backend/values.yaml` file:
+  - Update the `sendgridApiKey` in the `./chart-acquirer-backend/values.yaml`
+  - Update the `senderEmail` in the `./chart-acquirer-backend/values.yaml`
+
 - Register for Google reCAPTCHA v2 and Add Ingress Domain
   - https://www.google.com/recaptcha/admin/create
   - Update the `./chart-acquirer-backend/values.yaml` file with the following values:

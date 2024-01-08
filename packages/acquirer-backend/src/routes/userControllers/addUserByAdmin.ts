@@ -24,9 +24,6 @@ const AddUserSchema = z.object({
 
 const JWT_SECRET = readEnv('JWT_SECRET', '') as string
 
-const JWT_EXPIRES_IN = readEnv('JWT_EXPIRES_IN', '1d') as string
-const JWT_EXPIRES_IN_MS = ms(JWT_EXPIRES_IN)
-
 /**
  * @openapi
  * /users/add:
@@ -185,12 +182,12 @@ export async function addUser (req: AuthRequest, res: Response) {
       )
 
       // Generate Token using jwt
-      const token = jwt.sign({ id: newUser.id, email: newUser.email }, JWT_SECRET, { expiresIn: '1y' })
+      const token = jwt.sign({ id: newUser.id, email: newUser.email }, JWT_SECRET, { expiresIn: '1h' })
 
       const jwtTokenObj = transactionalEntityManager.create(JwtTokenEntity, {
         token,
         user: newUser,
-        expires_at: new Date(Date.now() + JWT_EXPIRES_IN_MS),
+        expires_at: new Date(Date.now() + ms('1h')),
         last_used: new Date()
       })
 
