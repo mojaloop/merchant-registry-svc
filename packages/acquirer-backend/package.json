@@ -2,6 +2,7 @@
   "name": "acquirer-backend",
   "version": "0.1.0",
   "description": "Merchant Acquirer Backend",
+  "private": true,
   "main": "src/index.ts",
   "scripts": {
     "start": "ts-node src/index.ts",

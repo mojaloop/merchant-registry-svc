@@ -1,5 +1,6 @@
 {
   "name": "shared-lib",
+  "private": true,
   "version": "0.0.1",
   "description": "Shared Library to be used across Frontend and Backend Services",
   "main": "src/index.ts",
