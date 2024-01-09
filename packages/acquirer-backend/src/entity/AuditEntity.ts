@@ -34,7 +34,7 @@ export class AuditEntity {
   @Column({ nullable: true, length: 4096 })
     new_value!: string
 
-  @ManyToOne(() => PortalUserEntity, portalUser => portalUser.audits, { onDelete: 'CASCADE' })
+  @ManyToOne(() => PortalUserEntity, portalUser => portalUser.audits, { onDelete: 'SET NULL' })
     portal_user!: PortalUserEntity | null
 
   @ManyToOne(() => DFSPEntity, dfsp => dfsp.audits)
