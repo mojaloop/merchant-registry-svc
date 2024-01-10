@@ -39,7 +39,7 @@ export function useOnboardDfsp() {
     return useMutation({
         mutationFn: onboardDfsp,
         onSuccess: () => {
-            queryClient.invalidateQueries(['dfsps'])
+            queryClient.invalidateQueries({ queryKey: ['dfsps'] })
             toast({
                 title: 'dfsp onboarding Successful!',
                 description: 'Please notify the dfsp.',
