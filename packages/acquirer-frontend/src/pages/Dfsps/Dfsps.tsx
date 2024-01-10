@@ -4,14 +4,9 @@ import { Box, Heading, Stack, useDisclosure } from '@chakra-ui/react';
 import type { DfspInfo } from '@/types/dfsp';
 import { useDfsps } from '@/api/hooks/dfsps';
 import { useTable } from '@/hooks';
-import { CustomButton, DataTable, EmptyState, TableSkeleton } from '@/components/ui';
-import { FormSelect } from '@/components/form';
-import FilterFormSkeleton from './FilterFormSkeleton';
-
+import {DataTable, EmptyState, TableSkeleton } from '@/components/ui';
 
 const Dfsps = () => {
-    const { isOpen, onOpen, onClose } = useDisclosure();
-
     const [pagination, setPagination] = useState<PaginationState>({
         pageIndex: 0,
         pageSize: 10,
