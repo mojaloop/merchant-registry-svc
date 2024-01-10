@@ -30,7 +30,7 @@ const OnboardDfsp = () => {
     const mojaloopDfsps = useMojaloopDfsps();
     const onboardDfsp = useOnboardDfsp();
 
-    let dfspNamesOptions = [];
+    let dfspNamesOptions ;
     let dfspTypesOptions = [
         { label: 'Bank and Credit Union', value: 'Bank and Credit Union' },
         { label: 'Mobile Money Operator', value: 'Mobile Money Operator' },
