@@ -1,12 +1,7 @@
 import { useMemo, useState } from 'react';
 import { createColumnHelper, type PaginationState } from '@tanstack/react-table';
-import { Box, Flex, HStack, Heading, Stack, useDisclosure } from '@chakra-ui/react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import dayjs from 'dayjs';
-import { AuditActionType } from 'shared-lib';
-
-import type { DfspType } from '@/types/dfsp';
+import { Box, Heading, Stack, useDisclosure } from '@chakra-ui/react';
+import type { DfspInfo } from '@/types/dfsp';
 import { useDfsps } from '@/api/hooks/dfsps';
 import { useTable } from '@/hooks';
 import { CustomButton, DataTable, EmptyState, TableSkeleton } from '@/components/ui';
