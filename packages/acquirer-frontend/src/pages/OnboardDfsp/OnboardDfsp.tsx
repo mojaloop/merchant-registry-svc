@@ -1,29 +1,18 @@
 import {
-    Box,
     FormControl,
-    FormErrorMessage,
-    FormLabel,
     HStack,
-    IconButton,
-    Link,
     Heading,
     Radio,
     RadioGroup,
     Stack,
     Text,
-    VisuallyHiddenInput,
-    useToast,
-    Grid,
-    GridItem,
 } from '@chakra-ui/react';
-
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Controller, useForm } from 'react-hook-form';
-import type { mojaloopDfsp } from '@/types/mojaloopDfsps';
 import { type onboardDfspForm, onboardDfspSchema } from '@/lib/validations/onboardDfsp';
 import { useMojaloopDfsps } from '@/api/hooks/mojaloopDfsps';
 import { useOnboardDfsp } from '@/api/hooks/dfsps';
-import { CustomButton, Skeleton } from '@/components/ui';
+import { CustomButton } from '@/components/ui';
 import { FormInput, FormSelect } from '@/components/form';
 import GridShell from './GridBox';
 
@@ -106,7 +95,6 @@ const OnboardDfsp = () => {
                                                 const file = e.target.files[0];
                                                 if (file && file.size > 5 * 1024 * 1024) {
                                                     alert('Please select a file smaller than 5MB.');
-                                                    e.target.value = null;
                                                 }
                                             },
                                             accept: '.jpg, .jpeg, .png, .pdf',
@@ -133,7 +121,7 @@ const OnboardDfsp = () => {
                                         />
                                     </FormControl>
                                 <HStack>
-                                    <CustomButton type='submit' isLoading={onboardDfsp.isLoading} mt={40} ml={30}>
+                                    <CustomButton type='submit' mt={40} ml={30}>
                                         Submit
                                     </CustomButton>
                                 </HStack>
