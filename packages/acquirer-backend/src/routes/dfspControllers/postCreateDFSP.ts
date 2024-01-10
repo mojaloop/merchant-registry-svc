@@ -76,20 +76,6 @@ const createDFSPSchema = z.object({
 export async function postCreateDFSP (req: AuthRequest, res: Response) {
   const parsedBody = createDFSPSchema.safeParse(req.body)
   if (!parsedBody.success) {
-    return res.status(400).send({
-      message: 'Invalid request body', errors: parsedBody.error.formErrors.fieldErrors
-    })
-  }
-  const { name, fspId, dfspType, joinedDate, activated, logoURI, businessLicenseId } = parsedBody.data
-
-  // Check for authenticated user
-  /* istanbul ignore if */
-  if (req.user === null || req.user === undefined) {
-    return res.status(401).send({ message: 'Unauthorized' })
-  }
-
-  const parsedBody = createDFSPSchema.safeParse(req.body)
-  if (!parsedBody.success) {
     await audit(
       AuditActionType.ADD,
       AuditTrasactionStatus.FAILURE,
@@ -102,7 +88,7 @@ export async function postCreateDFSP (req: AuthRequest, res: Response) {
       message: 'Invalid request body', errors: parsedBody.error.formErrors.fieldErrors
     })
   }
-  const { name, fspId, dfspType, logoURI } = parsedBody.data
+  const { name, fspId, dfspType, logoURI, businessLicenseId } = parsedBody.data
 
   try {
     const DFSPRepository = AppDataSource.manager.getRepository(DFSPEntity)
