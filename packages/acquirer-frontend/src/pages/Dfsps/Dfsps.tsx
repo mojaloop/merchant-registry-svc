@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { createColumnHelper, type PaginationState } from '@tanstack/react-table';
-import { Box, Heading, Stack, useDisclosure } from '@chakra-ui/react';
-import type { DfspInfo } from '@/types/dfsp';
+import { Box, Heading, Stack} from '@chakra-ui/react';
+import type { dfspInfo } from '@/types/dfsps';
 import { useDfsps } from '@/api/hooks/dfsps';
 import { useTable } from '@/hooks';
 import {DataTable, EmptyState, TableSkeleton } from '@/components/ui';
@@ -13,7 +13,7 @@ const Dfsps = () => {
     });
 
     const columns = useMemo(() => {
-        const columnHelper = createColumnHelper<DfspType>();
+        const columnHelper = createColumnHelper<dfspInfo>();
 
         return [
             columnHelper.display({
