@@ -1,7 +1,7 @@
 import type { dfspInfo, DfspResponse } from '@/types/dfsps'
 import type { PaginationParams } from '@/types/pagination'
 import instance from '@/lib/axiosInstance'
-import { type onboardMojaloopDfspForm } from '@/lib/validations/onboardMojaloopDfsp'
+import { type onboardDfspForm } from '@/lib/validations/onboardDfsp'
 
 
 export function transformIntoTableData(dfspResponse: DfspResponse) {
@@ -33,7 +33,7 @@ export async function getDfsps(params: dfspInfo & PaginationParams) {
         throw new Error("Failed to fetch data. Please try again.");
     }
 }
-export async function onboardDfsp(dfsp: onboardMojaloopDfspForm) {
+export async function onboardDfsp(dfsp: onboardDfspForm) {
     const response = await instance.post('/dfsps', dfsp)
     return response.data
 }
