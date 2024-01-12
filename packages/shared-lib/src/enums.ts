@@ -50,8 +50,8 @@ export enum DFSPType {
 export enum PortalUserStatus {
   UNVERIFIED = 'Unverified',
   RESETPASSWORD = 'Reset Password',
-  FRESH = 'Fresh',
-  INACTIVE = 'Inactive',
+  FRESH = 'Fresh', // Unused
+  INACTIVE = 'Inactive', // Unused
   ACTIVE = 'Active',
   BLOCKED = 'Blocked',
   DISABLED = 'Disabled'

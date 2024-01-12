@@ -1,13 +1,23 @@
 import { useMemo } from 'react'
 import { createColumnHelper } from '@tanstack/react-table'
-import { Flex, Heading, Stack, Switch } from '@chakra-ui/react'
+import { CheckCircleIcon, NotAllowedIcon, WarningIcon } from '@chakra-ui/icons'
+import { Box, Flex, Heading, Stack, Text, Tooltip } from '@chakra-ui/react'
+import { PortalUserStatus } from 'shared-lib'
 
 import type { User } from '@/types/users'
-import { useUsers } from '@/api/hooks/users'
+import { useUsers, useUserStatusUpdate } from '@/api/hooks/users'
 import { useTable } from '@/hooks'
-import { CustomLink, DataTable, EmptyState, TableSkeleton } from '@/components/ui'
+import {
+  CustomButton,
+  CustomLink,
+  DataTable,
+  EmptyState,
+  TableSkeleton,
+} from '@/components/ui'
 
 const UserManagement = () => {
+  const { mutate: updateUserStatus } = useUserStatusUpdate()
+
   const columns = useMemo(() => {
     const columnHelper = createColumnHelper<User>()
 
@@ -28,34 +38,144 @@ const UserManagement = () => {
         cell: info => info.getValue(),
         header: 'Role',
       }),
-      columnHelper.accessor('status', {
+      columnHelper.accessor('dfsp', {
         cell: info => info.getValue(),
+        header: 'DFSP',
+      }),
+      columnHelper.accessor('status', {
+        cell: info => {
+          const status = info.getValue()
+          let statusIcon
+          switch (status) {
+            case PortalUserStatus.ACTIVE:
+              statusIcon = <CheckCircleIcon color='green.500' />
+              break
+            case PortalUserStatus.UNVERIFIED:
+              statusIcon = <WarningIcon color='yellow.500' />
+              break
+            case PortalUserStatus.RESETPASSWORD:
+              statusIcon = <WarningIcon color='yellow.500' />
+              break
+            case PortalUserStatus.DISABLED:
+              statusIcon = <WarningIcon color='yellow.500' />
+              break
+            case PortalUserStatus.BLOCKED:
+              statusIcon = <NotAllowedIcon color='red.500' />
+              break
+            default:
+              statusIcon = null
+          }
+          return (
+            <Flex alignItems='center' justifyContent='center'>
+              {statusIcon}
+              <Text ml={2}>{status}</Text>
+            </Flex>
+          )
+        },
         header: 'Status',
       }),
       columnHelper.display({
         id: 'action',
         header: 'Action',
-        cell: () => <Switch />,
+        cell: info => {
+          const status = info.row.original.status
+          const userId = info.row.original.no
+
+          const BlockButton = () => {
+            return (
+              <Tooltip label='Non-reversible Permanently Block. ' hasArrow>
+                <CustomButton colorVariant='danger' onClick={handleBlock} mx='2'>
+                  Block
+                </CustomButton>
+              </Tooltip>
+            )
+          }
+
+          const DisableButton = () => {
+            return (
+              <Tooltip label='Temporary Disable' hasArrow>
+                <CustomButton
+                  colorVariant='accent-outline'
+                  onClick={handleDisable}
+                  mx='2'
+                >
+                  Disable
+                </CustomButton>
+              </Tooltip>
+            )
+          }
+
+          const ActivateButton = () => {
+            return (
+              <Tooltip label='Activate' hasArrow>
+                <CustomButton colorVariant='info' onClick={handleActivate} mx='2'>
+                  Activate
+                </CustomButton>
+              </Tooltip>
+            )
+          }
+
+          let actionButtons
+          const handleDisable = () => {
+            const newStatus = PortalUserStatus.DISABLED
+            updateUserStatus({ userId, newStatus })
+          }
+
+          const handleBlock = () => {
+            const newStatus = PortalUserStatus.BLOCKED
+            updateUserStatus({ userId, newStatus })
+          }
+
+          const handleActivate = () => {
+            const newStatus = PortalUserStatus.ACTIVE
+            updateUserStatus({ userId, newStatus })
+          }
+
+          if (status === PortalUserStatus.ACTIVE) {
+            actionButtons = (
+              <>
+                <DisableButton />
+                <BlockButton />
+              </>
+            )
+          } else if (status === PortalUserStatus.DISABLED) {
+            actionButtons = (
+              <>
+                <ActivateButton />
+                <BlockButton />
+              </>
+            )
+          } else {
+            actionButtons = <></> // No buttons for any other status
+          }
+
+          return <Box>{actionButtons}</Box>
+        },
       }),
     ]
-  }, [])
+  }, [updateUserStatus])
 
   const users = useUsers()
   let data
 
   if (users.isSuccess && !users.isFetching) {
-    data = users.data.map(({ id, name, email, role, status }) => ({
+    data = users.data.map(({ id, name, email, role, status, dfsp }) => ({
       no: id,
       name,
       email,
       status,
       role: role.description,
+      dfsp: dfsp?.name || 'N/A',
     }))
   }
 
   const table = useTable({
     data: data || [],
     columns,
+    pagination: {
+      pageIndex: 0,
+      pageSize: 100,
+    },
   })
 
   return (

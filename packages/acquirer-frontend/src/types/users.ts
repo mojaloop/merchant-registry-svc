@@ -9,6 +9,7 @@ export interface User {
   email: string
   status: string
   role: string
+  dfsp: string | null
 }
 
 export type ServerUser = {

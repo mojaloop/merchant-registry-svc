@@ -16,3 +16,9 @@ export async function getUserProfile() {
   const response = await instance.get<{ data: ServerUser }>('/users/profile')
   return response.data.data
 }
+
+export async function updateUserStatus(userId: string | number, newStatus: string) {
+  const response = await instance.put(`/users/${userId}/status`, { status: newStatus })
+  return response.data.data
+}
+
