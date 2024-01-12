@@ -36,6 +36,7 @@
     "express": "^4.18.2",
     "express-rate-limit": "^7.1.5",
     "helm": "^0.2.1",
+    "helmet": "^7.1.0",
     "js-yaml": "^4.1.0",
     "jsonwebtoken": "^9.0.2",
     "minio": "^7.1.3",

@@ -1,18 +1,15 @@
 import {
-    Entity,
-    PrimaryGeneratedColumn, Column,
-    OneToMany
+  Entity,
+  PrimaryGeneratedColumn, Column
 } from 'typeorm'
-import { CountrySubdivisionEntity } from './CountrySubdivisionEntity'
-
 @Entity('mojaloopDfsps')
 export class MojaloopDFSPEntity {
-    @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn()
     id!: number
 
-    @Column({ nullable: false, length: 255 })
+  @Column({ nullable: false, length: 255 })
     dfsp_id!: string
 
-    @Column({ nullable: false, length: 255 })
+  @Column({ nullable: false, length: 255 })
     dfsp_name!: string
 }

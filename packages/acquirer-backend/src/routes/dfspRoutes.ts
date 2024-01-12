@@ -21,7 +21,7 @@ router.get('/dfsps',
 router.get('/mojaloop-dfsps',
   authenticateJWT,
   checkPermissions(PermissionsEnum.VIEW_DFSPS),
-  checkUserUserType(PortalUserType.HUB), // Only Hub Admin can view DFSPs
+  checkPortalUserType(PortalUserType.HUB), // Only Hub Admin can view DFSPs
   getMojaloopDFSPs
 )
 router.post('/dfsps',
@@ -31,10 +31,10 @@ router.post('/dfsps',
   postCreateDFSP
 )
 router.post('/add-mojaloop-dfsp',
-    authenticateJWT,
-    checkPermissions(PermissionsEnum.CREATE_DFSPS),
-    checkUserUserType(PortalUserType.HUB), // Only Hub Admin can create DFSPs
-    postAddMojaloopDfsp
+  authenticateJWT,
+  checkPermissions(PermissionsEnum.CREATE_DFSPS),
+  checkPortalUserType(PortalUserType.HUB), // Only Hub Admin can create DFSPs
+  postAddMojaloopDfsp
 )
 router.post('/dfsps/:id/client-access-key',
   authenticateJWT,

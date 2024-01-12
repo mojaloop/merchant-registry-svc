@@ -1,4 +1,4 @@
- /* eslint-disable @typescript-eslint/explicit-function-return-type */
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { type Response } from 'express'
 import { AppDataSource } from '../../database/dataSource'
 import logger from '../../services/logger'
@@ -18,6 +18,7 @@ const createDFSPSchema = z.object({
   logoURI: z.string(),
   businessLicenseId: z.string()
 })
+
 /**
  * @openapi
  * tags:
@@ -74,23 +75,6 @@ const createDFSPSchema = z.object({
  *         description: Internal Server Error
  */
 export async function postCreateDFSP (req: AuthRequest, res: Response) {
-<<<<<<< HEAD
-=======
-  const parsedBody = createDFSPSchema.safeParse(req.body)
-  if (!parsedBody.success) {
-    return res.status(400).send({
-      message: 'Invalid request body', errors: parsedBody.error.formErrors.fieldErrors
-    })
-  }
-  const { name, fspId, dfspType, joinedDate, activated, logoURI, businessLicenseId } = parsedBody.data
-
-  // Check for authenticated user
->>>>>>> 42a752a (imosys: dfsp onboarding pages)
-  /* istanbul ignore if */
-  if (req.user === null || req.user === undefined) {
-    return res.status(401).send({ message: 'Unauthorized' })
-  }
-
   const parsedBody = createDFSPSchema.safeParse(req.body)
   if (!parsedBody.success) {
     await audit(
@@ -99,13 +83,16 @@ export async function postCreateDFSP (req: AuthRequest, res: Response) {
       'postCreateDFSP',
       'Error creating DFSP: Invalid request body',
       'DFSPEntity',
-      {}, {}, req.user
+      {}, {},
+      req.user ?? null
     )
     return res.status(400).send({
-      message: 'Invalid request body', errors: parsedBody.error.formErrors.fieldErrors
+      message: 'Invalid request body',
+      errors: parsedBody.error.formErrors.fieldErrors
     })
   }
-  const { name, fspId, dfspType, logoURI } = parsedBody.data
+
+  const { name, fspId, dfspType, logoURI, businessLicenseId } = parsedBody.data
 
   try {
     const DFSPRepository = AppDataSource.manager.getRepository(DFSPEntity)
@@ -127,7 +114,8 @@ export async function postCreateDFSP (req: AuthRequest, res: Response) {
       'postCreateDFSP',
       'DFSP created successfully',
       'DFSPEntity',
-      {}, {}, req.user
+      {}, {},
+      req.user ?? null
     )
 
     logger.info(`DFSP created: ${newDFSP.id}`)
@@ -139,9 +127,10 @@ export async function postCreateDFSP (req: AuthRequest, res: Response) {
       AuditActionType.ADD,
       AuditTrasactionStatus.FAILURE,
       'postCreateDFSP',
-      `Error creating DFSP: ${e as string}`,
-      'DFSPEntity',
-      {}, {}, req.user
+        `Error creating DFSP: ${e as string}`,
+        'DFSPEntity',
+        {}, {},
+        req.user ?? null
     )
 
     res.status(500).send({ message: 'Internal Server Error' })

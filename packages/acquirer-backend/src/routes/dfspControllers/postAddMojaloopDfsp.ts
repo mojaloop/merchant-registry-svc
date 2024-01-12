@@ -8,8 +8,8 @@ import { z } from 'zod'
 
 // Define a Zod schema for the request body
 const createMojaloopDFSPSchema = z.object({
-    name: z.string(),
-    fspId: z.string()
+  name: z.string(),
+  fspId: z.string()
 })
 
 /**
@@ -60,35 +60,35 @@ const createMojaloopDFSPSchema = z.object({
  *         description: Internal Server Error
  */
 export async function postAddMojaloopDfsp (req: AuthRequest, res: Response) {
-    const parsedBody = createMojaloopDFSPSchema.safeParse(req.body)
-    if (!parsedBody.success) {
-        return res.status(400).send({
-            message: 'Invalid request body', errors: parsedBody.error.formErrors.fieldErrors
-        })
-    }
-    const { name, fspId } = parsedBody.data
+  const parsedBody = createMojaloopDFSPSchema.safeParse(req.body)
+  if (!parsedBody.success) {
+    return res.status(400).send({
+      message: 'Invalid request body', errors: parsedBody.error.formErrors.fieldErrors
+    })
+  }
+  const { name, fspId } = parsedBody.data
 
-    // Check for authenticated user
-    /* istanbul ignore if */
-    if (req.user === null || req.user === undefined) {
-        return res.status(401).send({ message: 'Unauthorized' })
-    }
+  // Check for authenticated user
+  /* istanbul ignore if */
+  if (req.user === null || req.user === undefined) {
+    return res.status(401).send({ message: 'Unauthorized' })
+  }
 
-    try {
-        const DFSPRepository = AppDataSource.manager.getRepository(MojaloopDFSPEntity)
+  try {
+    const DFSPRepository = AppDataSource.manager.getRepository(MojaloopDFSPEntity)
 
-        // add  new mojaloop DFSP
-        const newDFSP = new MojaloopDFSPEntity()
-        newDFSP.dfsp_id = fspId
-        newDFSP.dfsp_name = name
-        // Save to database
-        await DFSPRepository.save(newDFSP)
+    // add  new mojaloop DFSP
+    const newDFSP = new MojaloopDFSPEntity()
+    newDFSP.dfsp_id = fspId
+    newDFSP.dfsp_name = name
+    // Save to database
+    await DFSPRepository.save(newDFSP)
 
-        logger.info(`mojaloop dfsp  stored: ${newDFSP.id}`)
-        res.status(201).send({ message: 'Mojaloop DFSP stored successfully', data: newDFSP })
-    } catch (e: any) /* istanbul ignore next */ {
-        logger.error(`Error storing mojaloop DFSP: ${e as string}`)
-        
-        res.status(500).send({ message: 'Internal Server Error' })
-    }
+    logger.info(`mojaloop dfsp  stored: ${newDFSP.id}`)
+    res.status(201).send({ message: 'Mojaloop DFSP stored successfully', data: newDFSP })
+  } catch (e: any) /* istanbul ignore next */ {
+    logger.error(`Error storing mojaloop DFSP: ${e as string}`)
+
+    res.status(500).send({ message: 'Internal Server Error' })
+  }
 }
