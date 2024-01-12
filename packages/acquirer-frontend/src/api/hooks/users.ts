@@ -3,7 +3,7 @@ import { useToast } from '@chakra-ui/react'
 import { isAxiosError } from 'axios'
 
 import { FALLBACK_ERROR_MESSAGE } from '@/constants/errorMessage'
-import { createUser, getUserProfile, getUsers } from '../users'
+import { createUser, getUserProfile, getUsers, updateUserStatus } from '../users'
 
 export function useUsers() {
   return useQuery({
@@ -43,6 +43,38 @@ export function useCreateUser() {
       })
     },
   })
+}
+
+export function useUserStatusUpdate() {
+  const queryClient = useQueryClient()
+  const toast = useToast()
+
+  const mutation = useMutation({
+    mutationFn: (data: { userId: string | number; newStatus: string }) =>
+      updateUserStatus(data.userId, data.newStatus),
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['users'] })
+      toast({
+        title: 'User Status Update Successful!',
+        description: 'User status has been updated successfully.',
+        status: 'success',
+      })
+    },
+    onError: error => {
+      let errorMessage = FALLBACK_ERROR_MESSAGE
+      if (isAxiosError(error) && typeof error.response?.data.message === 'string') {
+        errorMessage = error.response.data.message
+      }
+      toast({
+        title: 'User Status Update Failed!',
+        description: errorMessage,
+        status: 'error',
+      })
+    },
+  })
+
+  return mutation
 }
 
 export function useUserProfile() {
