@@ -26,6 +26,9 @@ const hoistedValues = vi.hoisted(() => ({
 const mockUsers = vi.fn()
 vi.mock('@/api/hooks/users', () => ({
   useUsers: () => mockUsers(),
+  useUserStatusUpdate: () => ({
+    mutate: vi.fn(), 
+  }),
 }))
 
 describe('UserManagement', () => {
