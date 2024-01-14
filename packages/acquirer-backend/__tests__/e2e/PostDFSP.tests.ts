@@ -43,7 +43,8 @@ export function testPostDFSP (app: Application): void {
         fspId: 555555,
         dfspType: 'non-existing-type',
         activated: 'true',
-        logoURI: 77777
+        logoURI: 77777,
+        businessLicenseId: 'RYHDOJ384F'
       })
 
     expect(res.statusCode).toEqual(400)
@@ -64,7 +65,8 @@ export function testPostDFSP (app: Application): void {
         fspId: 'DFSP001',
         dfspType: 'Other',
         activated: true,
-        logoURI: 'https://picsum.photos/200/300'
+        logoURI: 'https://picsum.photos/200/300',
+        businessLicenseId: 'SFHSJFI5JDF'
       })
 
     expect(res.statusCode).toEqual(201)
@@ -97,7 +99,8 @@ export function testPostDFSP (app: Application): void {
         fspId: 'DFSP001',
         dfspType: 'Other',
         activated: true,
-        logoURI: 'https://picsum.photos/200/300'
+        logoURI: 'https://picsum.photos/200/300',
+        businessLicenseId: 'WOFUTP48FDHG'
       })
 
     // Assert

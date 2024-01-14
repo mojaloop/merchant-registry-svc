@@ -28,9 +28,10 @@ export function testGetDFSPs (app: Application): void {
         fspId: 'DFSP033',
         dfspType: 'Other',
         activated: true,
-        logoURI: 'https://picsum.photos/200/300'
+        logoURI: 'https://picsum.photos/200/300',
+        businessLicenseId: "RGIHL23493RU"
       })
-    dfspId = res2.body.data.id
+    dfspId = res2.body?.data?.id
   })
 
   afterAll(async () => {
