@@ -177,7 +177,12 @@ export async function getMerchants (req: AuthRequest, res: Response) {
       .addSelect(['locations.country_subdivision', 'locations.town_name'])
       .addSelect(['checkout_counters.alias_value', 'checkout_counters.description'])
       .innerJoin('merchant.dfsps', 'dfsp')
-      .andWhere('dfsp.id = :dfspId', { dfspId: portalUser.dfsp.id })
+
+    if (portalUser.dfsp !== null) {
+      queryBuilder.andWhere('dfsp.id = :dfspId', { dfspId: portalUser.dfsp.id })
+    }
+
+    queryBuilder
       .andWhere(whereClause)
       .orderBy('merchant.created_at', 'DESC') // Sort by latest
 

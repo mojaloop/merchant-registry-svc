@@ -327,17 +327,18 @@ export const MerchantInfo = ({
               value={checkoutCounter?.description || 'N/A'}
             />
 
-            {checkoutCounter.qr_code_link && (
-              <CustomButton alignSelf='start' colorVariant='info' onClick={onOpen}>
-                View QR Code
-              </CustomButton>
+            {checkoutCounter?.qr_code_link && (
+              <>
+                <CustomButton alignSelf='start' colorVariant='info' onClick={onOpen}>
+                  View QR Code
+                </CustomButton>
+                <QRCodeModal
+                  isOpen={isOpen}
+                  onClose={onClose}
+                  qrCodeUrl={checkoutCounter?.qr_code_link}
+                />
+              </>
             )}
-
-            <QRCodeModal
-              isOpen={isOpen}
-              onClose={onClose}
-              qrCodeUrl={checkoutCounter.qr_code_link}
-            />
           </Stack>
         </GridItemShell>
       </Grid>

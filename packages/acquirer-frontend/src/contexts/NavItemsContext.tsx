@@ -11,7 +11,7 @@ export const NAV_ITEMS = [
     to: '/registry',
     label: 'Go to registry page',
     icon: MdAssignmentAdd,
-    permissions: ['View Merchants'],
+    permissions: ['Create Merchants'],
   },
   {
     name: 'Merchant Records',
