@@ -4,7 +4,7 @@ import { AppDataSource } from '../../database/dataSource'
 import logger from '../../services/logger'
 import { MerchantEntity } from '../../entity/MerchantEntity'
 import { audit } from '../../utils/audit'
-import { AuditActionType, AuditTrasactionStatus } from 'shared-lib'
+import { AuditActionType, AuditTrasactionStatus, PortalUserType } from 'shared-lib'
 import { type AuthRequest } from 'src/types/express'
 /**
  * @openapi
@@ -90,9 +90,15 @@ export async function getMerchantLocations (req: AuthRequest, res: Response) {
       return
     }
 
-    const validMerchantForUser = merchant.dfsps
-      .map(dfsp => dfsp.id)
-      .includes(portalUser.dfsp.id)
+    let validMerchantForUser = false
+    if (portalUser.dfsp !== null) {
+      validMerchantForUser = merchant.dfsps
+        .map(dfsp => dfsp.id)
+        .includes(portalUser.dfsp.id)
+    } else if (portalUser.user_type === PortalUserType.HUB) {
+      validMerchantForUser = true
+    }
+
     if (!validMerchantForUser) {
       logger.error('Accessing different DFSP\'s Merchant is not allowed.')
       await audit(

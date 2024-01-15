@@ -49,11 +49,13 @@ export async function getMerchantDraftCountsByUser (req: AuthRequest, res: Respo
     // TODO: Add where clause for DFSP specific
     whereClause.registration_status = MerchantRegistrationStatus.DRAFT
 
+    const whereQuery: any = { registration_status: MerchantRegistrationStatus.DRAFT }
+    if (portalUser.dfsp !== null) {
+      whereQuery.dfsps = { id: portalUser.dfsp.id }
+    }
+
     const merchantDraftCountsByUser = await merchantRepository.count({
-      where: {
-        registration_status: MerchantRegistrationStatus.DRAFT,
-        dfsps: { id: portalUser.dfsp.id }
-      }
+      where: whereQuery
     })
 
     await audit(
