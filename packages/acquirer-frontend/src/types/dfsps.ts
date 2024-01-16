@@ -3,7 +3,7 @@ export interface dfspInfo {
   dfspId: string
   dfspName: string
   businessLicenseId: string
-  whetherMojaloopMerchantAcquiringPortalIsUsed: string
+  isUsingAcquiringPortal: string
 }
 
 export interface DfspResponse {

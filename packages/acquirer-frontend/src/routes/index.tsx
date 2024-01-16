@@ -58,7 +58,7 @@ const Routes = () => {
       children: [
         {
           index: true,
-          element: <Navigate to='/onboarding-dfsp' replace />,
+          element: <Navigate to={redirectTarget} replace />,
         },
         {
           index: true,

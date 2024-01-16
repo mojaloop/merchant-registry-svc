@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom'
 import { Box, Heading, HStack, Stack } from '@chakra-ui/react'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -6,9 +7,11 @@ import { useForm } from 'react-hook-form'
 import type { Role } from '@/types/roles'
 import { addNewUserSchema, type AddNewUserForm } from '@/lib/validations/addNewUser'
 import { useRoles } from '@/api/hooks/roles'
+import { useDfsps } from '@/api/hooks/dfsps'
 import { useCreateUser, useUserProfile } from '@/api/hooks/users'
 import { CustomButton, Skeleton } from '@/components/ui'
 import { FormInput, FormSelect } from '@/components/form'
+import { PortalUserType } from 'shared-lib';
 
 const AddNewUser = () => {
   const {
@@ -16,13 +19,29 @@ const AddNewUser = () => {
     formState: { errors },
     handleSubmit,
     reset,
+    watch,
   } = useForm<AddNewUserForm>({
     resolver: zodResolver(addNewUserSchema),
   })
 
+  const [showDfspDropdown, setShowDfspDropdown] = useState(false);
+
+  useEffect(() => {
+    const subscription = watch((value, { name }) => {
+      if (name === 'role' && userProfile.data?.user_type === PortalUserType.HUB)  {
+        setShowDfspDropdown(
+          ['DFSP Admin', 'DFSP Operator', 'DFSP Auditor'].includes(value.role ?? '')
+        );
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  });
+
   const navigate = useNavigate()
 
   const roles = useRoles()
+  const dfsps = useDfsps({limit: 100, page: 1})
   const createUser = useCreateUser()
   const userProfile = useUserProfile()
 
@@ -110,6 +129,19 @@ const AddNewUser = () => {
             selectProps={{ bg: 'white' }}
             maxW='25rem'
           />
+
+          {showDfspDropdown && dfsps.isSuccess && (
+            <FormSelect
+              name='dfsp_id'
+              register={register}
+              errors={errors}
+              label='DFSP'
+              placeholder='Choose DFSP'
+              options={dfsps.data.data.map(({ dfspName, no }) => ({ label: dfspName, value: no }))}
+              selectProps={{ bg: 'white' }}
+              maxW='25rem'
+            />
+          )}
 
           <HStack spacing='3' alignSelf='end' mt='8'>
             <CustomButton type='submit' isLoading={createUser.isPending}>

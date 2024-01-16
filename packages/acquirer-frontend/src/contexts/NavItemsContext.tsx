@@ -12,12 +12,14 @@ export const NAV_ITEMS = [
     to: '/onboarding-dfsp',
     label: 'go to onboarding dfsp page',
     icon: MdAssignmentAdd,
+    permissions: ['Create DFSPs'],
   },
   {
     name: 'DFSP List',
     to: '/dfsp-list',
     label: 'go to dfsp list page',
     icon: RiShieldUserLine,
+    permissions: ['View DFSPs']
   },
   {
     name: 'Registry',

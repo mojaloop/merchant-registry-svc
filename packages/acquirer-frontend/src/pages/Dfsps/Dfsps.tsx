@@ -33,9 +33,9 @@ const Dfsps = () => {
         cell: info => info.getValue(),
         header: 'Business License ID',
       }),
-      columnHelper.accessor('whetherMojaloopMerchantAcquiringPortalIsUsed', {
+      columnHelper.accessor('isUsingAcquiringPortal', {
         cell: info => (info.getValue() ? 'Yes' : 'No'),
-        header: 'whether Mojaloop Merchant Acquiring Portal is used',
+        header: 'Is Using Acquiring Portal',
       }),
     ]
   }, [])
@@ -64,7 +64,7 @@ const Dfsps = () => {
         flexGrow='1'
         mb='-14'
       >
-        <Heading size='md' mb='10'>
+        <Heading size='md' mb={4} mt={7} ml={9}>
           DFSP List
         </Heading>
         {dfsps.isFetching && (
