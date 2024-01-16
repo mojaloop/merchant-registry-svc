@@ -17,21 +17,9 @@ export function useDfsps(params: PaginationParams) {
     },
   })
 
-  // Log the dfspList
-  console.log('Dfsp List:', dfspList)
-
-  // Error handling
-  if (dfspList.error) {
-    console.error('Error fetching data:', dfspList.error)
-  }
-
-  // Loading state rendering
-  if (dfspList.isLoading) {
-    console.log('it is loading')
-  }
-
   return dfspList
 }
+
 export function useOnboardDfsp() {
   const queryClient = useQueryClient()
   const toast = useToast()

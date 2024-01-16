@@ -1,15 +1,15 @@
 export interface dfspInfo {
-  no: string
-  dfspId: string
+  no: number // dfsp database id
+  dfspId: string // dfsp mojaloop id
   dfspName: string
   businessLicenseId: string
-  whetherMojaloopMerchantAcquiringPortalIsUsed: string
+  isUsingAcquiringPortal: string
 }
 
 export interface DfspResponse {
-  id: number
+  id: number // dfsp database id
   name: string
-  fspId: string
+  fspId: string // dfsp mojaloop id
   dfsp_type: string
   joined_date: string
   activated: boolean
