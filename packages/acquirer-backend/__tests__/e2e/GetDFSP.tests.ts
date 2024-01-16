@@ -29,7 +29,7 @@ export function testGetDFSPs (app: Application): void {
         dfspType: 'Other',
         activated: true,
         logoURI: 'https://picsum.photos/200/300',
-        businessLicenseId: "RGIHL23493RU"
+        businessLicenseId: 'RGIHL23493RU'
       })
     dfspId = res2.body?.data?.id
   })

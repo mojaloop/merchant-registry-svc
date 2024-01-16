@@ -75,6 +75,11 @@ const createDFSPSchema = z.object({
  *         description: Internal Server Error
  */
 export async function postCreateDFSP (req: AuthRequest, res: Response) {
+  /* istanbul ignore if */
+  if (req.user === null || req.user === undefined) {
+    return res.status(401).send({ message: 'Unauthorized' })
+  }
+
   const parsedBody = createDFSPSchema.safeParse(req.body)
   if (!parsedBody.success) {
     await audit(
@@ -84,7 +89,7 @@ export async function postCreateDFSP (req: AuthRequest, res: Response) {
       'Error creating DFSP: Invalid request body',
       'DFSPEntity',
       {}, {},
-      req.user ?? null
+      req.user
     )
     return res.status(400).send({
       message: 'Invalid request body',
@@ -115,7 +120,7 @@ export async function postCreateDFSP (req: AuthRequest, res: Response) {
       'DFSP created successfully',
       'DFSPEntity',
       {}, {},
-      req.user ?? null
+      req.user
     )
 
     logger.info(`DFSP created: ${newDFSP.id}`)
@@ -130,7 +135,7 @@ export async function postCreateDFSP (req: AuthRequest, res: Response) {
         `Error creating DFSP: ${e as string}`,
         'DFSPEntity',
         {}, {},
-        req.user ?? null
+        req.user
     )
 
     res.status(500).send({ message: 'Internal Server Error' })
