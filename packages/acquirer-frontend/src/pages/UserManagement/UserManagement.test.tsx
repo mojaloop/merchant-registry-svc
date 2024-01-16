@@ -27,7 +27,7 @@ const mockUsers = vi.fn()
 vi.mock('@/api/hooks/users', () => ({
   useUsers: () => mockUsers(),
   useUserStatusUpdate: () => ({
-    mutate: vi.fn(), 
+    mutate: vi.fn(),
   }),
 }))
 
