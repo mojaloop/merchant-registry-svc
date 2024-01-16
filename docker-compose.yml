@@ -77,8 +77,8 @@ services:
   rabbitmq:
     image: rabbitmq:3.12.4-management-alpine
     ports:
-      - 5673:5672 
-      - 15673:15672
+      - 5672:5672 
+      - 15672:15672
     environment:
       - RABBITMQ_DEFAULT_USER=guest # TODO: change this in production
       - RABBITMQ_DEFAULT_PASS=guest # TODO: change this in production
