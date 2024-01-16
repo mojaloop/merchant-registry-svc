@@ -13,7 +13,7 @@ const createDFSPSchema = z.object({
   name: z.string(),
   fspId: z.string(),
   dfspType: z.nativeEnum(DFSPType),
-  joinedDate: z.string(),
+  // joinedDate: z.string(),
   activated: z.boolean(),
   logoURI: z.string(),
   businessLicenseId: z.string()
