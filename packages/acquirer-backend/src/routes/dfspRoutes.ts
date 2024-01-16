@@ -6,7 +6,9 @@ import { authenticateJWT } from '../middleware/authenticate'
 import { checkPortalUserType } from '../middleware/checkUserType'
 import { PortalUserType } from 'shared-lib'
 import { getDFSPs } from './dfspControllers/getDFSP'
+import { getMojaloopDFSPs } from './dfspControllers/getMojaloopDFSP'
 import { postCreateDFSP } from './dfspControllers/postCreateDFSP'
+import { postAddMojaloopDfsp } from './dfspControllers/postAddMojaloopDfsp'
 import { createClientAccessKey } from './dfspControllers/createClientAccessKey'
 
 const router = express.Router()
@@ -16,14 +18,24 @@ router.get('/dfsps',
   checkPortalUserType(PortalUserType.HUB), // Only Hub Admin can view DFSPs
   getDFSPs
 )
-
+router.get('/mojaloop-dfsps',
+  authenticateJWT,
+  checkPermissions(PermissionsEnum.VIEW_DFSPS),
+  checkPortalUserType(PortalUserType.HUB), // Only Hub Admin can view DFSPs
+  getMojaloopDFSPs
+)
 router.post('/dfsps',
   authenticateJWT,
   checkPermissions(PermissionsEnum.CREATE_DFSPS),
   checkPortalUserType(PortalUserType.HUB), // Only Hub Admin can create DFSPs
   postCreateDFSP
 )
-
+router.post('/add-mojaloop-dfsp',
+  authenticateJWT,
+  checkPermissions(PermissionsEnum.CREATE_DFSPS),
+  checkPortalUserType(PortalUserType.HUB), // Only Hub Admin can create DFSPs
+  postAddMojaloopDfsp
+)
 router.post('/dfsps/:id/client-access-key',
   authenticateJWT,
   checkPermissions(PermissionsEnum.EDIT_DFSPS),

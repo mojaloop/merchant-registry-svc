@@ -30,6 +30,9 @@ export class DFSPEntity {
   @Column({ nullable: false, length: 512 })
     logo_uri!: string
 
+  @Column({ nullable: true, length: 512 })
+    business_license_id!: string
+
   @Column({ nullable: true })
     client_secret!: string
 

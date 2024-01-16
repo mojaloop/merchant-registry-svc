@@ -28,7 +28,8 @@ export function testPostExternalDFSPClientAcess (app: Application): void {
         fspId: 'DFSP001',
         dfspType: 'Other',
         activated: true,
-        logoURI: 'https://picsum.photos/200/300'
+        logoURI: 'https://picsum.photos/200/300',
+        businessLicenseId: 'EUHDFHK438FJ'
       })
     dfspId = res2.body.data.id
   })
@@ -114,7 +115,8 @@ export function testPostExternalDFSPClientAcess (app: Application): void {
         fspId: 'DFSP001',
         dfspType: 'Other',
         activated: true,
-        logoURI: 'https://picsum.photos/200/300'
+        logoURI: 'https://picsum.photos/200/300',
+        businessLicenseId: 'SHFSH874HGD'
       })
 
     expect(res.statusCode).toEqual(201)

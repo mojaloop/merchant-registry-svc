@@ -1,11 +1,24 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 import { AiOutlineAudit } from 'react-icons/ai'
 import { MdAssignmentAdd } from 'react-icons/md'
+import { RiShieldUserLine } from 'react-icons/ri'
 import { TbFileText, TbUserSearch } from 'react-icons/tb'
 
 import { getUserProfile } from '@/api/users'
 
 export const NAV_ITEMS = [
+  {
+    name: 'Onboarding DFSP',
+    to: '/onboarding-dfsp',
+    label: 'go to onboarding dfsp page',
+    icon: MdAssignmentAdd,
+  },
+  {
+    name: 'DFSP List',
+    to: '/dfsp-list',
+    label: 'go to dfsp list page',
+    icon: RiShieldUserLine,
+  },
   {
     name: 'Registry',
     to: '/registry',

@@ -13,8 +13,12 @@ const createDFSPSchema = z.object({
   name: z.string(),
   fspId: z.string(),
   dfspType: z.nativeEnum(DFSPType),
-  logoURI: z.string()
+  // joinedDate: z.string(),
+  activated: z.boolean(),
+  logoURI: z.string(),
+  businessLicenseId: z.string()
 })
+
 /**
  * @openapi
  * tags:
@@ -84,13 +88,16 @@ export async function postCreateDFSP (req: AuthRequest, res: Response) {
       'postCreateDFSP',
       'Error creating DFSP: Invalid request body',
       'DFSPEntity',
-      {}, {}, req.user
+      {}, {},
+      req.user
     )
     return res.status(400).send({
-      message: 'Invalid request body', errors: parsedBody.error.formErrors.fieldErrors
+      message: 'Invalid request body',
+      errors: parsedBody.error.formErrors.fieldErrors
     })
   }
-  const { name, fspId, dfspType, logoURI } = parsedBody.data
+
+  const { name, fspId, dfspType, logoURI, businessLicenseId } = parsedBody.data
 
   try {
     const DFSPRepository = AppDataSource.manager.getRepository(DFSPEntity)
@@ -101,6 +108,7 @@ export async function postCreateDFSP (req: AuthRequest, res: Response) {
     newDFSP.fspId = fspId
     newDFSP.dfsp_type = dfspType
     newDFSP.logo_uri = logoURI
+    newDFSP.business_license_id = businessLicenseId
 
     // Save to database
     await DFSPRepository.save(newDFSP)
@@ -111,7 +119,8 @@ export async function postCreateDFSP (req: AuthRequest, res: Response) {
       'postCreateDFSP',
       'DFSP created successfully',
       'DFSPEntity',
-      {}, {}, req.user
+      {}, {},
+      req.user
     )
 
     logger.info(`DFSP created: ${newDFSP.id}`)
@@ -123,9 +132,10 @@ export async function postCreateDFSP (req: AuthRequest, res: Response) {
       AuditActionType.ADD,
       AuditTrasactionStatus.FAILURE,
       'postCreateDFSP',
-      `Error creating DFSP: ${e as string}`,
-      'DFSPEntity',
-      {}, {}, req.user
+        `Error creating DFSP: ${e as string}`,
+        'DFSPEntity',
+        {}, {},
+        req.user
     )
 
     res.status(500).send({ message: 'Internal Server Error' })
