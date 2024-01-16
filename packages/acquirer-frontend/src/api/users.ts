@@ -21,4 +21,3 @@ export async function updateUserStatus(userId: string | number, newStatus: strin
   const response = await instance.put(`/users/${userId}/status`, { status: newStatus })
   return response.data.data
 }
-
