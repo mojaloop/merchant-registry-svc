@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { createColumnHelper } from '@tanstack/react-table'
 import { CheckCircleIcon, NotAllowedIcon, WarningIcon } from '@chakra-ui/icons'
 import { Box, Flex, Heading, Stack, Text, Tooltip } from '@chakra-ui/react'
@@ -8,6 +8,7 @@ import type { User } from '@/types/users'
 import { useUsers, useUserStatusUpdate } from '@/api/hooks/users'
 import { useTable } from '@/hooks'
 import {
+  AlertDialog,
   CustomButton,
   CustomLink,
   DataTable,
@@ -17,6 +18,11 @@ import {
 
 const UserManagement = () => {
   const { mutate: updateUserStatus } = useUserStatusUpdate()
+  const [isOpenBlockModal, setIsOpenBlockModal] = useState(false)
+  const [isOpenDisableModal, setIsOpenDisableModal] = useState(false)
+  const [isOpenActivateModal, setIsOpenActivateModal] = useState(false)
+
+  const [selectedUser, setSelectedUser] = useState<User | null>(null)
 
   const columns = useMemo(() => {
     const columnHelper = createColumnHelper<User>()
@@ -79,12 +85,19 @@ const UserManagement = () => {
         header: 'Action',
         cell: info => {
           const status = info.row.original.status
-          const userId = info.row.original.no
+          const user = info.row.original
 
           const BlockButton = () => {
             return (
               <Tooltip label='Non-reversible Permanently Block. ' hasArrow>
-                <CustomButton colorVariant='danger' onClick={handleBlock} mx='2'>
+                <CustomButton
+                  colorVariant='danger'
+                  onClick={() => {
+                    setIsOpenBlockModal(true)
+                    setSelectedUser(user)
+                  }}
+                  mx='2'
+                >
                   Block
                 </CustomButton>
               </Tooltip>
@@ -96,7 +109,10 @@ const UserManagement = () => {
               <Tooltip label='Temporary Disable' hasArrow>
                 <CustomButton
                   colorVariant='accent-outline'
-                  onClick={handleDisable}
+                  onClick={() => {
+                    setIsOpenDisableModal(true)
+                    setSelectedUser(user)
+                  }}
                   mx='2'
                 >
                   Disable
@@ -108,7 +124,14 @@ const UserManagement = () => {
           const ActivateButton = () => {
             return (
               <Tooltip label='Activate' hasArrow>
-                <CustomButton colorVariant='info' onClick={handleActivate} mx='2'>
+                <CustomButton
+                  colorVariant='info'
+                  onClick={() => {
+                    setIsOpenActivateModal(true)
+                    setSelectedUser(user)
+                  }}
+                  mx='2'
+                >
                   Activate
                 </CustomButton>
               </Tooltip>
@@ -116,21 +139,6 @@ const UserManagement = () => {
           }
 
           let actionButtons
-          const handleDisable = () => {
-            const newStatus = PortalUserStatus.DISABLED
-            updateUserStatus({ userId, newStatus })
-          }
-
-          const handleBlock = () => {
-            const newStatus = PortalUserStatus.BLOCKED
-            updateUserStatus({ userId, newStatus })
-          }
-
-          const handleActivate = () => {
-            const newStatus = PortalUserStatus.ACTIVE
-            updateUserStatus({ userId, newStatus })
-          }
-
           if (status === PortalUserStatus.ACTIVE) {
             actionButtons = (
               <>
@@ -153,7 +161,7 @@ const UserManagement = () => {
         },
       }),
     ]
-  }, [updateUserStatus])
+  }, [])
 
   const users = useUsers()
   let data
@@ -206,6 +214,48 @@ const UserManagement = () => {
           )}
         </>
       )}
+
+      {/* Disable User Modal */}
+      <AlertDialog
+        alertText={`Disable User ${selectedUser?.email}?`}
+        isOpen={isOpenDisableModal}
+        onClose={() => setIsOpenDisableModal(false)}
+        onConfirm={() => {
+          updateUserStatus({
+            userId: selectedUser?.no ?? 0,
+            newStatus: PortalUserStatus.DISABLED,
+          })
+          setIsOpenDisableModal(false)
+        }}
+      />
+
+      {/* Block User Modal*/}
+      <AlertDialog
+        alertText={`Permanently Block User ${selectedUser?.email}?`}
+        isOpen={isOpenBlockModal}
+        onClose={() => setIsOpenBlockModal(false)}
+        onConfirm={() => {
+          updateUserStatus({
+            userId: selectedUser?.no ?? 0,
+            newStatus: PortalUserStatus.BLOCKED,
+          })
+          setIsOpenBlockModal(false)
+        }}
+      />
+
+      {/* Activate User Modal*/}
+      <AlertDialog
+        alertText={`Activate User ${selectedUser?.email}?`}
+        isOpen={isOpenActivateModal}
+        onClose={() => setIsOpenActivateModal(false)}
+        onConfirm={() => {
+          updateUserStatus({
+            userId: selectedUser?.no ?? 0,
+            newStatus: PortalUserStatus.ACTIVE,
+          })
+          setIsOpenActivateModal(false)
+        }}
+      />
     </Stack>
   )
 }
