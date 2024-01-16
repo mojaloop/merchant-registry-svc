@@ -1,17 +1,17 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Box, Heading, HStack, Stack } from '@chakra-ui/react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
+import { PortalUserType } from 'shared-lib'
 
 import type { Role } from '@/types/roles'
 import { addNewUserSchema, type AddNewUserForm } from '@/lib/validations/addNewUser'
-import { useRoles } from '@/api/hooks/roles'
 import { useDfsps } from '@/api/hooks/dfsps'
+import { useRoles } from '@/api/hooks/roles'
 import { useCreateUser, useUserProfile } from '@/api/hooks/users'
 import { CustomButton, Skeleton } from '@/components/ui'
 import { FormInput, FormSelect } from '@/components/form'
-import { PortalUserType } from 'shared-lib';
 
 const AddNewUser = () => {
   const {
@@ -24,24 +24,24 @@ const AddNewUser = () => {
     resolver: zodResolver(addNewUserSchema),
   })
 
-  const [showDfspDropdown, setShowDfspDropdown] = useState(false);
+  const [showDfspDropdown, setShowDfspDropdown] = useState(false)
 
   useEffect(() => {
     const subscription = watch((value, { name }) => {
-      if (name === 'role' && userProfile.data?.user_type === PortalUserType.HUB)  {
+      if (name === 'role' && userProfile.data?.user_type === PortalUserType.HUB) {
         setShowDfspDropdown(
           ['DFSP Admin', 'DFSP Operator', 'DFSP Auditor'].includes(value.role ?? '')
-        );
+        )
       }
-    });
+    })
 
-    return () => subscription.unsubscribe();
-  });
+    return () => subscription.unsubscribe()
+  })
 
   const navigate = useNavigate()
 
   const roles = useRoles()
-  const dfsps = useDfsps({limit: 100, page: 1})
+  const dfsps = useDfsps({ limit: 100, page: 1 })
   const createUser = useCreateUser()
   const userProfile = useUserProfile()
 
@@ -137,7 +137,10 @@ const AddNewUser = () => {
               errors={errors}
               label='DFSP'
               placeholder='Choose DFSP'
-              options={dfsps.data.data.map(({ dfspName, no }) => ({ label: dfspName, value: no }))}
+              options={dfsps.data.data.map(({ dfspName, no }) => ({
+                label: dfspName,
+                value: no,
+              }))}
               selectProps={{ bg: 'white' }}
               maxW='25rem'
             />

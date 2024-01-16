@@ -19,7 +19,7 @@ export const NAV_ITEMS = [
     to: '/dfsp-list',
     label: 'go to dfsp list page',
     icon: RiShieldUserLine,
-    permissions: ['View DFSPs']
+    permissions: ['View DFSPs'],
   },
   {
     name: 'Registry',
