@@ -55,6 +55,8 @@ export const DefaultRoles = [
 
       PermissionsEnum.VIEW_PORTAL_USERS,
 
+      PermissionsEnum.VIEW_ROLES, // CREATE_PORTAL_USERS require viewing roles in UI
+
       PermissionsEnum.VIEW_AUDIT_LOGS,
 
       PermissionsEnum.EXPORT_MERCHANTS
