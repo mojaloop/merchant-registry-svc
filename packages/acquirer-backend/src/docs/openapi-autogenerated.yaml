@@ -425,6 +425,70 @@ paths:
           description: Unauthorized
         '500':
           description: Internal Server Error
+  /mojaloop-dfsps:
+    get:
+      tags:
+        - DFSP
+      security:
+        - Authorization: []
+      summary: GET MojaloopDFSP
+      responses:
+        '200':
+          description: GET Roles
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: The response message
+                    example: OK
+                  data:
+                    type: array
+                    description: The response data
+                    items:
+                      type: object
+  /add-mojaloop-dfsp:
+    post:
+      tags:
+        - DFSP
+      security:
+        - Authorization: []
+      summary: POST add a new mojaloop DFSP
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: DFSP Name
+                  description: The display name of the dfsp
+                fspId:
+                  type: string
+                  example: DFSP001
+                  description: The FSP ID of the dfsp
+      responses:
+        '201':
+          description: Mojaloop DFSP successfully stored
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: The response message
+                    example: Mojaloop  DFSP stored successfully
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal Server Error
   /health-check:
     get:
       tags:
