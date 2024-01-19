@@ -326,7 +326,7 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
                 fontSize='sm'
                 pointerEvents={haveLicense ? undefined : 'none'}
               >
-                License Document
+                License Document (PDF)
               </FormLabel>
               <Controller
                 control={control}
@@ -360,7 +360,7 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
                 <Text color='gray.500'>
                   {watchedLicenseDocument
                     ? watchedLicenseDocument?.name
-                    : licenseDocument?.name || 'Upload your file'}
+                    : licenseDocument?.name || 'Upload your PDF file'}
                 </Text>
                 <IconButton
                   ref={uploadFileButtonRef}
@@ -399,23 +399,6 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
                 setValue('license_document', file)
               }}
             />
-
-            {haveLicense && (
-              <Box mt='2'>
-                <Text mb='1.5' fontSize='sm'>
-                  Download sample files here.
-                </Text>
-
-                <Link
-                  download
-                  href='https://images.pexels.com/photos/268533/pexels-photo-268533.jpeg?cs=srgb&dl=pexels-pixabay-268533.jpg&fm=jpg'
-                  color='blue.500'
-                  fontSize='sm'
-                >
-                  Sample license document template
-                </Link>
-              </Box>
-            )}
           </Box>
         </GridShell>
 

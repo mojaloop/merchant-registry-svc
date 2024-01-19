@@ -83,7 +83,7 @@ const FileUploadModal = ({
         <ModalCloseButton top='2.5' right='4' />
 
         <ModalBody py='5' px={{ base: '6', md: '10' }}>
-          <Text>Upload your CSV File to share your license documents.</Text>
+          <Text>Upload your PDF File to share your license documents.</Text>
 
           <Flex
             align='center'
@@ -186,7 +186,7 @@ const FileUploadModal = ({
               <Box textAlign='center' fontSize='sm'>
                 {!isUploading && uploadProgress === 0 && (
                   <>
-                    <Text>Drag & Drop you CSV file here</Text>
+                    <Text>Drag & Drop you PDF file here</Text>
                     <Text>OR</Text>
                   </>
                 )}
