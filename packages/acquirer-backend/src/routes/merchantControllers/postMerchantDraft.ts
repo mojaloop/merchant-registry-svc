@@ -134,7 +134,7 @@ export async function postMerchantDraft (req: AuthRequest, res: Response) {
     // Upload Business License Document
     const licenseRepository = AppDataSource.getRepository(BusinessLicenseEntity)
     const file = req.file
-    const licenseNumber = req.body.license_number
+    const licenseNumber = req.body.license_number ?? ''
     const license = new BusinessLicenseEntity()
     let documentPath = null
 
