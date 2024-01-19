@@ -85,7 +85,7 @@ describe('BusinessInfoForm', () => {
     expect(screen.queryByText('Document is already uploaded.')).toBeInTheDocument()
   })
 
-  it('should render "Upload your file" text when license document does not exist', () => {
+  it('should render "Upload your PDF file" text when license document does not exist', () => {
     mockDraft.mockReturnValue({ data: null })
 
     render(
@@ -94,7 +94,7 @@ describe('BusinessInfoForm', () => {
       </TestWrapper>
     )
 
-    expect(screen.queryByText('Upload your file')).toBeInTheDocument()
+    expect(screen.queryByText('Upload your PDF file')).toBeInTheDocument()
   })
 
   it('should focus the first input which has an error when the validation fails', async () => {
