@@ -5,7 +5,7 @@
 acquirerBackend:
   replicaCount: 1
   image:
-    repository: twstm/acquirer-backend
+    repository: mojaloop/merchant-acquirer-backend
     tag: 0.0.3l
   service:
     type: ClusterIP
