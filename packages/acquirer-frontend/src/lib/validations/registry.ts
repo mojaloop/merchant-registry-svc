@@ -34,6 +34,16 @@ export const businessInfoSchema = z.object({
   have_business_license: z.union([z.literal('yes'), z.literal('no')]).or(z.undefined()),
   license_number: z.string().optional(),
   license_document: z.custom<File>(val => val instanceof File).or(z.null()),
+}).refine(data => {
+  // If have_business_license is 'yes', ensure license_number is defined and not empty
+  if (data.have_business_license === 'yes') {
+    return data.license_number?.trim() ? true : false;
+  }
+  // If have_business_license is 'no' or undefined, refinement passes
+  return true;
+}, {
+  message: "License Number is required",
+  path: ["license_number"],
 })
 
 export const locationInfoSchema = z.object({
