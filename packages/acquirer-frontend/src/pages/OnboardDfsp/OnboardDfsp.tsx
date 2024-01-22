@@ -14,6 +14,7 @@ import {
 } from '@chakra-ui/react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Controller, useForm } from 'react-hook-form'
+import { MdFileUpload } from 'react-icons/md'
 
 import { onboardDfspSchema, type onboardDfspForm } from '@/lib/validations/onboardDfsp'
 import { useOnboardDfsp } from '@/api/hooks/dfsps'
@@ -22,7 +23,6 @@ import { CustomButton } from '@/components/ui'
 import { FormInput, FormSelect } from '@/components/form'
 import GridShell from './GridBox'
 import LogoFileUploadModal from './LogoFileUploadModal'
-import {MdFileUpload} from 'react-icons/md'
 
 const OnboardDfsp = () => {
   const {
@@ -150,9 +150,7 @@ const OnboardDfsp = () => {
                 borderColor='gray.200'
                 opacity='1'
               >
-                <Text color='gray.500'>
-                    Upload DFSP Logo
-                </Text>
+                <Text color='gray.500'>Upload DFSP Logo</Text>
                 <IconButton
                   ref={uploadFileButtonRef}
                   aria-label='Upload file'

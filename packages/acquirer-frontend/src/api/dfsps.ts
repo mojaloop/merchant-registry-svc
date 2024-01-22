@@ -34,14 +34,14 @@ export async function getDfsps(params: PaginationParams) {
 }
 
 export async function onboardDfsp(dfsp: onboardDfspForm) {
-    const formData = new FormData()
+  const formData = new FormData()
 
   // Loop over the form values and append each one to the form data.
   Object.entries(dfsp).forEach(([key, value]) => {
     if (value instanceof File || typeof value === 'string') {
       formData.append(key, value)
-    }else if (typeof value === 'boolean') {
-      formData.append(key, value.toString());
+    } else if (typeof value === 'boolean') {
+      formData.append(key, value.toString())
     }
   })
 
