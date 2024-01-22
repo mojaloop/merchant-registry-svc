@@ -32,6 +32,13 @@ services:
       - RABBITMQ_PASSWORD=guest # TODO: change this in production
       - RABBITMQ_QUEUE=acquirer_to_registry
       - RABBITMQ_REPLY_QUEUE=registry_reply_acquirer
+
+      - RECAPTCHA_SECRET_KEY=reCAPTCHA_SECRET_KEY
+      - RECAPTCHA_ENABLED=true
+
+      - SENDGRID_API_KEY=SENDGRID_API_KEY
+      - SENDER_EMAIL=test@email.com
+
     depends_on:
       - merchant-db
       - minio
@@ -46,6 +53,8 @@ services:
       - VITE_HOST=0.0.0.0
       - VITE_PORT=5173
       - VITE_API_URL=http://127.0.0.0:5555/api/v1
+      - VITE_RECAPTCHA_SITE_KEY=reCAPTCHA_SITE_KEY
+
     ports:
       - "5173:5173"
 
