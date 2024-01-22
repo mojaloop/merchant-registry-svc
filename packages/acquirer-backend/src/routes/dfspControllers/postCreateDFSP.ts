@@ -7,6 +7,7 @@ import { DFSPEntity } from '../../entity/DFSPEntity'
 import { z } from 'zod'
 import { AuditActionType, AuditTrasactionStatus, DFSPType } from 'shared-lib'
 import { audit } from '../../utils/audit'
+import { uploadDFSPLogo } from '../../services/S3Client'
 
 // Define a Zod schema for the request body
 const createDFSPSchema = z.object({
@@ -14,8 +15,8 @@ const createDFSPSchema = z.object({
   fspId: z.string(),
   dfspType: z.nativeEnum(DFSPType),
   // joinedDate: z.string(),
-  activated: z.boolean(),
-  logoURI: z.string(),
+  activated: z.boolean().or(z.string()),
+  // logoURI: z.string(),
   businessLicenseId: z.string()
 })
 
@@ -88,7 +89,8 @@ export async function postCreateDFSP (req: AuthRequest, res: Response) {
       'postCreateDFSP',
       'Error creating DFSP: Invalid request body',
       'DFSPEntity',
-      {}, {},
+      {},
+      {},
       req.user
     )
     return res.status(400).send({
@@ -97,7 +99,7 @@ export async function postCreateDFSP (req: AuthRequest, res: Response) {
     })
   }
 
-  const { name, fspId, dfspType, logoURI, businessLicenseId } = parsedBody.data
+  const { name, fspId, dfspType, businessLicenseId, activated } = parsedBody.data
 
   try {
     const DFSPRepository = AppDataSource.manager.getRepository(DFSPEntity)
@@ -107,8 +109,24 @@ export async function postCreateDFSP (req: AuthRequest, res: Response) {
     newDFSP.name = name
     newDFSP.fspId = fspId
     newDFSP.dfsp_type = dfspType
-    newDFSP.logo_uri = logoURI
+    // newDFSP.logo_uri = logoURI
     newDFSP.business_license_id = businessLicenseId
+    newDFSP.activated = Boolean(activated)
+
+    let logoPath = null
+    const file = req.file
+
+    if (file != null) {
+      logoPath = await uploadDFSPLogo(newDFSP, file)
+      if (logoPath == null) {
+        logger.error('Failed to upload the Logo to Storage Server')
+      } else {
+        newDFSP.logo_uri = logoPath
+        logger.debug("Successfully uploaded the Logo '%s' to Storage", logoPath)
+      }
+    } else {
+      logger.debug('No Logo file uploaded')
+    }
 
     // Save to database
     await DFSPRepository.save(newDFSP)
@@ -119,7 +137,8 @@ export async function postCreateDFSP (req: AuthRequest, res: Response) {
       'postCreateDFSP',
       'DFSP created successfully',
       'DFSPEntity',
-      {}, {},
+      {},
+      {},
       req.user
     )
 
@@ -132,10 +151,11 @@ export async function postCreateDFSP (req: AuthRequest, res: Response) {
       AuditActionType.ADD,
       AuditTrasactionStatus.FAILURE,
       'postCreateDFSP',
-        `Error creating DFSP: ${e as string}`,
-        'DFSPEntity',
-        {}, {},
-        req.user
+      `Error creating DFSP: ${e as string}`,
+      'DFSPEntity',
+      {},
+      {},
+      req.user
     )
 
     res.status(500).send({ message: 'Internal Server Error' })

@@ -10,6 +10,7 @@ import { getMojaloopDFSPs } from './dfspControllers/getMojaloopDFSP'
 import { postCreateDFSP } from './dfspControllers/postCreateDFSP'
 import { postAddMojaloopDfsp } from './dfspControllers/postAddMojaloopDfsp'
 import { createClientAccessKey } from './dfspControllers/createClientAccessKey'
+import { logoUpload } from '../services/S3Client'
 
 const router = express.Router()
 router.get('/dfsps',
@@ -28,6 +29,7 @@ router.post('/dfsps',
   authenticateJWT,
   checkPermissions(PermissionsEnum.CREATE_DFSPS),
   checkPortalUserType(PortalUserType.HUB), // Only Hub Admin can create DFSPs
+  logoUpload.single('logo'),
   postCreateDFSP
 )
 router.post('/add-mojaloop-dfsp',

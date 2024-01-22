@@ -19,7 +19,7 @@ const AddUserSchema = z.object({
   name: z.string(),
   email: z.string().email(),
   role: z.string(),
-  dfsp_id: z.number().optional()
+  dfsp_id: z.number().or(z.string()).optional()
 })
 
 const JWT_SECRET = readEnv('JWT_SECRET', '') as string
@@ -102,8 +102,10 @@ export async function addUser (req: AuthRequest, res: Response) {
   }
 
   try {
+    const { name, email, role } = result.data
     // eslint-disable-next-line @typescript-eslint/naming-convention
-    const { name, email, role, dfsp_id } = result.data
+    const dfsp_id = Number(result.data.dfsp_id)
+
     logger.debug('addUser req.body: %s', JSON.stringify(req.body))
     const roleRepository = AppDataSource.getRepository(PortalRoleEntity)
 

@@ -27,7 +27,7 @@ export class DFSPEntity {
   @Column({ type: 'boolean', nullable: false, default: true })
     activated!: boolean
 
-  @Column({ nullable: false, length: 512 })
+  @Column({ nullable: true, length: 512 })
     logo_uri!: string
 
   @Column({ nullable: true, length: 512 })
