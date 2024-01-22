@@ -1,11 +1,16 @@
+import { useRef, useState } from 'react'
 import {
   FormControl,
+  FormErrorMessage,
+  FormLabel,
   Heading,
   HStack,
+  IconButton,
   Radio,
   RadioGroup,
   Stack,
   Text,
+  VisuallyHiddenInput,
 } from '@chakra-ui/react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Controller, useForm } from 'react-hook-form'
@@ -16,6 +21,8 @@ import { useMojaloopDfsps } from '@/api/hooks/mojaloopDfsps'
 import { CustomButton } from '@/components/ui'
 import { FormInput, FormSelect } from '@/components/form'
 import GridShell from './GridBox'
+import LogoFileUploadModal from './LogoFileUploadModal'
+import {MdFileUpload} from 'react-icons/md'
 
 const OnboardDfsp = () => {
   const {
@@ -24,9 +31,16 @@ const OnboardDfsp = () => {
     formState: { errors },
     handleSubmit,
     reset,
+    setValue,
   } = useForm<onboardDfspForm>({
     resolver: zodResolver(onboardDfspSchema),
   })
+
+  const [isLogoModalOpen, setIsLogoModalOpen] = useState(false)
+  const [isUploading, setIsUploading] = useState(false)
+
+  const logoElementRef = useRef<HTMLInputElement>(null)
+  const uploadFileButtonRef = useRef<HTMLButtonElement>(null)
 
   const mojaloopDfsps = useMojaloopDfsps()
   const onboardDfsp = useOnboardDfsp()
@@ -68,17 +82,23 @@ const OnboardDfsp = () => {
             DFSP Onboarding
           </Heading>
           <GridShell>
-            <FormSelect
+            <FormInput
+              name='fspId'
+              register={register}
+              errors={errors}
+              label='DFSP ID'
+              placeholder='Enter DFSP ID'
+            />
+            <FormInput
               name='name'
               register={register}
               errors={errors}
               label='DFSP Name'
-              placeholder='Select Dfsp name'
-              options={dfspNamesOptions}
-              selectProps={{ bg: 'white' }}
+              placeholder='Enter DFSP Name'
             />
+
             <FormSelect
-              name='type'
+              name='dfspType'
               register={register}
               errors={errors}
               label='DFSP Type'
@@ -87,32 +107,83 @@ const OnboardDfsp = () => {
               ml={0}
               selectProps={{ bg: 'white' }}
             />
+
             <FormInput
-              name='license_id'
+              name='businessLicenseId'
               register={register}
               errors={errors}
               label='DFSP Business License ID'
               inputProps={{ bg: 'white' }}
             />
-            <FormInput
-              name='logo'
-              register={register}
-              label='Business logo'
-              inputProps={{
-                type: 'file',
-                onChange: e => {
-                  const file = e.target.files ? e.target.files[0] : null
-                  if (file && file.size > 5 * 1024 * 1024) {
-                    alert('Please select a file smaller than 5MB.')
-                    e.target.value = ''
-                  }
-                },
-                accept: '.jpg, .jpeg, .png, .pdf',
-                bg: 'white',
+
+            <FormControl maxW={{ md: '20rem' }}>
+              <FormLabel htmlFor='logo' fontSize='sm'>
+                License Document
+              </FormLabel>
+
+              <Controller
+                control={control}
+                name='logo'
+                render={({ field: { name, onBlur, onChange } }) => (
+                  <VisuallyHiddenInput
+                    id='logo'
+                    ref={logoElementRef}
+                    type='file'
+                    accept='.jpg, .jpeg, .png, .pdf'
+                    name={name}
+                    onBlur={onBlur}
+                    onChange={e => {
+                      if (!e.target.files) return
+                      onChange(e.target.files[0])
+                      setIsUploading(true)
+                    }}
+                  />
+                )}
+              />
+              <HStack
+                w='full'
+                h='10'
+                position='relative'
+                px='4'
+                rounded='md'
+                border='1px'
+                borderColor='gray.200'
+                opacity='1'
+              >
+                <Text color='gray.500'>
+                    Upload DFSP Logo
+                </Text>
+                <IconButton
+                  ref={uploadFileButtonRef}
+                  aria-label='Upload file'
+                  icon={<MdFileUpload />}
+                  variant='unstyled'
+                  h='auto'
+                  minW='auto'
+                  position='absolute'
+                  top='0.45rem'
+                  right='2.5'
+                  fontSize='22px'
+                  color='accent'
+                  onClick={() => {
+                    setIsLogoModalOpen(true)
+                  }}
+                />
+              </HStack>
+              <FormErrorMessage>{errors.logo?.message}</FormErrorMessage>
+            </FormControl>
+
+            <LogoFileUploadModal
+              isOpen={isLogoModalOpen}
+              onClose={() => setIsLogoModalOpen(false)}
+              isUploading={isUploading}
+              setIsUploading={setIsUploading}
+              openFileInput={() => logoElementRef.current?.click()}
+              setFile={(file: File) => {
+                setValue('logo', file)
               }}
-              errors={errors}
-              ml={0}
             />
+
             <FormControl>
               <Text mb='4' fontSize='0.9375rem'>
                 Will this DFSP use the Mojaloop Merchant Acquiring Portal?

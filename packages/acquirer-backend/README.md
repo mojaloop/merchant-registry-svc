@@ -63,6 +63,7 @@
 | `S3_REGION`                              | `us-east-1`                          | Region for S3. Ignored by Minio.                                                       |
 | `S3_USE_SSL`                             | `false`                              | Set to `true` for HTTPS with AWS S3.                                                   |
 | `S3_MERCHANT_BUCKET_NAME`                | `merchant-documents`                 | Name of the S3 bucket for merchant documents.                                          |
+| `S3_DFSP_LOGO_BUCKET_NAME`               | `dfsp-logos`                         | Name of the S3 bucket for DFSP logos.                                                  |
 | **SendGrid Configuration**               |                                      |                                                                                        |
 | `SENDGRID_API_KEY`                       | `add-api-key-here`                   | API key for SendGrid. Used for services like email verification.                       |
 | **Log Configuration**                    |                                      |                                                                                        |
