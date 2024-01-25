@@ -50,7 +50,7 @@ const DraftApplications = () => {
     return [
       columnHelper.accessor('no', {
         cell: info => info.getValue(),
-        header: 'No',
+        header: 'ID',
       }),
       columnHelper.accessor('dbaName', {
         cell: info => info.getValue(),

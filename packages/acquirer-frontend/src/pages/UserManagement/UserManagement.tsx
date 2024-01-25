@@ -30,7 +30,7 @@ const UserManagement = () => {
     return [
       columnHelper.accessor('no', {
         cell: info => info.getValue(),
-        header: 'No',
+        header: 'ID',
       }),
       columnHelper.accessor('name', {
         cell: info => info.getValue(),
