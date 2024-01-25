@@ -103,8 +103,8 @@ export async function addUser (req: AuthRequest, res: Response) {
 
   try {
     const { name, email, role } = result.data
-    // eslint-disable-next-line @typescript-eslint/naming-convention
-    const dfsp_id = Number(result.data.dfsp_id)
+    // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions, @typescript-eslint/naming-convention
+    const dfsp_id = Number(result.data.dfsp_id) || 0
 
     logger.debug('addUser req.body: %s', JSON.stringify(req.body))
     const roleRepository = AppDataSource.getRepository(PortalRoleEntity)
@@ -160,7 +160,7 @@ export async function addUser (req: AuthRequest, res: Response) {
 
     if (portalUser.dfsp !== null) {
       newUser.dfsp = portalUser.dfsp
-    } else if (portalUser.user_type === PortalUserType.HUB) {
+    } else if (role.includes('DFSP')) {
       const dfsp = await AppDataSource.manager.findOne(DFSPEntity, {
         where: { id: dfsp_id }
       })
