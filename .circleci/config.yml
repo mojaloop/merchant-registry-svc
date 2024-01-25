@@ -149,10 +149,10 @@ jobs:
           name: Execute unit tests
           command: npm run test:unit:frontend
       # store workspace for the coverage-report step
-      - persist_to_workspace:
-          root: *workingDirVar
-          paths:
-            - .
+      # - persist_to_workspace:
+      #     root: *workingDirVar
+      #     paths:
+      #       - .
   
   tests-acquirer-backend:
     executor: default-docker
@@ -163,10 +163,10 @@ jobs:
           name: Execute unit tests
           command: npm run acquirer-backend:test:coverage
       # store workspace for the coverage-report step
-      - persist_to_workspace:
-          root: *workingDirVar
-          paths:
-            - .
+      # - persist_to_workspace:
+      #     root: *workingDirVar
+      #     paths:
+      #       - .
   
   tests-oracle:
     executor: default-docker
@@ -177,10 +177,10 @@ jobs:
           name: Execute unit tests
           command: npm run oracle:test:coverage
       # store workspace for the coverage-report step
-      - persist_to_workspace:
-          root: *workingDirVar
-          paths:
-            - .
+      # - persist_to_workspace:
+      #     root: *workingDirVar
+      #     paths:
+      #       - .
 
   coverage-report:
     executor: default-docker
