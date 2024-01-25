@@ -18,7 +18,7 @@ const Dfsps = () => {
 
     return [
       columnHelper.display({
-        header: 'No',
+        header: 'ID',
         cell: props => <span>{props.row.index + 1}</span>,
       }),
       columnHelper.accessor('dfspId', {
@@ -72,6 +72,7 @@ const Dfsps = () => {
         )}
 
         <DataTable
+          hidePagination={true}
           table={table}
           totalPages={dfsps.data?.totalPages || 0}
           breakpoint='xl'
