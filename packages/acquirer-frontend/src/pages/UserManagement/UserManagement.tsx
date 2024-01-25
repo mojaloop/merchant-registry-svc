@@ -207,7 +207,12 @@ const UserManagement = () => {
 
       {data && (
         <>
-          <DataTable hidePagination={true} table={table} breakpoint='lg' alwaysVisibleColumns={[0, 1]} />
+          <DataTable
+            hidePagination={true}
+            table={table}
+            breakpoint='lg'
+            alwaysVisibleColumns={[0, 1]}
+          />
 
           {data.length === 0 && (
             <EmptyState text='There are no users right now.' mt='14' />
