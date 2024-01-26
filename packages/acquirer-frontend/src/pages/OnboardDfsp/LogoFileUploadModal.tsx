@@ -20,25 +20,27 @@ import { MdOutlineCloudUpload } from 'react-icons/md'
 
 import { CustomButton } from '@/components/ui'
 
-import './fileUploadModal.css'
+import './LogoFileUploadModal.css'
 
-interface FileUploadModalProps {
+interface LogoFileUploadModalProps {
   isOpen: boolean
   onClose: () => void
   isUploading: boolean
   setIsUploading: (isUploading: boolean) => void
+  setIsUploaded: (isUploaded: boolean) => void
   openFileInput: () => void
   setFile: (file: File) => void
 }
 
-const FileUploadModal = ({
+const LogoFileUploadModal = ({
   isOpen,
   onClose,
   isUploading,
+  setIsUploaded,
   setIsUploading,
   openFileInput,
   setFile,
-}: FileUploadModalProps) => {
+}: LogoFileUploadModalProps) => {
   const intervalRef = useRef<NodeJS.Timeout>()
   const [uploadProgress, setUploadProgress] = useState(0)
   const [isDraggingOver, setIsDraggingOver] = useState(false)
@@ -56,8 +58,9 @@ const FileUploadModal = ({
     if (uploadProgress === 100) {
       clearInterval(intervalRef.current)
       setIsUploading(false)
+      setIsUploaded(true)
     }
-  }, [uploadProgress, setIsUploading])
+  }, [uploadProgress, setIsUploading, setIsUploaded])
 
   const resetUploadStates = () => {
     setUploadProgress(0)
@@ -83,7 +86,7 @@ const FileUploadModal = ({
         <ModalCloseButton top='2.5' right='4' />
 
         <ModalBody py='5' px={{ base: '6', md: '10' }}>
-          <Text>Upload your PDF File to share your license documents.</Text>
+          <Text>Upload your Logo Image File</Text>
 
           <Flex
             align='center'
@@ -102,7 +105,7 @@ const FileUploadModal = ({
               setIsDraggingOver(false)
               resetUploadStates()
 
-              if (e.dataTransfer.files[0].type !== 'application/pdf') return
+              // if (e.dataTransfer.files[0].type !== 'application/pdf') return
 
               setFile(e.dataTransfer.files[0])
               setIsUploading(true)
@@ -186,7 +189,7 @@ const FileUploadModal = ({
               <Box textAlign='center' fontSize='sm'>
                 {!isUploading && uploadProgress === 0 && (
                   <>
-                    <Text>Drag & Drop you PDF file here</Text>
+                    <Text>Drag & Drop you Logo file here</Text>
                     <Text>OR</Text>
                   </>
                 )}
@@ -224,4 +227,4 @@ const FileUploadModal = ({
   )
 }
 
-export default FileUploadModal
+export default LogoFileUploadModal

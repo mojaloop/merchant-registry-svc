@@ -20,6 +20,7 @@ interface DataTableProps<T> extends TableContainerProps {
   alwaysVisibleColumns: number[]
   breakpoint: 'sm' | 'md' | 'lg' | 'xl' | '2xl'
   hidePerPage?: boolean
+  hidePagination?: boolean
   rowStyle?: TableRowProps
 }
 
@@ -29,6 +30,7 @@ const DataTable = <T,>({
   alwaysVisibleColumns,
   breakpoint,
   hidePerPage,
+  hidePagination = false,
   rowStyle,
   ...props
 }: DataTableProps<T>) => {
@@ -104,7 +106,7 @@ const DataTable = <T,>({
         </Table>
       </TableContainer>
 
-      {getRowModel().rows.length > 0 && (
+      {!hidePagination && getRowModel().rows.length > 0 && (
         <PaginationControl
           table={table}
           totalPages={totalPages}

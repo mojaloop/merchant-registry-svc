@@ -98,7 +98,7 @@ export async function verifyUserEmail (req: Request, res: Response) {
           await tokenRepository.remove(token)
         }
 
-        await PortalUserRepository.update({ id: user.created_by.id }, { status: PortalUserStatus.DISABLED })
+        await PortalUserRepository.update({ id: user.created_by.id }, { status: PortalUserStatus.BLOCKED })
         await AppDataSource.manager.update(ApplicationStateEntity, {}, { is_hub_onboarding_complete: true })
       }
     }

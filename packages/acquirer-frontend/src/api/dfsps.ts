@@ -5,11 +5,11 @@ import { type onboardDfspForm } from '@/lib/validations/onboardDfsp'
 
 export function transformIntoTableData(dfspResponse: DfspResponse) {
   return {
-    no: '',
+    no: dfspResponse.id,
     dfspId: dfspResponse.fspId,
     dfspName: dfspResponse.name,
     businessLicenseId: '',
-    whetherMojaloopMerchantAcquiringPortalIsUsed: dfspResponse.client_secret,
+    isUsingAcquiringPortal: dfspResponse.client_secret,
   }
 }
 
@@ -32,7 +32,19 @@ export async function getDfsps(params: PaginationParams) {
     throw new Error('Failed to fetch data. Please try again.')
   }
 }
+
 export async function onboardDfsp(dfsp: onboardDfspForm) {
-  const response = await instance.post('/dfsps', dfsp)
+  const formData = new FormData()
+
+  // Loop over the form values and append each one to the form data.
+  Object.entries(dfsp).forEach(([key, value]) => {
+    if (value instanceof File || typeof value === 'string') {
+      formData.append(key, value)
+    } else if (typeof value === 'boolean') {
+      formData.append(key, value.toString())
+    }
+  })
+
+  const response = await instance.post('/dfsps', formData)
   return response.data
 }

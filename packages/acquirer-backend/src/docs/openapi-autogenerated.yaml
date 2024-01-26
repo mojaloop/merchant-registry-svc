@@ -1634,7 +1634,7 @@ paths:
                   description: The email for login
                 role:
                   type: string
-                  example: Auditor
+                  example: DFSP Auditor
                   description: The role of the user
                 dfsp_id:
                   type: number

@@ -16,7 +16,6 @@ import {
 } from '@chakra-ui/react'
 import { AiOutlineMail, AiOutlineUser } from 'react-icons/ai'
 import { FiMenu } from 'react-icons/fi'
-import { MdLockOutline } from 'react-icons/md'
 import { TbLogout } from 'react-icons/tb'
 
 import mojaloopLogo from '@/assets/mojaloop-logo.png'
@@ -103,6 +102,7 @@ const Header = () => {
                 </Text>
               </HStack>
 
+              {/*
               <Button variant='unstyled' h='auto' p='1.5' _hover={{ bg: 'gray.100' }}>
                 <HStack spacing='2'>
                   <Box
@@ -119,6 +119,7 @@ const Header = () => {
                   </Box>
                 </HStack>
               </Button>
+              */}
 
               <Button
                 variant='unstyled'

@@ -19,7 +19,7 @@ const AddUserSchema = z.object({
   name: z.string(),
   email: z.string().email(),
   role: z.string(),
-  dfsp_id: z.number().optional()
+  dfsp_id: z.number().or(z.string()).optional()
 })
 
 const JWT_SECRET = readEnv('JWT_SECRET', '') as string
@@ -50,7 +50,7 @@ const JWT_SECRET = readEnv('JWT_SECRET', '') as string
  *                 description: "The email for login"
  *               role:
  *                 type: string
- *                 example: "Auditor"
+ *                 example: "DFSP Auditor"
  *                 description: "The role of the user"
  *               dfsp_id:
  *                 type: number
@@ -102,8 +102,10 @@ export async function addUser (req: AuthRequest, res: Response) {
   }
 
   try {
-    // eslint-disable-next-line @typescript-eslint/naming-convention
-    const { name, email, role, dfsp_id } = req.body
+    const { name, email, role } = result.data
+    // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions, @typescript-eslint/naming-convention
+    const dfsp_id = Number(result.data.dfsp_id) || 0
+
     logger.debug('addUser req.body: %s', JSON.stringify(req.body))
     const roleRepository = AppDataSource.getRepository(PortalRoleEntity)
 
@@ -138,15 +140,27 @@ export async function addUser (req: AuthRequest, res: Response) {
       return res.status(400).send({ message: 'Email already exists' })
     }
 
+    // Find User Type from role
+    let newUserType
+    if (role.includes('Hub')) {
+      newUserType = PortalUserType.HUB
+    } else if (role.includes('DFSP')) {
+      newUserType = PortalUserType.DFSP
+    } else {
+      return res.status(400).send({ message: 'Cannot determined User Type from role.' })
+    }
+
     const newUser = new PortalUserEntity()
     newUser.name = name
     newUser.email = email
-    newUser.user_type = PortalUserType.DFSP
+    newUser.user_type = newUserType
     newUser.status = PortalUserStatus.UNVERIFIED
     newUser.role = roleObj
     newUser.created_by = portalUser
 
-    if (portalUser.user_type === PortalUserType.HUB) {
+    if (portalUser.dfsp !== null) {
+      newUser.dfsp = portalUser.dfsp
+    } else if (role.includes('DFSP')) {
       const dfsp = await AppDataSource.manager.findOne(DFSPEntity, {
         where: { id: dfsp_id }
       })
@@ -164,9 +178,8 @@ export async function addUser (req: AuthRequest, res: Response) {
         return res.status(400).send({ message: 'Invalid dfsp_id: DFSP Not found' })
       }
       newUser.dfsp = dfsp
-    } else {
-      newUser.dfsp = portalUser.dfsp
     }
+
     // Start Transaction
     await AppDataSource.manager.transaction(async (transactionalEntityManager) => {
       await transactionalEntityManager.save(newUser)
