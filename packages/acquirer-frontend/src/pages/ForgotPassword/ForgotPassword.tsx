@@ -42,7 +42,7 @@ const ForgotPassword = () => {
           <Image src={mojaloopLogo} w='60' />
 
           <Heading as='h1' color='primary' textAlign='center'>
-            Merchant Registry Portal
+            Merchant Acquiring System Portal
           </Heading>
 
           <Box alignSelf='start' color='primary' fontSize='sm' fontWeight='medium'>

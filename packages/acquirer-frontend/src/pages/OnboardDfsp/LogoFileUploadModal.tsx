@@ -27,6 +27,7 @@ interface LogoFileUploadModalProps {
   onClose: () => void
   isUploading: boolean
   setIsUploading: (isUploading: boolean) => void
+  setIsUploaded: (isUploaded: boolean) => void
   openFileInput: () => void
   setFile: (file: File) => void
 }
@@ -35,6 +36,7 @@ const LogoFileUploadModal = ({
   isOpen,
   onClose,
   isUploading,
+  setIsUploaded,
   setIsUploading,
   openFileInput,
   setFile,
@@ -56,8 +58,9 @@ const LogoFileUploadModal = ({
     if (uploadProgress === 100) {
       clearInterval(intervalRef.current)
       setIsUploading(false)
+      setIsUploaded(true)
     }
-  }, [uploadProgress, setIsUploading])
+  }, [uploadProgress, setIsUploading, setIsUploaded])
 
   const resetUploadStates = () => {
     setUploadProgress(0)
@@ -83,7 +86,7 @@ const LogoFileUploadModal = ({
         <ModalCloseButton top='2.5' right='4' />
 
         <ModalBody py='5' px={{ base: '6', md: '10' }}>
-          <Text>Upload your Logo CSV File to share your license documents.</Text>
+          <Text>Upload your Logo Image File</Text>
 
           <Flex
             align='center'
