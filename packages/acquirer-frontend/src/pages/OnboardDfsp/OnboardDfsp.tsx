@@ -67,8 +67,8 @@ const OnboardDfsp = () => {
 
   const onSubmit = async (values: onboardDfspForm) => {
     if (!values.logo) {
-      setError('logo', { type: 'manual', message: 'Please upload a logo' });
-      return;
+      setError('logo', { type: 'manual', message: 'Please upload a logo' })
+      return
     }
     await onboardDfsp.mutateAsync(values)
     reset()
