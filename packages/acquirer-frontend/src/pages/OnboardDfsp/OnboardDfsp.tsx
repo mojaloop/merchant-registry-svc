@@ -32,12 +32,14 @@ const OnboardDfsp = () => {
     handleSubmit,
     reset,
     setValue,
+    setError,
   } = useForm<onboardDfspForm>({
     resolver: zodResolver(onboardDfspSchema),
   })
 
   const [isLogoModalOpen, setIsLogoModalOpen] = useState(false)
   const [isUploading, setIsUploading] = useState(false)
+  const [isUploaded, setIsUploaded] = useState(false)
 
   const logoElementRef = useRef<HTMLInputElement>(null)
   const uploadFileButtonRef = useRef<HTMLButtonElement>(null)
@@ -64,6 +66,10 @@ const OnboardDfsp = () => {
   }
 
   const onSubmit = async (values: onboardDfspForm) => {
+    if (!values.logo) {
+      setError('logo', { type: 'manual', message: 'Please upload a logo' })
+      return
+    }
     await onboardDfsp.mutateAsync(values)
     reset()
   }
@@ -86,7 +92,7 @@ const OnboardDfsp = () => {
               name='fspId'
               register={register}
               errors={errors}
-              label='DFSP ID'
+              label='DFSP ID (Participant ID)'
               placeholder='Enter DFSP ID'
             />
             <FormInput
@@ -116,9 +122,9 @@ const OnboardDfsp = () => {
               inputProps={{ bg: 'white' }}
             />
 
-            <FormControl maxW={{ md: '20rem' }}>
+            <FormControl isInvalid={!!errors.logo} maxW={{ md: '20rem' }}>
               <FormLabel htmlFor='logo' fontSize='sm'>
-                License Document
+                DFSP Logo
               </FormLabel>
 
               <Controller
@@ -150,7 +156,9 @@ const OnboardDfsp = () => {
                 borderColor='gray.200'
                 opacity='1'
               >
-                <Text color='gray.500'>Upload DFSP Logo</Text>
+                <Text color='gray.500'>
+                  {isUploaded ? 'Logo File Successfully uploaded' : 'No file uploaded'}
+                </Text>
                 <IconButton
                   ref={uploadFileButtonRef}
                   aria-label='Upload file'
@@ -168,7 +176,7 @@ const OnboardDfsp = () => {
                   }}
                 />
               </HStack>
-              <FormErrorMessage>{errors.logo?.message}</FormErrorMessage>
+              <FormErrorMessage>{errors.logo?.message?.toString()}</FormErrorMessage>
             </FormControl>
 
             <LogoFileUploadModal
@@ -176,6 +184,7 @@ const OnboardDfsp = () => {
               onClose={() => setIsLogoModalOpen(false)}
               isUploading={isUploading}
               setIsUploading={setIsUploading}
+              setIsUploaded={setIsUploaded}
               openFileInput={() => logoElementRef.current?.click()}
               setFile={(file: File) => {
                 setValue('logo', file)

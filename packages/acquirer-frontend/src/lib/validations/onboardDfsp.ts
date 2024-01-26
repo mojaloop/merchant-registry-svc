@@ -10,7 +10,9 @@ export const onboardDfspSchema = z.object({
     .string()
     .trim()
     .min(1, { message: 'business license id is required' }),
-  logo: z.custom<File>(val => val instanceof File),
+  logo: z
+    .any() // Use any() to allow for file type
+    .refine(file => file instanceof File, { message: 'Please upload a logo' }),
   will_use_portal: z.union([z.literal('yes'), z.literal('no')]).or(z.undefined()),
   activated: z.boolean().default(true),
 })
