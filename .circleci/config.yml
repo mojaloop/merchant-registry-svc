@@ -44,7 +44,7 @@ executors:
         command: ["server", "/data"]
       - image: rabbitmq:3.12.4-management-alpine
         environment:
-          RABBITMQ_DEFAULT_USER: guest 
+          RABBITMQ_DEFAULT_USER: guest
           RABBITMQ_DEFAULT_PASS: guest
 
   default-machine:
@@ -131,21 +131,20 @@ jobs:
       - attach_workspace:
           at: *workingDirVar
       - run: npm run dep:check:backend
-  
+
   dep-check-acquirer-frontend:
     executor: default-docker
     steps:
       - attach_workspace:
           at: *workingDirVar
       - run: npm run dep:check:frontend
-  
+
   dep-check-registry-oracle:
     executor: default-docker
     steps:
       - attach_workspace:
           at: *workingDirVar
       - run: npm run dep:check:oracle
-  
 
   test-unit-frontend:
     executor: default-docker
@@ -160,7 +159,7 @@ jobs:
       #     root: *workingDirVar
       #     paths:
       #       - .
-  
+
   tests-acquirer-backend:
     executor: default-docker
     steps:
@@ -174,7 +173,7 @@ jobs:
       #     root: *workingDirVar
       #     paths:
       #       - .
-  
+
   tests-oracle:
     executor: default-docker
     steps:
@@ -246,32 +245,32 @@ workflows:
           context: org-global
           requires:
             - setup
-      
+
       - lint-check-acquirer-frontend:
           context: org-global
           requires:
             - setup
-      
+
       - lint-check-registry-oracle:
           context: org-global
           requires:
             - setup
-      
+
       - type-check-acquirer-backend:
           context: org-global
           requires:
             - setup
-      
+
       - type-check-acquirer-frontend:
           context: org-global
           requires:
             - setup
-      
+
       - type-check-registry-oracle:
           context: org-global
           requires:
             - setup
-      
+
       - tests-acquirer-backend:
         context: org-global
         requires:
@@ -312,11 +311,11 @@ workflows:
             - tests-acquirer-backend
             - tests-oracle
             - test-unit-frontend
-                     
+
             - lint-check-acquirer-backend
             - lint-check-acquirer-frontend
             - lint-check-registry-oracle
-                     
+
             - type-check-acquirer-backend
             - type-check-acquirer-frontend
             - type-check-registry-oracle
