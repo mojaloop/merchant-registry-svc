@@ -236,11 +236,6 @@ workflows:
           requires:
             - setup
 
-      # - approve_dep_check:
-      #     type: approval
-      #     requires:
-      #       - setup
-
       - lint-check-acquirer-backend:
           context: org-global
           requires:
@@ -272,33 +267,19 @@ workflows:
             - setup
 
       - tests-acquirer-backend:
-        context: org-global
-        requires:
-          - setup
+          context: org-global
+          requires:
+            - setup
 
       - tests-oracle:
-        context: org-global
-        requires:
-          - setup
+          context: org-global
+          requires:
+            - setup
 
       - test-unit-frontend:
-        context: org-global
-        requires:
-          - setup
-      # - dep-check-acquirer-backend:
-      #     context: org-global
-      #     requires:
-      #       - approve_dep_check
-      #
-      # - dep-check-acquirer-frontend:
-      #     context: org-global
-      #     requires:
-      #       - approve_dep_check
-      #
-      # - dep-check-registry-oracle:
-      #     context: org-global
-      #     requires:
-      #       - approve_dep_check
+          context: org-global
+          requires:
+            - setup
 
       - publish:
           context: org-global
