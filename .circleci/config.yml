@@ -241,37 +241,51 @@ workflows:
       #     type: approval
       #     requires:
       #       - setup
-      #
-      # - lint-check-acquirer-backend:
-      #     context: org-global
-      #     requires:
-      #       - setup
-      #
-      # - lint-check-acquirer-frontend:
-      #     context: org-global
-      #     requires:
-      #       - setup
-      #
-      # - lint-check-registry-oracle:
-      #     context: org-global
-      #     requires:
-      #       - setup
-      #
-      # - type-check-acquirer-backend:
-      #     context: org-global
-      #     requires:
-      #       - setup
-      #
-      # - type-check-acquirer-frontend:
-      #     context: org-global
-      #     requires:
-      #       - setup
-      #
-      # - type-check-registry-oracle:
-      #     context: org-global
-      #     requires:
-      #       - setup
-      #
+
+      - lint-check-acquirer-backend:
+          context: org-global
+          requires:
+            - setup
+      
+      - lint-check-acquirer-frontend:
+          context: org-global
+          requires:
+            - setup
+      
+      - lint-check-registry-oracle:
+          context: org-global
+          requires:
+            - setup
+      
+      - type-check-acquirer-backend:
+          context: org-global
+          requires:
+            - setup
+      
+      - type-check-acquirer-frontend:
+          context: org-global
+          requires:
+            - setup
+      
+      - type-check-registry-oracle:
+          context: org-global
+          requires:
+            - setup
+      
+      - tests-acquirer-backend:
+        context: org-global
+        requires:
+          - setup
+
+      - tests-oracle:
+        context: org-global
+        requires:
+          - setup
+
+      - test-unit-frontend:
+        context: org-global
+        requires:
+          - setup
       # - dep-check-acquirer-backend:
       #     context: org-global
       #     requires:
@@ -287,37 +301,22 @@ workflows:
       #     requires:
       #       - approve_dep_check
 
-      # - tests-acquirer-backend:
-      #     context: org-global
-      #     requires:
-      #       - setup
-      #
-      # - tests-oracle:
-      #     context: org-global
-      #     requires:
-      #       - setup
-      #
-      # - test-unit-frontend:
-      #     context: org-global
-      #     requires:
-      #       - setup
-
       - publish:
           context: org-global
-          # filters:
-          #   branches:
-          #     only: main
+          filters:
+            branches:
+              only: main
           requires:
             - setup
             - build
-            # - tests-acquirer-backend
-            # - tests-oracle
-            # - test-unit-frontend
-            #          
-            # - lint-check-acquirer-backend
-            # - lint-check-acquirer-frontend
-            # - lint-check-registry-oracle
-            #          
-            # - type-check-acquirer-backend
-            # - type-check-acquirer-frontend
-            # - type-check-registry-oracle
+            - tests-acquirer-backend
+            - tests-oracle
+            - test-unit-frontend
+                     
+            - lint-check-acquirer-backend
+            - lint-check-acquirer-frontend
+            - lint-check-registry-oracle
+                     
+            - type-check-acquirer-backend
+            - type-check-acquirer-frontend
+            - type-check-registry-oracle
