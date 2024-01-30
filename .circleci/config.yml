@@ -311,7 +311,7 @@ workflows:
           #     only: main
           requires:
             - setup
-            # - build
+            - build
             # - tests-acquirer-backend
             # - tests-oracle
             # - test-unit-frontend
