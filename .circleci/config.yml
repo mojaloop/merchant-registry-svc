@@ -18,8 +18,6 @@ orbs:
 defaults_configure_git: &defaults_configure_git
   name: Configure git
   command: |
-    echo "GIT_CI_EMAIL: $GIT_CI_EMAIL"
-    echo "GIT_CI_USER: $GIT_CI_USER"
     git config user.email ${GIT_CI_EMAIL}
     git config user.name ${GIT_CI_USER}
 
