@@ -1,8 +1,12 @@
 {
-  "name": "acquirer-backend",
+  "name": "@mojaloop/merchant-acquirer-backend",
   "version": "0.1.0",
   "description": "Merchant Acquirer Backend",
   "main": "src/index.ts",
+  "private": true,
+  "mojaloop": {
+    "publish_to_dockerhub": true
+  },
   "scripts": {
     "start": "ts-node src/index.ts",
     "start:watch": "nodemon --watch 'src/**/*.ts' --watch '.env*' --exec 'ts-node' src/index.ts",

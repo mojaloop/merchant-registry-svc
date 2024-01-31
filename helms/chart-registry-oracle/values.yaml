@@ -1,7 +1,7 @@
 registryOracle:
   replicaCount: 1
   image:
-    repository: twstm/registry-oracle
+    repository: mojaloop/merchant-registry-oracle
     tag: 0.0.3l
   service:
     type: ClusterIP

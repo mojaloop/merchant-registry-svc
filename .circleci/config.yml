@@ -1,8 +1,15 @@
 # CircleCI v2.1 Config
 version: 2.1
-
-# this allows you to use CircleCI's dynamic configuration feature
-#setup: true
+##
+# orbs
+#
+# Orbs used in this pipeline
+##
+orbs:
+  anchore: anchore/anchore-engine@1.9.0
+  slack: circleci/slack@4.12.5 # Ref: https://github.com/mojaloop/ci-config/tree/main/slack-templates
+  pr-tools: mojaloop/pr-tools@0.1.10 # Ref: https://github.com/mojaloop/ci-config/
+  gh: circleci/github-cli@2.2.0
 
 ##
 # Yaml anchors
@@ -37,7 +44,7 @@ executors:
         command: ["server", "/data"]
       - image: rabbitmq:3.12.4-management-alpine
         environment:
-          RABBITMQ_DEFAULT_USER: guest 
+          RABBITMQ_DEFAULT_USER: guest
           RABBITMQ_DEFAULT_PASS: guest
 
   default-machine:
@@ -124,21 +131,20 @@ jobs:
       - attach_workspace:
           at: *workingDirVar
       - run: npm run dep:check:backend
-  
+
   dep-check-acquirer-frontend:
     executor: default-docker
     steps:
       - attach_workspace:
           at: *workingDirVar
       - run: npm run dep:check:frontend
-  
+
   dep-check-registry-oracle:
     executor: default-docker
     steps:
       - attach_workspace:
           at: *workingDirVar
       - run: npm run dep:check:oracle
-  
 
   test-unit-frontend:
     executor: default-docker
@@ -149,11 +155,11 @@ jobs:
           name: Execute unit tests
           command: npm run test:unit:frontend
       # store workspace for the coverage-report step
-      - persist_to_workspace:
-          root: *workingDirVar
-          paths:
-            - .
-  
+      # - persist_to_workspace:
+      #     root: *workingDirVar
+      #     paths:
+      #       - .
+
   tests-acquirer-backend:
     executor: default-docker
     steps:
@@ -163,11 +169,11 @@ jobs:
           name: Execute unit tests
           command: npm run acquirer-backend:test:coverage
       # store workspace for the coverage-report step
-      - persist_to_workspace:
-          root: *workingDirVar
-          paths:
-            - .
-  
+      # - persist_to_workspace:
+      #     root: *workingDirVar
+      #     paths:
+      #       - .
+
   tests-oracle:
     executor: default-docker
     steps:
@@ -177,10 +183,10 @@ jobs:
           name: Execute unit tests
           command: npm run oracle:test:coverage
       # store workspace for the coverage-report step
-      - persist_to_workspace:
-          root: *workingDirVar
-          paths:
-            - .
+      # - persist_to_workspace:
+      #     root: *workingDirVar
+      #     paths:
+      #       - .
 
   coverage-report:
     executor: default-docker
@@ -230,11 +236,6 @@ workflows:
           requires:
             - setup
 
-      # - approve_dep_check:
-      #     type: approval
-      #     requires:
-      #       - setup
-
       - lint-check-acquirer-backend:
           context: org-global
           requires:
@@ -265,21 +266,6 @@ workflows:
           requires:
             - setup
 
-      # - dep-check-acquirer-backend:
-      #     context: org-global
-      #     requires:
-      #       - approve_dep_check
-      #
-      # - dep-check-acquirer-frontend:
-      #     context: org-global
-      #     requires:
-      #       - approve_dep_check
-      #
-      # - dep-check-registry-oracle:
-      #     context: org-global
-      #     requires:
-      #       - approve_dep_check
-
       - tests-acquirer-backend:
           context: org-global
           requires:
@@ -301,6 +287,16 @@ workflows:
             branches:
               only: main
           requires:
+            - setup
+            - build
             - tests-acquirer-backend
             - tests-oracle
             - test-unit-frontend
+
+            - lint-check-acquirer-backend
+            - lint-check-acquirer-frontend
+            - lint-check-registry-oracle
+
+            - type-check-acquirer-backend
+            - type-check-acquirer-frontend
+            - type-check-registry-oracle

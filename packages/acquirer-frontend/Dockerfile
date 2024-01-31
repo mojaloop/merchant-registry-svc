@@ -1,7 +1,7 @@
 # Use an official Node runtime as the base image
 FROM node:18.16-alpine3.18
 
-RUN apk add --no-cache curl
+RUN apk add --no-cache mysql-client curl
 
 # Set the working directory in the container
 WORKDIR /app
