@@ -8,6 +8,10 @@ REPOSITORY_TYPE="github"
 DOCKER_BUILD_PLATFORMS=linux/amd64,linux/arm64
 DOCKER_LATEST_RELEASE_NAME=snapshot
 
+# Keep track of packages description that were published
+CHANGES_DESCRIPTION=""
+TAG_NAME_PARTS=""
+
 ########################################################################################
 ## 1. Setup
 ########################################################################################
@@ -87,12 +91,7 @@ for PACKAGE in ${CHANGED_PACKAGES}; do
 
     if [[ $PUB_SUCCESS -eq 0 ]]; then
         PUBLISHED_NPM_PACKAGES_COUNT=$((PUBLISHED_NPM_PACKAGES_COUNT + 1))
-        TAG_NAME=${PACKAGE}_v${PACKAGE_NEW_VERSION}
         echo -e "Successfully published package."
-        echo -e "Git staging '${PACKAGE_PATH}/package.json, committing and tagging with: '${TAG_NAME}'"
-        git add ${PACKAGE_PATH}/package.json
-        git commit -nm "[ci skip] CI/CD auto commit for '${PACKAGE}' NPM publish - parent commit: '${CIRCLE_SHA1}'"
-        git tag ${TAG_NAME}
     else
         echo -e "Error publishing package: ${PACKAGE} - exiting"
         exit 1
@@ -179,12 +178,9 @@ for PACKAGE in ${CHANGED_PACKAGES}; do
 
     if [[ BUILD_AND_PUB_SUCCESS -eq 0 ]]; then
         PUBLISHED_DOCKERHUB_PACKAGES_COUNT=$((PUBLISHED_DOCKERHUB_PACKAGES_COUNT + 1))
-        TAG_NAME=${PACKAGE}_v${PACKAGE_NEW_VERSION}
+        TAG_NAME_PARTS+="${PACKAGE_NAME}-${PACKAGE_NEW_VERSION},"
         echo -e "Successfully published docker image."
-        echo -e "Git staging '${PACKAGE_PATH}/package.json, committing and tagging with: '${TAG_NAME}'"
-        git add ${PACKAGE_PATH}/package.json
-        git commit -nm "[ci skip] CI/CD auto commit for '${PACKAGE}' Docker Build and Publish - parent commit: '${CIRCLE_SHA1}'"
-        git tag ${TAG_NAME}
+        CHANGES_DESCRIPTION="${CHANGES_DESCRIPTION} - [${PACKAGE} - ${PACKAGE_NEW_VERSION}]"
     else
         echo -e "Error publishing package: ${PACKAGE} - exiting"
         exit 1
@@ -197,9 +193,19 @@ if [[ -n "$DRYRUN" ]]; then
 fi
 
 ############################################
-## Phase 5 - Pushing commits to git
+## Phase 5 - Pushing combined commit to git
 ############################################
-printHeader "Phase 5 - Pushing commits to git"
+printHeader "Phase 5 - Pushing single combined commit and tag to git"
+
+# Stage all changes
+git add -A
+# Commit with a combined message
+COMMIT_MESSAGE="[ci skip] CI/CD auto commit for published packages - ${CHANGES_DESCRIPTION}"
+git commit --no-verify -m "$COMMIT_MESSAGE"
+
+# Create a single tag. Example uses date and time for uniqueness.
+TAG_NAME="${TAG_NAME_PARTS%,}" # Removes the trailing comma
+git tag $TAG_NAME
 
 if [[ PUBLISHED_NPM_PACKAGES_COUNT -eq 0 ]] && [[ PUBLISHED_DOCKERHUB_PACKAGES_COUNT -eq 0 ]]; then
     echo -e "No Packages were published, nothing to push to git"
