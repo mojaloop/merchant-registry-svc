@@ -8,8 +8,8 @@ export function transformIntoTableData(dfspResponse: DfspResponse) {
     no: dfspResponse.id,
     dfspId: dfspResponse.fspId,
     dfspName: dfspResponse.name,
-    businessLicenseId: '',
-    isUsingAcquiringPortal: dfspResponse.client_secret,
+    businessLicenseId: dfspResponse.business_license_id,
+    // isUsingAcquiringPortal: dfspResponse.client_secret,
   }
 }
 

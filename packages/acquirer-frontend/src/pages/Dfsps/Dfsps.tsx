@@ -33,10 +33,10 @@ const Dfsps = () => {
         cell: info => info.getValue(),
         header: 'Business License ID',
       }),
-      columnHelper.accessor('isUsingAcquiringPortal', {
-        cell: info => (info.getValue() ? 'Yes' : 'No'),
-        header: 'Is Using Acquiring Portal',
-      }),
+      // columnHelper.accessor('isUsingAcquiringPortal', {
+      //   cell: info => (info.getValue() ? 'Yes' : 'No'),
+      //   header: 'Is Using Acquiring Portal',
+      // }),
     ]
   }, [])
 
