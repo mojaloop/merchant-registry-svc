@@ -24,4 +24,4 @@ COPY . .
 EXPOSE 5173
 
 # Run the app when the container launches
-CMD [ "npm", "run", "dev", "-w", "acquirer-frontend", "--", "--host"]
+CMD [ "npm", "run", "dev", "-w", "@mojaloop/merchant-acquirer-frontend", "--", "--host"]
