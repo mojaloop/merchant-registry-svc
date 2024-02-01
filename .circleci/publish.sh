@@ -180,7 +180,7 @@ for PACKAGE in ${CHANGED_PACKAGES}; do
         PUBLISHED_DOCKERHUB_PACKAGES_COUNT=$((PUBLISHED_DOCKERHUB_PACKAGES_COUNT + 1))
         TAG_NAME_PARTS+="${PACKAGE_NAME}-${PACKAGE_NEW_VERSION},"
         echo -e "Successfully published docker image."
-        CHANGES_DESCRIPTION="${CHANGES_DESCRIPTION} - [${PACKAGE} - ${PACKAGE_NEW_VERSION}]"
+        CHANGES_DESCRIPTION="${CHANGES_DESCRIPTION} - [${PACKAGE}-${PACKAGE_NEW_VERSION}]"
     else
         echo -e "Error publishing package: ${PACKAGE} - exiting"
         exit 1
@@ -200,7 +200,7 @@ printHeader "Phase 5 - Pushing single combined commit and tag to git"
 # Stage all changes
 git add -A
 # Commit with a combined message
-COMMIT_MESSAGE="[ci skip] CI/CD auto commit for published packages - ${CHANGES_DESCRIPTION}"
+COMMIT_MESSAGE="[ci skip] auto commit for packages - ${CHANGES_DESCRIPTION}"
 git commit --no-verify -m "$COMMIT_MESSAGE"
 
 # Create a single tag. Example uses date and time for uniqueness.
