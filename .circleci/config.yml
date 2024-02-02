@@ -188,31 +188,31 @@ jobs:
           paths:
             - .
 
-  build-local:
-    executor: default-machine
-    environment:
-      <<: *defaults_environment
-    steps:
-      - checkout
-      - run:
-          <<: *defaults_configure_nvmrc
-      - run:
-          <<: *defaults_display_versions
-      - run:
-          name: Build Docker local image
-          command: |
-            source ~/.profile
-            export DOCKER_NODE_VERSION="$NVMRC_VERSION-alpine"
-            echo "export DOCKER_NODE_VERSION=$NVMRC_VERSION-alpine" >> $BASH_ENV
-            echo "Building Docker image: ${DOCKER_ORG:-mojaloop}/$CIRCLE_PROJECT_REPONAME:local --build-arg NODE_VERSION=$DOCKER_NODE_VERSION"
-            docker build -t ${DOCKER_ORG:-mojaloop}/$CIRCLE_PROJECT_REPONAME:local --build-arg NODE_VERSION=$DOCKER_NODE_VERSION .
-      - run:
-          name: Save docker image to workspace
-          command: docker save -o /tmp/docker-image.tar ${DOCKER_ORG:-mojaloop}/$CIRCLE_PROJECT_REPONAME:local
-      - persist_to_workspace:
-          root: /tmp
-          paths:
-            - ./docker-image.tar
+  # build-local:
+  #   executor: default-machine
+  #   environment:
+  #     <<: *defaults_environment
+  #   steps:
+  #     - checkout
+  #     - run:
+  #         <<: *defaults_configure_nvmrc
+  #     - run:
+  #         <<: *defaults_display_versions
+  #     - run:
+  #         name: Build Docker local image
+  #         command: |
+  #           source ~/.profile
+  #           export DOCKER_NODE_VERSION="$NVMRC_VERSION-alpine"
+  #           echo "export DOCKER_NODE_VERSION=$NVMRC_VERSION-alpine" >> $BASH_ENV
+  #           echo "Building Docker image: ${DOCKER_ORG:-mojaloop}/$CIRCLE_PROJECT_REPONAME:local --build-arg NODE_VERSION=$DOCKER_NODE_VERSION"
+  #           docker build -t ${DOCKER_ORG:-mojaloop}/$CIRCLE_PROJECT_REPONAME:local --build-arg NODE_VERSION=$DOCKER_NODE_VERSION .
+  #     - run:
+  #         name: Save docker image to workspace
+  #         command: docker save -o /tmp/docker-image.tar ${DOCKER_ORG:-mojaloop}/$CIRCLE_PROJECT_REPONAME:local
+  #     - persist_to_workspace:
+  #         root: /tmp
+  #         paths:
+  #           - ./docker-image.tar
 
   lint-check-acquirer-backend:
     executor: default-docker
@@ -401,25 +401,6 @@ jobs:
           path: /tmp/license-scanner/results
           destination: licenses
 
-  license-scan:
-    executor: default-machine
-    environment:
-      <<: *defaults_environment
-    steps:
-      - attach_workspace:
-          at: /tmp
-      - run:
-          name: Load the pre-built docker image from workspace
-          command: docker load -i /tmp/docker-image.tar
-      - run:
-          <<: *defaults_license_scanner
-      - run:
-          name: Run the license-scanner
-          command: cd /tmp/license-scanner && mode=docker dockerImages=${DOCKER_ORG:-mojaloop}/$CIRCLE_PROJECT_REPONAME:local make run
-      - store_artifacts:
-          path: /tmp/license-scanner/results
-          destination: licenses
-
 workflows:
   version: 2
   build_lint_and_test:
@@ -454,27 +435,6 @@ workflows:
               ignore:
                 - /feature*/
                 - /bugfix*/
-      - build-local:
-          context: org-global
-          requires:
-            - setup
-          filters:
-            tags:
-              only: /.*/
-            branches:
-              ignore:
-                - /feature*/
-                - /bugfix*/
-      - license-scan:
-          context: org-global
-          requires:
-            - build-local
-          filters:
-            tags:
-              only: /v[0-9]+(\.[0-9]+)*(\-snapshot(\.[0-9]+)?)?(\-hotfix(\.[0-9]+)?)?(\-perf(\.[0-9]+)?)?/
-            branches:
-              ignore:
-                - /.*/
 
       - lint-check-acquirer-backend:
           context: org-global
