@@ -30,6 +30,7 @@
     "oracle:test": "npm run test -w @mojaloop/merchant-registry-oracle",
     "oracle:test:coverage": "npm run test:coverage -w @mojaloop/merchant-registry-oracle",
 
+    "audit:check": "npx audit-ci --config ./audit-ci.jsonc",
     "build": "npm -ws run build"
   },
   "keywords": [],
@@ -39,7 +40,10 @@
     "packages/*"
   ],
   "devDependencies": {
-    "@commitlint/cli": "^18.4.0",
-    "@commitlint/config-conventional": "^18.4.0"
+    "@commitlint/cli": "^18.6.0",
+    "@commitlint/config-conventional": "^18.6.0"
+  },
+  "dependencies": {
+    "audit-ci": "^6.6.1"
   }
 }

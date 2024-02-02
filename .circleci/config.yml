@@ -15,15 +15,119 @@ orbs:
 # Yaml anchors
 #
 ##
+defaults_environment: &defaults_environment
+  MAIN_BRANCH_NAME: main
+
 defaults_configure_git: &defaults_configure_git
   name: Configure git
   command: |
     git config user.email ${GIT_CI_EMAIL}
     git config user.name ${GIT_CI_USER}
 
+defaults_license_scanner: &defaults_license_scanner
+  name: Install and set up license-scanner
+  command: |
+    git clone https://github.com/mojaloop/license-scanner /tmp/license-scanner
+    cd /tmp/license-scanner && make build default-files set-up
+
+defaults_docker_Dependencies: &defaults_docker_Dependencies |
+  apk --no-cache add bash
+  apk --no-cache add git
+  apk --no-cache add ca-certificates
+  apk --no-cache add curl
+  apk --no-cache add openssh-client
+  apk --no-cache add -t build-dependencies make gcc g++ python3 libtool autoconf automake jq
+  apk --no-cache add -t openssl ncurses coreutils libgcc linux-headers grep util-linux binutils findutils
+  apk --no-cache add librdkafka-dev
+
+## Default 'default-machine' executor dependencies
+defaults_machine_Dependencies: &defaults_machine_Dependencies |
+  ## Add Package Repos
+  ## Ref: https://docs.confluent.io/platform/current/installation/installing_cp/deb-ubuntu.html#get-the-software
+  wget -qO - https://packages.confluent.io/deb/7.4/archive.key | sudo apt-key add -
+  sudo add-apt-repository -y "deb https://packages.confluent.io/clients/deb $(lsb_release -cs) main"
+
+  ## Install deps
+  sudo apt install -y librdkafka-dev curl bash musl-dev libsasl2-dev
+  sudo ln -s /usr/lib/x86_64-linux-musl/libc.so /lib/libc.musl-x86_64.so.1
+
 defaults_npm_auth: &defaults_npm_auth
   name: Update NPM registry auth token
   command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc
+
+defaults_configure_nvmrc: &defaults_configure_nvmrc
+  name: Configure NVMRC
+  command: |
+    if [ -z "$NVMRC_VERSION" ]; then
+      echo "==> Configuring NVMRC_VERSION!"
+
+      export ENV_DOT_PROFILE=$HOME/.profile
+      touch $ENV_DOT_PROFILE
+
+      export NVMRC_VERSION=$(cat $CIRCLE_WORKING_DIRECTORY/.nvmrc)
+      echo "export NVMRC_VERSION=$NVMRC_VERSION" >> $ENV_DOT_PROFILE
+    fi
+    echo "NVMRC_VERSION=$NVMRC_VERSION"
+
+defaults_configure_nvm: &defaults_configure_nvm
+  name: Configure NVM
+  command: |
+    cd $HOME
+    export ENV_DOT_PROFILE=$HOME/.profile
+    touch $ENV_DOT_PROFILE
+    echo "1. Check/Set NVM_DIR env variable"
+    if [ -z "$NVM_DIR" ]; then
+      export NVM_DIR="$HOME/.nvm"
+      echo "==> NVM_DIR has been exported - $NVM_DIR"
+    else
+      echo "==> NVM_DIR already exists - $NVM_DIR"
+    fi
+    echo "2. Check/Set NVMRC_VERSION env variable"
+    if [ -z "$NVMRC_VERSION" ]; then
+      echo "==> Configuring NVMRC_VERSION!"
+      export NVMRC_VERSION=$(cat $CIRCLE_WORKING_DIRECTORY/.nvmrc)
+      echo "export NVMRC_VERSION=$NVMRC_VERSION" >> $ENV_DOT_PROFILE
+    fi
+    echo "3. Configure NVM"
+    ## Lets check if an existing NVM_DIR exists, if it does lets skil
+    if [ -e "$NVM_DIR" ]; then
+      echo "==> $NVM_DIR exists. Skipping steps 3!"
+      # echo "5. Executing $NVM_DIR/nvm.sh"
+      # [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+    else
+      echo "==> $NVM_DIR does not exists. Executing steps 4-5!"
+      echo "4. Installing NVM"
+      curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
+      echo "5. Executing $NVM_DIR/nvm.sh"
+      [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+    fi
+    ## Ref: https://github.com/nvm-sh/nvm/issues/1102#issuecomment-550572252
+    if [ ! -z "$NVM_ARCH_UNOFFICIAL_OVERRIDE" ]; then
+      echo "==> Handle NVM_ARCH_UNOFFICIAL_OVERRIDE=$NVM_ARCH_UNOFFICIAL_OVERRIDE!"
+      echo "nvm_get_arch() { nvm_echo \"${NVM_ARCH_UNOFFICIAL_OVERRIDE}\"; }" >> $ENV_DOT_PROFILE
+      echo "export NVM_NODEJS_ORG_MIRROR=https://unofficial-builds.nodejs.org/download/release" >> $ENV_DOT_PROFILE
+      source $ENV_DOT_PROFILE
+    fi
+    echo "6. Setup Node version"
+    if [ -n "$NVMRC_VERSION" ]; then
+      echo "==> Installing Node version: $NVMRC_VERSION"
+      nvm install $NVMRC_VERSION
+      nvm alias default $NVMRC_VERSION
+      nvm use $NVMRC_VERSION
+      cd $CIRCLE_WORKING_DIRECTORY
+    else
+      echo "==> ERROR - NVMRC_VERSION has not been set! - NVMRC_VERSION: $NVMRC_VERSION"
+      exit 1
+    fi
+
+defaults_display_versions: &defaults_display_versions
+  name: Display Versions
+  command: |
+    echo "What is the active version of Nodejs?"
+    echo "node: $(node --version)"
+    echo "yarn: $(yarn --version)"
+    echo "npm: $(npm --version)"
+    echo "nvm: $(nvm --version)"
 
 ##
 # Executors
@@ -83,6 +187,33 @@ jobs:
           root: *workingDirVar
           paths:
             - .
+
+  build-local:
+    executor: default-machine
+    environment:
+      <<: *defaults_environment
+    steps:
+      - checkout
+      - run:
+          <<: *defaults_configure_nvmrc
+      - run:
+          <<: *defaults_display_versions
+      - run:
+          name: Build Docker local image
+          command: |
+            source ~/.profile
+            export DOCKER_NODE_VERSION="$NVMRC_VERSION-alpine"
+            echo "export DOCKER_NODE_VERSION=$NVMRC_VERSION-alpine" >> $BASH_ENV
+            echo "Building Docker image: ${DOCKER_ORG:-mojaloop}/$CIRCLE_PROJECT_REPONAME:local --build-arg NODE_VERSION=$DOCKER_NODE_VERSION"
+            docker build -t ${DOCKER_ORG:-mojaloop}/$CIRCLE_PROJECT_REPONAME:local --build-arg NODE_VERSION=$DOCKER_NODE_VERSION .
+      - run:
+          name: Save docker image to workspace
+          command: docker save -o /tmp/docker-image.tar ${DOCKER_ORG:-mojaloop}/$CIRCLE_PROJECT_REPONAME:local
+      - persist_to_workspace:
+          root: /tmp
+          paths:
+            - ./docker-image.tar
+
   lint-check-acquirer-backend:
     executor: default-docker
     steps:
@@ -225,16 +356,125 @@ jobs:
           no_output_timeout: 30m
           command: chmod +x .circleci/*.sh && .circleci/publish.sh
 
+  vulnerability-check:
+    executor: default-docker
+    environment:
+      <<: *defaults_environment
+    steps:
+      - run:
+          name: Install general dependencies
+          command: *defaults_docker_Dependencies
+      - checkout
+      - run:
+          <<: *defaults_configure_nvm
+      - run:
+          <<: *defaults_display_versions
+      - restore_cache:
+          key: dependency-cache-{{ .Environment.CIRCLE_SHA1 }}
+      - run:
+          name: Create dir for test results
+          command: mkdir -p ./audit/results
+      - run:
+          name: Check for new npm vulnerabilities
+          command: npm run audit:check -- -o json > ./audit/results/auditResults.json
+      - store_artifacts:
+          path: ./audit/results
+          destination: audit
+
+  audit-licenses:
+    executor: default-docker
+    environment:
+      <<: *defaults_environment
+    steps:
+      - run:
+          name: Install general dependencies
+          command: *defaults_docker_Dependencies
+      - run:
+          <<: *defaults_license_scanner
+      - checkout
+      - restore_cache:
+          key: dependency-cache-{{ .Environment.CIRCLE_SHA1 }}
+      - run:
+          name: Run the license-scanner
+          command: cd /tmp/license-scanner && pathToRepo=$CIRCLE_WORKING_DIRECTORY make run
+      - store_artifacts:
+          path: /tmp/license-scanner/results
+          destination: licenses
+
+  license-scan:
+    executor: default-machine
+    environment:
+      <<: *defaults_environment
+    steps:
+      - attach_workspace:
+          at: /tmp
+      - run:
+          name: Load the pre-built docker image from workspace
+          command: docker load -i /tmp/docker-image.tar
+      - run:
+          <<: *defaults_license_scanner
+      - run:
+          name: Run the license-scanner
+          command: cd /tmp/license-scanner && mode=docker dockerImages=${DOCKER_ORG:-mojaloop}/$CIRCLE_PROJECT_REPONAME:local make run
+      - store_artifacts:
+          path: /tmp/license-scanner/results
+          destination: licenses
+
 workflows:
   version: 2
   build_lint_and_test:
     jobs:
+      - pr-tools/pr-title-check:
+          context: org-global
       - setup:
           context: org-global
       - build:
           context: org-global
           requires:
             - setup
+      - vulnerability-check:
+          context: org-global
+          requires:
+            - setup
+          filters:
+            tags:
+              only: /.*/
+            branches:
+              ignore:
+                - /feature*/
+                - /bugfix*/
+      - audit-licenses:
+          context: org-global
+          requires:
+            - setup
+          filters:
+            tags:
+              only: /.*/
+            branches:
+              ignore:
+                - /feature*/
+                - /bugfix*/
+      - build-local:
+          context: org-global
+          requires:
+            - setup
+          filters:
+            tags:
+              only: /.*/
+            branches:
+              ignore:
+                - /feature*/
+                - /bugfix*/
+      - license-scan:
+          context: org-global
+          requires:
+            - build-local
+          filters:
+            tags:
+              only: /v[0-9]+(\.[0-9]+)*(\-snapshot(\.[0-9]+)?)?(\-hotfix(\.[0-9]+)?)?(\-perf(\.[0-9]+)?)?/
+            branches:
+              ignore:
+                - /.*/
 
       - lint-check-acquirer-backend:
           context: org-global
