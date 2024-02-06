@@ -70,3 +70,7 @@ Require `docker-compose up minio rabbitmq` (MinIO and RabbitMQ) to be running.
 
 ## ERD Design
 ![ERD Design](./images/Entity-Relations-Diagram.png)
+
+## Note
+The system utilize RabbitMQ for message queuing between services and SendGrid for email verification. 
+Adopters can substitute these services with their preferred choices for a customized integration.
