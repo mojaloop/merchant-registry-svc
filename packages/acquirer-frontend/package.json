@@ -1,6 +1,6 @@
 {
   "name": "@mojaloop/merchant-acquirer-frontend",
-  "version": "0.1.3",
+  "version": "1.0.0",
   "type": "module",
   "license": "ISC",
   "private": true,

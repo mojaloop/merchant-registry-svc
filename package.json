@@ -1,6 +1,6 @@
 {
   "name": "@mojaloop/merchant-registry",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -9,27 +9,23 @@
     "acquirer-backend:start": "npm run start -w @mojaloop/merchant-acquirer-backend",
     "acquirer-backend:test": "npm run test -w @mojaloop/merchant-acquirer-backend",
     "acquirer-backend:test:coverage": "npm run test:coverage -w @mojaloop/merchant-acquirer-backend",
-
     "lint:check:backend": "npm run lint:check -w @mojaloop/merchant-acquirer-backend",
     "type:check:backend": "npm run type:check -w @mojaloop/merchant-acquirer-backend",
     "dep:check:backend": "npm run dep:check -w @mojaloop/merchant-acquirer-backend",
     "test:unit:backend": "npm run test:unit -w @mojaloop/merchant-acquirer-backend",
     "test:integration:backend": "npm run test:integration -w @mojaloop/merchant-acquirer-backend",
     "test:e2e:backend": "npm run test:e2e -w @mojaloop/merchant-acquirer-backend",
-
     "lint:check:frontend": "npm run lint -w @mojaloop/merchant-acquirer-frontend",
     "type:check:frontend": "npm run type:check -w @mojaloop/merchant-acquirer-frontend",
     "format:write:frontend": "npm run format:write -w @mojaloop/merchant-acquirer-frontend",
     "dep:check:frontend": "npm run dep:check -w @mojaloop/merchant-acquirer-frontend",
     "test:unit:frontend": "npm run test -w @mojaloop/merchant-acquirer-frontend",
-
     "registry-oracle:start": "npm run start -w @mojaloop/merchant-registry-oracle",
     "lint:check:oracle": "npm run lint:check -w @mojaloop/merchant-registry-oracle",
     "type:check:oracle": "npm run type:check -w @mojaloop/merchant-registry-oracle",
     "dep:check:oracle": "npm run dep:check -w @mojaloop/merchant-registry-oracle",
     "oracle:test": "npm run test -w @mojaloop/merchant-registry-oracle",
     "oracle:test:coverage": "npm run test:coverage -w @mojaloop/merchant-registry-oracle",
-
     "audit:check": "npx audit-ci --config ./audit-ci.jsonc",
     "build": "npm -ws run build"
   },
