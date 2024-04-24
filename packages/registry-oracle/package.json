@@ -1,6 +1,6 @@
 {
   "name": "@mojaloop/merchant-registry-oracle",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Merchant Registry Oracle",
   "main": "src/index.ts",
   "private": true,
