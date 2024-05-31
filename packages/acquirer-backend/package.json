@@ -36,7 +36,7 @@
     "crc": "^4.3.2",
     "dotenv": "^16.3.1",
     "exceljs": "^4.4.0",
-    "express": "^4.18.2",
+    "express": "^4.19.2",
     "express-rate-limit": "^7.1.5",
     "helm": "^0.2.1",
     "helmet": "^7.1.0",
