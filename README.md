@@ -43,6 +43,7 @@ See the README.md file on each services for more Environment Variable Configurat
         - Register at [Google reCAPTCHA](https://www.google.com/recaptcha/admin/create) and create new reCAPTCHA v2 Checkbox
         - Use Client Site Key and Update the `VITE_RECAPTCHA_SITE_KEY` in the `./packages/acquirer-frontend/.env`
         - Use Server Site Key and Update the `RECAPTCHA_SECRET_KEY` in the `./packages/acquirer-backend/.env` 
+    - Make sure to update IP/Domain name in `FRONTEND_SET_PASSWORD_URL`, `APP_URL` and `VITE_API_URL` if deploying other than `localhost` (`127.0.0.1`)
 
 * Run 
     ```bash 
