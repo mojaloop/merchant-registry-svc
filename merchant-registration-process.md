@@ -20,9 +20,7 @@
 
 4. Run the command `docker-compose up –-build`<br><br>
 5. Merchant registry portal should be accessible at -> http://localhost:5173<br><br>
-6. Login to the portal(http://localhost:5173) as the Hub Super Admin using the credentials 
-	  - Email - hubsuperadmin@email.com
-	  - Password - password
+6. Login to the portal(http://localhost:5173) as the Hub Super Admin
   - Create the Hub Admin by adding a new user at the user management page (http://localhost:5173/portal-user-management/user-management/add-new-user)- use the same email that was given while creating hub admin sender in sendgrid 
   - Upon successful creation of hub admin, the respective hub admin email will receive an email for verification and the password of the hub admin can be set <br><br>
 7. After the hub admin is created and verified, login to the portal(http://localhost:5173) as the hub admin by filling in the credentials (email and password)
