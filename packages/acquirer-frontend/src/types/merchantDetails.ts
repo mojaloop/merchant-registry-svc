@@ -104,6 +104,7 @@ export interface MerchantDetails {
   id: number
   dba_trading_name: string
   registered_name: string
+  lei: string | null
   employees_num: NumberOfEmployees
   monthly_turnover: string
   merchant_type: MerchantType

@@ -32,6 +32,9 @@ export class MerchantEntity {
   @Column({ nullable: true, length: 255 })
     registered_name!: string
 
+  @Column({ nullable: true, length: 20 })
+    lei!: string
+
   @Column({
     type: 'simple-enum',
     enum: NumberOfEmployees,

@@ -19,6 +19,7 @@ import { uploadMerchantDocument } from '../../services/S3Client'
 
 import { audit } from '../../utils/audit'
 import { type AuthRequest } from 'src/types/express'
+import { gleifService } from '../../services/GLEIFService'
 /**
  * @openapi
  * /merchants/{id}/draft:
@@ -48,6 +49,9 @@ import { type AuthRequest } from 'src/types/express'
  *               registered_name:
  *                 type: string
  *                 example: "Merchant 1"
+ *               lei:
+ *                 type: string
+ *                 example: "123456789012345ABCDE"
  *               employees_num:
  *                 type: string
  *                 example: "1 - 5"
@@ -92,6 +96,17 @@ import { type AuthRequest } from 'src/types/express'
  *
  *       422:
  *         description: Validation error
+ *         content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                message:
+ *                  type: string
+ *                  example: "LEI validation failed: LEI not found in GLEIF database"
+ *                field:
+ *                  type: string
+ *                  example: "lei"
  *       500:
  *         description: Server error
  */
@@ -123,6 +138,42 @@ export async function putMerchantDraft (req: AuthRequest, res: Response) {
 
       return res.status(422).send({ message: errors })
     }
+  }
+
+  // GLEIF LEI validation
+  if (req.body.lei !== null && req.body.lei !== undefined && req.body.lei !== '') {
+    logger.info('Starting LEI validation for: %s', req.body.lei)
+    try {
+      const leiValidation = await gleifService.validateLEI(req.body.lei)
+
+      if (!leiValidation.isValid) {
+        logger.error('LEI validation failed: %o', leiValidation.error)
+        await audit(
+          AuditActionType.UPDATE,
+          AuditTrasactionStatus.FAILURE,
+          'putMerchantDraft',
+          'LEI validation failed',
+          'MerchantEntity',
+          {}, { lei: req.body.lei, error: leiValidation.error }, portalUser
+        )
+
+        return res.status(422).send({
+          message: `LEI validation failed: ${leiValidation.error}`,
+          field: 'lei'
+        })
+      }
+
+      logger.info('LEI validation successful for %s: %s', req.body.lei, leiValidation.entityName)
+    } catch (error) {
+      logger.error('LEI validation error: %o', error)
+      // If GLEIF service is not configured or fails, we can still proceed
+      // but log the issue for monitoring
+      if (!gleifService.isConfigured()) {
+        logger.warn('GLEIF service not configured, skipping LEI validation')
+      }
+    }
+  } else {
+    logger.info('No LEI provided, skipping validation')
   }
 
   // Merchant ID validation
@@ -175,6 +226,7 @@ trying to access unauthorized(different DFSP) merchant ${merchant.id}`,
 
   merchant.dba_trading_name = req.body.dba_trading_name
   merchant.registered_name = req.body.registered_name // TODO: check if already registered
+  merchant.lei = req.body.lei
   merchant.employees_num = req.body.employees_num
   merchant.monthly_turnover = req.body.monthly_turnover
   merchant.currency_code = req.body.currency_code

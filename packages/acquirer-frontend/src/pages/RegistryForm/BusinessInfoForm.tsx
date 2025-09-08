@@ -118,6 +118,7 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
     const {
       dba_trading_name,
       registered_name,
+      lei,
       // checkout_counters,
       employees_num,
       monthly_turnover,
@@ -133,6 +134,7 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
 
     dba_trading_name && setValue('dba_trading_name', dba_trading_name)
     registered_name && setValue('registered_name', registered_name)
+    lei && setValue('lei', lei)
     // payinto_alias && setValue('payinto_alias', payinto_alias)
     employees_num && setValue('employees_num', employees_num)
     monthly_turnover && setValue('monthly_turnover', monthly_turnover)
@@ -215,6 +217,14 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
             errors={errors}
             label='Registered Name'
             placeholder='Registered Name'
+          />
+
+          <FormInput
+            name='lei'
+            register={register}
+            errors={errors}
+            label='Legal Entity Identifier (LEI)'
+            placeholder='LEI (up to 20 characters)'
           />
 
           {/* <FormInput

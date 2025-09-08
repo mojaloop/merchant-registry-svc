@@ -56,6 +56,7 @@ export const MerchantInfo = ({
   const {
     dba_trading_name,
     registered_name,
+    lei,
     employees_num,
     monthly_turnover,
     category_code,
@@ -111,6 +112,8 @@ export const MerchantInfo = ({
             />
 
             <DetailsItem label='Registered Name' value={registered_name || 'N/A'} />
+
+            <DetailsItem label='LEI' value={lei || 'N/A'} />
 
             <DetailsItem
               label='Payinto Account'
