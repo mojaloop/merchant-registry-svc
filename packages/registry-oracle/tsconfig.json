@@ -11,6 +11,8 @@
     "emitDecoratorMetadata": true,
     "allowSyntheticDefaultImports": true,
     "experimentalDecorators": true,
+    "declaration": true,
+    "composite": true,
     "baseUrl": ".",
     "paths": {
       "shared-lib": ["../shared-lib/src/*"]

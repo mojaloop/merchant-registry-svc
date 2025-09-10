@@ -127,7 +127,8 @@ export async function postMerchantDraft (req: AuthRequest, res: Response) {
   if (req.body.lei !== null && req.body.lei !== undefined && req.body.lei !== '') {
     logger.info('Starting LEI validation for: %s', req.body.lei)
     try {
-      const leiValidation = await gleifService.validateLEI(req.body.lei)
+      console.log(req.body.dba_trading_name)
+      const leiValidation = await gleifService.validateLEI(req.body.lei, req.body.dba_trading_name || '')
 
       if (!leiValidation.isValid) {
         logger.error('LEI validation failed: %o', leiValidation.error)

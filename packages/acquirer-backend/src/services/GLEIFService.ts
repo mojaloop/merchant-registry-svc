@@ -54,7 +54,7 @@ export class GLEIFService {
    * @param lei - The LEI number to validate
    * @returns Promise<LEIValidationResult>
    */
-  async validateLEI (lei: string): Promise<LEIValidationResult> {
+    async validateLEI (lei: string, name: string): Promise<LEIValidationResult> {
     try {
       // Basic LEI format validation (20 characters, alphanumeric)
       if (lei === null || lei === undefined || lei === '' || lei.length !== 20 || !/^[A-Z0-9]{20}$/.test(lei)) {
@@ -80,10 +80,20 @@ export class GLEIFService {
       if (response.data.data && response.data.data.length > 0) {
         const leiRecord = response.data.data[0]
         const attributes = leiRecord.attributes
+        const legalName = attributes.entity.legalName.name
+        
+        //console.log(legalName)
+        // 🔍 Check if provided name matches the legal name from GLEIF
+        if (name.trim().toLowerCase() !== legalName.trim().toLowerCase()) {
+          return {
+            isValid: false,
+            error: `Provided entity name "${name}" does not match registered legal name "${legalName}" from GLEIF`
+          }
+        }
 
         return {
           isValid: true,
-          entityName: attributes.entity.legalName.name,
+          entityName: legalName,
           country: attributes.entity.legalAddress.country || attributes.entity.headquartersAddress.country,
           status: attributes.registration.status
         }

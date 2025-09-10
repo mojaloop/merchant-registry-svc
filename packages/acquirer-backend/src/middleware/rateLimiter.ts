@@ -1,4 +1,5 @@
 import rateLimit from 'express-rate-limit'
+import type { Request, Response } from 'express'
 import { readEnv, readEnvAsMilliseconds } from '../setup/readEnv'
 
 const generalRateLimitWindow = readEnvAsMilliseconds('GENERAL_RATE_LIMIT_WINDOW', '15m')
@@ -13,7 +14,7 @@ const forgotPasswordRateLimitMax = 8 // 8 requests per window default
 export const generalRateLimiter = rateLimit({
   windowMs: generalRateLimitWindow,
   max: generalRateLimitMax,
-  handler: (req, res) => {
+  handler: (req: Request, res: Response) => {
     const retryAfter = res.get('Retry-After') ?? '0'
     const formattedTime = formatTime(parseInt(retryAfter))
     res.status(429).json({
@@ -27,7 +28,7 @@ export const generalRateLimiter = rateLimit({
 export const authRateLimiter = rateLimit({
   windowMs: authRateLimitWindow,
   max: authRateLimitMax,
-  handler: (req, res) => {
+  handler: (req: Request, res: Response) => {
     const retryAfter = res.get('Retry-After') ?? '0'
     const formattedTime = formatTime(parseInt(retryAfter))
     res.status(429).json({
@@ -41,7 +42,7 @@ export const authRateLimiter = rateLimit({
 export const forgotPasswordRateLimiter = rateLimit({
   windowMs: readEnvAsMilliseconds('FORGOT_PASSWORD_RATE_LIMIT_WINDOW', forgotPasswordRateLimitWindow),
   max: readEnv('FORGOT_PASSWORD_RATE_LIMIT_MAX', forgotPasswordRateLimitMax, true) as number,
-  handler: (req, res) => {
+  handler: (req: Request, res: Response) => {
     const retryAfter = res.get('Retry-After') ?? '0'
     const formattedTime = formatTime(parseInt(retryAfter))
     res.status(429).json({

@@ -12,7 +12,8 @@
     "allowSyntheticDefaultImports": true,
     "experimentalDecorators": true,
     "removeComments": true,
-    "declaration": false,
+    "declaration": true,
+    "composite": true,
     "baseUrl": ".",
     "paths": {
       "shared-lib": ["../shared-lib/src/*"]
