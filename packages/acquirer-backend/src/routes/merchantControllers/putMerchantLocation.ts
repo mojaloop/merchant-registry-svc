@@ -14,6 +14,7 @@ import {
 import { audit } from '../../utils/audit'
 import { AuditActionType, AuditTrasactionStatus } from 'shared-lib'
 import { type AuthRequest } from 'src/types/express'
+import { gleifService } from '../../services/GLEIFService'
 
 /**
  * @openapi
@@ -188,6 +189,35 @@ trying to access unauthorized(different DFSP) merchant ${merchant.id}`,
   if (location == null || location === undefined) {
     logger.error('Merchant Location not found')
     return res.status(404).json({ message: 'Merchant Location not found' })
+  }
+
+  // GLEIF Location validation
+  if (merchant.lei) {
+    const validationResult = await gleifService.validateLocation(
+      merchant.lei,
+      locationData.street_name ?? '',
+      locationData.building_number ?? '',
+      locationData.postal_code ?? '',
+      locationData.town_name ?? '',
+      locationData.country_subdivision ?? '',
+      locationData.country ?? '',
+      locationData.address_line ?? ''
+    )
+
+    if (!validationResult.isValid) {
+      logger.error('GLEIF Location validation failed: %s', validationResult.error)
+      await audit(
+        AuditActionType.UPDATE,
+        AuditTrasactionStatus.FAILURE,
+        'putMerchantLocation',
+        `GLEIF Location validation failed: ${validationResult.error}`,
+        'MerchantLocationEntity',
+        {}, { merchantId, locationId, body: req.body }, portalUser
+      )
+      return res.status(422).send({
+        message: validationResult.error ?? 'GLEIF Location validation failed'
+      })
+    }
   }
 
   if (location.checkout_counters.length !== 0) {
