@@ -111,6 +111,22 @@ const RevertedMerchantRecords = () => {
         ),
         header: 'Registration Status',
       }),
+      columnHelper.accessor('registrationStatus', {
+        id: 'gleif-validation-status',
+        cell: info => {
+          const status = info.getValue() as MerchantRegistrationStatus
+          const isValidated = status === MerchantRegistrationStatus.APPROVED || status === MerchantRegistrationStatus.REVIEW
+          return (
+            <Text 
+              color={isValidated ? 'green.600' : 'orange.500'}
+              fontWeight='semibold'
+            >
+              {isValidated ? 'Validated' : 'Pending'}
+            </Text>
+          )
+        },
+        header: 'GLEIF Validation Status',
+      }),
       columnHelper.display({
         id: 'view-details',
         cell: ({ row }) => (
