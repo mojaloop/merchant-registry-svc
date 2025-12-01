@@ -55,7 +55,6 @@ export const MerchantInfo = ({
 }) => {
   const {
     dba_trading_name,
-    registered_name,
     lei,
     employees_num,
     monthly_turnover,
@@ -110,8 +109,6 @@ export const MerchantInfo = ({
               label='Doing Business As Name'
               value={dba_trading_name || 'N/A'}
             />
-
-            <DetailsItem label='Registered Name' value={registered_name || 'N/A'} />
 
             <DetailsItem label='LEI' value={lei || 'N/A'} />
 

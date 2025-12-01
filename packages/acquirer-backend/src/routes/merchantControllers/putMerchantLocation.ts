@@ -192,7 +192,7 @@ trying to access unauthorized(different DFSP) merchant ${merchant.id}`,
   }
 
   // GLEIF Location validation
-  if (merchant.lei) {
+  if (merchant.lei !== null && merchant.lei !== undefined && merchant.lei !== '') {
     const validationResult = await gleifService.validateLocation(
       merchant.lei,
       locationData.street_name ?? '',

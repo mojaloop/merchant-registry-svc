@@ -33,11 +33,11 @@ services:
       - RABBITMQ_QUEUE=acquirer_to_registry
       - RABBITMQ_REPLY_QUEUE=registry_reply_acquirer
 
-      - RECAPTCHA_SECRET_KEY=#
+      - RECAPTCHA_SECRET_KEY=your-recaptcha-secret-key
       - RECAPTCHA_ENABLED=true
 
-      - SENDGRID_API_KEY=#
-      - SENDER_EMAIL=davidajayprakash@gmail.com
+      - SENDGRID_API_KEY=your-sendgrid-api-key
+      - SENDER_EMAIL=your-email@example.com
 
       # GLEIF API Configuration
       - GLEIF_API_URL=https://api.gleif.org/api/v1
@@ -56,7 +56,7 @@ services:
       - VITE_HOST=0.0.0.0
       - VITE_PORT=5173
       - VITE_API_URL=http://127.0.0.1:5555/api/v1
-      - VITE_RECAPTCHA_SITE_KEY=#
+      - VITE_RECAPTCHA_SITE_KEY=your-recaptcha-site-key
 
     ports:
       - "5173:5173"

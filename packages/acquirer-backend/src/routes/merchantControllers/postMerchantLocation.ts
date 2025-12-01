@@ -196,8 +196,8 @@ trying to access unauthorized(different DFSP) merchant ${merchant.id}`,
     })
   }
 
-  //GLEIF Location validation 
-  if (merchant.lei) {
+  // GLEIF Location validation
+  if (merchant.lei !== null && merchant.lei !== undefined && merchant.lei !== '') {
     const validationResult = await gleifService.validateLocation(
       merchant.lei,
       locationData.street_name ?? '',
@@ -223,6 +223,10 @@ trying to access unauthorized(different DFSP) merchant ${merchant.id}`,
         message: validationResult.error ?? 'GLEIF Location validation failed'
       })
     }
+
+    // Set GLEIF verification timestamp when location validation succeeds
+    merchant.gleif_verified_at = new Date()
+    await merchantRepository.save(merchant)
   }
 
   const newLocation = locationRepository.create({

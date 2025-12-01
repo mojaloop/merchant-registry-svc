@@ -6,6 +6,7 @@ export interface MerchantInfo {
   no: number
   dbaName: string
   registeredName: string
+  lei: string | null
   payintoAccountId: string
   merchantType: MerchantType
   town: string
@@ -14,4 +15,5 @@ export interface MerchantInfo {
   registeredDfspName: string
   registrationStatus: MerchantRegistrationStatus
   maker: CreatedBy
+  gleif_verified_at?: string | null
 }

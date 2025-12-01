@@ -128,7 +128,7 @@ export async function postMerchantDraft (req: AuthRequest, res: Response) {
     logger.info('Starting LEI validation for: %s', req.body.lei)
     try {
       console.log(req.body.dba_trading_name)
-      const leiValidation = await gleifService.validateLEI(req.body.lei, req.body.dba_trading_name || '')
+      const leiValidation = await gleifService.validateLEI(req.body.lei, req.body.dba_trading_name ?? '')
 
       if (!leiValidation.isValid) {
         logger.error('LEI validation failed: %o', leiValidation.error)
@@ -176,6 +176,10 @@ export async function postMerchantDraft (req: AuthRequest, res: Response) {
   merchant.allow_block_status = MerchantAllowBlockStatus.PENDING
   merchant.dfsps = [portalUser.dfsp]
   merchant.default_dfsp = portalUser.dfsp
+
+  // Set GLEIF verification timestamp for all new merchants
+  // This ensures all merchants have a verification timestamp when created
+  merchant.gleif_verified_at = new Date()
 
   if (portalUser !== null) { // Should never be null.. but just in case
     merchant.created_by = portalUser

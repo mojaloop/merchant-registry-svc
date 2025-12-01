@@ -19,7 +19,7 @@ export class RegistryEntity {
     dfsp_name!: string
 
   @Column({ nullable: true })
-    checkout_counter_id!: number
+    checkout_counter_id?: number
 
   @Column({ nullable: false, default: 'MERCHANT_PAYINTOID' })
     alias_type!: string
@@ -32,6 +32,9 @@ export class RegistryEntity {
 
   @Column({ nullable: false })
     currency!: string
+
+  @Column({ nullable: true })
+    lei?: string
 
   @CreateDateColumn()
     created_at!: Date

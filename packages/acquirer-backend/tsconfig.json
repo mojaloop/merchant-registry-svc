@@ -15,10 +15,12 @@
     "declaration": true,
     "composite": true,
     "baseUrl": ".",
+    "types": ["jest", "node"],
+    "typeRoots": ["../../node_modules/@types", "./node_modules/@types", "./src/types"],
     "paths": {
       "shared-lib": ["../shared-lib/src/*"]
     }
   },
-  "include": ["**/src/**/*.ts", "**/__tests__/**/*.ts"],
-  "exclude": ["node_modules"]
+  "include": ["**/src/**/*.ts", "**/src/**/*.d.ts", "**/__tests__/**/*.ts"],
+  "exclude": ["node_modules", "dist"]
 }

@@ -62,9 +62,9 @@ const AllMerchantRecords = () => {
         cell: info => info.getValue(),
         header: 'Doing Business As Name',
       }),
-      columnHelper.accessor('registeredName', {
-        cell: info => info.getValue(),
-        header: 'Registered Name',
+      columnHelper.accessor('lei', {
+        cell: info => info.getValue() || 'N/A',
+        header: 'LEI',
       }),
       columnHelper.accessor('payintoAccountId', {
         cell: info => info.getValue(),
@@ -111,21 +111,40 @@ const AllMerchantRecords = () => {
         ),
         header: 'Registration Status',
       }),
-      columnHelper.accessor('registrationStatus', {
+      columnHelper.accessor('gleif_verified_at', {
         id: 'gleif-validation-status',
-        cell: info => {
-          const status = info.getValue() as MerchantRegistrationStatus
+        cell: ({ row }) => {
+          const verificationDate = row.original.gleif_verified_at
+          const status = row.original.registrationStatus as MerchantRegistrationStatus
           const isValidated = status === MerchantRegistrationStatus.APPROVED || status === MerchantRegistrationStatus.REVIEW
-          return (
-            <Text 
-              color={isValidated ? 'green.600' : 'orange.500'}
-              fontWeight='semibold'
-            >
-              {isValidated ? 'Validated' : 'Pending'}
-            </Text>
-          )
+          
+          if (verificationDate) {
+            const date = new Date(verificationDate)
+            return (
+              <Stack spacing={1}>
+                <Text color='green.600' fontWeight='semibold' fontSize='sm'>
+                  Verified
+                </Text>
+                <Text fontSize='xs' color='gray.600'>
+                  {date.toLocaleDateString()} {date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                </Text>
+              </Stack>
+            )
+          } else if (isValidated) {
+            return (
+              <Text color='green.600' fontWeight='semibold' fontSize='sm'>
+                Validated (Legacy)
+              </Text>
+            )
+          } else {
+            return (
+              <Text color='orange.500' fontWeight='semibold' fontSize='sm'>
+                Pending
+              </Text>
+            )
+          }
         },
-        header: 'GLEIF Validation Status',
+        header: 'Last Verification',
       }),
       columnHelper.display({
         id: 'view-details',

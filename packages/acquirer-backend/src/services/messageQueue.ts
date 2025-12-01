@@ -210,9 +210,22 @@ async function processReplyMessage (msg: Message): Promise<void> {
         qr_code_link: qrImageS3Path
       })
 
-      await AppDataSource.manager.update(MerchantEntity, aliasData.merchant_id, {
-        registration_status: MerchantRegistrationStatus.APPROVED
+      // Get current merchant to check if gleif_verified_at is already set
+      const currentMerchant = await AppDataSource.manager.findOne(MerchantEntity, {
+        where: { id: aliasData.merchant_id },
+        select: ['gleif_verified_at']
       })
+
+      const updateData: any = {
+        registration_status: MerchantRegistrationStatus.APPROVED
+      }
+
+      // Only set gleif_verified_at if it's not already set
+      if (currentMerchant !== null && currentMerchant !== undefined && (currentMerchant.gleif_verified_at === null || currentMerchant.gleif_verified_at === undefined)) {
+        updateData.gleif_verified_at = new Date()
+      }
+
+      await AppDataSource.manager.update(MerchantEntity, aliasData.merchant_id, updateData)
     }
     logger.info('Updated alias value for %d checkout counters', response.data.length)
     logger.info('Updated registration status for %d merchants: Approved', response.data.length)
