@@ -80,7 +80,7 @@ export async function putUserResetPassword (req: AuthRequest, res: Response) {
       'putUserResetPassword',
       'Reset User Password Successful',
       'PortalUserEntity',
-      { password: oldPasswordHash }, { password: portalUser.password }, null
+      {}, {}, null
     )
 
     return res.status(201).send({ message: 'Reset Password Successful' })
