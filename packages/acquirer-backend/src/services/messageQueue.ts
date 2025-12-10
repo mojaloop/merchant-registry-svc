@@ -138,7 +138,9 @@ export async function publishToQueue (data: any): Promise<boolean> {
 }
 
 export async function disconnectMessageQueue (): Promise<void> {
-  await conn.close()
+  if (conn !== null && conn !== undefined) {
+    await conn.close()
+  }
 }
 
 async function processReplyMessage (msg: Message): Promise<void> {
@@ -150,86 +152,155 @@ async function processReplyMessage (msg: Message): Promise<void> {
   )
 
   if (response.command === 'bulkGenerateAlias') {
-    for (const aliasData of response.data) {
-      // generate qr image and upload to s3
-      let qrImageBuffer = null
-      const guid = uuidv4()
-      try {
-        const merchant = await AppDataSource.manager.findOne(MerchantEntity, {
-          where: { id: aliasData.merchant_id },
-          relations: ['category_code', 'currency_code']
-        })
-
-        logger.debug('Merchant: %o', merchant)
-
-        if (merchant == null) {
-          logger.error('Error while generating QR image: Merchant Not Found \'%o\'', aliasData)
-          continue
-        }
-
-        const checkoutCounter = await AppDataSource.manager.findOne(CheckoutCounterEntity, {
-          where: { id: aliasData.checkout_counter_id },
-          relations: ['checkout_location']
-        })
-
-        const country = await AppDataSource.manager.findOne(CountryEntity, {
-          where: { name: checkoutCounter?.checkout_location.country },
-          select: ['code']
-        })
-
-        const emvcoQRString = getEMVQRCodeText(
-          guid,
-          aliasData.alias_value,
-          merchant.category_code.category_code,
-          merchant.currency_code.iso_code,
-          country?.code,
-          merchant.dba_trading_name,
-          checkoutCounter?.checkout_location?.district_name
-        )
-        const frameImagePath = path.join(__dirname, '../../assets/sample-qr-frame/frame.png')
-        qrImageBuffer = await generateQRImage(emvcoQRString, {}, frameImagePath)
-      } catch (e) {
-        logger.error('Error while generating QR image: %o', e)
-        continue
-      }
-
-      if (qrImageBuffer == null) {
-        logger.error('Error while generating QR image')
-        continue
-      }
-      const qrImageS3Path = await uploadCheckoutAliasQRImage(aliasData.alias_value, qrImageBuffer)
-      if (qrImageS3Path == null) {
-        logger.error('Error while uploading QR image to S3')
-        continue
-      }
-      logger.info('Uploaded QR image to S3: %s', qrImageS3Path)
-
-      await AppDataSource.manager.update(CheckoutCounterEntity, aliasData.checkout_counter_id, {
-        guid,
-        alias_value: aliasData.alias_value,
-        qr_code_link: qrImageS3Path
-      })
-
-      // Get current merchant to check if gleif_verified_at is already set
-      const currentMerchant = await AppDataSource.manager.findOne(MerchantEntity, {
-        where: { id: aliasData.merchant_id },
-        select: ['gleif_verified_at']
-      })
-
-      const updateData: any = {
-        registration_status: MerchantRegistrationStatus.APPROVED
-      }
-
-      // Only set gleif_verified_at if it's not already set
-      if (currentMerchant !== null && currentMerchant !== undefined && (currentMerchant.gleif_verified_at === null || currentMerchant.gleif_verified_at === undefined)) {
-        updateData.gleif_verified_at = new Date()
-      }
-
-      await AppDataSource.manager.update(MerchantEntity, aliasData.merchant_id, updateData)
-    }
-    logger.info('Updated alias value for %d checkout counters', response.data.length)
-    logger.info('Updated registration status for %d merchants: Approved', response.data.length)
+    await processBulkGenerateAlias(response.data)
   }
+}
+
+/**
+ * Process bulk generate alias command
+ */
+async function processBulkGenerateAlias (aliasDataList: any[]): Promise<void> {
+  for (const aliasData of aliasDataList) {
+    await processAliasData(aliasData)
+  }
+  logger.info('Updated alias value for %d checkout counters', aliasDataList.length)
+  logger.info('Updated registration status for %d merchants: Approved', aliasDataList.length)
+}
+
+/**
+ * Process a single alias data item
+ */
+async function processAliasData (aliasData: any): Promise<void> {
+  const guid = uuidv4()
+
+  // Generate QR image
+  const qrImageBuffer = await generateQRImageForAlias(aliasData, guid)
+  if (qrImageBuffer === null || qrImageBuffer === undefined) return
+
+  // Upload QR image to S3
+  const qrImageS3Path = await uploadQRImage(aliasData.alias_value, qrImageBuffer)
+  if (qrImageS3Path === null || qrImageS3Path === undefined || qrImageS3Path === '') return
+
+  // Update checkout counter
+  await updateCheckoutCounter(aliasData.checkout_counter_id, guid, aliasData.alias_value, qrImageS3Path)
+
+  // Update merchant status
+  await updateMerchantStatus(aliasData.merchant_id)
+}
+
+/**
+ * Generate QR image for alias
+ */
+async function generateQRImageForAlias (aliasData: any, guid: string): Promise<Buffer | null> {
+  try {
+    const merchant = await fetchMerchantData(aliasData.merchant_id)
+    if (merchant === null || merchant === undefined) {
+      logger.error('Error while generating QR image: Merchant Not Found \'%o\'', aliasData)
+      return null
+    }
+
+    const checkoutCounter = await AppDataSource.manager.findOne(CheckoutCounterEntity, {
+      where: { id: aliasData.checkout_counter_id },
+      relations: ['checkout_location']
+    })
+
+    const country = await AppDataSource.manager.findOne(CountryEntity, {
+      where: { name: checkoutCounter?.checkout_location.country },
+      select: ['code']
+    })
+
+    const emvcoQRString = getEMVQRCodeText(
+      guid,
+      aliasData.alias_value,
+      merchant.category_code.category_code,
+      merchant.currency_code.iso_code,
+      country?.code,
+      merchant.dba_trading_name,
+      checkoutCounter?.checkout_location?.district_name
+    )
+
+    const frameImagePath = path.join(__dirname, '../../assets/sample-qr-frame/frame.png')
+    return await generateQRImage(emvcoQRString, {}, frameImagePath)
+  } catch (e) {
+    logger.error('Error while generating QR image: %o', e)
+    return null
+  }
+}
+
+/**
+ * Fetch merchant data with relations
+ */
+async function fetchMerchantData (merchantId: number): Promise<MerchantEntity | null> {
+  const merchant = await AppDataSource.manager.findOne(MerchantEntity, {
+    where: { id: merchantId },
+    relations: ['category_code', 'currency_code']
+  })
+  logger.debug('Merchant: %o', merchant)
+  return merchant
+}
+
+/**
+ * Upload QR image to S3
+ */
+async function uploadQRImage (aliasValue: string, qrImageBuffer: Buffer): Promise<string | null> {
+  if (qrImageBuffer === null || qrImageBuffer === undefined) {
+    logger.error('Error while generating QR image')
+    return null
+  }
+
+  const qrImageS3Path = await uploadCheckoutAliasQRImage(aliasValue, qrImageBuffer)
+  if (qrImageS3Path === null || qrImageS3Path === undefined || qrImageS3Path === '') {
+    logger.error('Error while uploading QR image to S3')
+    return null
+  }
+
+  logger.info('Uploaded QR image to S3: %s', qrImageS3Path)
+  return qrImageS3Path
+}
+
+/**
+ * Update checkout counter with generated data
+ */
+async function updateCheckoutCounter (
+  checkoutCounterId: number,
+  guid: string,
+  aliasValue: string,
+  qrCodeLink: string
+): Promise<void> {
+  await AppDataSource.manager.update(CheckoutCounterEntity, checkoutCounterId, {
+    guid,
+    alias_value: aliasValue,
+    qr_code_link: qrCodeLink
+  })
+}
+
+/**
+ * Update merchant status to approved
+ */
+async function updateMerchantStatus (merchantId: number): Promise<void> {
+  const currentMerchant = await AppDataSource.manager.findOne(MerchantEntity, {
+    where: { id: merchantId },
+    select: ['gleif_verified_at']
+  })
+
+  const updateData: any = {
+    registration_status: MerchantRegistrationStatus.APPROVED
+  }
+
+  // Only set gleif_verified_at if it's not already set
+  if (shouldSetGleifVerifiedAt(currentMerchant)) {
+    updateData.gleif_verified_at = new Date()
+  }
+
+  await AppDataSource.manager.update(MerchantEntity, merchantId, updateData)
+}
+
+/**
+ * Check if gleif_verified_at should be set
+ */
+function shouldSetGleifVerifiedAt (merchant: MerchantEntity | null): boolean {
+  return merchant !== null && merchant !== undefined &&
+         (merchant.gleif_verified_at === null || merchant.gleif_verified_at === undefined)
 }
 
 logger.info('Connecting to RabbitMQ: %s', connStr)

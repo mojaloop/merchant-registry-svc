@@ -41,10 +41,10 @@ export class PortalUserEntity extends PersonEntity {
   @OneToMany(() => EmailVerificationTokenEntity, emailToken => emailToken.portal_user)
     email_verification_tokens!: EmailVerificationTokenEntity[]
 
-  @ManyToOne(() => DFSPEntity, dfsp => dfsp.portal_users)
+  @ManyToOne(() => DFSPEntity, dfsp => dfsp.portal_users, { nullable: true })
     dfsp!: DFSPEntity
 
-  @ManyToOne(() => PortalRoleEntity, role => role.users)
+  @ManyToOne(() => PortalRoleEntity, role => role.users, { nullable: false })
     role!: PortalRoleEntity
 
   @OneToMany(() => JwtTokenEntity, jwtToken => jwtToken.user)
@@ -53,6 +53,6 @@ export class PortalUserEntity extends PersonEntity {
   @OneToMany(() => PortalUserEntity, user => user.created_by)
     created_users!: PortalUserEntity[]
 
-  @ManyToOne(() => PortalUserEntity, user => user.created_users)
+  @ManyToOne(() => PortalUserEntity, user => user.created_users, { nullable: true })
     created_by!: PortalUserEntity
 }

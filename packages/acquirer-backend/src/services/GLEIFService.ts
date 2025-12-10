@@ -1,10 +1,6 @@
-/* eslint-disable @typescript-eslint/strict-boolean-expressions */
-/* eslint-disable @typescript-eslint/prefer-nullish-coalescing */
-/* eslint-disable @typescript-eslint/naming-convention */
-/* eslint-disable import/no-named-as-default */
 import axios, { isAxiosError } from 'axios'
 import logger from './logger'
-import SubdivisionMappingService from './SubdivisionMappingService'
+import { compareSubdivisions, getSuggestions } from './SubdivisionMappingService'
 
 export interface GLEIFResponse {
   data: Array<{
@@ -349,7 +345,7 @@ export class GLEIFService {
    * @returns Full country name (e.g., 'Luxembourg') or the original code if not found
    */
   private convertCountryCodeToName (countryCode: string): string {
-    return COUNTRY_CODE_MAP[countryCode] || countryCode
+    return COUNTRY_CODE_MAP[countryCode] ?? countryCode
   }
 
   /**
@@ -358,7 +354,7 @@ export class GLEIFService {
    * @returns ISO country code (e.g., 'LU') or the original name if not found
    */
   private convertCountryNameToCode (countryName: string): string {
-    return REVERSE_COUNTRY_CODE_MAP[countryName.toLowerCase()] || countryName
+    return REVERSE_COUNTRY_CODE_MAP[countryName.toLowerCase()] ?? countryName
   }
 
   /**
@@ -370,7 +366,7 @@ export class GLEIFService {
     try {
       // Check cache first
       if (countryCache.has(countryCode)) {
-        return countryCache.get(countryCode) || null
+        return countryCache.get(countryCode) ?? null
       }
 
       const response = await axios.get<RestCountriesResponse[]>(
@@ -378,7 +374,7 @@ export class GLEIFService {
         { timeout: 5000 }
       )
 
-      if (response.data && response.data.length > 0) {
+      if (response.data !== null && response.data !== undefined && response.data.length > 0) {
         const countryData = response.data[0]
         countryCache.set(countryCode, countryData)
         return countryData
@@ -428,7 +424,7 @@ export class GLEIFService {
     try {
       // Assume country2 is the GLEIF code (more likely to be ISO format)
       const countryInfo = await this.fetchCountryInfo(country2)
-      if (countryInfo) {
+      if (countryInfo !== null && countryInfo !== undefined) {
         const officialName = countryInfo.name.official.toLowerCase()
         const commonName = countryInfo.name.common.toLowerCase()
 
@@ -439,7 +435,7 @@ export class GLEIFService {
 
       // Try the other way around
       const countryInfo2 = await this.fetchCountryInfo(country1)
-      if (countryInfo2) {
+      if (countryInfo2 !== null && countryInfo2 !== undefined) {
         const officialName2 = countryInfo2.name.official.toLowerCase()
         const commonName2 = countryInfo2.name.common.toLowerCase()
 
@@ -464,7 +460,7 @@ export class GLEIFService {
       // Check cache first
       const cacheKey = `subdivisions_${countryCode}`
       if (regionCache.has(cacheKey)) {
-        return regionCache.get(cacheKey) || []
+        return regionCache.get(cacheKey) ?? []
       }
 
       // Use a more comprehensive API for subdivisions
@@ -474,7 +470,7 @@ export class GLEIFService {
       )
 
       let subdivisions: string[] = []
-      if (response.data?.subdivisions) {
+      if (response.data?.subdivisions !== null && response.data?.subdivisions !== undefined) {
         subdivisions = Object.values(response.data.subdivisions).map((sub: any) => sub.name)
       }
 
@@ -486,7 +482,7 @@ export class GLEIFService {
             `https://api.worldbank.org/v2/country/${countryCode}/region?format=json`,
             { timeout: 3000 }
           )
-          if (altResponse.data?.[1] && altResponse.data[1].length > 0) {
+          if (altResponse.data?.[1] !== null && altResponse.data?.[1] !== undefined && altResponse.data[1].length > 0) {
             subdivisions = altResponse.data[1].map((item: any) => item.name)
           }
         } catch (altError) {
@@ -511,7 +507,7 @@ export class GLEIFService {
    * @returns Promise<boolean>
    */
   private async compareRegions (region1: string, region2: string, countryCode?: string): Promise<boolean> {
-    if (!countryCode) {
+    if (countryCode === undefined || countryCode === null || countryCode === '') {
       // Fallback to simple comparison if no country code
       const r1Lower = region1.toLowerCase().trim()
       const r2Lower = region2.toLowerCase().trim()
@@ -520,7 +516,7 @@ export class GLEIFService {
 
     try {
       // Use the subdivision mapping service for enhanced comparison
-      const comparisonResult = SubdivisionMappingService.compareSubdivisions(
+      const comparisonResult = compareSubdivisions(
         region1,
         region2,
         countryCode
@@ -565,86 +561,109 @@ export class GLEIFService {
    */
   async validateLEI (lei: string, name: string): Promise<LEIValidationResult> {
     try {
-      // Basic LEI format validation (20 characters, alphanumeric)
-      if (lei === null || lei === undefined || lei === '' || lei.length !== 20 || !/^[A-Z0-9]{20}$/.test(lei)) {
-        return {
-          isValid: false,
-          error: 'Invalid LEI format. LEI must be exactly 20 alphanumeric characters.'
-        }
-      }
+      // Basic LEI format validation
+      const formatError = this.validateLEIFormat(lei)
+      if (formatError !== null && formatError !== undefined) return formatError
 
-      const headers: Record<string, string> = {
-        Accept: 'application/vnd.api+json'
-      }
+      // Fetch LEI record from GLEIF with authentication
+      const leiRecord = await this.fetchLEIRecordWithAuth(lei)
+      if ('error' in leiRecord) return leiRecord
 
-      if (this.apiKey) {
-        headers.Authorization = `Bearer ${this.apiKey}`
-      }
+      // Type guard: at this point, leiRecord is GLEIFResponse['data'][0]
+      const gleifRecord = leiRecord as GLEIFResponse['data'][0]
 
-      const response = await axios.get<GLEIFResponse>(
-        `${this.baseUrl}/lei-records?filter[lei]=${lei}`,
-        { headers }
-      )
+      // Validate entity name
+      const nameValidationError = this.validateEntityName(name, gleifRecord)
+      if (nameValidationError !== null && nameValidationError !== undefined) return nameValidationError
 
-      if (response.data.data && response.data.data.length > 0) {
-        const leiRecord = response.data.data[0]
-        const attributes = leiRecord.attributes
-        const legalName = attributes.entity.legalName.name
-
-        // console.log(legalName)
-        // 🔍 Check if provided name matches the legal name from GLEIF
-        if (name.trim().toLowerCase() !== legalName.trim().toLowerCase()) {
-          return {
-            isValid: false,
-            error: `Provided entity name "${name}" does not match registered legal name "${legalName}" from GLEIF`
-          }
-        }
-
-        // Convert GLEIF country code to full country name for Mojaloop compatibility
-        const countryCode = attributes.entity.legalAddress.country || attributes.entity.headquartersAddress.country
-        const countryName = this.convertCountryCodeToName(countryCode)
-
-        return {
-          isValid: true,
-          entityName: legalName,
-          country: countryName,
-          status: attributes.registration.status
-        }
-      } else {
-        return {
-          isValid: false,
-          error: 'LEI not found in GLEIF database'
-        }
-      }
+      // Build success response
+      return this.buildLEISuccessResponse(gleifRecord)
     } catch (error) {
-      logger.error('GLEIF API error: %o', error)
+      return this.handleLEIValidationError(error)
+    }
+  }
 
-      if (isAxiosError(error)) {
-        if (error.response?.status === 404) {
-          return {
-            isValid: false,
-            error: 'LEI not found in GLEIF database'
-          }
-        }
-        if (error.response?.status === 429) {
-          return {
-            isValid: false,
-            error: 'GLEIF API rate limit exceeded. Please try again later.'
-          }
-        }
-        if (error.response?.status === 401 || error.response?.status === 403) {
-          return {
-            isValid: false,
-            error: 'GLEIF API authentication failed'
-          }
-        }
-      }
+  /**
+   * Fetch LEI record with authentication headers
+   */
+  private async fetchLEIRecordWithAuth (lei: string): Promise<GLEIFResponse['data'][0] | LEIValidationResult> {
+    const headers: Record<string, string> = {
+      Accept: 'application/vnd.api+json'
+    }
 
+    if (this.apiKey !== null && this.apiKey !== undefined && this.apiKey !== '') {
+      headers.Authorization = `Bearer ${this.apiKey}`
+    }
+
+    const response = await axios.get<GLEIFResponse>(
+      `${this.baseUrl}/lei-records?filter[lei]=${lei}`,
+      { headers }
+    )
+
+    if (response.data.data === null || response.data.data === undefined || response.data.data.length === 0) {
       return {
         isValid: false,
-        error: 'Failed to validate LEI. Please try again later.'
+        error: 'LEI not found in GLEIF database'
       }
     }
+
+    return response.data.data[0]
+  }
+
+  /**
+   * Validate entity name matches GLEIF legal name
+   */
+  private validateEntityName (providedName: string, leiRecord: GLEIFResponse['data'][0]): LEIValidationResult | null {
+    const legalName = leiRecord.attributes.entity.legalName.name
+
+    if (providedName.trim().toLowerCase() !== legalName.trim().toLowerCase()) {
+      return {
+        isValid: false,
+        error: `Provided entity name "${providedName}" does not match registered legal name "${legalName}" from GLEIF`
+      }
+    }
+
+    return null
+  }
+
+  /**
+   * Build success response for LEI validation
+   */
+  private buildLEISuccessResponse (leiRecord: GLEIFResponse['data'][0]): LEIValidationResult {
+    const attributes = leiRecord.attributes
+    const legalName = attributes.entity.legalName.name
+    const countryCode = attributes.entity.legalAddress.country ?? attributes.entity.headquartersAddress.country
+    const countryName = this.convertCountryCodeToName(countryCode)
+
+    return {
+      isValid: true,
+      entityName: legalName,
+      country: countryName,
+      status: attributes.registration.status
+    }
+  }
+
+  /**
+   * Handle LEI validation errors
+   */
+  private handleLEIValidationError (error: any): LEIValidationResult {
+    logger.error('GLEIF API error: %o', error)
+
+    if (isAxiosError(error)) {
+      const status = error.response?.status
+
+      if (status === 404) {
+        return { isValid: false, error: 'LEI not found in GLEIF database' }
+      }
+      if (status === 429) {
+        return { isValid: false, error: 'GLEIF API rate limit exceeded. Please try again later.' }
+      }
+      if (status === 401 || status === 403) {
+        return { isValid: false, error: 'GLEIF API authentication failed' }
+      }
+    }
+
+    return { isValid: false, error: 'Failed to validate LEI. Please try again later.' }
   }
 
   /**
@@ -661,119 +680,37 @@ export class GLEIFService {
    */
   async validateLocation (
     lei: string,
-    street_name?: string,
-    building_number?: string,
-    postal_code?: string,
-    town_name?: string,
-    country_subdivision?: string,
+    streetName?: string,
+    buildingNumber?: string,
+    postalCode?: string,
+    townName?: string,
+    countrySubdivision?: string,
     country?: string,
-    address_line?: string
+    addressLine?: string
   ): Promise<LEIValidationResult> {
     try {
       // Basic LEI format validation
-      if (lei === null || lei === undefined || lei === '' || lei.length !== 20 || !/^[A-Z0-9]{20}$/.test(lei)) {
-        return {
-          isValid: false,
-          error: 'Invalid LEI format. LEI must be exactly 20 alphanumeric characters.'
-        }
-      }
+      const formatError = this.validateLEIFormat(lei)
+      if (formatError !== null && formatError !== undefined) return formatError
 
-      const headers: Record<string, string> = {
-        Accept: 'application/vnd.api+json'
-      }
+      // Fetch LEI record from GLEIF
+      const leiRecord = await this.fetchLEIRecord(lei)
+      if ('error' in leiRecord) return leiRecord
 
-      const response = await axios.get<GLEIFResponse>(
-        `${this.baseUrl}/lei-records?filter[lei]=${lei}`,
-        { headers }
-      )
+      // Type guard: at this point, leiRecord is GLEIFResponse['data'][0]
+      const gleifRecord = leiRecord as GLEIFResponse['data'][0]
 
-      if (!response.data.data || response.data.data.length === 0) {
-        return {
-          isValid: false,
-          error: 'LEI not found in GLEIF database'
-        }
-      }
-
-      const attributes = response.data.data[0].attributes
+      const attributes = gleifRecord.attributes
       const legalAddress = attributes.entity.legalAddress
 
-      // Mapping expected values from GLEIF API response
-      const expected = {
-        street_name: legalAddress.addressLines?.[0] || '',
-        building_number: legalAddress.addressNumber || '',
-        postal_code: legalAddress.postalCode || '',
-        town_name: legalAddress.city || '',
-        country_subdivision: legalAddress.region || '',
-        country: legalAddress.country,
-        address_line: legalAddress.addressLines?.[1] || legalAddress.mailRouting || ''
-      }
+      // Map expected values from GLEIF
+      const expected = this.mapExpectedAddressFields(legalAddress)
 
-      // Compare provided values with GLEIF data
-      const mismatches: string[] = []
-      const warnings: string[] = []
-
-      if (street_name && street_name.trim().toLowerCase() !== (expected.street_name ?? '').trim().toLowerCase()) {
-        mismatches.push(`Street name mismatch: provided "${street_name}", expected "${expected.street_name}"`)
-      }
-      if (building_number && building_number.trim().toLowerCase() !== (expected.building_number ?? '').trim().toLowerCase()) {
-        mismatches.push(`Building number mismatch: provided "${building_number}", expected "${expected.building_number}"`)
-      }
-      if (postal_code && postal_code.trim().toLowerCase() !== (expected.postal_code ?? '').trim().toLowerCase()) {
-        mismatches.push(`Postal code mismatch: provided "${postal_code}", expected "${expected.postal_code}"`)
-      }
-      if (town_name && town_name.trim().toLowerCase() !== (expected.town_name ?? '').trim().toLowerCase()) {
-        mismatches.push(`Town name mismatch: provided "${town_name}", expected "${expected.town_name}"`)
-      }
-
-      // Handle country subdivision (region) with enhanced API validation
-      if (country_subdivision && expected.country_subdivision &&
-          !(await this.compareRegions(country_subdivision, expected.country_subdivision, expected.country))) {
-        // Get suggestions for better error messaging
-        const suggestions = SubdivisionMappingService.getSuggestions(
-          country_subdivision,
-          expected.country,
-          3
-        )
-
-        const expectedCountryName = this.convertCountryCodeToName(expected.country)
-        let errorMessage = `Country subdivision mismatch: provided "${country_subdivision}", expected "${expected.country_subdivision}" (in ${expectedCountryName})`
-
-        // Add suggestions if available
-        if (suggestions.length > 0) {
-          const suggestionText = suggestions
-            .map(s => `"${s.name}" (${s.code})`)
-            .join(', ')
-          errorMessage += `. Did you mean: ${suggestionText}?`
-        }
-
-        mismatches.push(errorMessage)
-      }
-
-      // Handle country validation with dynamic API support
-      if (country && !(await this.compareCountries(country, expected.country))) {
-        const expectedCountryName = this.convertCountryCodeToName(expected.country)
-        const providedCountryCode = this.convertCountryNameToCode(country)
-
-        let errorMessage = `Country mismatch: provided "${country}"`
-        if (providedCountryCode !== country) {
-          errorMessage += ` (${providedCountryCode})`
-        }
-        errorMessage += `, expected "${expectedCountryName}"`
-        if (expected.country !== expectedCountryName) {
-          errorMessage += ` (${expected.country})`
-        }
-
-        mismatches.push(errorMessage)
-      }
-
-      if (address_line && address_line.trim().toLowerCase() !== (expected.address_line ?? '').trim().toLowerCase()) {
-        mismatches.push(`Address line mismatch: provided "${address_line}", expected "${expected.address_line}"`)
-      }
-
-      // Log warnings if any
-      if (warnings.length > 0) {
-        logger.warn('Location validation warnings: %s', warnings.join('; '))
-      }
+      // Validate all address fields
+      const mismatches = await this.validateAddressFields(
+        { street_name: streetName, building_number: buildingNumber, postal_code: postalCode, town_name: townName, country_subdivision: countrySubdivision, country, address_line: addressLine },
+        expected
+      )
 
       if (mismatches.length > 0) {
         return {
@@ -782,44 +719,182 @@ export class GLEIFService {
         }
       }
 
-      // Convert GLEIF country code to full country name for Mojaloop compatibility
-      const countryName = this.convertCountryCodeToName(legalAddress.country)
-
-      return {
-        isValid: true,
-        entityName: attributes.entity.legalName.name,
-        country: countryName,
-        status: attributes.registration.status
-      }
+      return this.buildSuccessResponse(attributes, legalAddress.country)
     } catch (error) {
-      logger.error('GLEIF API error (location validation): %o', error)
+      return this.handleValidationError(error)
+    }
+  }
 
-      if (isAxiosError(error)) {
-        if (error.response?.status === 404) {
-          return {
-            isValid: false,
-            error: 'LEI not found in GLEIF database'
-          }
-        }
-        if (error.response?.status === 429) {
-          return {
-            isValid: false,
-            error: 'GLEIF API rate limit exceeded. Please try again later.'
-          }
-        }
-        if (error.response?.status === 401 || error.response?.status === 403) {
-          return {
-            isValid: false,
-            error: 'GLEIF API authentication failed'
-          }
-        }
-      }
-
+  /**
+   * Validate LEI format
+   */
+  private validateLEIFormat (lei: string): LEIValidationResult | null {
+    if (lei === null || lei === undefined || lei === '' || lei.length !== 20 || !/^[A-Z0-9]{20}$/.test(lei)) {
       return {
         isValid: false,
-        error: 'Failed to validate LEI location. Please try again later.'
+        error: 'Invalid LEI format. LEI must be exactly 20 alphanumeric characters.'
       }
     }
+    return null
+  }
+
+  /**
+   * Fetch LEI record from GLEIF API
+   */
+  private async fetchLEIRecord (lei: string): Promise<GLEIFResponse['data'][0] | LEIValidationResult> {
+    const headers: Record<string, string> = {
+      Accept: 'application/vnd.api+json'
+    }
+
+    const response = await axios.get<GLEIFResponse>(
+      `${this.baseUrl}/lei-records?filter[lei]=${lei}`,
+      { headers }
+    )
+
+    if (response.data.data === null || response.data.data === undefined || response.data.data.length === 0) {
+      return {
+        isValid: false,
+        error: 'LEI not found in GLEIF database'
+      }
+    }
+
+    return response.data.data[0]
+  }
+
+  /**
+   * Map expected address fields from GLEIF legal address
+   */
+  private mapExpectedAddressFields (legalAddress: any): Record<string, string> {
+    return {
+      street_name: legalAddress.addressLines?.[0] ?? '',
+      building_number: legalAddress.addressNumber ?? '',
+      postal_code: legalAddress.postalCode ?? '',
+      town_name: legalAddress.city ?? '',
+      country_subdivision: legalAddress.region ?? '',
+      country: legalAddress.country,
+      address_line: legalAddress.addressLines?.[1] ?? legalAddress.mailRouting ?? ''
+    }
+  }
+
+  /**
+   * Validate all address fields
+   */
+  private async validateAddressFields (provided: any, expected: any): Promise<string[]> {
+    const mismatches: string[] = []
+
+    // Validate simple string fields
+    this.validateSimpleField('Street name', provided.street_name, expected.street_name, mismatches)
+    this.validateSimpleField('Building number', provided.building_number, expected.building_number, mismatches)
+    this.validateSimpleField('Postal code', provided.postal_code, expected.postal_code, mismatches)
+    this.validateSimpleField('Town name', provided.town_name, expected.town_name, mismatches)
+    this.validateSimpleField('Address line', provided.address_line, expected.address_line, mismatches)
+
+    // Validate country subdivision with enhanced logic
+    await this.validateCountrySubdivision(
+      provided.country_subdivision,
+      expected.country_subdivision,
+      expected.country,
+      mismatches
+    )
+
+    // Validate country with enhanced logic
+    await this.validateCountry(provided.country, expected.country, mismatches)
+
+    return mismatches
+  }
+
+  /**
+   * Validate a simple string field
+   */
+  private validateSimpleField (fieldName: string, provided: string | undefined, expected: string, mismatches: string[]): void {
+    if (provided !== null && provided !== undefined && provided !== '' && provided.trim().toLowerCase() !== (expected ?? '').trim().toLowerCase()) {
+      mismatches.push(`${fieldName} mismatch: provided "${provided}", expected "${expected}"`)
+    }
+  }
+
+  /**
+   * Validate country subdivision with suggestions
+   */
+  private async validateCountrySubdivision (
+    provided: string | undefined,
+    expected: string,
+    country: string,
+    mismatches: string[]
+  ): Promise<void> {
+    if (provided === undefined || provided === null || provided === '' || expected === undefined || expected === null || expected === '') return
+
+    const isMatch = await this.compareRegions(provided, expected, country)
+    if (isMatch) return
+
+    const expectedCountryName = this.convertCountryCodeToName(country)
+    let errorMessage = `Country subdivision mismatch: provided "${provided}", expected "${expected}" (in ${expectedCountryName})`
+
+    // Add suggestions
+    const suggestions = getSuggestions(provided, country, 3)
+    if (suggestions.length > 0) {
+      const suggestionText = suggestions.map(s => `"${s.name}" (${s.code})`).join(', ')
+      errorMessage += `. Did you mean: ${suggestionText}?`
+    }
+
+    mismatches.push(errorMessage)
+  }
+
+  /**
+   * Validate country field
+   */
+  private async validateCountry (provided: string | undefined, expected: string, mismatches: string[]): Promise<void> {
+    if (provided === undefined || provided === null || provided === '') return
+
+    const isMatch = await this.compareCountries(provided, expected)
+    if (isMatch) return
+
+    const expectedCountryName = this.convertCountryCodeToName(expected)
+    const providedCountryCode = this.convertCountryNameToCode(provided)
+
+    let errorMessage = `Country mismatch: provided "${provided}"`
+    if (providedCountryCode !== provided) {
+      errorMessage += ` (${providedCountryCode})`
+    }
+    errorMessage += `, expected "${expectedCountryName}"`
+    if (expected !== expectedCountryName) {
+      errorMessage += ` (${expected})`
+    }
+
+    mismatches.push(errorMessage)
+  }
+
+  /**
+   * Build success response
+   */
+  private buildSuccessResponse (attributes: any, countryCode: string): LEIValidationResult {
+    const countryName = this.convertCountryCodeToName(countryCode)
+    return {
+      isValid: true,
+      entityName: attributes.entity.legalName.name,
+      country: countryName,
+      status: attributes.registration.status
+    }
+  }
+
+  /**
+   * Handle validation errors
+   */
+  private handleValidationError (error: any): LEIValidationResult {
+    logger.error('GLEIF API error (location validation): %o', error)
+
+    if (isAxiosError(error)) {
+      if (error.response?.status === 404) {
+        return { isValid: false, error: 'LEI not found in GLEIF database' }
+      }
+      if (error.response?.status === 429) {
+        return { isValid: false, error: 'GLEIF API rate limit exceeded. Please try again later.' }
+      }
+      if (error.response?.status === 401 || error.response?.status === 403) {
+        return { isValid: false, error: 'GLEIF API authentication failed' }
+      }
+    }
+
+    return { isValid: false, error: 'Failed to validate LEI location. Please try again later.' }
   }
 
   /**
@@ -827,7 +902,7 @@ export class GLEIFService {
    * @returns boolean
    */
   isConfigured (): boolean {
-    return !!this.baseUrl
+    return this.baseUrl !== null && this.baseUrl !== undefined && this.baseUrl !== ''
   }
 }
 

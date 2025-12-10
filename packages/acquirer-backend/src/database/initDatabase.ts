@@ -160,6 +160,7 @@ export async function seedDefaultPermissions (appDataSource: DataSource): Promis
 export async function seedDefaultRoles (appDataSource: DataSource): Promise<void> {
   logger.info('Seeding Default Roles...')
   const permissions = await appDataSource.manager.find(PortalPermissionEntity)
+  logger.info('Found %d permissions', permissions.length)
 
   for (const role of DefaultRoles) {
     const filteredPermissions = permissions.filter(permission =>
@@ -177,6 +178,9 @@ export async function seedDefaultRoles (appDataSource: DataSource): Promise<void
       newRole.description = role.name
       newRole.permissions = filteredPermissions
       await appDataSource.manager.save(newRole)
+      logger.info('Created role: %s with %d permissions', role.name, filteredPermissions.length)
+    } else {
+      logger.info('Role %s already exists', role.name)
     }
   }
   logger.info('Seeding Default Roles... Done')

@@ -75,7 +75,7 @@ export class MerchantEntity {
   @Column({ nullable: true, length: 2048 })
     registration_status_reason!: string
 
-  @Column({ type: 'timestamp', nullable: true })
+  @Column({ type: 'datetime', nullable: true })
     gleif_verified_at!: Date
 
   @ManyToOne(

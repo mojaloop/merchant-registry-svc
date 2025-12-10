@@ -116,8 +116,10 @@ const AllMerchantRecords = () => {
         cell: ({ row }) => {
           const verificationDate = row.original.gleif_verified_at
           const status = row.original.registrationStatus as MerchantRegistrationStatus
-          const isValidated = status === MerchantRegistrationStatus.APPROVED || status === MerchantRegistrationStatus.REVIEW
-          
+          const isValidated =
+            status === MerchantRegistrationStatus.APPROVED ||
+            status === MerchantRegistrationStatus.REVIEW
+
           if (verificationDate) {
             const date = new Date(verificationDate)
             return (
@@ -126,7 +128,8 @@ const AllMerchantRecords = () => {
                   Verified
                 </Text>
                 <Text fontSize='xs' color='gray.600'>
-                  {date.toLocaleDateString()} {date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                  {date.toLocaleDateString()}{' '}
+                  {date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                 </Text>
               </Stack>
             )
