@@ -14,6 +14,37 @@ import { findIncrementAliasValue } from '../utils/utils'
 const router = express.Router()
 
 /**
+ * Common function to lookup registry records by alias_value
+ */
+async function lookupRegistryRecord (
+  id: string,
+  actionType: string,
+  actionDescription: string
+): Promise<RegistryEntity | null> {
+  const registryRecord = await AppDataSource.manager.findOne(RegistryEntity, {
+    where: { alias_value: id },
+    select: ['fspId', 'currency', 'lei', 'alias_value']
+  })
+
+  const transactionStatus = registryRecord == null
+    ? AuditTrasactionStatus.FAILURE
+    : AuditTrasactionStatus.SUCCESS
+
+  await audit(
+    AuditActionType.ACCESS,
+    transactionStatus,
+    actionType,
+    actionDescription,
+    'RegistryEntity',
+    {},
+    { partyList: registryRecord, id }
+  )
+
+  logger.debug('registryRecord %s Retrieved: %o', id, registryRecord)
+  return registryRecord
+}
+
+/**
  * @openapi
  * tags:
  *   name: Participants
@@ -90,28 +121,12 @@ router.get('/participants/:type/:id', async (req: Request, res: Response) => {
 
   // The id can be either a merchant alias or an LEI code - we don't need to validate format
   // since the database lookup will handle both cases
-
-  const registryRecord = await AppDataSource.manager.findOne(RegistryEntity, {
-    where: { alias_value: id },
-    select: ['fspId', 'currency', 'lei', 'alias_value']
-  })
-
-  // eslint-disable-next-line
-  let transaction_status = AuditTrasactionStatus.SUCCESS
-  if (registryRecord == null) {
-    transaction_status = AuditTrasactionStatus.FAILURE
-  }
-
-  await audit(
-    AuditActionType.ACCESS,
-    transaction_status,
+  const registryRecord = await lookupRegistryRecord(
+    id,
     'getParticipants',
-    'GET Participants: Participant retrieved',
-    'RegistryEntity',
-    {}, { partyList: registryRecord, id }
+    'GET Participants: Participant retrieved'
   )
 
-  logger.debug('registryRecord %s Retrieved: %o', id, registryRecord)
   res.send({ partyList: registryRecord !== null ? [registryRecord] : [] })
 })
 
@@ -192,27 +207,12 @@ router.get('/parties/:type/:id', async (req: Request, res: Response) => {
   }
 
   // The id should be the LEI code - we lookup using alias_value
-  const registryRecord = await AppDataSource.manager.findOne(RegistryEntity, {
-    where: { alias_value: id },
-    select: ['fspId', 'currency', 'lei', 'alias_value']
-  })
-
-  // eslint-disable-next-line
-  let transaction_status = AuditTrasactionStatus.SUCCESS
-  if (registryRecord == null) {
-    transaction_status = AuditTrasactionStatus.FAILURE
-  }
-
-  await audit(
-    AuditActionType.ACCESS,
-    transaction_status,
+  const registryRecord = await lookupRegistryRecord(
+    id,
     'getParties',
-    'GET Parties: Party retrieved',
-    'RegistryEntity',
-    {}, { partyList: registryRecord, id }
+    'GET Parties: Party retrieved'
   )
 
-  logger.debug('registryRecord %s Retrieved: %o', id, registryRecord)
   res.send({ partyList: registryRecord !== null ? [registryRecord] : [] })
 })
 

@@ -105,13 +105,13 @@ export function testUserLoginFails (app: Application): void {
 
   it('should response 400 with "User is not verified"', async () => {
     // Arrange
-    const role = await AppDataSource.manager.findOne(PortalRoleEntity, { where: { name: 'Hub Admin' } })
+    const role = await AppDataSource.manager.findOneOrFail(PortalRoleEntity, { where: { name: 'Hub Admin' } })
+    
     const newUser = new PortalUserEntity()
     newUser.name = 'unverified user'
     newUser.email = 'unverified-user-for-test@email.com'
     newUser.user_type = PortalUserType.HUB
     newUser.status = PortalUserStatus.UNVERIFIED
-    if (role === null || role === undefined) throw new Error('Role not found')
     newUser.role = role
     await AppDataSource.manager.save(newUser)
 
@@ -138,13 +138,13 @@ export function testUserLoginFails (app: Application): void {
 
   it('should response 400 with "User need to reset password"', async () => {
     // Arrange
-    const role = await AppDataSource.manager.findOne(PortalRoleEntity, { where: { name: 'Hub Admin' } })
+    const role = await AppDataSource.manager.findOneOrFail(PortalRoleEntity, { where: { name: 'Hub Admin' } })
+    
     const newUser = new PortalUserEntity()
     newUser.name = 'resetting user'
     newUser.email = 'pwd-resetting-user-for-test@email.com'
     newUser.user_type = PortalUserType.HUB
     newUser.status = PortalUserStatus.RESETPASSWORD
-    if (role === null || role === undefined) throw new Error('Role not found')
     newUser.role = role
     await AppDataSource.manager.save(newUser)
 
