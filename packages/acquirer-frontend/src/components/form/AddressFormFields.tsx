@@ -1,25 +1,31 @@
-import { type FieldErrors, type FieldValues, type Path, type UseFormRegister, type UseFormSetValue } from 'react-hook-form'
 import { Heading } from '@chakra-ui/react'
+import {
+  type FieldErrors,
+  type FieldValues,
+  type Path,
+  type UseFormRegister,
+  type UseFormSetValue,
+} from 'react-hook-form'
 
 import { FormInput, FormSelect } from '@/components/form'
 import GridShell from '@/pages/RegistryForm/GridShell'
 
 export interface AddressFormValues {
-  department?: string;
-  sub_department?: string;
-  street_name?: string;
-  building_number?: string;
-  building_name?: string;
-  floor_number?: string;
-  room_number?: string;
-  post_box?: string;
-  postal_code?: string;
-  country?: string;
-  country_subdivision?: string;
-  district_name?: string;
-  town_name?: string;
-  longitude?: string;
-  latitude?: string;
+  department?: string
+  sub_department?: string
+  street_name?: string
+  building_number?: string
+  building_name?: string
+  floor_number?: string
+  room_number?: string
+  post_box?: string
+  postal_code?: string
+  country?: string
+  country_subdivision?: string
+  district_name?: string
+  town_name?: string
+  longitude?: string
+  latitude?: string
 }
 
 interface AddressFormFieldsProps<T extends FieldValues & AddressFormValues> {
