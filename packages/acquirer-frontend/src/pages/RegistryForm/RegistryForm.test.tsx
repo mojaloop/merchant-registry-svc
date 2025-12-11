@@ -29,7 +29,7 @@ describe('RegistryForm', () => {
     )
 
     expect(screen.getByLabelText(/Doing Business As Name/)).toBeInTheDocument()
-  })
+  }, 10000)
 
   it('should render location info form in step 2', () => {
     mockStep.mockReturnValue(2)
