@@ -6,6 +6,7 @@ import EmptyState from './EmptyState/EmptyState'
 import FloatingSpinner from './FloatingSpinner/FloatingSpinner'
 import FormSkeleton from './FormSkeleton/FormSkeleton'
 import MerchantInformationModal from './MerchantInformationModal/MerchantInformationModal'
+import MerchantRecordsPageTemplate from './MerchantRecordsPageTemplate'
 import Skeleton from './Skeleton/Skeleton'
 import TableSkeleton from './TableSkeleton/TableSkeleton'
 
@@ -15,6 +16,7 @@ export {
   CustomLink,
   DataTable,
   MerchantInformationModal,
+  MerchantRecordsPageTemplate,
   TableSkeleton,
   FormSkeleton,
   FloatingSpinner,
