@@ -3,6 +3,7 @@ import CustomButton from './CustomButton/CustomButton'
 import CustomLink from './CustomLink/CustomLink'
 import DataTable from './DataTable/DataTable'
 import EmptyState from './EmptyState/EmptyState'
+import FileUploadModal from './FileUploadModal'
 import FloatingSpinner from './FloatingSpinner/FloatingSpinner'
 import FormSkeleton from './FormSkeleton/FormSkeleton'
 import MerchantInformationModal from './MerchantInformationModal/MerchantInformationModal'
@@ -15,11 +16,12 @@ export {
   CustomButton,
   CustomLink,
   DataTable,
+  EmptyState,
+  FileUploadModal,
+  FloatingSpinner,
+  FormSkeleton,
   MerchantInformationModal,
   MerchantRecordsPageTemplate,
-  TableSkeleton,
-  FormSkeleton,
-  FloatingSpinner,
-  EmptyState,
   Skeleton,
+  TableSkeleton,
 }

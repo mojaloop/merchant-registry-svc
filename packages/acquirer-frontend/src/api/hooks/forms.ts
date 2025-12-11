@@ -33,7 +33,9 @@ const FORM_FALLBACK_ERROR_MESSAGE = 'Please check your data and try again.'
 type MutationSuccessCallback = () => void
 
 interface CreateMutationOptions<TParams> {
-  mutationFn: (params: TParams) => Promise<{ message: string; data?: {id: string | number} }>
+  mutationFn: (
+    params: TParams
+  ) => Promise<{ message: string; data?: { id: string | number } }>
   onSuccessCallback: MutationSuccessCallback
   createErrorTitle: string
   invalidateQueries?: string[]
@@ -95,7 +97,8 @@ function useUpdateMutation<TParams, TIds>({
   const toast = useToast()
 
   return useMutation({
-    mutationFn: ({ params, ...ids }: { params: TParams } & TIds) => mutationFn(params, ids as TIds),
+    mutationFn: ({ params, ...ids }: { params: TParams } & TIds) =>
+      mutationFn(params, ids as TIds),
     onSuccess: data => {
       invalidateQueries.forEach(key => {
         queryClient.invalidateQueries({ queryKey: [key] })
@@ -212,7 +215,8 @@ export function useCreateLocationInfo(goToNextStep: () => void) {
 
 export function useUpdateLocationInfo(goToNextStep: () => void) {
   return useUpdateMutation<LocationInfoForm, { merchantId: string; locationId: number }>({
-    mutationFn: (params, { merchantId, locationId }) => updateLocationInfo(params, merchantId, locationId),
+    mutationFn: (params, { merchantId, locationId }) =>
+      updateLocationInfo(params, merchantId, locationId),
     onSuccessCallback: goToNextStep,
     updateErrorTitle: 'Updating Failed!',
   })
@@ -228,7 +232,8 @@ export function useCreateOwnerInfo(goToNextStep: () => void) {
 
 export function useUpdateOwnerInfo(goToNextStep: () => void) {
   return useUpdateMutation<OwnerInfoForm, { merchantId: string; ownerId: number }>({
-    mutationFn: (params, { merchantId, ownerId }) => updateOwnerInfo(params, merchantId, ownerId),
+    mutationFn: (params, { merchantId, ownerId }) =>
+      updateOwnerInfo(params, merchantId, ownerId),
     onSuccessCallback: goToNextStep,
     updateErrorTitle: 'Updating Failed!',
   })
@@ -244,7 +249,10 @@ export function useCreateContactPerson(openReviewModal: () => void) {
 }
 
 export function useUpdateContactPerson(openReviewModal: () => void) {
-  return useUpdateMutation<ContactPersonForm, { merchantId: string; contactPersonId: number }>({
+  return useUpdateMutation<
+    ContactPersonForm,
+    { merchantId: string; contactPersonId: number }
+  >({
     mutationFn: (params, { merchantId, contactPersonId }) =>
       updateContactPersonInfo(params, merchantId, contactPersonId),
     onSuccessCallback: openReviewModal,
