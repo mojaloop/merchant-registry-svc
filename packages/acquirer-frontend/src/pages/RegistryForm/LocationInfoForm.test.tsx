@@ -1,9 +1,15 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
-import type { CurrencyCodes, MerchantLocationType, MerchantRegistrationStatus, MerchantType, NumberOfEmployees } from 'shared-lib'
 import { vi } from 'vitest'
+import type {
+  CurrencyCodes,
+  MerchantLocationType,
+  MerchantRegistrationStatus,
+  MerchantType,
+  NumberOfEmployees,
+} from 'shared-lib'
 
-import TestWrapper from '@/__tests__/TestWrapper'
 import type { MerchantDetails } from '@/types/merchantDetails'
+import TestWrapper from '@/__tests__/TestWrapper'
 import LocationInfoForm, { removePropFromObj } from './LocationInfoForm'
 
 const hoistedValues = vi.hoisted(() => ({
@@ -23,12 +29,25 @@ const hoistedValues = vi.hoisted(() => ({
     gleif_verified_at: null,
     created_at: '2023-10-25T15:39:03.173Z',
     updated_at: '2023-10-25T17:42:24.000Z',
-    default_dfsp: { id: 1, name: 'Test DFSP', dfsp_type: 'Bank', logo_uri: '', activated: true, created_at: '2023-10-25T15:39:03.173Z', updated_at: '2023-10-25T17:42:24.000Z' },
+    default_dfsp: {
+      id: 1,
+      name: 'Test DFSP',
+      dfsp_type: 'Bank',
+      logo_uri: '',
+      activated: true,
+      created_at: '2023-10-25T15:39:03.173Z',
+      updated_at: '2023-10-25T17:42:24.000Z',
+    },
     dfsps: [],
     business_licenses: [],
     contact_persons: [],
     business_owners: [],
-    created_by: { id: 1, name: 'Test User', email: 'test@email.com', phone_number: '123456789' },
+    created_by: {
+      id: 1,
+      name: 'Test User',
+      email: 'test@email.com',
+      phone_number: '123456789',
+    },
     checked_by: null,
     checkout_counters: [
       {
@@ -97,7 +116,9 @@ vi.mock('@/api/hooks/forms', () => ({
   useSubdivisions: () => ({ data: ['Western Australia'], isFetching: false }),
   useDistricts: () => ({ data: ['Perth'], isFetching: false }),
   useDraft: () => ({
-    get data() { return draftData },
+    get data() {
+      return draftData
+    },
     isFetching: false,
   }),
   useCreateLocationInfo: () => ({

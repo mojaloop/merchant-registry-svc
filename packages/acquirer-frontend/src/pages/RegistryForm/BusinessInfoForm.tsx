@@ -155,9 +155,10 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
   const haveLicense = watchedHaveLicense === 'yes'
 
   const onSubmit = (values: BusinessInfoForm) => {
-    const isExistingMerchant = draft.data?.registration_status === 'Draft' ||
+    const isExistingMerchant =
+      draft.data?.registration_status === 'Draft' ||
       draft.data?.registration_status === 'Reverted'
-    
+
     if (isExistingMerchant) {
       if (!merchantId) {
         return toast({

@@ -1,9 +1,14 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
-import type { CurrencyCodes, MerchantRegistrationStatus, MerchantType, NumberOfEmployees } from 'shared-lib'
 import { vi } from 'vitest'
+import type {
+  CurrencyCodes,
+  MerchantRegistrationStatus,
+  MerchantType,
+  NumberOfEmployees,
+} from 'shared-lib'
 
-import TestWrapper from '@/__tests__/TestWrapper'
 import type { MerchantDetails } from '@/types/merchantDetails'
+import TestWrapper from '@/__tests__/TestWrapper'
 import BusinessInfoForm from './BusinessInfoForm'
 
 const hoistedValues = vi.hoisted(() => ({
@@ -39,13 +44,26 @@ const hoistedValues = vi.hoisted(() => ({
     lei: null,
     allow_block_status: 'Pending' as const,
     gleif_verified_at: null,
-    default_dfsp: { id: 1, name: 'Test DFSP', dfsp_type: 'Bank', logo_uri: '', activated: true, created_at: '2023-10-23T11:55:01.739Z', updated_at: '2023-10-23T11:55:01.739Z' },
+    default_dfsp: {
+      id: 1,
+      name: 'Test DFSP',
+      dfsp_type: 'Bank',
+      logo_uri: '',
+      activated: true,
+      created_at: '2023-10-23T11:55:01.739Z',
+      updated_at: '2023-10-23T11:55:01.739Z',
+    },
     dfsps: [],
     locations: [],
     checkout_counters: [],
     contact_persons: [],
     business_owners: [],
-    created_by: { id: 1, name: 'Test User', email: 'd1superadmin1@email.com', phone_number: '123456789' },
+    created_by: {
+      id: 1,
+      name: 'Test User',
+      email: 'd1superadmin1@email.com',
+      phone_number: '123456789',
+    },
     checked_by: null,
   },
 }))
@@ -72,7 +90,9 @@ let draftData: MerchantDetails | null = null
 
 vi.mock('@/api/hooks/forms', () => ({
   useDraft: () => ({
-    get data() { return draftData },
+    get data() {
+      return draftData
+    },
     isFetching: false,
   }),
   useCreateBusinessInfo: () => ({
@@ -255,7 +275,10 @@ describe('BusinessInfoForm', () => {
   })
 
   it('should call "updateBusinessInfo.mutate" when it is a draft or reverted data', async () => {
-    draftData = { ...hoistedValues.draft, registration_status: 'Reverted' as MerchantRegistrationStatus }
+    draftData = {
+      ...hoistedValues.draft,
+      registration_status: 'Reverted' as MerchantRegistrationStatus,
+    }
     mockMerchantId.mockReturnValue(1)
 
     render(

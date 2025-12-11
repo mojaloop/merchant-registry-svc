@@ -154,7 +154,6 @@ router.get('/participants/:type/:id', async (req: Request, res: Response) => {
  *         description: LEI code or merchant identifier
  *         schema:
  *           type: string
- *         example: "787200JXIR2YYZDPNP23"
  *     responses:
  *       200:
  *         description: Successfully retrieved party information

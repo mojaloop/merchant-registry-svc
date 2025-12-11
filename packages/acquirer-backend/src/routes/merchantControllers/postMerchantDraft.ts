@@ -43,7 +43,6 @@ import { gleifService } from '../../services/GLEIFService'
  *                 example: "Merchant 1"
  *               lei:
  *                 type: string
- *                 example: "123456789012345ABCDE"
  *               employees_num:
  *                 type: string
  *                 example: "1 - 5"
@@ -61,7 +60,6 @@ import { gleifService } from '../../services/GLEIFService'
  *                 example: "Individual"
  *               license_number:
  *                 type: string
- *                 example: "123456789"
  *               license_document:
  *                 type: string
  *                 format: binary

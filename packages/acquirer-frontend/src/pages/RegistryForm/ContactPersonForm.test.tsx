@@ -1,9 +1,16 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
-import type { BusinessOwnerIDType, CurrencyCodes, MerchantLocationType, MerchantRegistrationStatus, MerchantType, NumberOfEmployees } from 'shared-lib'
 import { vi } from 'vitest'
+import type {
+  BusinessOwnerIDType,
+  CurrencyCodes,
+  MerchantLocationType,
+  MerchantRegistrationStatus,
+  MerchantType,
+  NumberOfEmployees,
+} from 'shared-lib'
 
-import TestWrapper from '@/__tests__/TestWrapper'
 import type { MerchantDetails } from '@/types/merchantDetails'
+import TestWrapper from '@/__tests__/TestWrapper'
 import ContactPersonForm from './ContactPersonForm'
 
 const hoistedValues = vi.hoisted(() => ({
@@ -23,12 +30,25 @@ const hoistedValues = vi.hoisted(() => ({
     gleif_verified_at: null,
     created_at: '2023-10-26T04:24:14.056Z',
     updated_at: '2023-10-26T04:24:14.056Z',
-    default_dfsp: { id: 1, name: 'Test DFSP', dfsp_type: 'Bank', logo_uri: '', activated: true, created_at: '2023-10-26T04:24:14.056Z', updated_at: '2023-10-26T04:24:14.056Z' },
+    default_dfsp: {
+      id: 1,
+      name: 'Test DFSP',
+      dfsp_type: 'Bank',
+      logo_uri: '',
+      activated: true,
+      created_at: '2023-10-26T04:24:14.056Z',
+      updated_at: '2023-10-26T04:24:14.056Z',
+    },
     dfsps: [],
     locations: [],
     checkout_counters: [],
     business_licenses: [],
-    created_by: { id: 1, name: 'Test User', email: 'test@email.com', phone_number: '123456789' },
+    created_by: {
+      id: 1,
+      name: 'Test User',
+      email: 'test@email.com',
+      phone_number: '123456789',
+    },
     checked_by: null,
     business_owners: [
       {
@@ -101,7 +121,9 @@ let draftData: MerchantDetails | null = null
 
 vi.mock('@/api/hooks/forms', () => ({
   useDraft: () => ({
-    get data() { return draftData },
+    get data() {
+      return draftData
+    },
     isFetching: false,
   }),
   useCreateContactPerson: () => ({
