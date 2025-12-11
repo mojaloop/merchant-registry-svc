@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { Box, Heading, Stack, useToast } from '@chakra-ui/react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
@@ -29,9 +29,6 @@ interface OwnerInfoFormProps {
 
 const OwnerInfoForm = ({ setActiveStep }: OwnerInfoFormProps) => {
   const toast = useToast()
-
-  const [isDraft, setIsDraft] = useState(false)
-  const [ownerId, setOwnerId] = useState<number | null>(null)
 
   const {
     register,
@@ -80,12 +77,9 @@ const OwnerInfoForm = ({ setActiveStep }: OwnerInfoFormProps) => {
     if (!draftData) return
 
     if (draftData.business_owners?.[0]) {
-      setIsDraft(!!draftData.business_owners[0])
-
-      const { id, name, identificaton_type, identification_number, phone_number, email } =
+      const { name, identificaton_type, identification_number, phone_number, email } =
         draftData.business_owners[0]
 
-      id && setOwnerId(id)
       name && setValue('name', name)
       identificaton_type && setValue('identificaton_type', identificaton_type)
       identification_number && setValue('identification_number', identification_number)
@@ -141,12 +135,11 @@ const OwnerInfoForm = ({ setActiveStep }: OwnerInfoFormProps) => {
     // Server expects null instead of empty string or any other falsy value
     values.email = values.email || null
 
-    if (!isDraft) {
-      createOwnerInfo.mutate({ params: values, merchantId })
+    const existingOwnerId = draft.data?.business_owners?.[0]?.id
+    if (existingOwnerId) {
+      updateOwnerInfo.mutate({ params: values, merchantId, ownerId: existingOwnerId })
     } else {
-      if (ownerId) {
-        updateOwnerInfo.mutate({ params: values, merchantId, ownerId })
-      }
+      createOwnerInfo.mutate({ params: values, merchantId })
     }
   }
 

@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import { createColumnHelper } from '@tanstack/react-table'
-import { Box, HStack, Stack, Text } from '@chakra-ui/react'
+import { Box, Checkbox, HStack, Stack, Text } from '@chakra-ui/react'
 import { MerchantRegistrationStatus } from 'shared-lib'
 
 import type { MerchantInfo } from '@/types/merchants'
@@ -8,7 +8,7 @@ import {
   REGISTRATION_STATUS_COLORS,
   type RegistrationStatus,
 } from '@/constants/registrationStatus'
-import { CustomButton } from '@/components/ui'
+import { CustomButton, CustomLink } from '@/components/ui'
 
 interface UseMerchantColumnsProps {
   onViewDetails: (merchantId: number) => void
@@ -33,14 +33,15 @@ export const useMerchantColumns = ({
 
     // Select column for pending merchants
     if (showSelectColumn) {
-      const { Checkbox } = require('@chakra-ui/react')
       columns.push(
         columnHelper.display({
           id: 'select',
           header: ({ table }) => (
             <Checkbox
               isChecked={table.getIsAllPageRowsSelected()}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => table.toggleAllPageRowsSelected(!!e.target.checked)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                table.toggleAllPageRowsSelected(!!e.target.checked)
+              }
               aria-label='Select all'
               borderColor='blackAlpha.400'
             />
@@ -51,7 +52,9 @@ export const useMerchantColumns = ({
               isChecked={
                 userProfile?.id === row.original.maker.id ? false : row.getIsSelected()
               }
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => row.toggleSelected(!!e.target.checked)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                row.toggleSelected(!!e.target.checked)
+              }
               aria-label='Select row'
               borderColor='blackAlpha.400'
             />
@@ -201,7 +204,6 @@ export const useMerchantColumns = ({
 
     // Proceed column for reverted merchants
     if (showProceedColumn) {
-      const { CustomLink } = require('@/components/ui')
       columns.push(
         columnHelper.display({
           id: 'proceed',

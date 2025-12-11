@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { Box, Checkbox, Heading, Stack, useDisclosure, useToast } from '@chakra-ui/react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Controller, useForm } from 'react-hook-form'
@@ -22,9 +22,6 @@ interface ContactPersonProps {
 const ContactPersonForm = ({ setActiveStep }: ContactPersonProps) => {
   const toast = useToast()
   const { isOpen, onOpen, onClose } = useDisclosure()
-
-  const [isDraft, setIsDraft] = useState(false)
-  const [contactPersonId, setContactPersonId] = useState<number | null>(null)
 
   const {
     register,
@@ -59,10 +56,8 @@ const ContactPersonForm = ({ setActiveStep }: ContactPersonProps) => {
     const contact_person = draftData.contact_persons?.[0]
     if (!contact_person) return
 
-    setIsDraft(!!contact_person)
-    const { id, name, phone_number, email } = contact_person
+    const { name, phone_number, email } = contact_person
 
-    id && setContactPersonId(id)
     name && setValue('name', name)
     phone_number && setValue('phone_number', phone_number)
     email && setValue('email', email)
@@ -92,16 +87,15 @@ const ContactPersonForm = ({ setActiveStep }: ContactPersonProps) => {
     // Server expects null instead of empty string or any other falsy value
     values.email = values.email || null
 
-    if (!isDraft) {
-      createContactPerson.mutate({ params: values, merchantId })
+    const existingContactPersonId = draft.data?.contact_persons?.[0]?.id
+    if (existingContactPersonId) {
+      updateContactPerson.mutate({
+        params: values,
+        merchantId,
+        contactPersonId: existingContactPersonId,
+      })
     } else {
-      if (contactPersonId) {
-        updateContactPerson.mutate({
-          params: values,
-          merchantId,
-          contactPersonId,
-        })
-      }
+      createContactPerson.mutate({ params: values, merchantId })
     }
   }
 

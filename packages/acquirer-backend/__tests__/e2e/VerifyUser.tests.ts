@@ -18,7 +18,7 @@ export function testVerifyUser (app: Application): void {
   beforeAll(async () => {
     // Generate Token using jwt
     const role = await AppDataSource.manager.findOneOrFail(PortalRoleEntity, { where: { name: 'Hub Admin' } })
-    
+
     unVerifyUser = AppDataSource.manager.create(PortalUserEntity)
     unVerifyUser.name = 'New Unverification User'
     unVerifyUser.email = 'new-unverification-user@email.com'
@@ -69,7 +69,7 @@ export function testVerifyUser (app: Application): void {
   it('should return 404 when maliciously crafted token is used', async () => {
     // Arrange
     const role = await AppDataSource.manager.findOneOrFail(PortalRoleEntity, { where: { name: 'Hub Admin' } })
-    
+
     const verifiedUser = AppDataSource.manager.create(PortalUserEntity)
     verifiedUser.name = 'New Unverification User'
     verifiedUser.email = 'new-unverification-user@email.com'

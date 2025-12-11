@@ -1,14 +1,46 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import type { CurrencyCodes, MerchantLocationType, MerchantRegistrationStatus, MerchantType, NumberOfEmployees } from 'shared-lib'
 import { vi } from 'vitest'
 
 import TestWrapper from '@/__tests__/TestWrapper'
+import type { MerchantDetails } from '@/types/merchantDetails'
 import LocationInfoForm, { removePropFromObj } from './LocationInfoForm'
 
 const hoistedValues = vi.hoisted(() => ({
   draft: {
+    id: 1,
+    dba_trading_name: 'Test Merchant',
+    registered_name: 'Test Merchant Ltd',
+    lei: null,
+    employees_num: '6 - 10' as NumberOfEmployees,
+    monthly_turnover: '10000',
+    merchant_type: 'Small Shop' as MerchantType,
+    category_code: { category_code: '10120', description: 'Test Category' },
+    currency_code: { iso_code: 'USD' as CurrencyCodes, description: 'US Dollar' },
+    allow_block_status: 'Pending',
+    registration_status: 'Draft' as MerchantRegistrationStatus,
+    registration_status_reason: null,
+    gleif_verified_at: null,
+    created_at: '2023-10-25T15:39:03.173Z',
+    updated_at: '2023-10-25T17:42:24.000Z',
+    default_dfsp: { id: 1, name: 'Test DFSP', dfsp_type: 'Bank', logo_uri: '', activated: true, created_at: '2023-10-25T15:39:03.173Z', updated_at: '2023-10-25T17:42:24.000Z' },
+    dfsps: [],
+    business_licenses: [],
+    contact_persons: [],
+    business_owners: [],
+    created_by: { id: 1, name: 'Test User', email: 'test@email.com', phone_number: '123456789' },
+    checked_by: null,
     checkout_counters: [
       {
+        id: 1,
         description: '-',
+        notification_number: '',
+        alias_type: '',
+        alias_value: '',
+        merchant_registry_id: 1,
+        qr_code_link: '',
+        created_at: '2023-10-25T15:39:03.173Z',
+        updated_at: '2023-10-25T17:42:24.000Z',
       },
     ],
     locations: [
@@ -19,13 +51,13 @@ const hoistedValues = vi.hoisted(() => ({
         building_number: '123',
         country: 'Australia',
         country_subdivision: 'Western Australia',
-        created_at: '2023-10-25T15:39:03.173Z',
+        created_at: new Date('2023-10-25T15:39:03.173Z'),
         department: 'Sale',
         district_name: 'Perth',
         floor_number: '4',
         id: 1,
         latitude: '331',
-        location_type: 'Virtual',
+        location_type: 'Virtual' as MerchantLocationType,
         longitude: '99',
         post_box: 'PO Box 123',
         postal_code: '12345',
@@ -33,7 +65,7 @@ const hoistedValues = vi.hoisted(() => ({
         street_name: 'Main Street',
         sub_department: 'Support',
         town_name: 'Townsville',
-        updated_at: '2023-10-25T17:42:24.000Z',
+        updated_at: new Date('2023-10-25T17:42:24.000Z'),
         web_url: 'http://www.example.com',
       },
     ],
@@ -58,17 +90,23 @@ vi.mock('@/hooks', () => ({
   useMerchantId: () => mockMerchantId(),
 }))
 
-const mockDraft = vi.fn()
+let draftData: MerchantDetails | null = null
+
 vi.mock('@/api/hooks/forms', () => ({
-  useCountries: () => ({ data: ['Australia'] }),
-  useSubdivisions: () => ({ data: ['Western Australia'] }),
-  useDistricts: () => ({ data: ['Perth'] }),
-  useDraft: () => mockDraft(),
+  useCountries: () => ({ data: ['Australia'], isLoading: false }),
+  useSubdivisions: () => ({ data: ['Western Australia'], isFetching: false }),
+  useDistricts: () => ({ data: ['Perth'], isFetching: false }),
+  useDraft: () => ({
+    get data() { return draftData },
+    isFetching: false,
+  }),
   useCreateLocationInfo: () => ({
     mutate: () => fn('createLocationInfo'),
+    isPending: false,
   }),
   useUpdateLocationInfo: () => ({
     mutate: () => fn('updateLocationInfo'),
+    isPending: false,
   }),
 }))
 
@@ -77,10 +115,15 @@ const mockSetActiveStep = vi.fn()
 describe('ContactPersonForm', () => {
   afterEach(() => {
     vi.restoreAllMocks()
+    draftData = null
+  })
+
+  beforeEach(() => {
+    fn.mockClear()
   })
 
   it('should focus the first input which has an error when the validation fails', async () => {
-    mockDraft.mockReturnValue({ data: null })
+    draftData = null
 
     render(
       <TestWrapper>
@@ -95,7 +138,7 @@ describe('ContactPersonForm', () => {
   })
 
   it('should fill with draft values when it is a draft', () => {
-    mockDraft.mockReturnValue({ data: hoistedValues.draft })
+    draftData = hoistedValues.draft
 
     render(
       <TestWrapper>
@@ -147,7 +190,7 @@ describe('ContactPersonForm', () => {
   })
 
   it('should reset the values of "Country Subdivision" and "District" when the value of "Country" is changed', () => {
-    mockDraft.mockReturnValue({ data: hoistedValues.draft })
+    draftData = hoistedValues.draft
 
     render(
       <TestWrapper>
@@ -168,7 +211,7 @@ describe('ContactPersonForm', () => {
   })
 
   it('should reset the value of "District" when the value of "Country Subdivision" is changed', () => {
-    mockDraft.mockReturnValue({ data: hoistedValues.draft })
+    draftData = hoistedValues.draft
 
     render(
       <TestWrapper>
@@ -187,7 +230,7 @@ describe('ContactPersonForm', () => {
   })
 
   it('should call "createLocationInfo.mutate" when it is not a draft', async () => {
-    mockDraft.mockReturnValue({ data: null })
+    draftData = null
     mockMerchantId.mockReturnValue(1)
 
     render(
@@ -208,7 +251,7 @@ describe('ContactPersonForm', () => {
   })
 
   it('should call "updateLocationInfo.mutate" when it is a draft', async () => {
-    mockDraft.mockReturnValue({ data: hoistedValues.draft })
+    draftData = hoistedValues.draft
     mockMerchantId.mockReturnValue(1)
 
     render(
@@ -226,7 +269,7 @@ describe('ContactPersonForm', () => {
   })
 
   it('should show an error toast when the merchantId is not found', async () => {
-    mockDraft.mockReturnValue({ data: hoistedValues.draft })
+    draftData = hoistedValues.draft
     mockMerchantId.mockReturnValue(null)
 
     render(

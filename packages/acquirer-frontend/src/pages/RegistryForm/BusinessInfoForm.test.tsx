@@ -1,7 +1,9 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import type { CurrencyCodes, MerchantRegistrationStatus, MerchantType, NumberOfEmployees } from 'shared-lib'
 import { vi } from 'vitest'
 
 import TestWrapper from '@/__tests__/TestWrapper'
+import type { MerchantDetails } from '@/types/merchantDetails'
 import BusinessInfoForm from './BusinessInfoForm'
 
 const hoistedValues = vi.hoisted(() => ({
@@ -23,17 +25,28 @@ const hoistedValues = vi.hoisted(() => ({
     created_at: '2023-10-23T11:55:01.739Z',
     currency_code: {
       description: 'Lek',
-      iso_code: 'ALL',
+      iso_code: 'ALL' as CurrencyCodes,
     },
     dba_trading_name: 'marco',
-    employees_num: '6 - 10',
+    employees_num: '6 - 10' as NumberOfEmployees,
     id: 1,
-    merchant_type: 'Small Shop',
+    merchant_type: 'Small Shop' as MerchantType,
     monthly_turnover: '',
     registered_name: '',
-    registration_status: 'Draft',
+    registration_status: 'Draft' as MerchantRegistrationStatus,
     registration_status_reason: 'Draft Merchant by d1superadmin1@email.com',
     updated_at: '2023-10-23T11:56:54.000Z',
+    lei: null,
+    allow_block_status: 'Pending' as const,
+    gleif_verified_at: null,
+    default_dfsp: { id: 1, name: 'Test DFSP', dfsp_type: 'Bank', logo_uri: '', activated: true, created_at: '2023-10-23T11:55:01.739Z', updated_at: '2023-10-23T11:55:01.739Z' },
+    dfsps: [],
+    locations: [],
+    checkout_counters: [],
+    contact_persons: [],
+    business_owners: [],
+    created_by: { id: 1, name: 'Test User', email: 'd1superadmin1@email.com', phone_number: '123456789' },
+    checked_by: null,
   },
 }))
 
@@ -55,14 +68,20 @@ vi.mock('@/hooks', () => ({
   useMerchantId: () => mockMerchantId(),
 }))
 
-const mockDraft = vi.fn()
+let draftData: MerchantDetails | null = null
+
 vi.mock('@/api/hooks/forms', () => ({
-  useDraft: () => mockDraft(),
+  useDraft: () => ({
+    get data() { return draftData },
+    isFetching: false,
+  }),
   useCreateBusinessInfo: () => ({
     mutate: () => fn('createBusinessInfo'),
+    isPending: false,
   }),
   useUpdateBusinessInfo: () => ({
     mutate: () => fn('updateBusinessInfo'),
+    isPending: false,
   }),
 }))
 
@@ -71,10 +90,15 @@ const mockSetActiveStep = vi.fn()
 describe('BusinessInfoForm', () => {
   afterEach(() => {
     vi.restoreAllMocks()
+    draftData = null
+  })
+
+  beforeEach(() => {
+    fn.mockClear()
   })
 
   it('should render "Document is already uploaded." text when license document exists', () => {
-    mockDraft.mockReturnValue({ data: hoistedValues.draft })
+    draftData = hoistedValues.draft
 
     render(
       <TestWrapper>
@@ -86,7 +110,7 @@ describe('BusinessInfoForm', () => {
   })
 
   it('should render "Upload your PDF file" text when license document does not exist', () => {
-    mockDraft.mockReturnValue({ data: null })
+    draftData = null
 
     render(
       <TestWrapper>
@@ -98,7 +122,7 @@ describe('BusinessInfoForm', () => {
   })
 
   it('should focus the first input which has an error when the validation fails', async () => {
-    mockDraft.mockReturnValue({ data: null })
+    draftData = null
 
     render(
       <TestWrapper>
@@ -115,7 +139,7 @@ describe('BusinessInfoForm', () => {
   })
 
   it('should render radio inputs correctly', () => {
-    mockDraft.mockReturnValue({ data: hoistedValues.draft })
+    draftData = hoistedValues.draft
 
     render(
       <TestWrapper>
@@ -131,7 +155,7 @@ describe('BusinessInfoForm', () => {
   })
 
   it('should fill with draft values when it is a draft', () => {
-    mockDraft.mockReturnValue({ data: hoistedValues.draft })
+    draftData = hoistedValues.draft
 
     render(
       <TestWrapper>
@@ -168,7 +192,7 @@ describe('BusinessInfoForm', () => {
   })
 
   it('should reset the value of "License Number" when the "No" radio button is clicked', () => {
-    mockDraft.mockReturnValue({ data: hoistedValues.draft })
+    draftData = hoistedValues.draft
 
     render(
       <TestWrapper>
@@ -186,7 +210,7 @@ describe('BusinessInfoForm', () => {
   })
 
   it('should render file upload modal when upload file icon button is clicked', () => {
-    mockDraft.mockReturnValue({ data: hoistedValues.draft })
+    draftData = hoistedValues.draft
 
     render(
       <TestWrapper>
@@ -201,7 +225,7 @@ describe('BusinessInfoForm', () => {
   })
 
   it('should call "createBusinessInfo.mutate" when it is not a draft', async () => {
-    mockDraft.mockReturnValue({ data: null })
+    draftData = null
 
     render(
       <TestWrapper>
@@ -231,9 +255,7 @@ describe('BusinessInfoForm', () => {
   })
 
   it('should call "updateBusinessInfo.mutate" when it is a draft or reverted data', async () => {
-    mockDraft.mockReturnValue({
-      data: { ...hoistedValues.draft, registration_status: 'Reverted' },
-    })
+    draftData = { ...hoistedValues.draft, registration_status: 'Reverted' as MerchantRegistrationStatus }
     mockMerchantId.mockReturnValue(1)
 
     render(
@@ -251,7 +273,7 @@ describe('BusinessInfoForm', () => {
   })
 
   it('should show an error toast when the merchantId is not found', async () => {
-    mockDraft.mockReturnValue({ data: hoistedValues.draft })
+    draftData = hoistedValues.draft
     mockMerchantId.mockReturnValue(null)
 
     render(

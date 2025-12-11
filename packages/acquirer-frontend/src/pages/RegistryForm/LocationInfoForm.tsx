@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { Box, Heading, Stack, useToast } from '@chakra-ui/react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
@@ -37,9 +37,6 @@ interface LocationInfoFormProps {
 
 const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
   const toast = useToast()
-
-  const [isDraft, setIsDraft] = useState(false)
-  const [locationId, setLocationId] = useState<number | null>(null)
 
   const {
     register,
@@ -86,10 +83,7 @@ const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
 
     if (!draftData.locations?.[0]) return
 
-    setIsDraft(!!draftData.locations[0])
-
     const {
-      id,
       location_type,
       web_url,
       department,
@@ -111,7 +105,6 @@ const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
 
     const checkoutCounter = draftData.checkout_counters?.[0]
 
-    id && setLocationId(id)
     location_type && setValue('location_type', location_type)
     web_url && setValue('web_url', web_url)
     department && setValue('department', department)
@@ -141,17 +134,16 @@ const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
       })
     }
 
-    if (!isDraft) {
-      createLocationInfo.mutate({ params: values, merchantId })
+    const existingLocationId = draft.data?.locations?.[0]?.id
+    if (existingLocationId) {
+      const params = removePropFromObj(values, 'checkout_description')
+      updateLocationInfo.mutate({
+        params,
+        merchantId,
+        locationId: existingLocationId,
+      })
     } else {
-      if (locationId) {
-        const params = removePropFromObj(values, 'checkout_description')
-        updateLocationInfo.mutate({
-          params,
-          merchantId,
-          locationId,
-        })
-      }
+      createLocationInfo.mutate({ params: values, merchantId })
     }
   }
 

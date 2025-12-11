@@ -74,7 +74,6 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
   const navigate = useNavigate()
   const toast = useToast()
 
-  const [isDraft, setIsDraft] = useState(false)
   const [licenseDocument, setLicenseDocument] = useState<LicenseDocument | null>(null)
   const [isDocumentModalOpen, setIsDocumentModalOpen] = useState(false)
   const [isUploading, setIsUploading] = useState(false)
@@ -109,11 +108,6 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
 
   useEffect(() => {
     if (!draftData) return
-
-    setIsDraft(
-      draftData.registration_status === 'Draft' ||
-        draftData.registration_status === 'Reverted'
-    )
 
     const {
       dba_trading_name,
@@ -161,9 +155,10 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
   const haveLicense = watchedHaveLicense === 'yes'
 
   const onSubmit = (values: BusinessInfoForm) => {
-    if (!isDraft) {
-      createBusinessInfo.mutate(values)
-    } else {
+    const isExistingMerchant = draft.data?.registration_status === 'Draft' ||
+      draft.data?.registration_status === 'Reverted'
+    
+    if (isExistingMerchant) {
       if (!merchantId) {
         return toast({
           title: 'Merchant ID not found!',
@@ -172,6 +167,8 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
         })
       }
       updateBusinessInfo.mutate({ params: values, merchantId })
+    } else {
+      createBusinessInfo.mutate(values)
     }
   }
 

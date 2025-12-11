@@ -58,7 +58,9 @@ const connectToRabbitMQ = async (delay: number): Promise<void> => {
 }
 
 export async function disconnectMessageQueue (): Promise<void> {
-  await conn.close()
+  if (conn !== undefined && conn !== null) {
+    await conn.close()
+  }
 }
 
 const consumeQueue = async (): Promise<void> => {

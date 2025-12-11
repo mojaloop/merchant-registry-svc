@@ -116,7 +116,7 @@ export function testRegisterMerchants (): void {
 
     // Second merchant should use incremental alias_value
     expect(result[1].alias_value).toMatch(/^\d+$/)
-    expect(result[1].lei).toBeUndefined()
+    expect(result[1].lei).toBeNull()
   })
 
   test('Merchants with empty or whitespace-only LEI fall back to incremental', async () => {

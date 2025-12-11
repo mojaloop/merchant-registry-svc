@@ -1,14 +1,7 @@
 import { useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { type PaginationState } from '@tanstack/react-table'
-import {
-  Box,
-  Heading,
-  HStack,
-  SimpleGrid,
-  Stack,
-  useDisclosure,
-} from '@chakra-ui/react'
+import { Box, Heading, HStack, SimpleGrid, Stack, useDisclosure } from '@chakra-ui/react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { MerchantRegistrationStatus } from 'shared-lib'
@@ -26,7 +19,7 @@ import {
   useRevertMerchants,
 } from '@/api/hooks/merchants'
 import { useUserProfile, useUsers } from '@/api/hooks/users'
-import { useTable, useMerchantColumns } from '@/hooks'
+import { useMerchantColumns, useTable } from '@/hooks'
 import {
   AlertDialog,
   CustomButton,

@@ -22,9 +22,10 @@ export async function registerMerchants (merchants: MerchantData[]): Promise<Reg
   const bulkRegistryEntities: RegistryEntity[] = []
 
   for (const merchant of merchants) {
-    // Use LEI as alias if present, otherwise use merchant_id + 10000000 as alias_value
-    const aliasValue = (merchant.lei !== null && merchant.lei !== undefined && merchant.lei !== '') ? merchant.lei : (10000000 + merchant.merchant_id).toString()
-    const aliasType = (merchant.lei !== null && merchant.lei !== undefined && merchant.lei !== '') ? 'LEI' : '8-digit merchant_id'
+    // Use LEI as alias if present and not empty/whitespace, otherwise use merchant_id + 10000000 as alias_value
+    const hasValidLEI = merchant.lei !== null && merchant.lei !== undefined && merchant.lei.trim() !== ''
+    const aliasValue = hasValidLEI ? merchant.lei : (10000000 + merchant.merchant_id).toString()
+    const aliasType = hasValidLEI ? 'LEI' : '8-digit merchant_id'
     logger.debug('Using %s as alias_value for merchant %d: %s', aliasType, merchant.merchant_id, aliasValue)
 
     const registryRecord = registryRepository.create({
@@ -34,7 +35,7 @@ export async function registerMerchants (merchants: MerchantData[]): Promise<Reg
       checkout_counter_id: merchant.checkout_counter_id,
       alias_value: aliasValue,
       currency: merchant.currency_code.iso_code,
-      lei: (merchant.lei !== null && merchant.lei !== undefined && merchant.lei !== '') ? merchant.lei : undefined
+      lei: hasValidLEI ? merchant.lei : undefined
     })
 
     bulkRegistryEntities.push(registryRecord)
