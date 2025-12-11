@@ -155,7 +155,7 @@ export const createLocationInfoMerchant = (
         sub_department: 'Support',
         town_name: 'Townsville',
         updated_at: new Date('2023-10-25T17:42:24.000Z'),
-        web_url: 'http://www.example.com',
+        web_url: 'https://www.example.com',
       },
     ],
     ...overrides,
@@ -229,7 +229,7 @@ export const createBusinessInfoMerchant = (
         created_at: '2023-10-23T11:55:01.772Z',
         id: 1,
         license_document_link:
-          'http://minio:9000/merchant-documents/marco/thitsaworkspdf-123.pdf?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20231025%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20231025T195349Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=d4e492cc0eb820949dd78dfecead33aa7748c206dd5d0c12e3060f63573c0b90',
+          'https://minio:9000/merchant-documents/marco/thitsaworkspdf-123.pdf?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20231025%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20231025T195349Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=d4e492cc0eb820949dd78dfecead33aa7748c206dd5d0c12e3060f63573c0b90',
         license_number: '1234',
         updated_at: '2023-10-23T11:56:54.000Z',
       },

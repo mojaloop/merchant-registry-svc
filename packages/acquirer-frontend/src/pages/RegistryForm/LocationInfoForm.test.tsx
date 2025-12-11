@@ -2,8 +2,8 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { vi } from 'vitest'
 
 import type { MerchantDetails } from '@/types/merchantDetails'
-import TestWrapper from '@/__tests__/TestWrapper'
 import { createLocationInfoMerchant } from '@/__tests__/fixtures/merchantDetails'
+import TestWrapper from '@/__tests__/TestWrapper'
 import LocationInfoForm, { removePropFromObj } from './LocationInfoForm'
 
 const draft = createLocationInfoMerchant()
@@ -107,7 +107,7 @@ describe('ContactPersonForm', () => {
     )
 
     expect(locationTypeInput.value).toEqual('Virtual')
-    expect(websiteUrlInput.value).toEqual('http://www.example.com')
+    expect(websiteUrlInput.value).toEqual('https://www.example.com')
     expect(departmentInput.value).toEqual('Sale')
     expect(subDepartmentInput.value).toEqual('Support')
     expect(streetNameInput.value).toEqual('Main Street')

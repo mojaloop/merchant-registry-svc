@@ -2,8 +2,8 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { vi } from 'vitest'
 
 import type { MerchantDetails } from '@/types/merchantDetails'
-import TestWrapper from '@/__tests__/TestWrapper'
 import { createOwnerInfoMerchant } from '@/__tests__/fixtures/merchantDetails'
+import TestWrapper from '@/__tests__/TestWrapper'
 import OwnerInfoForm from './OwnerInfoForm'
 
 const draft = createOwnerInfoMerchant()

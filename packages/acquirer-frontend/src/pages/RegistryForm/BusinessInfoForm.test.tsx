@@ -3,8 +3,8 @@ import { vi } from 'vitest'
 import type { MerchantRegistrationStatus } from 'shared-lib'
 
 import type { MerchantDetails } from '@/types/merchantDetails'
-import TestWrapper from '@/__tests__/TestWrapper'
 import { createBusinessInfoMerchant } from '@/__tests__/fixtures/merchantDetails'
+import TestWrapper from '@/__tests__/TestWrapper'
 import BusinessInfoForm from './BusinessInfoForm'
 
 const draft = createBusinessInfoMerchant()
