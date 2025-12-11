@@ -1,11 +1,13 @@
 import { useState } from 'react'
+import { type UseQueryResult } from '@tanstack/react-query'
 import { type PaginationState } from '@tanstack/react-table'
 import { Box, Heading, SimpleGrid, Stack, useDisclosure } from '@chakra-ui/react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { type MerchantRegistrationStatus } from 'shared-lib'
-import { type UseQueryResult } from '@tanstack/react-query'
 
+import type { MerchantInfo } from '@/types/merchants'
+import type { PaginationParams } from '@/types/pagination'
 import {
   merchantsFilterSchema,
   type MerchantsFilterForm,
@@ -23,8 +25,6 @@ import {
   TableSkeleton,
 } from '@/components/ui'
 import { FormInput, FormSelect } from '@/components/form'
-import type { MerchantInfo } from '@/types/merchants'
-import type { PaginationParams } from '@/types/pagination'
 
 interface PaginatedMerchantsResponse {
   data: MerchantInfo[]
@@ -35,7 +35,9 @@ interface MerchantRecordsPageTemplateProps {
   title: string
   emptyStateText: string
   registrationStatus: MerchantRegistrationStatus
-  useMerchantsHook: (params: MerchantsFilterForm & PaginationParams) => UseQueryResult<PaginatedMerchantsResponse>
+  useMerchantsHook: (
+    params: MerchantsFilterForm & PaginationParams
+  ) => UseQueryResult<PaginatedMerchantsResponse>
   columnOptions?: {
     includeRegisteredName?: boolean
     includeLEI?: boolean

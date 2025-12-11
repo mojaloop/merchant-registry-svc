@@ -30,6 +30,95 @@ import { getMerchant } from '../merchants'
 
 const FORM_FALLBACK_ERROR_MESSAGE = 'Please check your data and try again.'
 
+type MutationSuccessCallback = () => void
+
+interface CreateMutationOptions<TParams> {
+  mutationFn: (params: TParams) => Promise<{ message: string; data?: {id: string | number} }>
+  onSuccessCallback: MutationSuccessCallback
+  createErrorTitle: string
+  invalidateQueries?: string[]
+  saveMerchantId?: boolean
+}
+
+interface UpdateMutationOptions<TParams, TIds> {
+  mutationFn: (params: TParams, ids: TIds) => Promise<{ message: string }>
+  onSuccessCallback: MutationSuccessCallback
+  updateErrorTitle: string
+  invalidateQueries?: string[]
+}
+
+function useCreateMutation<TParams>({
+  mutationFn,
+  onSuccessCallback,
+  createErrorTitle,
+  invalidateQueries = [],
+  saveMerchantId = false,
+}: CreateMutationOptions<TParams>) {
+  const queryClient = useQueryClient()
+  const toast = useToast()
+
+  return useMutation({
+    mutationFn,
+    onSuccess: data => {
+      if (saveMerchantId && data.data?.id) {
+        localStorage.setItem('merchantId', data.data.id.toString())
+      }
+      invalidateQueries.forEach(key => {
+        queryClient.invalidateQueries({ queryKey: [key] })
+      })
+      toast({
+        title: data.message,
+        status: 'success',
+      })
+      onSuccessCallback()
+      scrollToTop()
+    },
+    onError: error => {
+      if (isAxiosError(error)) {
+        toast({
+          title: createErrorTitle,
+          description: error.response?.data.message || FORM_FALLBACK_ERROR_MESSAGE,
+          status: 'error',
+        })
+      }
+    },
+  })
+}
+
+function useUpdateMutation<TParams, TIds>({
+  mutationFn,
+  onSuccessCallback,
+  updateErrorTitle,
+  invalidateQueries = [],
+}: UpdateMutationOptions<TParams, TIds>) {
+  const queryClient = useQueryClient()
+  const toast = useToast()
+
+  return useMutation({
+    mutationFn: ({ params, ...ids }: { params: TParams } & TIds) => mutationFn(params, ids as TIds),
+    onSuccess: data => {
+      invalidateQueries.forEach(key => {
+        queryClient.invalidateQueries({ queryKey: [key] })
+      })
+      toast({
+        title: data.message,
+        status: 'success',
+      })
+      onSuccessCallback()
+      scrollToTop()
+    },
+    onError: error => {
+      if (isAxiosError(error)) {
+        toast({
+          title: updateErrorTitle,
+          description: error.response?.data.message || FORM_FALLBACK_ERROR_MESSAGE,
+          status: 'error',
+        })
+      }
+    },
+  })
+}
+
 export function useDraftCount() {
   return useQuery({
     queryKey: ['draft-count'],
@@ -95,252 +184,72 @@ export function useDistricts(country: string, subdivision: string) {
 }
 
 export function useCreateBusinessInfo(goToNextStep: () => void) {
-  const queryClient = useQueryClient()
-  const toast = useToast()
-
-  return useMutation({
-    mutationFn: (params: BusinessInfoForm) => createBusinessInfo(params),
-    onSuccess: data => {
-      localStorage.setItem('merchantId', data.data.id.toString())
-      queryClient.invalidateQueries({ queryKey: ['draft-count'] })
-      toast({
-        title: data.message,
-        status: 'success',
-      })
-      goToNextStep()
-      scrollToTop()
-    },
-    onError: error => {
-      if (isAxiosError(error)) {
-        toast({
-          title: 'Creating Failed!',
-          description: error.response?.data.message || FORM_FALLBACK_ERROR_MESSAGE,
-          status: 'error',
-        })
-      }
-    },
+  return useCreateMutation<BusinessInfoForm>({
+    mutationFn: createBusinessInfo,
+    onSuccessCallback: goToNextStep,
+    createErrorTitle: 'Creating Failed!',
+    invalidateQueries: ['draft-count'],
+    saveMerchantId: true,
   })
 }
 
 export function useUpdateBusinessInfo(goToNextStep: () => void) {
-  const queryClient = useQueryClient()
-  const toast = useToast()
-
-  return useMutation({
-    mutationFn: ({
-      params,
-      merchantId,
-    }: {
-      params: BusinessInfoForm
-      merchantId: string
-    }) => updateBusinessInfo(params, merchantId),
-    onSuccess: data => {
-      queryClient.invalidateQueries({ queryKey: ['draft-count'] })
-      toast({
-        title: data.message,
-        status: 'success',
-      })
-      goToNextStep()
-      scrollToTop()
-    },
-    onError: error => {
-      if (isAxiosError(error)) {
-        toast({
-          title: 'Updating Failed!',
-          description: error.response?.data.message || FORM_FALLBACK_ERROR_MESSAGE,
-          status: 'error',
-        })
-      }
-    },
+  return useUpdateMutation<BusinessInfoForm, { merchantId: string }>({
+    mutationFn: (params, { merchantId }) => updateBusinessInfo(params, merchantId),
+    onSuccessCallback: goToNextStep,
+    updateErrorTitle: 'Updating Failed!',
+    invalidateQueries: ['draft-count'],
   })
 }
 
 export function useCreateLocationInfo(goToNextStep: () => void) {
-  const toast = useToast()
-
-  return useMutation({
-    mutationFn: ({
-      params,
-      merchantId,
-    }: {
-      params: LocationInfoForm
-      merchantId: string
-    }) => createLocationInfo(params, merchantId),
-    onSuccess: data => {
-      toast({
-        title: data.message,
-        status: 'success',
-      })
-      goToNextStep()
-      scrollToTop()
-    },
-    onError: error => {
-      if (isAxiosError(error)) {
-        toast({
-          title: 'Creating Failed!',
-          description: error.response?.data.message || FORM_FALLBACK_ERROR_MESSAGE,
-          status: 'error',
-        })
-      }
-    },
+  return useUpdateMutation<LocationInfoForm, { merchantId: string }>({
+    mutationFn: (params, { merchantId }) => createLocationInfo(params, merchantId),
+    onSuccessCallback: goToNextStep,
+    updateErrorTitle: 'Creating Failed!',
   })
 }
 
 export function useUpdateLocationInfo(goToNextStep: () => void) {
-  const toast = useToast()
-
-  return useMutation({
-    mutationFn: ({
-      params,
-      merchantId,
-      locationId,
-    }: {
-      params: LocationInfoForm
-      merchantId: string
-      locationId: number
-    }) => updateLocationInfo(params, merchantId, locationId),
-    onSuccess: data => {
-      toast({
-        title: data.message,
-        status: 'success',
-      })
-      goToNextStep()
-      scrollToTop()
-    },
-    onError: error => {
-      if (isAxiosError(error)) {
-        toast({
-          title: 'Updating Failed!',
-          description: error.response?.data.message || FORM_FALLBACK_ERROR_MESSAGE,
-          status: 'error',
-        })
-      }
-    },
+  return useUpdateMutation<LocationInfoForm, { merchantId: string; locationId: number }>({
+    mutationFn: (params, { merchantId, locationId }) => updateLocationInfo(params, merchantId, locationId),
+    onSuccessCallback: goToNextStep,
+    updateErrorTitle: 'Updating Failed!',
   })
 }
 
 export function useCreateOwnerInfo(goToNextStep: () => void) {
-  const toast = useToast()
-
-  return useMutation({
-    mutationFn: ({ params, merchantId }: { params: OwnerInfoForm; merchantId: string }) =>
-      createOwnerInfo(params, merchantId),
-    onSuccess: data => {
-      toast({
-        title: data.message,
-        status: 'success',
-      })
-      goToNextStep()
-      scrollToTop()
-    },
-    onError: error => {
-      if (isAxiosError(error)) {
-        toast({
-          title: 'Creating Failed!',
-          description: error.response?.data.message || FORM_FALLBACK_ERROR_MESSAGE,
-          status: 'error',
-        })
-      }
-    },
+  return useUpdateMutation<OwnerInfoForm, { merchantId: string }>({
+    mutationFn: (params, { merchantId }) => createOwnerInfo(params, merchantId),
+    onSuccessCallback: goToNextStep,
+    updateErrorTitle: 'Creating Failed!',
   })
 }
 
 export function useUpdateOwnerInfo(goToNextStep: () => void) {
-  const toast = useToast()
-
-  return useMutation({
-    mutationFn: ({
-      params,
-      merchantId,
-      ownerId,
-    }: {
-      params: OwnerInfoForm
-      merchantId: string
-      ownerId: number
-    }) => updateOwnerInfo(params, merchantId, ownerId),
-    onSuccess: data => {
-      toast({
-        title: data.message,
-        status: 'success',
-      })
-      goToNextStep()
-      scrollToTop()
-    },
-    onError: error => {
-      if (isAxiosError(error)) {
-        toast({
-          title: 'Updating Failed!',
-          description: error.response?.data.message || FORM_FALLBACK_ERROR_MESSAGE,
-          status: 'error',
-        })
-      }
-    },
+  return useUpdateMutation<OwnerInfoForm, { merchantId: string; ownerId: number }>({
+    mutationFn: (params, { merchantId, ownerId }) => updateOwnerInfo(params, merchantId, ownerId),
+    onSuccessCallback: goToNextStep,
+    updateErrorTitle: 'Updating Failed!',
   })
 }
 
 export function useCreateContactPerson(openReviewModal: () => void) {
-  const queryClient = useQueryClient()
-  const toast = useToast()
-
-  return useMutation({
-    mutationFn: ({
-      params,
-      merchantId,
-    }: {
-      params: ContactPersonForm
-      merchantId: string
-    }) => createContactPersonInfo(params, merchantId),
-    onSuccess: data => {
-      queryClient.invalidateQueries({ queryKey: ['merchants'] })
-      toast({
-        title: data.message,
-        status: 'success',
-      })
-      openReviewModal()
-    },
-    onError: error => {
-      if (isAxiosError(error)) {
-        toast({
-          title: 'Creating Failed!',
-          description: error.response?.data.message || FORM_FALLBACK_ERROR_MESSAGE,
-          status: 'error',
-        })
-      }
-    },
+  return useUpdateMutation<ContactPersonForm, { merchantId: string }>({
+    mutationFn: (params, { merchantId }) => createContactPersonInfo(params, merchantId),
+    onSuccessCallback: openReviewModal,
+    updateErrorTitle: 'Creating Failed!',
+    invalidateQueries: ['merchants'],
   })
 }
 
 export function useUpdateContactPerson(openReviewModal: () => void) {
-  const queryClient = useQueryClient()
-  const toast = useToast()
-
-  return useMutation({
-    mutationFn: ({
-      params,
-      merchantId,
-      contactPersonId,
-    }: {
-      params: ContactPersonForm
-      merchantId: string
-      contactPersonId: number
-    }) => updateContactPersonInfo(params, merchantId, contactPersonId),
-    onSuccess: data => {
-      queryClient.invalidateQueries({ queryKey: ['merchants'] })
-      toast({
-        title: data.message,
-        status: 'success',
-      })
-      openReviewModal()
-    },
-    onError: error => {
-      if (isAxiosError(error)) {
-        toast({
-          title: 'Updating Failed!',
-          description: error.response?.data.message || FORM_FALLBACK_ERROR_MESSAGE,
-          status: 'error',
-        })
-      }
-    },
+  return useUpdateMutation<ContactPersonForm, { merchantId: string; contactPersonId: number }>({
+    mutationFn: (params, { merchantId, contactPersonId }) =>
+      updateContactPersonInfo(params, merchantId, contactPersonId),
+    onSuccessCallback: openReviewModal,
+    updateErrorTitle: 'Updating Failed!',
+    invalidateQueries: ['merchants'],
   })
 }
 
