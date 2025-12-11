@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { Box, Heading, Stack, useToast } from '@chakra-ui/react'
+import { Box, Stack, useToast } from '@chakra-ui/react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { BusinessOwnerIDType } from 'shared-lib'
@@ -15,7 +15,7 @@ import {
 } from '@/api/hooks/forms'
 import { useMerchantId } from '@/hooks'
 import { CustomButton, FloatingSpinner } from '@/components/ui'
-import { FormInput, FormSelect } from '@/components/form'
+import { AddressFormFields, FormInput, FormSelect } from '@/components/form'
 import GridShell from './GridShell'
 
 const ID_TYPES = Object.entries(BusinessOwnerIDType).map(([, label]) => ({
@@ -212,145 +212,15 @@ const OwnerInfoForm = ({ setActiveStep }: OwnerInfoFormProps) => {
           />
         </GridShell>
 
-        <GridShell pt='2'>
-          <Heading size='sm' as='h3' w='20rem' justifySelf={{ md: 'center' }}>
-            Physical Address
-          </Heading>
-        </GridShell>
-
-        <GridShell justifyItems='center'>
-          <FormInput
-            name='department'
-            register={register}
-            errors={errors}
-            label='Department'
-            placeholder='Department'
-          />
-
-          <FormInput
-            name='sub_department'
-            register={register}
-            errors={errors}
-            label='Sub Department'
-            placeholder='Sub Department'
-          />
-
-          <FormInput
-            name='street_name'
-            register={register}
-            errors={errors}
-            label='Street Name'
-            placeholder='Street Name'
-          />
-
-          <FormInput
-            name='building_number'
-            register={register}
-            errors={errors}
-            label='Building Number'
-            placeholder='Building Number'
-          />
-
-          <FormInput
-            name='building_name'
-            register={register}
-            errors={errors}
-            label='Building Name'
-            placeholder='Building Name'
-          />
-
-          <FormInput
-            name='floor_number'
-            register={register}
-            errors={errors}
-            label='Floor Number'
-            placeholder='Floor Number'
-          />
-
-          <FormInput
-            name='room_number'
-            register={register}
-            errors={errors}
-            label='Room Number'
-            placeholder='Room Number'
-          />
-
-          <FormInput
-            name='post_box'
-            register={register}
-            errors={errors}
-            label='Post Box'
-            placeholder='Post Box'
-          />
-
-          <FormInput
-            name='postal_code'
-            register={register}
-            errors={errors}
-            label='Postal Code'
-            placeholder='Postal Code'
-          />
-
-          <FormSelect
-            name='country'
-            register={register}
-            errors={errors}
-            label='Country'
-            placeholder='Choose Country'
-            options={countryOptions || []}
-            onChange={() => {
-              setValue('country_subdivision', '')
-              setValue('district_name', '')
-            }}
-          />
-
-          <FormSelect
-            name='country_subdivision'
-            register={register}
-            errors={errors}
-            label='Country Subdivision (State/Divison)'
-            placeholder='Choose Country Subdivision'
-            options={subdivisionOptions || []}
-            onChange={() => {
-              setValue('district_name', '')
-            }}
-          />
-
-          <FormSelect
-            name='district_name'
-            register={register}
-            errors={errors}
-            label='District'
-            placeholder='Choose District'
-            options={districtOptions || []}
-          />
-
-          <FormInput
-            name='town_name'
-            register={register}
-            errors={errors}
-            label='Township'
-            placeholder='Township'
-          />
-
-          <FormInput
-            name='longitude'
-            register={register}
-            errors={errors}
-            label='Longitude'
-            placeholder='Longitude'
-            inputProps={{ type: 'number' }}
-          />
-
-          <FormInput
-            name='latitude'
-            register={register}
-            errors={errors}
-            label='Latitude'
-            placeholder='Latitude'
-            inputProps={{ type: 'number' }}
-          />
-        </GridShell>
+        <AddressFormFields
+          register={register}
+          errors={errors}
+          setValue={setValue}
+          countryOptions={countryOptions}
+          subdivisionOptions={subdivisionOptions}
+          districtOptions={districtOptions}
+          headingText='Physical Address'
+        />
 
         <Box alignSelf='end'>
           <CustomButton

@@ -113,7 +113,8 @@ const FileUploadModal = ({
               setIsDraggingOver(false)
               resetUploadStates()
 
-              if (acceptedFileType && e.dataTransfer.files[0].type !== acceptedFileType) return
+              if (acceptedFileType && e.dataTransfer.files[0].type !== acceptedFileType)
+                return
 
               setFile(e.dataTransfer.files[0])
               setIsUploading(true)
