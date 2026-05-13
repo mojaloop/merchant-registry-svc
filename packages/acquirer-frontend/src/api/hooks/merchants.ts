@@ -31,6 +31,7 @@ function transformIntoTableData(merchantData: MerchantDetails): MerchantInfo {
     no: merchantData.id, // Assuming 'no' is the id of the merchant
     dbaName: merchantData.dba_trading_name,
     registeredName: merchantData.registered_name || 'N/A',
+    lei: merchantData.lei,
 
     // Assuming the first checkout counter's alias value is the payintoAccount
     payintoAccountId: merchantData.checkout_counters[0]?.alias_value || 'N/A',
@@ -45,6 +46,7 @@ function transformIntoTableData(merchantData: MerchantDetails): MerchantInfo {
     registeredDfspName: merchantData.default_dfsp.name,
     registrationStatus: merchantData.registration_status,
     maker: merchantData.created_by,
+    gleif_verified_at: merchantData.gleif_verified_at,
   }
 }
 

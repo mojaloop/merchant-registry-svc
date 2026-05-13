@@ -1,62 +1,46 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { vi } from 'vitest'
 
+import type { MerchantDetails } from '@/types/merchantDetails'
+import { createContactPersonMerchant } from '@/__tests__/fixtures/merchantDetails'
 import TestWrapper from '@/__tests__/TestWrapper'
 import ContactPersonForm from './ContactPersonForm'
 
-const hoistedValues = vi.hoisted(() => ({
-  draft: {
-    business_owners: [
-      {
-        created_at: '2023-10-26T04:24:14.056Z',
-        email: 'johndoe@gmail.com',
-        id: 1,
-        identification_number: '30291',
-        identificaton_type: 'Passport',
-        name: 'John Doe',
-        phone_number: '932-888-4213',
-        updated_at: '2023-10-26T04:24:14.056Z',
-      },
-    ],
-    contact_persons: [
-      {
-        created_at: '2023-10-26T06:29:21.676Z',
-        email: 'john@gmail.com',
-        id: 1,
-        name: 'John',
-        phone_number: '932-555-4213',
-        updated_at: '2023-10-26T06:29:21.676Z',
-      },
-    ],
-  },
-}))
-
+const draft = createContactPersonMerchant()
 const fn = vi.fn()
+const mockMerchantId = vi.fn()
 
 vi.mock('@chakra-ui/react', async () => {
-  const charaUI: object = await vi.importActual('@chakra-ui/react')
+  const chakraUI: object = await vi.importActual('@chakra-ui/react')
 
   return {
-    ...charaUI,
+    ...chakraUI,
     useToast: () => {
       return () => fn('toast')
     },
   }
 })
 
-const mockMerchantId = vi.fn()
 vi.mock('@/hooks', () => ({
   useMerchantId: () => mockMerchantId(),
 }))
 
-const mockDraft = vi.fn()
+let draftData: MerchantDetails | null = null
+
 vi.mock('@/api/hooks/forms', () => ({
-  useDraft: () => mockDraft(),
+  useDraft: () => ({
+    get data() {
+      return draftData
+    },
+    isFetching: false,
+  }),
   useCreateContactPerson: () => ({
     mutate: () => fn('createContactPerson'),
+    isPending: false,
   }),
   useUpdateContactPerson: () => ({
     mutate: () => fn('updateContactPerson'),
+    isPending: false,
   }),
   useChangeStatusToReview: () => ({
     isLoading: false,
@@ -69,10 +53,15 @@ const mockSetActiveStep = vi.fn()
 describe('ContactPersonForm', () => {
   afterEach(() => {
     vi.restoreAllMocks()
+    draftData = null
+  })
+
+  beforeEach(() => {
+    fn.mockClear()
   })
 
   it('should focus the first input which has an error when the validation fails', async () => {
-    mockDraft.mockReturnValue({ data: null })
+    draftData = null
 
     render(
       <TestWrapper>
@@ -87,7 +76,7 @@ describe('ContactPersonForm', () => {
   })
 
   it('should fill with draft values when it is a draft', () => {
-    mockDraft.mockReturnValue({ data: hoistedValues.draft })
+    draftData = draft
 
     render(
       <TestWrapper>
@@ -105,7 +94,7 @@ describe('ContactPersonForm', () => {
   })
 
   it('should set input values to owner info values when "Same as business owner" checkbox is checked', () => {
-    mockDraft.mockReturnValue({ data: hoistedValues.draft })
+    draftData = draft
 
     render(
       <TestWrapper>
@@ -126,7 +115,7 @@ describe('ContactPersonForm', () => {
   })
 
   it('should not set input values to owner info values if owner info doesn\'t exist when "Same as business owner" checkbox is checked', () => {
-    mockDraft.mockReturnValue({ data: null })
+    draftData = null
 
     render(
       <TestWrapper>
@@ -147,7 +136,7 @@ describe('ContactPersonForm', () => {
   })
 
   it('should call "createContactPerson.mutate" when it is not a draft', async () => {
-    mockDraft.mockReturnValue({ data: null })
+    draftData = null
     mockMerchantId.mockReturnValue(1)
 
     render(
@@ -170,7 +159,7 @@ describe('ContactPersonForm', () => {
   })
 
   it('should call "updateContactPerson.mutate" when it is a draft', async () => {
-    mockDraft.mockReturnValue({ data: hoistedValues.draft })
+    draftData = draft
     mockMerchantId.mockReturnValue(1)
 
     render(
@@ -188,7 +177,7 @@ describe('ContactPersonForm', () => {
   })
 
   it('should show an error toast when the merchantId is not found', async () => {
-    mockDraft.mockReturnValue({ data: hoistedValues.draft })
+    draftData = draft
     mockMerchantId.mockReturnValue(null)
 
     render(

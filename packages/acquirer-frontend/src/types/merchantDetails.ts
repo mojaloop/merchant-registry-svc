@@ -104,6 +104,7 @@ export interface MerchantDetails {
   id: number
   dba_trading_name: string
   registered_name: string
+  lei: string | null
   employees_num: NumberOfEmployees
   monthly_turnover: string
   merchant_type: MerchantType
@@ -112,6 +113,7 @@ export interface MerchantDetails {
   allow_block_status: string
   registration_status: MerchantRegistrationStatus
   registration_status_reason: string | null
+  gleif_verified_at: string | null
   created_at: string
   updated_at: string
   default_dfsp: DFSP

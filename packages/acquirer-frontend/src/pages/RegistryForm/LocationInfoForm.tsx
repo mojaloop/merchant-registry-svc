@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react'
-import { Box, Heading, Stack, useToast } from '@chakra-ui/react'
+import { useEffect } from 'react'
+import { Box, Stack, useToast } from '@chakra-ui/react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { MerchantLocationType } from 'shared-lib'
@@ -15,7 +15,7 @@ import {
 } from '@/api/hooks/forms'
 import { useMerchantId } from '@/hooks'
 import { CustomButton, FloatingSpinner } from '@/components/ui'
-import { FormInput, FormSelect } from '@/components/form'
+import { AddressFormFields, FormInput, FormSelect } from '@/components/form'
 import GridShell from './GridShell'
 
 export function removePropFromObj<TObj extends object, TKey extends keyof TObj>(
@@ -37,9 +37,6 @@ interface LocationInfoFormProps {
 
 const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
   const toast = useToast()
-
-  const [isDraft, setIsDraft] = useState(false)
-  const [locationId, setLocationId] = useState<number | null>(null)
 
   const {
     register,
@@ -86,10 +83,7 @@ const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
 
     if (!draftData.locations?.[0]) return
 
-    setIsDraft(!!draftData.locations[0])
-
     const {
-      id,
       location_type,
       web_url,
       department,
@@ -111,7 +105,6 @@ const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
 
     const checkoutCounter = draftData.checkout_counters?.[0]
 
-    id && setLocationId(id)
     location_type && setValue('location_type', location_type)
     web_url && setValue('web_url', web_url)
     department && setValue('department', department)
@@ -141,17 +134,16 @@ const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
       })
     }
 
-    if (!isDraft) {
-      createLocationInfo.mutate({ params: values, merchantId })
+    const existingLocationId = draft.data?.locations?.[0]?.id
+    if (existingLocationId) {
+      const params = removePropFromObj(values, 'checkout_description')
+      updateLocationInfo.mutate({
+        params,
+        merchantId,
+        locationId: existingLocationId,
+      })
     } else {
-      if (locationId) {
-        const params = removePropFromObj(values, 'checkout_description')
-        updateLocationInfo.mutate({
-          params,
-          merchantId,
-          locationId,
-        })
-      }
+      createLocationInfo.mutate({ params: values, merchantId })
     }
   }
 
@@ -197,145 +189,15 @@ const LocationInfoForm = ({ setActiveStep }: LocationInfoFormProps) => {
           />
         </GridShell>
 
-        <GridShell pt='2'>
-          <Heading size='sm' as='h3' w='20rem' justifySelf={{ md: 'center' }}>
-            Physical Business Address
-          </Heading>
-        </GridShell>
-
-        <GridShell justifyItems='center'>
-          <FormInput
-            name='department'
-            register={register}
-            errors={errors}
-            label='Department'
-            placeholder='Department'
-          />
-
-          <FormInput
-            name='sub_department'
-            register={register}
-            errors={errors}
-            label='Sub Department'
-            placeholder='Sub Department'
-          />
-
-          <FormInput
-            name='street_name'
-            register={register}
-            errors={errors}
-            label='Street Name'
-            placeholder='Street Name'
-          />
-
-          <FormInput
-            name='building_number'
-            register={register}
-            errors={errors}
-            label='Building Number'
-            placeholder='Building Number'
-          />
-
-          <FormInput
-            name='building_name'
-            register={register}
-            errors={errors}
-            label='Building Name'
-            placeholder='Building Name'
-          />
-
-          <FormInput
-            name='floor_number'
-            register={register}
-            errors={errors}
-            label='Floor Number'
-            placeholder='Floor Number'
-          />
-
-          <FormInput
-            name='room_number'
-            register={register}
-            errors={errors}
-            label='Room Number'
-            placeholder='Room Number'
-          />
-
-          <FormInput
-            name='post_box'
-            register={register}
-            errors={errors}
-            label='Post Box'
-            placeholder='Post Box'
-          />
-
-          <FormInput
-            name='postal_code'
-            register={register}
-            errors={errors}
-            label='Postal Code'
-            placeholder='Postal Code'
-          />
-
-          <FormSelect
-            name='country'
-            register={register}
-            errors={errors}
-            label='Country'
-            placeholder='Choose Country'
-            options={countryOptions || []}
-            onChange={() => {
-              setValue('country_subdivision', '')
-              setValue('district_name', '')
-            }}
-          />
-
-          <FormSelect
-            name='country_subdivision'
-            register={register}
-            errors={errors}
-            label='Country Subdivision (State/Divison)'
-            placeholder='Choose Country Subdivision'
-            options={subdivisionOptions || []}
-            onChange={() => {
-              setValue('district_name', '')
-            }}
-          />
-
-          <FormSelect
-            name='district_name'
-            register={register}
-            errors={errors}
-            label='District'
-            placeholder='Choose District'
-            options={districtOptions || []}
-          />
-
-          <FormInput
-            name='town_name'
-            register={register}
-            errors={errors}
-            label='Township'
-            placeholder='Township'
-          />
-
-          <FormInput
-            name='longitude'
-            register={register}
-            errors={errors}
-            label='Longitude'
-            placeholder='Longitude'
-            inputProps={{ type: 'number' }}
-          />
-
-          <FormInput
-            name='latitude'
-            register={register}
-            errors={errors}
-            label='Latitude'
-            placeholder='Latitude'
-            inputProps={{ type: 'number' }}
-          />
-        </GridShell>
+        <AddressFormFields
+          register={register}
+          errors={errors}
+          setValue={setValue}
+          countryOptions={countryOptions}
+          subdivisionOptions={subdivisionOptions}
+          districtOptions={districtOptions}
+          headingText='Physical Business Address'
+        />
 
         <GridShell justifyItems='center' pb={{ base: '8', sm: '12' }}>
           <FormInput

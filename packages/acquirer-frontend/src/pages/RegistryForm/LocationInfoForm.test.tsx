@@ -1,74 +1,49 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { vi } from 'vitest'
 
+import type { MerchantDetails } from '@/types/merchantDetails'
+import { createLocationInfoMerchant } from '@/__tests__/fixtures/merchantDetails'
 import TestWrapper from '@/__tests__/TestWrapper'
 import LocationInfoForm, { removePropFromObj } from './LocationInfoForm'
 
-const hoistedValues = vi.hoisted(() => ({
-  draft: {
-    checkout_counters: [
-      {
-        description: '-',
-      },
-    ],
-    locations: [
-      {
-        address_line: '',
-        address_type: '',
-        building_name: 'Big Building',
-        building_number: '123',
-        country: 'Australia',
-        country_subdivision: 'Western Australia',
-        created_at: '2023-10-25T15:39:03.173Z',
-        department: 'Sale',
-        district_name: 'Perth',
-        floor_number: '4',
-        id: 1,
-        latitude: '331',
-        location_type: 'Virtual',
-        longitude: '99',
-        post_box: 'PO Box 123',
-        postal_code: '12345',
-        room_number: '101',
-        street_name: 'Main Street',
-        sub_department: 'Support',
-        town_name: 'Townsville',
-        updated_at: '2023-10-25T17:42:24.000Z',
-        web_url: 'http://www.example.com',
-      },
-    ],
-  },
-}))
-
+const draft = createLocationInfoMerchant()
 const fn = vi.fn()
+const mockMerchantId = vi.fn()
 
 vi.mock('@chakra-ui/react', async () => {
-  const charaUI: object = await vi.importActual('@chakra-ui/react')
+  const chakraUI: object = await vi.importActual('@chakra-ui/react')
 
   return {
-    ...charaUI,
+    ...chakraUI,
     useToast: () => {
       return () => fn('toast')
     },
   }
 })
 
-const mockMerchantId = vi.fn()
 vi.mock('@/hooks', () => ({
   useMerchantId: () => mockMerchantId(),
 }))
 
-const mockDraft = vi.fn()
+let draftData: MerchantDetails | null = null
+
 vi.mock('@/api/hooks/forms', () => ({
-  useCountries: () => ({ data: ['Australia'] }),
-  useSubdivisions: () => ({ data: ['Western Australia'] }),
-  useDistricts: () => ({ data: ['Perth'] }),
-  useDraft: () => mockDraft(),
+  useCountries: () => ({ data: ['Australia'], isLoading: false }),
+  useSubdivisions: () => ({ data: ['Western Australia'], isFetching: false }),
+  useDistricts: () => ({ data: ['Perth'], isFetching: false }),
+  useDraft: () => ({
+    get data() {
+      return draftData
+    },
+    isFetching: false,
+  }),
   useCreateLocationInfo: () => ({
     mutate: () => fn('createLocationInfo'),
+    isPending: false,
   }),
   useUpdateLocationInfo: () => ({
     mutate: () => fn('updateLocationInfo'),
+    isPending: false,
   }),
 }))
 
@@ -77,10 +52,15 @@ const mockSetActiveStep = vi.fn()
 describe('ContactPersonForm', () => {
   afterEach(() => {
     vi.restoreAllMocks()
+    draftData = null
+  })
+
+  beforeEach(() => {
+    fn.mockClear()
   })
 
   it('should focus the first input which has an error when the validation fails', async () => {
-    mockDraft.mockReturnValue({ data: null })
+    draftData = null
 
     render(
       <TestWrapper>
@@ -95,7 +75,7 @@ describe('ContactPersonForm', () => {
   })
 
   it('should fill with draft values when it is a draft', () => {
-    mockDraft.mockReturnValue({ data: hoistedValues.draft })
+    draftData = draft
 
     render(
       <TestWrapper>
@@ -127,7 +107,7 @@ describe('ContactPersonForm', () => {
     )
 
     expect(locationTypeInput.value).toEqual('Virtual')
-    expect(websiteUrlInput.value).toEqual('http://www.example.com')
+    expect(websiteUrlInput.value).toEqual('https://www.example.com')
     expect(departmentInput.value).toEqual('Sale')
     expect(subDepartmentInput.value).toEqual('Support')
     expect(streetNameInput.value).toEqual('Main Street')
@@ -147,7 +127,7 @@ describe('ContactPersonForm', () => {
   })
 
   it('should reset the values of "Country Subdivision" and "District" when the value of "Country" is changed', () => {
-    mockDraft.mockReturnValue({ data: hoistedValues.draft })
+    draftData = draft
 
     render(
       <TestWrapper>
@@ -168,7 +148,7 @@ describe('ContactPersonForm', () => {
   })
 
   it('should reset the value of "District" when the value of "Country Subdivision" is changed', () => {
-    mockDraft.mockReturnValue({ data: hoistedValues.draft })
+    draftData = draft
 
     render(
       <TestWrapper>
@@ -187,7 +167,7 @@ describe('ContactPersonForm', () => {
   })
 
   it('should call "createLocationInfo.mutate" when it is not a draft', async () => {
-    mockDraft.mockReturnValue({ data: null })
+    draftData = null
     mockMerchantId.mockReturnValue(1)
 
     render(
@@ -208,7 +188,7 @@ describe('ContactPersonForm', () => {
   })
 
   it('should call "updateLocationInfo.mutate" when it is a draft', async () => {
-    mockDraft.mockReturnValue({ data: hoistedValues.draft })
+    draftData = draft
     mockMerchantId.mockReturnValue(1)
 
     render(
@@ -226,7 +206,7 @@ describe('ContactPersonForm', () => {
   })
 
   it('should show an error toast when the merchantId is not found', async () => {
-    mockDraft.mockReturnValue({ data: hoistedValues.draft })
+    draftData = draft
     mockMerchantId.mockReturnValue(null)
 
     render(

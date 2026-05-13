@@ -25,7 +25,7 @@ export function GETParticipantsTests (app: Application): void {
     // Arrange
     // Act
     const res = await request(app)
-      .get('/participants/ALIAS/9999999')
+      .get('/parties/ALIAS/9999999')
 
     // Assert
     expect(res.statusCode).toEqual(200)
@@ -37,7 +37,7 @@ export function GETParticipantsTests (app: Application): void {
     // Arrange
     // Act
     const res = await request(app)
-      .get(`/participants/ALIAS/${registryEntries[0].alias_value}`)
+      .get(`/parties/ALIAS/${registryEntries[0].alias_value}`)
 
     // Assert
     expect(res.statusCode).toEqual(200)

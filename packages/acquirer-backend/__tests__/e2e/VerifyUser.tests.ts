@@ -5,6 +5,7 @@ import jwt from 'jsonwebtoken'
 import { readEnv } from '../../src/setup/readEnv'
 import { AppDataSource } from '../../src/database/dataSource'
 import { PortalUserEntity } from '../../src/entity/PortalUserEntity'
+import { PortalRoleEntity } from '../../src/entity/PortalRoleEntity'
 import { PortalUserStatus, PortalUserType } from 'shared-lib'
 import { EmailVerificationTokenEntity } from '../../src/entity/EmailVerificationToken'
 import { JwtTokenEntity } from '../../src/entity/JwtTokenEntity'
@@ -16,11 +17,14 @@ export function testVerifyUser (app: Application): void {
 
   beforeAll(async () => {
     // Generate Token using jwt
+    const role = await AppDataSource.manager.findOneOrFail(PortalRoleEntity, { where: { name: 'Hub Admin' } })
+
     unVerifyUser = AppDataSource.manager.create(PortalUserEntity)
     unVerifyUser.name = 'New Unverification User'
     unVerifyUser.email = 'new-unverification-user@email.com'
     unVerifyUser.user_type = PortalUserType.HUB
     unVerifyUser.status = PortalUserStatus.UNVERIFIED
+    unVerifyUser.role = role
     await AppDataSource.manager.save(unVerifyUser)
 
     unVerifyUserToken = jwt.sign(
@@ -64,11 +68,14 @@ export function testVerifyUser (app: Application): void {
 
   it('should return 404 when maliciously crafted token is used', async () => {
     // Arrange
+    const role = await AppDataSource.manager.findOneOrFail(PortalRoleEntity, { where: { name: 'Hub Admin' } })
+
     const verifiedUser = AppDataSource.manager.create(PortalUserEntity)
     verifiedUser.name = 'New Unverification User'
     verifiedUser.email = 'new-unverification-user@email.com'
     verifiedUser.user_type = PortalUserType.HUB
     verifiedUser.status = PortalUserStatus.RESETPASSWORD
+    verifiedUser.role = role
     await AppDataSource.manager.save(verifiedUser)
 
     const maliciouslyCraftedToken = jwt.sign(

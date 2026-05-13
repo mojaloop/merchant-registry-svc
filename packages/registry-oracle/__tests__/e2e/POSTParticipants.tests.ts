@@ -17,7 +17,7 @@ export function POSTParticipantsTests (app: Application): void {
 
   beforeEach(async () => {
     await AppDataSource.query('PRAGMA foreign_keys = OFF;')
-    await AppDataSource.manager.delete(RegistryEntity, {})
+    await AppDataSource.manager.clear(RegistryEntity)
     await AppDataSource.query('PRAGMA foreign_keys = ON;')
   })
 

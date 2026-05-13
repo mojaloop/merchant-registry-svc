@@ -4,6 +4,7 @@ export interface IMerchantSubmitData {
   id?: number // for continue updates after drafting
   dba_trading_name: string
   registered_name?: string
+  lei?: string
   employees_num: string
   monthly_turnover?: number
   allow_block_status: MerchantAllowBlockStatus

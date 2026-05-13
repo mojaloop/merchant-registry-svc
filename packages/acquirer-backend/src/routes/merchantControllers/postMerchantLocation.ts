@@ -14,6 +14,7 @@ import {
 import { audit } from '../../utils/audit'
 import { AuditActionType, AuditTrasactionStatus } from 'shared-lib'
 import { type AuthRequest } from 'src/types/express'
+import { gleifService } from '../../services/GLEIFService'
 
 /**
  * @openapi
@@ -193,6 +194,39 @@ trying to access unauthorized(different DFSP) merchant ${merchant.id}`,
     return res.status(400).send({
       message: 'Accessing different DFSP\'s Merchant is not allowed.'
     })
+  }
+
+  // GLEIF Location validation
+  if (merchant.lei !== null && merchant.lei !== undefined && merchant.lei !== '') {
+    const validationResult = await gleifService.validateLocation(
+      merchant.lei,
+      locationData.street_name ?? '',
+      locationData.building_number ?? '',
+      locationData.postal_code ?? '',
+      locationData.town_name ?? '',
+      locationData.country_subdivision ?? '',
+      locationData.country ?? '',
+      locationData.address_line ?? ''
+    )
+
+    if (!validationResult.isValid) {
+      logger.error('GLEIF Location validation failed: %s', validationResult.error)
+      await audit(
+        AuditActionType.ADD,
+        AuditTrasactionStatus.FAILURE,
+        'postMerchantLocation',
+        `GLEIF Location validation failed: ${validationResult.error}`,
+        'MerchantEntity',
+        {}, locationData, portalUser
+      )
+      return res.status(422).send({
+        message: validationResult.error ?? 'GLEIF Location validation failed'
+      })
+    }
+
+    // Set GLEIF verification timestamp when location validation succeeds
+    merchant.gleif_verified_at = new Date()
+    await merchantRepository.save(merchant)
   }
 
   const newLocation = locationRepository.create({

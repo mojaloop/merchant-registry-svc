@@ -1,77 +1,49 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { vi } from 'vitest'
 
+import type { MerchantDetails } from '@/types/merchantDetails'
+import { createOwnerInfoMerchant } from '@/__tests__/fixtures/merchantDetails'
 import TestWrapper from '@/__tests__/TestWrapper'
 import OwnerInfoForm from './OwnerInfoForm'
 
-const hoistedValues = vi.hoisted(() => ({
-  draft: {
-    business_owners: [
-      {
-        businessPersonLocation: {
-          address_line: '',
-          address_type: '',
-          building_name: 'Big Building',
-          building_number: '123',
-          country: 'Australia',
-          country_subdivision: 'Western Australia',
-          created_at: '2023-10-26T04:24:14.046Z',
-          department: 'Sales',
-          district_name: 'Perth',
-          floor_number: '4',
-          id: 1,
-          latitude: '331',
-          longitude: '99',
-          post_box: 'PO Box 123',
-          postal_code: '12345',
-          room_number: '101',
-          street_name: 'Main Street',
-          sub_department: 'Support',
-          town_name: 'Townsville',
-          updated_at: '2023-10-26T04:24:14.046Z',
-        },
-        created_at: '2023-10-26T04:24:14.056Z',
-        email: 'johndoe@gmail.com',
-        id: 1,
-        identification_number: '30291',
-        identificaton_type: 'Passport',
-        name: 'John Doe',
-        phone_number: '932-888-4213',
-        updated_at: '2023-10-26T04:24:14.056Z',
-      },
-    ],
-  },
-}))
-
+const draft = createOwnerInfoMerchant()
 const fn = vi.fn()
+const mockMerchantId = vi.fn()
 
 vi.mock('@chakra-ui/react', async () => {
-  const charaUI: object = await vi.importActual('@chakra-ui/react')
+  const chakraUI: object = await vi.importActual('@chakra-ui/react')
 
   return {
-    ...charaUI,
+    ...chakraUI,
     useToast: () => {
       return () => fn('toast')
     },
   }
 })
 
-const mockMerchantId = vi.fn()
 vi.mock('@/hooks', () => ({
   useMerchantId: () => mockMerchantId(),
 }))
 
-const mockDraft = vi.fn()
+let draftData: MerchantDetails | null = null
+
 vi.mock('@/api/hooks/forms', () => ({
-  useCountries: () => ({ data: ['Australia'] }),
-  useSubdivisions: () => ({ data: ['Western Australia'] }),
-  useDistricts: () => ({ data: ['Perth'] }),
-  useDraft: () => mockDraft(),
+  useCountries: () => ({ data: ['Australia'], isLoading: false }),
+  useSubdivisions: () => ({ data: ['Western Australia'], isFetching: false }),
+  useDistricts: () => ({ data: ['Perth'], isFetching: false }),
+  useDraft: () => ({
+    get data() {
+      return draftData
+    },
+    isFetching: false,
+  }),
   useCreateOwnerInfo: () => ({
     mutate: () => fn('createOwnerInfo'),
+    isPending: false,
   }),
   useUpdateOwnerInfo: () => ({
     mutate: () => fn('updateOwnerInfo'),
+    isPending: false,
   }),
 }))
 
@@ -80,10 +52,15 @@ const mockSetActiveStep = vi.fn()
 describe('OwnerInfoForm', () => {
   afterEach(() => {
     vi.restoreAllMocks()
+    draftData = null
+  })
+
+  beforeEach(() => {
+    fn.mockClear()
   })
 
   it('should focus the first input which has an error when the validation fails', async () => {
-    mockDraft.mockReturnValue({ data: null })
+    draftData = null
 
     render(
       <TestWrapper>
@@ -98,7 +75,7 @@ describe('OwnerInfoForm', () => {
   })
 
   it('should fill with draft values when it is a draft', () => {
-    mockDraft.mockReturnValue({ data: hoistedValues.draft })
+    draftData = draft
 
     render(
       <TestWrapper>
@@ -153,7 +130,7 @@ describe('OwnerInfoForm', () => {
   })
 
   it('should reset the values of "Country Subdivision" and "District" when the value of "Country" is changed', () => {
-    mockDraft.mockReturnValue({ data: hoistedValues.draft })
+    draftData = draft
 
     render(
       <TestWrapper>
@@ -174,7 +151,7 @@ describe('OwnerInfoForm', () => {
   })
 
   it('should reset the value of "District" when the value of "Country Subdivision" is changed', () => {
-    mockDraft.mockReturnValue({ data: hoistedValues.draft })
+    draftData = draft
 
     render(
       <TestWrapper>
@@ -193,7 +170,7 @@ describe('OwnerInfoForm', () => {
   })
 
   it('should call "createOwnerInfo.mutate" when it is not a draft', async () => {
-    mockDraft.mockReturnValue({ data: null })
+    draftData = null
     mockMerchantId.mockReturnValue(1)
 
     render(
@@ -221,7 +198,7 @@ describe('OwnerInfoForm', () => {
   })
 
   it('should call "updateOwnerInfo.mutate" when it is a draft', async () => {
-    mockDraft.mockReturnValue({ data: hoistedValues.draft })
+    draftData = draft
     mockMerchantId.mockReturnValue(1)
 
     render(
@@ -239,7 +216,7 @@ describe('OwnerInfoForm', () => {
   })
 
   it('should show an error toast when the merchantId is not found', async () => {
-    mockDraft.mockReturnValue({ data: hoistedValues.draft })
+    draftData = draft
     mockMerchantId.mockReturnValue(null)
 
     render(

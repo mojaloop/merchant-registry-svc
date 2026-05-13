@@ -14,6 +14,37 @@ import { findIncrementAliasValue } from '../utils/utils'
 const router = express.Router()
 
 /**
+ * Common function to lookup registry records by alias_value
+ */
+async function lookupRegistryRecord (
+  id: string,
+  actionType: string,
+  actionDescription: string
+): Promise<RegistryEntity | null> {
+  const registryRecord = await AppDataSource.manager.findOne(RegistryEntity, {
+    where: { alias_value: id },
+    select: ['fspId', 'currency', 'lei', 'alias_value']
+  })
+
+  const transactionStatus = registryRecord == null
+    ? AuditTrasactionStatus.FAILURE
+    : AuditTrasactionStatus.SUCCESS
+
+  await audit(
+    AuditActionType.ACCESS,
+    transactionStatus,
+    actionType,
+    actionDescription,
+    'RegistryEntity',
+    {},
+    { partyList: registryRecord, id }
+  )
+
+  logger.debug('registryRecord %s Retrieved: %o', id, registryRecord)
+  return registryRecord
+}
+
+/**
  * @openapi
  * tags:
  *   name: Participants
@@ -34,7 +65,7 @@ const router = express.Router()
  *       - name: id
  *         in: path
  *         required: true
- *         description: ID of the participant
+ *         description: ID of the participant (can be merchant alias or LEI code)
  *         schema:
  *           type: string
  *     responses:
@@ -54,6 +85,12 @@ const router = express.Router()
  *                         type: string
  *                       currency:
  *                         type: string
+ *                       lei:
+ *                         type: string
+ *                         description: Legal Entity Identifier
+ *                       alias_value:
+ *                         type: string
+ *                         description: Merchant identifier or alias
  *       400:
  *         description: Invalid Type or Invalid ID
  *         content:
@@ -66,44 +103,115 @@ const router = express.Router()
  *
  */
 router.get('/participants/:type/:id', async (req: Request, res: Response) => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { type, id } = req.params
 
-  // Don't check for type for now
-  // if(type == undefined || type == null || type != 'MERCHANT_PAYINTOID') {
-  //   logger.error('Invalid Type')
-  //   await audit(
-  //     AuditActionType.ACCESS,
-  //     AuditTrasactionStatus.FAILURE,
-  //     'getParticipants',
-  //     'GET Participants: Invalid Type',
-  //     'RegistryEntity',
-  //     {}, {type}
-  //   )
-  //   return res.status(400).send(prepareError('Invalid Type'))
-  // }
-
-  const registryRecord = await AppDataSource.manager.findOne(RegistryEntity, {
-    where: { alias_value: id },
-    select: ['fspId', 'currency']
-  })
-
-  // eslint-disable-next-line
-  let transaction_status = AuditTrasactionStatus.SUCCESS
-  if (registryRecord == null) {
-    transaction_status = AuditTrasactionStatus.FAILURE
+  // MERCHANT_PAYINTOID type (which can contain either merchant aliases or LEI codes)
+  if (type === undefined || type === null || type !== 'MERCHANT_PAYINTOID') {
+    logger.error('Invalid Type: %s', type)
+    await audit(
+      AuditActionType.ACCESS,
+      AuditTrasactionStatus.FAILURE,
+      'getParticipants',
+      'GET Participants: Invalid Type',
+      'RegistryEntity',
+      {}, { type }
+    )
+    return res.status(400).send(prepareError('Invalid Type. Supported types: MERCHANT_PAYINTOID'))
   }
 
-  await audit(
-    AuditActionType.ACCESS,
-    transaction_status,
+  // The id can be either a merchant alias or an LEI code - we don't need to validate format
+  // since the database lookup will handle both cases
+  const registryRecord = await lookupRegistryRecord(
+    id,
     'getParticipants',
-    'GET Participants: Participant retrieved',
-    'RegistryEntity',
-    {}, { partyList: registryRecord, payinto_id: id }
+    'GET Participants: Participant retrieved'
   )
 
-  logger.debug('registryRecord %s Retrieved: %o', id, registryRecord)
+  res.send({ partyList: registryRecord !== null ? [registryRecord] : [] })
+})
+
+/**
+ * @openapi
+ * tags:
+ *   name: Parties
+ *
+ * /parties/{type}/{id}:
+ *   get:
+ *     tags:
+ *       - Parties
+ *     summary: Get party information based on type and ID
+ *     parameters:
+ *       - name: type
+ *         in: path
+ *         required: true
+ *         description: Type of the party identifier
+ *         schema:
+ *           type: string
+ *           enum: [ALIAS]
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         description: LEI code or merchant identifier
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved party information
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 partyList:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       fspId:
+ *                         type: string
+ *                       currency:
+ *                         type: string
+ *                       lei:
+ *                         type: string
+ *                         description: Legal Entity Identifier
+ *                       alias_value:
+ *                         type: string
+ *                         description: Merchant identifier or alias
+ *       400:
+ *         description: Invalid Type or Invalid ID
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *
+ */
+router.get('/parties/:type/:id', async (req: Request, res: Response) => {
+  const { type, id } = req.params
+
+  // ALIAS type for LEI-based merchant lookups
+  if (type === undefined || type === null || type !== 'ALIAS') {
+    logger.error('Invalid Type: %s', type)
+    await audit(
+      AuditActionType.ACCESS,
+      AuditTrasactionStatus.FAILURE,
+      'getParties',
+      'GET Parties: Invalid Type',
+      'RegistryEntity',
+      {}, { type }
+    )
+    return res.status(400).send(prepareError('Invalid Type. Supported types: ALIAS'))
+  }
+
+  // The id should be the LEI code - we lookup using alias_value
+  const registryRecord = await lookupRegistryRecord(
+    id,
+    'getParties',
+    'GET Parties: Party retrieved'
+  )
+
   res.send({ partyList: registryRecord !== null ? [registryRecord] : [] })
 })
 

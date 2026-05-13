@@ -74,7 +74,6 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
   const navigate = useNavigate()
   const toast = useToast()
 
-  const [isDraft, setIsDraft] = useState(false)
   const [licenseDocument, setLicenseDocument] = useState<LicenseDocument | null>(null)
   const [isDocumentModalOpen, setIsDocumentModalOpen] = useState(false)
   const [isUploading, setIsUploading] = useState(false)
@@ -110,14 +109,10 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
   useEffect(() => {
     if (!draftData) return
 
-    setIsDraft(
-      draftData.registration_status === 'Draft' ||
-        draftData.registration_status === 'Reverted'
-    )
-
     const {
       dba_trading_name,
       registered_name,
+      lei,
       // checkout_counters,
       employees_num,
       monthly_turnover,
@@ -133,6 +128,7 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
 
     dba_trading_name && setValue('dba_trading_name', dba_trading_name)
     registered_name && setValue('registered_name', registered_name)
+    lei && setValue('lei', lei)
     // payinto_alias && setValue('payinto_alias', payinto_alias)
     employees_num && setValue('employees_num', employees_num)
     monthly_turnover && setValue('monthly_turnover', monthly_turnover)
@@ -159,9 +155,11 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
   const haveLicense = watchedHaveLicense === 'yes'
 
   const onSubmit = (values: BusinessInfoForm) => {
-    if (!isDraft) {
-      createBusinessInfo.mutate(values)
-    } else {
+    const isExistingMerchant =
+      draft.data?.registration_status === 'Draft' ||
+      draft.data?.registration_status === 'Reverted'
+
+    if (isExistingMerchant) {
       if (!merchantId) {
         return toast({
           title: 'Merchant ID not found!',
@@ -170,6 +168,8 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
         })
       }
       updateBusinessInfo.mutate({ params: values, merchantId })
+    } else {
+      createBusinessInfo.mutate(values)
     }
   }
 
@@ -215,6 +215,14 @@ const BusinessInfoForm = ({ setActiveStep }: BusinessInfoFormProps) => {
             errors={errors}
             label='Registered Name'
             placeholder='Registered Name'
+          />
+
+          <FormInput
+            name='lei'
+            register={register}
+            errors={errors}
+            label='Legal Entity Identifier (LEI)'
+            placeholder='LEI (up to 20 characters)'
           />
 
           {/* <FormInput

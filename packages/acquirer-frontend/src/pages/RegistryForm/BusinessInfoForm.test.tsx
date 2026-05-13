@@ -1,68 +1,47 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { vi } from 'vitest'
+import type { MerchantRegistrationStatus } from 'shared-lib'
 
+import type { MerchantDetails } from '@/types/merchantDetails'
+import { createBusinessInfoMerchant } from '@/__tests__/fixtures/merchantDetails'
 import TestWrapper from '@/__tests__/TestWrapper'
 import BusinessInfoForm from './BusinessInfoForm'
 
-const hoistedValues = vi.hoisted(() => ({
-  draft: {
-    business_licenses: [
-      {
-        created_at: '2023-10-23T11:55:01.772Z',
-        id: 1,
-        license_document_link:
-          'http://minio:9000/merchant-documents/marco/thitsaworkspdf-123.pdf?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20231025%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20231025T195349Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=d4e492cc0eb820949dd78dfecead33aa7748c206dd5d0c12e3060f63573c0b90',
-        license_number: '1234',
-        updated_at: '2023-10-23T11:56:54.000Z',
-      },
-    ],
-    category_code: {
-      category_code: '10120',
-      description: 'Processing and preserving of poultry meat',
-    },
-    created_at: '2023-10-23T11:55:01.739Z',
-    currency_code: {
-      description: 'Lek',
-      iso_code: 'ALL',
-    },
-    dba_trading_name: 'marco',
-    employees_num: '6 - 10',
-    id: 1,
-    merchant_type: 'Small Shop',
-    monthly_turnover: '',
-    registered_name: '',
-    registration_status: 'Draft',
-    registration_status_reason: 'Draft Merchant by d1superadmin1@email.com',
-    updated_at: '2023-10-23T11:56:54.000Z',
-  },
-}))
-
+const draft = createBusinessInfoMerchant()
 const fn = vi.fn()
+const mockMerchantId = vi.fn()
 
 vi.mock('@chakra-ui/react', async () => {
-  const charaUI: object = await vi.importActual('@chakra-ui/react')
+  const chakraUI: object = await vi.importActual('@chakra-ui/react')
 
   return {
-    ...charaUI,
+    ...chakraUI,
     useToast: () => {
       return () => fn('toast')
     },
   }
 })
 
-const mockMerchantId = vi.fn()
 vi.mock('@/hooks', () => ({
   useMerchantId: () => mockMerchantId(),
 }))
 
-const mockDraft = vi.fn()
+let draftData: MerchantDetails | null = null
+
 vi.mock('@/api/hooks/forms', () => ({
-  useDraft: () => mockDraft(),
+  useDraft: () => ({
+    get data() {
+      return draftData
+    },
+    isFetching: false,
+  }),
   useCreateBusinessInfo: () => ({
     mutate: () => fn('createBusinessInfo'),
+    isPending: false,
   }),
   useUpdateBusinessInfo: () => ({
     mutate: () => fn('updateBusinessInfo'),
+    isPending: false,
   }),
 }))
 
@@ -71,10 +50,15 @@ const mockSetActiveStep = vi.fn()
 describe('BusinessInfoForm', () => {
   afterEach(() => {
     vi.restoreAllMocks()
+    draftData = null
+  })
+
+  beforeEach(() => {
+    fn.mockClear()
   })
 
   it('should render "Document is already uploaded." text when license document exists', () => {
-    mockDraft.mockReturnValue({ data: hoistedValues.draft })
+    draftData = draft
 
     render(
       <TestWrapper>
@@ -86,7 +70,7 @@ describe('BusinessInfoForm', () => {
   })
 
   it('should render "Upload your PDF file" text when license document does not exist', () => {
-    mockDraft.mockReturnValue({ data: null })
+    draftData = null
 
     render(
       <TestWrapper>
@@ -98,7 +82,7 @@ describe('BusinessInfoForm', () => {
   })
 
   it('should focus the first input which has an error when the validation fails', async () => {
-    mockDraft.mockReturnValue({ data: null })
+    draftData = null
 
     render(
       <TestWrapper>
@@ -115,7 +99,7 @@ describe('BusinessInfoForm', () => {
   })
 
   it('should render radio inputs correctly', () => {
-    mockDraft.mockReturnValue({ data: hoistedValues.draft })
+    draftData = draft
 
     render(
       <TestWrapper>
@@ -131,7 +115,7 @@ describe('BusinessInfoForm', () => {
   })
 
   it('should fill with draft values when it is a draft', () => {
-    mockDraft.mockReturnValue({ data: hoistedValues.draft })
+    draftData = draft
 
     render(
       <TestWrapper>
@@ -168,7 +152,7 @@ describe('BusinessInfoForm', () => {
   })
 
   it('should reset the value of "License Number" when the "No" radio button is clicked', () => {
-    mockDraft.mockReturnValue({ data: hoistedValues.draft })
+    draftData = draft
 
     render(
       <TestWrapper>
@@ -186,7 +170,7 @@ describe('BusinessInfoForm', () => {
   })
 
   it('should render file upload modal when upload file icon button is clicked', () => {
-    mockDraft.mockReturnValue({ data: hoistedValues.draft })
+    draftData = draft
 
     render(
       <TestWrapper>
@@ -201,7 +185,7 @@ describe('BusinessInfoForm', () => {
   })
 
   it('should call "createBusinessInfo.mutate" when it is not a draft', async () => {
-    mockDraft.mockReturnValue({ data: null })
+    draftData = null
 
     render(
       <TestWrapper>
@@ -231,9 +215,10 @@ describe('BusinessInfoForm', () => {
   })
 
   it('should call "updateBusinessInfo.mutate" when it is a draft or reverted data', async () => {
-    mockDraft.mockReturnValue({
-      data: { ...hoistedValues.draft, registration_status: 'Reverted' },
-    })
+    draftData = {
+      ...draft,
+      registration_status: 'Reverted' as MerchantRegistrationStatus,
+    }
     mockMerchantId.mockReturnValue(1)
 
     render(
@@ -251,7 +236,7 @@ describe('BusinessInfoForm', () => {
   })
 
   it('should show an error toast when the merchantId is not found', async () => {
-    mockDraft.mockReturnValue({ data: hoistedValues.draft })
+    draftData = draft
     mockMerchantId.mockReturnValue(null)
 
     render(

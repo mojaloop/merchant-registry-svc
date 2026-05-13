@@ -11,11 +11,13 @@
     "emitDecoratorMetadata": true,
     "allowSyntheticDefaultImports": true,
     "experimentalDecorators": true,
+    "declaration": true,
+    "composite": true,
     "baseUrl": ".",
     "paths": {
       "shared-lib": ["../shared-lib/src/*"]
     }
   },
   "include": ["**/src/**/*.ts", "**/__tests__/**/*.ts"],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", "dist"]
 }

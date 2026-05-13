@@ -41,19 +41,24 @@ vi.mock('@tanstack/react-query', async () => {
 })
 
 const mockPendingMerchants = vi.fn()
+const mockExportMerchants = vi.fn()
+const mockApproveMerchants = vi.fn()
+const mockRejectMerchants = vi.fn()
+const mockRevertMerchants = vi.fn()
+
 vi.mock('@/api/hooks/merchants', () => ({
   usePendingMerchants: () => mockPendingMerchants(),
   useExportMerchants: () => ({
-    mutateAsync: () => vi.fn(),
+    mutateAsync: mockExportMerchants,
   }),
   useApproveMerchants: () => ({
-    mutateAsync: () => vi.fn(),
+    mutateAsync: mockApproveMerchants,
   }),
   useRejectMerchants: () => ({
-    mutateAsync: () => vi.fn(),
+    mutateAsync: mockRejectMerchants,
   }),
   useRevertMerchants: () => ({
-    mutateAsync: () => vi.fn(),
+    mutateAsync: mockRevertMerchants,
   }),
   useMerchant: () => ({}),
 }))
@@ -72,6 +77,10 @@ vi.mock('@/utils', () => ({
 describe('PendingMerchantRecords', () => {
   afterEach(() => {
     vi.restoreAllMocks()
+    mockExportMerchants.mockClear()
+    mockApproveMerchants.mockClear()
+    mockRejectMerchants.mockClear()
+    mockRevertMerchants.mockClear()
   })
 
   it('should render form skeleton when users data is loading', () => {
@@ -249,7 +258,6 @@ describe('PendingMerchantRecords', () => {
       isFetching: false,
       isSuccess: true,
     })
-    const exportMerchantsSpy = vi.spyOn(vi, 'fn')
 
     render(
       <TestWrapper>
@@ -260,7 +268,7 @@ describe('PendingMerchantRecords', () => {
     const exportButton = screen.getByText('Export')
     fireEvent.click(exportButton)
 
-    expect(exportMerchantsSpy).toHaveBeenCalled()
+    expect(mockExportMerchants).toHaveBeenCalled()
   })
 
   it('should call "rejectMerchants.mutateAsync" function when "Reject" button is clicked', async () => {
@@ -272,7 +280,7 @@ describe('PendingMerchantRecords', () => {
       isSuccess: true,
       refetch: () => vi.fn(),
     })
-    const mockSpy = vi.spyOn(vi, 'fn')
+    mockRejectMerchants.mockResolvedValue({})
 
     render(
       <TestWrapper>
@@ -286,17 +294,15 @@ describe('PendingMerchantRecords', () => {
     fireEvent.click(selectRowCheckBox)
     fireEvent.click(rejectButton)
 
-    const yesButton = screen.getByText('Yes')
+    const yesButton = await screen.findByText('Yes')
     fireEvent.click(yesButton)
 
-    const reasonInput = screen.getByPlaceholderText('Enter reason')
+    const reasonInput = await screen.findByPlaceholderText('Enter reason')
     const submitButton = screen.getByText('Submit')
     fireEvent.change(reasonInput, { target: { value: 'Invalid data' } })
-    fireEvent.submit(submitButton)
+    fireEvent.click(submitButton)
 
-    await waitFor(() => Promise.resolve())
-
-    expect(mockSpy).toHaveBeenCalledTimes(4)
+    await waitFor(() => expect(mockRejectMerchants).toHaveBeenCalled())
   })
 
   it('should call "approveMerchants.mutateAsync" function when "Approve" button is clicked', async () => {
@@ -308,7 +314,7 @@ describe('PendingMerchantRecords', () => {
       isSuccess: true,
       refetch: () => vi.fn(),
     })
-    const mockSpy = vi.spyOn(vi, 'fn')
+    mockApproveMerchants.mockResolvedValue({})
 
     render(
       <TestWrapper>
@@ -322,12 +328,10 @@ describe('PendingMerchantRecords', () => {
     fireEvent.click(selectRowCheckBox)
     fireEvent.click(approveButton)
 
-    const yesButton = screen.getByText('Yes')
+    const yesButton = await screen.findByText('Yes')
     fireEvent.click(yesButton)
 
-    await waitFor(() => Promise.resolve())
-
-    expect(mockSpy).toHaveBeenCalledTimes(4)
+    await waitFor(() => expect(mockApproveMerchants).toHaveBeenCalled())
   })
 
   it('should call "revertMerchants.mutateAsync" function when "Revert" button is clicked', async () => {
@@ -339,7 +343,7 @@ describe('PendingMerchantRecords', () => {
       isSuccess: true,
       refetch: () => vi.fn(),
     })
-    const mockSpy = vi.spyOn(vi, 'fn')
+    mockRevertMerchants.mockResolvedValue({})
 
     render(
       <TestWrapper>
@@ -353,17 +357,15 @@ describe('PendingMerchantRecords', () => {
     fireEvent.click(selectRowCheckBox)
     fireEvent.click(revertButton)
 
-    const yesButton = screen.getByText('Yes')
+    const yesButton = await screen.findByText('Yes')
     fireEvent.click(yesButton)
 
-    const reasonInput = screen.getByPlaceholderText('Enter reason')
+    const reasonInput = await screen.findByPlaceholderText('Enter reason')
     const submitButton = screen.getByText('Submit')
     fireEvent.change(reasonInput, { target: { value: 'Invalid data' } })
-    fireEvent.submit(submitButton)
+    fireEvent.click(submitButton)
 
-    await waitFor(() => Promise.resolve())
-
-    expect(mockSpy).toHaveBeenCalledTimes(4)
+    await waitFor(() => expect(mockRevertMerchants).toHaveBeenCalled())
   })
 
   it('should render merchant info modal when "View Details" button is clicked', () => {

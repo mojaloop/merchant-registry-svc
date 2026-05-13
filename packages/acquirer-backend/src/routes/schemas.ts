@@ -13,6 +13,7 @@ export const BusinessLicenseSubmitDataSchema = z.object({
 export const MerchantSubmitDataSchema = z.object({
   dba_trading_name: z.string().optional(),
   registered_name: z.string().optional().nullable().default(null),
+  lei: z.string().max(20).optional().nullable().default(null),
   employees_num: z.nativeEnum(NumberOfEmployees).optional(),
   monthly_turnover: z.string().nullable().default(null),
   currency_code: z.nativeEnum(CurrencyCodes).optional(),

@@ -4,6 +4,7 @@ import request from 'supertest'
 import { type Application } from 'express'
 import { DefaultHubUsers, DefaultDFSPUsers } from '../../src/database/defaultUsers'
 import { PortalUserEntity } from '../../src/entity/PortalUserEntity'
+import { PortalRoleEntity } from '../../src/entity/PortalRoleEntity'
 import { AppDataSource } from '../../src/database/dataSource'
 import { PortalUserStatus, PortalUserType } from 'shared-lib'
 
@@ -104,12 +105,14 @@ export function testUserLoginFails (app: Application): void {
 
   it('should response 400 with "User is not verified"', async () => {
     // Arrange
+    const role = await AppDataSource.manager.findOneOrFail(PortalRoleEntity, { where: { name: 'Hub Admin' } })
+
     const newUser = new PortalUserEntity()
     newUser.name = 'unverified user'
     newUser.email = 'unverified-user-for-test@email.com'
     newUser.user_type = PortalUserType.HUB
     newUser.status = PortalUserStatus.UNVERIFIED
-    // newUser.role = DefaultHubUsers[0].role
+    newUser.role = role
     await AppDataSource.manager.save(newUser)
 
     // Act
@@ -135,11 +138,14 @@ export function testUserLoginFails (app: Application): void {
 
   it('should response 400 with "User need to reset password"', async () => {
     // Arrange
+    const role = await AppDataSource.manager.findOneOrFail(PortalRoleEntity, { where: { name: 'Hub Admin' } })
+
     const newUser = new PortalUserEntity()
     newUser.name = 'resetting user'
     newUser.email = 'pwd-resetting-user-for-test@email.com'
     newUser.user_type = PortalUserType.HUB
     newUser.status = PortalUserStatus.RESETPASSWORD
+    newUser.role = role
     await AppDataSource.manager.save(newUser)
 
     // Act

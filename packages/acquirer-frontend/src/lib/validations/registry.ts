@@ -16,6 +16,7 @@ export const businessInfoSchema = z
   .object({
     dba_trading_name: z.string().trim().min(1, { message: 'Business name is required' }),
     registered_name: z.string().optional(),
+    lei: z.string().max(20, { message: 'LEI cannot exceed 20 characters' }).optional(),
     // payinto_alias: z.string().min(1, { message: 'Payinto account is required' }),
     employees_num: z.nativeEnum(NumberOfEmployees, {
       errorMap: () => ({ message: 'Please select an option' }),

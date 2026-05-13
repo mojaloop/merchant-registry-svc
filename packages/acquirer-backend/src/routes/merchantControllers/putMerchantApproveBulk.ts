@@ -153,7 +153,8 @@ export async function putBulkWaitingAliasGeneration (req: AuthRequest, res: Resp
       .set({
         registration_status: MerchantRegistrationStatus.WAITINGALIASGENERATION,
         registration_status_reason: 'Bulk Updated to "Waiting For Alias Generation"',
-        checked_by: portalUser
+        checked_by: portalUser,
+        gleif_verified_at: new Date()
       })
       .whereInIds(ids)
       .execute()
@@ -174,7 +175,8 @@ export async function putBulkWaitingAliasGeneration (req: AuthRequest, res: Resp
         dfsp_name: merchant.dfsps[0]?.name,
         fspId: merchant.dfsps[0]?.fspId,
         checkout_counter_id: merchant.checkout_counters[0]?.id,
-        currency_code: merchant.currency_code
+        currency_code: merchant.currency_code,
+        lei: merchant.lei
       }
     })
 
