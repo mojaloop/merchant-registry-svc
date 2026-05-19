@@ -67,7 +67,6 @@ export async function putUserResetPassword (req: AuthRequest, res: Response) {
   const { password } = req.body
 
   try {
-    const oldPasswordHash = portalUser.password
     portalUser.password = await hashPassword(password)
     if (portalUser.status === PortalUserStatus.RESETPASSWORD) {
       portalUser.status = PortalUserStatus.ACTIVE
@@ -80,7 +79,7 @@ export async function putUserResetPassword (req: AuthRequest, res: Response) {
       'putUserResetPassword',
       'Reset User Password Successful',
       'PortalUserEntity',
-      { password: oldPasswordHash }, { password: portalUser.password }, null
+      {}, {}, null
     )
 
     return res.status(201).send({ message: 'Reset Password Successful' })
