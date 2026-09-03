@@ -84,9 +84,9 @@ for PACKAGE in ${CHANGED_PACKAGES}; do
     echo -e "Publishing..."
 
     echo -e "---------------- PUBLISH START ----------------------\n"
-    # actual publish command
-    npm -w ${PACKAGE_NAME} publish --tag=latest --access public
-    PUB_SUCCESS=$?
+    # PoC: NPM publishing disabled while testing Docker image signing
+    echo "PoC: Skipping NPM publish for ${PACKAGE_NAME}"
+    PUB_SUCCESS=0
     echo -e "\n----------------- PUBLISH END -----------------------"
 
     if [[ $PUB_SUCCESS -eq 0 ]]; then
@@ -118,7 +118,6 @@ echo -e "  Create docker builder, bootstrap it and use it..."
 docker buildx create --name mybuilder --use --bootstrap
 docker buildx ls
 
-
 echo -e "\nGoing to build and publish ${PACKAGES_TO_PUBLISH_TO_DOCKER_COUNT} package(s)..."
 
 SHORT_GIT_HASH=$(echo $CIRCLE_SHA1 | cut -c -7)
@@ -129,10 +128,9 @@ for PACKAGE in ${CHANGED_PACKAGES}; do
 
     PACKAGE_PATH=${ROOT}/$PACKAGE
     PACKAGE_NAME=$(cat ${PACKAGE_PATH}/package.json | jq -r ".name")
-    DOCKER_IMAGE_NAME=$(echo $PACKAGE_NAME | sed -e 's/@//')
+    DOCKER_IMAGE_NAME="yxxx00/$(echo "$PACKAGE_NAME" | sed -e 's|@mojaloop/||')"
     PACKAGE_CUR_VERSION=$(cat ${PACKAGE_PATH}/package.json | jq -r ".version")
     PACKAGE_PUBLISH_FLAG=$(cat $PACKAGE_PATH/package.json | jq -r ".mojaloop.publish_to_dockerhub // false")
-
 
     echo -e "\tName: \t\t${PACKAGE_NAME}"
     echo -e "\tCur version: \t${PACKAGE_CUR_VERSION}"
@@ -157,7 +155,6 @@ for PACKAGE in ${CHANGED_PACKAGES}; do
     echo -e "\tCommit Tag: \t${DOCKER_TAG_SHORT_GIT_HASH}"
     echo -e "\tRelease Tag: \t${DOCKER_TAG_LATEST_RELEASE}"
 
-
     if [[ -n "$DRYRUN" ]]; then
         echo -e "\nDryrun env var found - not actually building and publishing docker image"
         continue
@@ -173,6 +170,7 @@ for PACKAGE in ${CHANGED_PACKAGES}; do
         -f ${PACKAGE_PATH}/Dockerfile \
         -t ${DOCKER_TAG_VERSION} -t ${DOCKER_TAG_SHORT_GIT_HASH} -t ${DOCKER_TAG_LATEST_RELEASE} \
         .
+
     BUILD_AND_PUB_SUCCESS=$?
     echo -e "\n---------------- DOCKER BUILD AND PUBLISH END ----------------------"
 
@@ -180,6 +178,154 @@ for PACKAGE in ${CHANGED_PACKAGES}; do
         PUBLISHED_DOCKERHUB_PACKAGES_COUNT=$((PUBLISHED_DOCKERHUB_PACKAGES_COUNT + 1))
         TAG_NAME_PARTS+="${PACKAGE_NAME}-${PACKAGE_NEW_VERSION},"
         echo -e "Successfully published docker image."
+        echo -e "Getting immutable Docker image digest..."
+
+        DIGEST=$(docker buildx imagetools inspect "${DOCKER_TAG_VERSION}" \
+        | awk '/^Digest:/ {print $2; exit}')
+
+        if [[ -z "$DIGEST" ]]; then
+            echo "Failed to obtain Docker image digest"
+            exit 1
+        fi
+
+        IMAGE_DIGEST="${DOCKER_IMAGE_NAME}@${DIGEST}"
+
+        echo "Image digest: ${IMAGE_DIGEST}"
+
+        echo "Installing and verifying Cosign..."
+
+        COSIGN_VERSION="v3.1.3"
+
+        # Verification flow adapted from the official
+        # sigstore/cosign-installer implementation.
+        BOOTSTRAP_VERSION="v3.0.6"
+        BOOTSTRAP_SHA256="c956e5dfcac53d52bcf058360d579472f0c1d2d9b69f55209e256fe7783f4c74"
+        RELEASE_KEY_SHA256="f4cea466e5e887a45da5031757fa1d32655d83420639dc1758749b744179f126"
+
+        WORKDIR="$(mktemp -d)"
+
+        echo "Downloading Cosign bootstrap ${BOOTSTRAP_VERSION}..."
+
+        curl --retry 3 \
+            --proto '=https' \
+            --proto-redir '=https' \
+            --tlsv1.2 \
+            -fsSL \
+            "https://github.com/sigstore/cosign/releases/download/${BOOTSTRAP_VERSION}/cosign-linux-amd64" \
+            -o "${WORKDIR}/cosign-bootstrap"
+
+        BOOTSTRAP_ACTUAL_SHA256="$(
+            sha256sum "${WORKDIR}/cosign-bootstrap" | awk '{print $1}'
+        )"
+
+        if [[ "$BOOTSTRAP_ACTUAL_SHA256" != "$BOOTSTRAP_SHA256" ]]; then
+            echo "ERROR: Cosign bootstrap SHA256 verification failed"
+            rm -rf "$WORKDIR"
+            exit 1
+        fi
+
+        chmod +x "${WORKDIR}/cosign-bootstrap"
+
+        echo "Cosign bootstrap SHA256 verified."
+
+        echo "Downloading Cosign ${COSIGN_VERSION}..."
+
+        curl --retry 3 \
+            --proto '=https' \
+            --proto-redir '=https' \
+            --tlsv1.2 \
+            -fsSL \
+            "https://github.com/sigstore/cosign/releases/download/${COSIGN_VERSION}/cosign-linux-amd64" \
+            -o "${WORKDIR}/cosign"
+
+        echo "Downloading Cosign release public key..."
+
+        curl --retry 3 \
+            --proto '=https' \
+            --proto-redir '=https' \
+            --tlsv1.2 \
+            -fsSL \
+            "https://raw.githubusercontent.com/sigstore/cosign/${COSIGN_VERSION}/release/release-cosign.pub" \
+            -o "${WORKDIR}/release-cosign.pub"
+
+        RELEASE_KEY_ACTUAL_SHA256="$(
+            sha256sum "${WORKDIR}/release-cosign.pub" | awk '{print $1}'
+        )"
+
+        if [[ "$RELEASE_KEY_ACTUAL_SHA256" != "$RELEASE_KEY_SHA256" ]]; then
+            echo "ERROR: Cosign release public key SHA256 verification failed"
+            rm -rf "$WORKDIR"
+            exit 1
+        fi
+
+        echo "Cosign release public key verified."
+
+        echo "Verifying Cosign keyless Sigstore bundle..."
+
+        curl --retry 3 \
+            --proto '=https' \
+            --proto-redir '=https' \
+            --tlsv1.2 \
+            -fsSL \
+            "https://github.com/sigstore/cosign/releases/download/${COSIGN_VERSION}/cosign-linux-amd64.sigstore.json" \
+            -o "${WORKDIR}/cosign-linux-amd64.sigstore.json"
+
+        "${WORKDIR}/cosign-bootstrap" verify-blob \
+            --certificate-identity="keyless@projectsigstore.iam.gserviceaccount.com" \
+            --certificate-oidc-issuer="https://accounts.google.com" \
+            --bundle "${WORKDIR}/cosign-linux-amd64.sigstore.json" \
+            "${WORKDIR}/cosign"
+
+        echo "Keyless Sigstore bundle verified."
+
+        echo "Verifying Cosign KMS-backed Sigstore bundle..."
+
+        curl --retry 3 \
+            --proto '=https' \
+            --proto-redir '=https' \
+            --tlsv1.2 \
+            -fsSL \
+            "https://github.com/sigstore/cosign/releases/download/${COSIGN_VERSION}/cosign-linux-amd64-kms.sigstore.json" \
+            -o "${WORKDIR}/cosign-linux-amd64-kms.sigstore.json"
+
+        "${WORKDIR}/cosign-bootstrap" verify-blob \
+            --key "${WORKDIR}/release-cosign.pub" \
+            --bundle "${WORKDIR}/cosign-linux-amd64-kms.sigstore.json" \
+            "${WORKDIR}/cosign"
+
+        echo "KMS-backed Sigstore bundle verified."
+        echo "Cosign binary successfully verified."
+
+        sudo install "${WORKDIR}/cosign" /usr/local/bin/cosign
+
+        rm -rf "$WORKDIR"
+
+        cosign version
+
+        echo "Preparing CircleCI OIDC token for keyless signing..."
+
+        echo "CircleCI environment CLI version:"
+        circleci version
+        
+        SIGSTORE_ID_TOKEN="$(circleci run oidc get --claims '{"aud":"sigstore"}')"
+
+        if [[ -z "$SIGSTORE_ID_TOKEN" ]]; then
+            echo "ERROR: Failed to obtain CircleCI OIDC token"
+            exit 1
+        fi
+
+        export SIGSTORE_ID_TOKEN
+
+        echo "Signing Docker image keylessly: ${IMAGE_DIGEST}"
+
+        cosign sign \
+            --yes \
+            "$IMAGE_DIGEST"
+
+        unset SIGSTORE_ID_TOKEN
+
+        echo "Successfully signed Docker image using CircleCI OIDC."
+
         CHANGES_DESCRIPTION="${CHANGES_DESCRIPTION} - [${PACKAGE}-${PACKAGE_NEW_VERSION}]"
     else
         echo -e "Error publishing package: ${PACKAGE} - exiting"
@@ -192,6 +338,9 @@ if [[ -n "$DRYRUN" ]]; then
     exit 0
 fi
 
+echo "PoC Docker signing test completed - skipping git commit/tag/push."
+exit 0
+
 ############################################
 ## Phase 5 - Pushing combined commit to git
 ############################################
@@ -199,6 +348,7 @@ printHeader "Phase 5 - Pushing single combined commit and tag to git"
 
 # Stage all changes
 git add -A
+
 # Commit with a combined message
 COMMIT_MESSAGE="[ci skip] auto commit for packages - ${CHANGES_DESCRIPTION}"
 git commit --no-verify -m "$COMMIT_MESSAGE"
@@ -226,3 +376,4 @@ fi
 TOTAL_PUBLISHED_COUNT=$((PUBLISHED_NPM_PACKAGES_COUNT + PUBLISHED_DOCKERHUB_PACKAGES_COUNT))
 
 echo -e "\nDONE - ${TOTAL_PUBLISHED_COUNT} package(s) were published and version changes pushed, all done."
+
